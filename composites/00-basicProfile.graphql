@@ -6,7 +6,3 @@ type BasicProfile @createModel(accountRelation: SINGLE, description: "A basic Pr
   gender: String @string(minLength: 3, maxLength: 100)
   emoji: String @string(minLength: 1, maxLength: 2)
 }
-
-# type BasicProfile @loadModel(id: "kjzl6hvfrbw6c76nndo46m7pf2o0cee7guxnrwpjamamhwirxhfvq9tmwgr2fcu") {
-#   id: ID!
-# }
