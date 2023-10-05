@@ -237,3 +237,5 @@ Regardless of whether a document exists or not, we can always create or update o
 Go ahead and create profiles for yourself and your chatbot. Observe your console-logs as you go - if you run into errors, you might want to check the field constraints assigned to the BasicProfile model definition back in /composites/00-basicProfile.graphql (for example, your username must contain a minimum length of 5 characters). Feel free to change those constraints and re-deploy the models on your node after you've finished the tutorial.
 
 Once you've successfully created profiles for both yourself and your chatbot, we can start a conversation. 
+
+### Creating Profiles

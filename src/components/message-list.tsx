@@ -408,7 +408,7 @@ export const MessageList = () => {
               if (body) {
                 console.log(body);
                 const resultPost = await createPost(body);
-                if (posts.length && resultPost) {
+                if (resultPost) {
                   setPosts([...posts, resultPost]);
                 }
                 if (resultPost) {
