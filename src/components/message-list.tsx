@@ -136,6 +136,7 @@ export const MessageList = () => {
   };
 
   const getProfile = async () => {
+    await authenticateCeramic(ceramic, composeClient);
     if (ceramic.did !== undefined) {
       const profile = await composeClient.executeQuery<{
         viewer: { basicProfile: Profile };

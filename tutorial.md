@@ -101,9 +101,9 @@ type BasicProfile @createModel(accountRelation: SINGLE, description: "A basic Pr
   author: DID! @documentAccount 
   name: String! @string(minLength: 3, maxLength: 100)
   username: String! @string(minLength: 5, maxLength: 255)
+  emoji: String! @string(minLength: 1, maxLength: 2)
   description: String @string(minLength: 3, maxLength: 100)
   gender: String @string(minLength: 3, maxLength: 100)
-  emoji: String @string(minLength: 1, maxLength: 2)
 }
 ```
 
@@ -210,8 +210,30 @@ Finally, for the purpose of this application and tutorial specifically, you'll n
 
 Go ahead and authenticate yourself by pressing the "Sign in with MetaMask" button in the navigation and observe the new key-value pairs that now appear in your local storage.
 
-### Creating Profiles
+### Checking for Profiles
 
 You'll notice a few things once you authenticate yourself. 
 
-First, if it's your first time running the application with a fresh Ceramic instance, you'll notice that you're immediately redirected to the /profile page. This is due to the /src/components/message-list.tsx component (imported and rendered conditionally into our homepage). If you locate the first of two useEffect lifecycle hooks within this component definition, you'll see that the first method it invoked is `getProfile` which queries our composeClient instance for a `BasicProfile` model instance document belonging to the user logged in. 
+First, if it's your first time running the application with a fresh Ceramic instance, you'll notice that you're immediately redirected to the /profile page. This is due to the /src/components/message-list.tsx component (imported and rendered conditionally into our homepage). 
+
+If you locate the first of two useEffect lifecycle hooks within this component definition, you'll see that the first method it invoked is `getProfile` which queries our composeClient instance for a `BasicProfile` model instance document belonging to the user logged in. You can see how the query is wrapped in a `viewer` object that automatically looks for a model instance document based on the authenticated account. Given that our user was the last authenticated (given the `authenticateCeramic` call we make as our first invocation within `getProfile`), our ComposeClient instance knows to assign viewer to the resulting did:pkh account.
+
+Since our application requires both our user and chatbot to have corresponding profiles before engaging in the chat, the user is subsequently redirected if no BasicProfile model instance document is found.
+
+You'll similarly find a call to the `getRobotProfile` method next in our useEffect hook. Notice how this method first calls yet another method, `createRobotDID`. As explained in the pseudocode, this method creates and authenticates another account (representing our chatbot) using the `did:key` method, taking our `did:pkh` as an input to generate a random seed. Finally, we authenticate this new DID on our ComposeClient and Ceramic client instances (similar to /utils/index.ts).
+
+The reasoning here is that we want to save chat responses to two separate Ceramic accounts - our human users, and our chatbots. We also want to allow multiple users to log in and only access data relevant to themselves. This gives us a way to create a unique chatbot account for each user. Similar to /utils/index.ts, we also save our chatbot's did:key to local storage. We'll explain why later in this tutorial.
+
+Similar to `getProfile`, the call to `getRobotProfile` will also redirect users to the /profile page if no robot profile is found.
+
+### Creating Profiles
+
+The component found in /src/components/userform.component.tsx is the one imported and rendered on the /profile page - jump over to that file in your text editor.
+
+Similar to /src/components/message-list.tsx, you'll notice that our useEffect lifecycle hook checks for user and chatbot profiles, if they exist. 
+
+Regardless of whether a document exists or not, we can always create or update one if authenticated. Back in your text editor, locate your `updateProfile` and `updateRobotProfile` method definitions. In both instances, you'll see that a mutation query uses values from our `profile` and `robotProfile` state variables which get updated whenever we enter content into those corresponding fields in our UI, and then replacing those state variables with the result of that mutation. We've also shown you how to create a `Following` model instance document as well (inputting the stream ID of the related BasicProfile to signal the relation), though we won't be using this model elsewhere in our application. 
+
+Go ahead and create profiles for yourself and your chatbot. Observe your console-logs as you go - if you run into errors, you might want to check the field constraints assigned to the BasicProfile model definition back in /composites/00-basicProfile.graphql (for example, your username must contain a minimum length of 5 characters). Feel free to change those constraints and re-deploy the models on your node after you've finished the tutorial.
+
+Once you've successfully created profiles for both yourself and your chatbot, we can start a conversation. 
