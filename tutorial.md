@@ -173,5 +173,45 @@ Finally, you'll see that we import models defined elsewhere within several of ou
 
 When running in production, it's safe to assume that your application will be referencing predefined definitions that have already been deployed on your node, making the script referenced above irrelevant. 
 
+### Run the Application in Developer Mode
 
+To start up our application, first make sure you're running node version 16, and then run the `dev` command:
 
+```bash
+nvm use 16
+npm run dev
+```
+
+You can observe your local node's output logs within your terminal as the application starts up. If you parse through the code in your text editor, you'll notice that a few things are happening behind the scenes when you run this command:
+
+1. The script located in /scripts/run.mjs is triggered, which then:
+a. Starts our local Ceramic node
+b. Runs the script found in /scripts/composites.mjs which compiles and deploys our models on the node we just started
+c. Creates a GraphiQL server and web graphical user interface running on localhost:5001
+d. Finally, starts up our Next.JS application which we can then view in our browser
+
+Once your terminal reads `[NextJS] ready - started server on 0.0.0.0:3000, url: http://localhost:3000`, you can view the frontend in your browser by visiting http://localhost:3000/.
+
+You can also now view the resulting composite deployed on your node in /src/__generated__/.
+
+## Authenticating Users
+
+Navigating to your browser you'll be prompted to sign in with your MetaMask wallet. If you jump back to your code editor and locate file /src/pages/index.tsx, you'll see that the UseEffect lifecycle hook calls a method we've defined called `handleLogin`, which in turn triggers an imported method called `authenticateCeramic` (which we'll talk about in a moment). But first, you'll also notice that `authenticateCeramic` takes two arguments: "ceramic" and "composeClient". If you follow the variable chain, you'll again notice that we're able to define these constants derived from yet another imported method called `useCeramicContext`.
+
+Jump over to /context/index.tsx to locate this method. You'll notice here that we use our client libraries to instantiate our clients on the same port our local node is running on (7007). Please observe how we also import our composite definition from /src/__generated__/definition.js which is used when instantiating our ComposeClient instance. This is necessary in order to be able to run queries against the same model definitions we just created during our start-up process. Finally, you can see how both clients are returned within the CeramicContext closure, yielding an object containing both clients when invoked.
+
+Jumping back to /src/pages/index.tsx, you'll see how both client instances are used to invoked `authenticateCeramic`. This definition can be found in /utils/index.ts. The important item to recognize during this sequence is which DID method is being used. While Ceramic supports multiple [DID methods](https://developers.ceramic.network/protocol/accounts/decentralized-identifiers/), this application authorizes Ethereum accounts using [@didtools/pkh-ethereum](https://did.js.org/docs/api/modules/pkh_ethereum/) (visit [User Sessions](https://composedb.js.org/docs/0.5.x/guides/composedb-client/user-sessions) for more information).
+
+This type of authentication flow offers a familiar "web2" experience allowing users to sign in once (thus generating a timebound session), removing the need to manually approve every transaction. In doing so, this method utilizes a root Ceramic `did:pkh` account with the user's wallet, and generates a temporary and resolvable Ceramic `did:key` account that lives in the browser's local storage, expiring after a default duration of 24 hours.
+
+Within `authenticateCeramic`, you can see how we not only detect whether or not a session is defined in the user's browser, but we also refresh the session if it's expired.
+
+Finally, for the purpose of this application and tutorial specifically, you'll notice that we also save the parent `did:pkh` to the user's local storage. We will discuss how this will be used later in the tutorial.
+
+Go ahead and authenticate yourself by pressing the "Sign in with MetaMask" button in the navigation and observe the new key-value pairs that now appear in your local storage.
+
+### Creating Profiles
+
+You'll notice a few things once you authenticate yourself. 
+
+First, if it's your first time running the application with a fresh Ceramic instance, you'll notice that you're immediately redirected to the /profile page. This is due to the /src/components/message-list.tsx component (imported and rendered conditionally into our homepage). If you locate the first of two useEffect lifecycle hooks within this component definition, you'll see that the first method it invoked is `getProfile` which queries our composeClient instance for a `BasicProfile` model instance document belonging to the user logged in. 

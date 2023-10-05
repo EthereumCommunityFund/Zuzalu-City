@@ -3,7 +3,6 @@ import { authenticateCeramic } from "../../utils";
 import { Header } from "@/components/header";
 import { MessageList } from "@/components/message-list";
 import { useCeramicContext } from "@/context";
-import { useChat, type Message } from "ai/react";
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
