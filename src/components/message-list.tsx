@@ -384,6 +384,7 @@ export const MessageList = () => {
                     body={post.body}
                     created={post.created}
                     id={post.id}
+                    authorId={post.authorId}
                   />
                 ))}
               {write && newPost && (
@@ -393,6 +394,7 @@ export const MessageList = () => {
                   body={data}
                   created={newPost.created}
                   id={newPost.id}
+                  authorId={newPost.authorId}
                 />
               )}
               <div ref={messageRef}></div>

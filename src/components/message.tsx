@@ -2,20 +2,20 @@ import { formatRelative, formatDistance, differenceInHours } from "date-fns";
 import { PostProps } from "../../utils/types";
 
 
-export const Message = ({profile, body, created}: PostProps) => {
+export const Message = ({profile, body, created, authorId}: PostProps) => {
   const session = localStorage.getItem("id");
 
   return (
     <div
       className={`flex flex-col relative space-x-1 space-y-1 ${
-        profile.author?.id === session
+        authorId === session
           ? "text-right"
           : "text-left"
       }`}
     >
       <div
         className={`flex relative space-x-1 ${
-          profile.author?.id === session
+          authorId === session
             ? "flex-row-reverse space-x-reverse"
             : "flex-row"
         }`}
@@ -33,12 +33,12 @@ export const Message = ({profile, body, created}: PostProps) => {
         )}
         <span
           className={`inline-flex rounded space-x-2 items-start p-3 text-white ${
-            profile.author?.id === session
+            authorId === session
               ? "bg-[#4a9c6d]"
               : "bg-[#363739]"
           } `}
         >
-          {profile.author?.id !== session && (
+          {authorId !== session && (
             <span className="font-bold">{profile.username}:&nbsp;</span>
           )}
           <span className="max-w-sm">{body}</span>
