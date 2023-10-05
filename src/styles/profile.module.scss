@@ -1,0 +1,42 @@
+.formGroup {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  label {
+    display: block;
+    padding-bottom: 3px;
+  }
+  input {
+    border: 2px solid black;
+    color: #333;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 5px 15px;
+  }
+}
+
+.contextGroup {
+  margin-bottom: 10px;
+  width: 100%;
+  height: 100%;
+  font-size: 18px;
+  color: rgb(10, 10, 10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  label {
+    display: block;
+    padding-bottom: 3px;
+  }
+  input {
+    border: 2px solid black;
+    background-color: rgb(197, 199, 201);
+    color: #333;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 5px 15px;
+  }
+}

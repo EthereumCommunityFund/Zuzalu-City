@@ -1,8 +1,36 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
+import { useCeramicContext } from "@/context";
+import { authenticateCeramic, disconnect } from "../../utils";
 
-export function Header() {
+type Props = {
+  logged: boolean;
+};
+
+export function Header({ logged }: Props) {
   const { data: session } = useSession();
+  const [loggedIn, setLoggedIn] = useState(false);
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
+
+  const handleLogin = async () => {
+    const accounts = await authenticateCeramic(ceramic, composeClient);
+    if(accounts){
+      setLoggedIn(true)
+    }
+    return accounts;
+  };
+
+  const handleDisconnect = async () => {
+    await disconnect()
+    return setLoggedIn(false);
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem("did")) {
+      handleLogin();
+    }
+  }, []);
 
   return (
     <header className="p-6 bg-white/5 border-b border-[#363739]">
@@ -33,11 +61,11 @@ export function Header() {
                 />
               </svg>
             </a>
-            <span className="text-white font-bold text-xl">Chatbase</span>
+            <button className="text-white font-bold text-xl" onClick={() => window.location.href = "/"}> Chatbase</button>
           </p>
-          {session ? (
+          {loggedIn ? (
             <div className="flex space-x-1">
-              {session?.user?.image && (
+              {/* {session?.user?.image && (
                 <div className="w-12 h-12 rounded overflow-hidden">
                   <Image
                     width={50}
@@ -47,21 +75,33 @@ export function Header() {
                     title={session?.user?.name || "User profile picture"}
                   />
                 </div>
-              )}
+              )} */}
               <button
-                onClick={() => signOut()}
+                onClick={() => handleDisconnect()}
                 className="bg-white/5 rounded h-12 px-6 font-medium text-white border border-transparent"
               >
                 Sign out
+              </button>
+              <button
+                onClick={() => window.location.href = "/profile"}
+                className="bg-white/5 rounded h-12 px-6 font-medium text-white text-lg border border-transparent inline-flex items-center"
+              >
+                Edit Profile
+              </button>
+              <button
+                onClick={() => window.location.href = "/context"}
+                className="bg-white/5 rounded h-12 px-6 font-medium text-white text-lg border border-transparent inline-flex items-center"
+              >
+                Create Context
               </button>
             </div>
           ) : (
             <div className="flex items-center">
               <button
-                onClick={() => signIn("github")}
+                onClick={async() => handleLogin()}
                 className="bg-white/5 rounded h-12 px-6 font-medium text-white text-lg border border-transparent inline-flex items-center"
               >
-                Sign in with GitHub
+                Sign in with MetaMask
               </button>
             </div>
           )}

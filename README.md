@@ -1,38 +1,41 @@
-# Chatbase
+# Save Chats and Context from OpenAI to ComposeDB on Ceramic
 
-Realtime chat using GraphQL Live Queries, Next.js and NextAuth.js &mdash; [tutorial](https://grafbase.com/guides/how-to-build-a-real-time-chat-app-with-nextjs-graphql-and-server-sent-events)
+Realtime chat using GraphQL Live Queries, Next.js, and ComposeDB.
 
-![Chatbase App](/public/og.png)
+## Getting Started
 
-## Tools used
+1. Install your dependencies:
 
-- NextAuth.js
-- Next.js
-- Apollo Client
-- Grafbase
-- Server-Sent Events
-- GraphQL Live Queries
-- GraphQL
-- Tailwind CSS
+```bash
+npm install
+```
 
-## Local Development
+2. Generate your admin seed, admin did, and ComposeDB configuration file:
 
-1. `npm install`
-2. Create a [GitHub OAuth App](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app) with your app details for development purposes. Make sure to set `Authorization callback URL` to `http://localhost:3000/api/auth/callback/github`
-3. `cp .env.example .env` and add values for `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` from step 2.
-4. [Generate a secret value](https://generate-secret.vercel.app) for `NEXTAUTH_SECRET` and add it to `.env`
-5. `cp grafbase/.env.example grafbase/.env`
-6. Add the same `NEXTAUTH_SECRET` to `grafbase/.env`
-7. `npx grafbase dev`
-8. `npm run dev`
+```bash
+npm run generate
+```
 
-## Deploy to Production
+3. Create a .env file and enter the three required environment variables outlined in .env.example
 
-1. Fork and Push this repo to GitHub
-2. [Create an account](https://grafbase.com) with Grafbase
-3. Create new project with Grafbase and connect your forked repo
-4. Add environment variable `NEXTAUTH_SECRET` during project creation
-5. Create a [GitHub OAuth App](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app) with your app details for production purposes. Make sure to set `Authorization callback URL` to `[YOUR_DESIRED_VERCEL_DOMAIN]/api/auth/callback/github`
-6. Deploy to Vercel and add `.env` values (`NEXT_PUBLIC_GRAFBASE_API_URL`\*, `NEXTAUTH_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`)
+4. Run the application (make sure you are using node version 16):
 
-\* `NEXT_PUBLIC_GRAFBASE_URL` is your production API endpoint. You can find this from the **Connect** modal in your [project dashboard](https://grafbase.com/dashboard).
+#### Development
+```bash
+npm run dev
+```
+
+#### Build
+```bash
+npm run build
+```
+
+## Learn More
+
+To learn more about Ceramic please visit the following links
+
+- [ComposeDB Sandbox](https://composedb.js.org/sandbox) - Test your queries directly from your browser without any local dependencies.
+- [Ceramic Documentation](https://developers.ceramic.network/learn/welcome/) - Learn more about the Ceramic Ecosystem.
+- [ComposeDB](https://composedb.js.org/) - Details on how to use and develop with ComposeDB!
+
+

@@ -1,12 +1,13 @@
-import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
-import { authenticateCeramic } from "../../utils";
+import type { NextPage } from 'next'
+import Head from 'next/head'
 import { Header } from "@/components/header";
-import { MessageList } from "@/components/message-list";
+import { useState, useEffect } from "react";
 import { useCeramicContext } from "@/context";
-import { useChat, type Message } from "ai/react";
+import { Userform } from '../components/userform.component'
+import { authenticateCeramic } from "../../utils";
+import { useSession } from "next-auth/react";
 
-export default function Home() {
+const ProfilePage: NextPage = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const { data: session, status } = useSession();
   const clients = useCeramicContext();
@@ -14,8 +15,8 @@ export default function Home() {
 
   const handleLogin = async () => {
     const accounts = await authenticateCeramic(ceramic, composeClient);
-    if (accounts) {
-      setLoggedIn(true);
+    if(accounts){
+      setLoggedIn(true)
     }
     return accounts;
   };
@@ -25,14 +26,23 @@ export default function Home() {
       handleLogin();
     }
   }, []);
-
   return (
     <div className="flex flex-col bg-cover">
-      <Header logged={loggedIn} />
+      <Header logged={loggedIn}/>
+      <h1 className="text-2xl font-bold text-white text-center mt-6">User and Chatbot Profiles</h1>
+      <br/>
+      <p className="text-md text-white text-center">You must first create profiles for you and your chatbot before interacting in the chat or creating context</p>
       {loggedIn ? (
-       
-          <MessageList />
-       
+        <>
+          <div className="flex-1 overflow-y-scroll no-scrollbar p-6">
+            <Userform />
+          </div>
+          <div className="p-6 bg-white/5 border-t border-[#363739]">
+            <div className="max-w-4xl mx-auto">
+            
+            </div>
+          </div>
+        </>
       ) : (
         <div className="h-full flex items-center justify-center flex-col space-y-2.5">
           {status === "loading" ? null : (
@@ -55,5 +65,7 @@ export default function Home() {
         </div>
       )}
     </div>
-  );
+  )
 }
+
+export default ProfilePage

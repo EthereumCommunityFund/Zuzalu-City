@@ -1,0 +1,4 @@
+type Context @createModel(accountRelation: SINGLE, description: "A basic context for a user") {
+  author: DID! @documentAccount 
+  context: String! @string(maxLength: 100000)
+}

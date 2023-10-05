@@ -1,77 +1,396 @@
-import { useQuery, gql } from "@apollo/client";
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
-
-import type { Message as IMessage } from "@/components/message";
+import { useEffect, useState, useRef } from "react";
+import { authenticateCeramic } from "../../utils";
+import { useCeramicContext } from "../context";
+import { PostProps } from "../../utils/types";
 import { Message } from "@/components/message";
-
-const GetRecentMessagesQuery = gql`
-  query GetRecentMessages($last: Int) @live {
-    messageCollection(last: $last) {
-      edges {
-        node {
-          id
-          username
-          avatar
-          body
-          likes
-          createdAt
-        }
-      }
-    }
-  }
-`;
+import { Profile } from "../../utils/types";
+import KeyResolver from "key-did-resolver";
+import { DID } from "dids";
+import seedrandom from "seedrandom";
+import { Ed25519Provider } from "key-did-provider-ed25519";
 
 export const MessageList = () => {
-  const [scrollRef, inView, entry] = useInView({
-    trackVisibility: true,
-    delay: 1000,
-  });
+  const clients = useCeramicContext();
+  const [posts, setPosts] = useState<PostProps[] | []>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState("");
+  const [body, setBody] = useState("");
+  const [context, setContext] = useState<string >();
+  const { ceramic, composeClient } = clients;
+  const [write, setWrite] = useState<boolean>(false);
+  const [newPost, setNewPost] = useState<PostProps>();
+  const [profile, setProfile] = useState<Profile | undefined>();
+  const [robotProfile, setRobotProfile] = useState<Profile | undefined>();
+  const [robotDID, setRobotDID] = useState<DID | undefined>();
+  const messageRef = useRef<HTMLDivElement>(null);
 
-  const { loading, error, data } = useQuery<{
-    messageCollection: { edges: { node: IMessage }[] };
-  }>(GetRecentMessagesQuery, {
-    variables: {
-      last: 100,
-    },
-  });
+  const createRobotDID = async () => {
+    const uniqueKey = "0x7a8b9cde";
+    const rng = seedrandom(uniqueKey);
+    const seed = new Uint8Array(32);
+    for (let i = 0; i < 32; i += 1) {
+      seed[i] = Math.floor(rng() * 256);
+    }
+    const staticDid = new DID({
+      provider: new Ed25519Provider(seed),
+      //@ts-ignore
+      resolver: KeyResolver.getResolver(),
+    });
+    await staticDid.authenticate();
+    //authenticate on ceramic instance
+    composeClient.setDID(staticDid);
+    ceramic.did = staticDid;
+
+    setRobotDID(staticDid);
+    console.log(staticDid);
+    return staticDid;
+  };
+
+  const getContext = async () => {
+    setLoading(true);
+    await authenticateCeramic(ceramic, composeClient);
+    const existingContext = await composeClient.executeQuery<{
+        contextIndex: { edges: { node: { id: string; context: string } }[] };
+      }>(`
+        query {
+            contextIndex(first: 1) {
+                edges {
+                    node {
+                        id
+                        context
+                    }
+                }
+            }
+        }
+      `);
+    console.log(existingContext);
+    if (existingContext?.data?.contextIndex?.edges[0]?.node?.context !== undefined) {
+      setContext(existingContext?.data?.contextIndex?.edges[0]?.node?.context);
+    }
+    setLoading(false);
+  };
+
+  const GetRecentMessagesQuery = async () => {
+    const messages = await composeClient.executeQuery<{
+      postsIndex: { edges: { node: PostProps }[] };
+    }>(`
+      query  {
+        postsIndex(last: 100) {
+          edges {
+            node {
+              id
+              body
+              tag
+              created
+              profile{
+                id
+                name
+                username
+                emoji
+                gender
+              }
+            }
+          }
+        }
+      }
+    `);
+    console.log(messages);
+    if (messages?.data?.postsIndex?.edges) {
+      const newPosts = messages?.data?.postsIndex?.edges.map((edge) => ({
+        id: edge.node.id,
+        body: edge.node.body,
+        profile: edge.node.profile,
+        tag: edge.node.tag,
+        created: edge.node.created,
+      }));
+      console.log(newPosts);
+      setPosts([...posts, ...newPosts]);
+      return messages?.data?.postsIndex?.edges;
+    }
+  };
+
+  const getProfile = async () => {
+    if (ceramic.did !== undefined) {
+      const profile = await composeClient.executeQuery<{
+        viewer: { basicProfile: Profile };
+      }>(`
+        query {
+          viewer {
+            basicProfile {
+              id
+              name
+              username
+              description
+              gender
+              emoji
+            }
+          }
+        }
+      `);
+
+      console.log(profile);
+      if (profile?.data?.viewer?.basicProfile !== null) {
+        setProfile(profile?.data?.viewer?.basicProfile);
+      } else {
+        window.location.href = "/profile";
+      }
+      return profile?.data?.viewer?.basicProfile;
+    }
+  };
+
+  const getRobotProfile = async () => {
+    await createRobotDID();
+    const profile = await composeClient.executeQuery<{
+      viewer: { basicProfile: Profile };
+    }>(`
+      query {
+        viewer {
+          basicProfile {
+            id
+            name
+            username
+            description
+            gender
+            emoji
+          }
+        }
+      }
+      `);
+    console.log(profile);
+    if (profile?.data?.viewer?.basicProfile !== null) {
+      setRobotProfile(profile?.data?.viewer?.basicProfile);
+    } else {
+      window.location.href = "/profile";
+    }
+  };
+
+  const createPost = async (thisPost: string) => {
+    if (profile !== undefined) {
+      await authenticateCeramic(ceramic, composeClient);
+      const post = await composeClient.executeQuery<{
+        createPosts: {
+          document: PostProps;
+        };
+      }>(`
+        mutation {
+          createPosts(input: {
+            content: {
+              body: "${thisPost}"
+              created: "${new Date().toISOString()}"
+              profileId: "${profile.id}"
+            }
+          })
+          {
+            document {
+              id
+              body
+              tag
+              created
+              profile{
+                id
+                name
+                username
+                emoji
+                gender
+              }
+            }
+          }
+        }
+      `);
+      console.log(post);
+      if (post.data?.createPosts?.document?.body) {
+        const createdPost: PostProps = {
+          id: post.data?.createPosts?.document?.id,
+          body: post.data?.createPosts?.document?.body,
+          profile: post.data?.createPosts?.document?.profile,
+          tag: post.data?.createPosts?.document?.tag,
+          created: post.data?.createPosts?.document?.created,
+        };
+        return createdPost;
+      }
+    }
+  };
+
+  const triggerResponse = async (message: string, inputPost: PostProps) => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/chat/other", {
+        method: "POST",
+        body: JSON.stringify({
+          message,
+          context,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok || !response.body) {
+        throw response.statusText;
+      }
+      const blankPost: PostProps = {
+        id: "",
+        body: "",
+        profile: {
+          description: robotProfile?.description,
+          username: robotProfile?.username,
+          gender: robotProfile?.gender,
+          emoji: robotProfile?.emoji,
+        },
+        tag: "bot",
+        created: new Date().toISOString(),
+      };
+      setNewPost(blankPost);
+      setWrite(true);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let str = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          setLoading(false);
+          await createRobotDID();
+          const post = await composeClient.executeQuery<{
+            createPosts: {
+              document: PostProps;
+            };
+          }>(`
+            mutation {
+              createPosts(input: {
+                content: {
+                  body: """${str}"""
+                  created: "${new Date().toISOString()}"
+                  profileId: "${robotProfile?.id}"
+                }
+              })
+              {
+                document {
+                  id
+                  body
+                  tag
+                  created
+                  profile{
+                    id
+                    name
+                    username
+                    emoji
+                    gender
+                  }
+                }
+              }
+            }
+          `);
+          console.log(post);
+          if (post.data?.createPosts?.document?.body) {
+            const createdPost: PostProps = {
+              id: post.data?.createPosts?.document?.id,
+              body: post.data?.createPosts?.document?.body,
+              profile: post.data?.createPosts?.document?.profile,
+              tag: post.data?.createPosts?.document?.tag,
+              created: post.data?.createPosts?.document?.created,
+            };
+            console.log(posts);
+            setWrite(false);
+            setNewPost(undefined);
+            setPosts([...posts, inputPost, createdPost]);
+            setData("");
+          }
+          break;
+        }
+        const decodedChunk = decoder.decode(value, { stream: true });
+        setData((prevValue) => `${prevValue.concat(decodedChunk)}`);
+        str = str.concat(decodedChunk);
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (entry?.target) {
-      entry.target.scrollIntoView({ behavior: "smooth", block: "end" });
+    getProfile();
+    getRobotProfile();
+    GetRecentMessagesQuery();
+    getContext();
+  }, []);
+
+  useEffect(() => {
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
     }
-  }, [data?.messageCollection.edges.length, entry?.target]);
-
-  if (loading)
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-white">Fetching most recent chat messages.</p>
-      </div>
-    );
-
-  if (error)
-    return (
-      <p className="text-white">Something went wrong. Refresh to try again.</p>
-    );
+  }, [posts, write]);
 
   return (
-    <div className="flex flex-col w-full space-y-3 overflow-y-scroll no-scrollbar">
-      {!inView && data?.messageCollection.edges.length && (
-        <div className="py-1.5 w-full px-3 z-10 text-xs absolute flex justify-center bottom-0 mb-[120px] inset-x-0">
-          <button
-            className="py-1.5 px-3 text-xs bg-[#1c1c1f] border border-[#363739] rounded-full text-white font-medium"
-            onClick={() => {
-              entry?.target.scrollIntoView({ behavior: "smooth", block: "end" })
-            }}
-          >
-            Scroll to see latest messages
-          </button>
+    <>
+      <div className="flex-1 overflow-y-scroll no-scrollbar p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col w-full space-y-3 overflow-y-scroll no-scrollbar">
+              {posts.length &&
+                posts.map((post) => (
+                  <Message
+                    key={post?.id}
+                    profile={post.profile}
+                    body={post.body}
+                    created={post.created}
+                    id={post.id}
+                  />
+                ))}
+              {write && newPost && (
+                <Message
+                  key={newPost?.id}
+                  profile={newPost.profile}
+                  body={data}
+                  created={newPost.created}
+                  id={newPost.id}
+                />
+              )}
+              <div ref={messageRef}></div>
+            </div>
+          </div>
         </div>
-      )}
-      {data?.messageCollection?.edges?.map(({ node }) => (
-        <Message key={node?.id} message={node} />
-      ))}
-      <div ref={scrollRef} />
-    </div>
+      </div>
+      <div className="p-6 bg-white/5 border-t border-[#363739]">
+        <div className="max-w-4xl mx-auto">
+          <form
+            onClick={async (e) => {
+              e.preventDefault();
+              if (body) {
+                console.log(body);
+                const resultPost = await createPost(body);
+                if (posts.length && resultPost) {
+                  setPosts([...posts, resultPost]);
+                }
+                if (resultPost) {
+                  await triggerResponse(body, resultPost);
+                }
+                setBody("");
+              }
+            }}
+            className="flex items-center space-x-3"
+          >
+            <input
+              autoFocus
+              id="message"
+              name="message"
+              placeholder="Write a message..."
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              className="flex-1 h-12 px-3 rounded bg-[#222226] border border-[#222226] focus:border-[#222226] focus:outline-none text-white placeholder-white"
+            />
+            <button
+              type="submit"
+              className="bg-[#222226] rounded h-12 font-medium text-white w-24 text-lg border border-transparent hover:bg-[#363739] transition"
+              disabled={!body || !ceramic.did}
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
   );
 };
