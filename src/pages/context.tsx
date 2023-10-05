@@ -4,16 +4,15 @@ import { useState, useEffect } from "react";
 import { useCeramicContext } from "@/context";
 import { Profile } from "../../utils/types";
 import { authenticateCeramic } from "../../utils";
-import { useSession } from "next-auth/react";
 import styles from "../styles/profile.module.scss";
 
 const Context: NextPage = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const { data: session, status } = useSession();
   const clients = useCeramicContext();
   const { ceramic, composeClient } = clients;
   const [loading, setLoading] = useState<boolean>(false);
-  const [context, setContext] = useState<string >();
+  const [resetLoading, setResetLoading] = useState<boolean>(false);
+  const [context, setContext] = useState<string>();
   const [id, setId] = useState<string>();
   const [profile, setProfile] = useState<Profile | undefined>();
 
@@ -24,8 +23,8 @@ const Context: NextPage = () => {
     } else {
       window.location.href = "/profile";
     }
-     await getProfile();
-     await getContext();
+    await getProfile();
+    await getContext();
   };
 
   const getProfile = async () => {
@@ -54,6 +53,9 @@ const Context: NextPage = () => {
         setProfile(profile?.data?.viewer?.basicProfile);
       }
       setId(profile?.data?.viewer?.basicProfile?.author?.id);
+      if (profile?.data?.viewer?.basicProfile?.author?.id === undefined) {
+        window.location.href = "/profile";
+      }
       setLoading(false);
       console.log(profile);
     }
@@ -62,8 +64,8 @@ const Context: NextPage = () => {
   const getContext = async () => {
     setLoading(true);
     const existingContext = await composeClient.executeQuery<{
-        contextIndex: { edges: { node: { id: string; context: string } }[] };
-      }>(`
+      contextIndex: { edges: { node: { id: string; context: string } }[] };
+    }>(`
         query {
             contextIndex(first: 1) {
                 edges {
@@ -76,7 +78,9 @@ const Context: NextPage = () => {
         }
       `);
     console.log(existingContext);
-    if (existingContext?.data?.contextIndex?.edges[0]?.node?.context !== undefined) {
+    if (
+      existingContext?.data?.contextIndex?.edges[0]?.node?.context !== undefined
+    ) {
       setContext(existingContext?.data?.contextIndex?.edges[0]?.node?.context);
     }
     setLoading(false);
@@ -92,7 +96,7 @@ const Context: NextPage = () => {
         mutation {
           createContext(input: {
             content: {
-              context: "${context || ''}"
+              context: "${context || ""}"
             }
           }) 
           {
@@ -117,6 +121,39 @@ const Context: NextPage = () => {
     }
   };
 
+  const resetContext = async () => {
+    setResetLoading(true);
+    await authenticateCeramic(ceramic, composeClient);
+    if (ceramic.did !== undefined) {
+      const update = await composeClient.executeQuery<{
+        viewer: { context: string };
+      }>(`
+        mutation {
+          createContext(input: {
+            content: {
+              context: "${""}"
+            }
+          }) 
+          {
+            document {
+              id
+              context
+            }
+          }
+        }
+      `);
+      console.log(update);
+      if (update.errors) {
+        alert(update.errors);
+      } else {
+        alert("Updated context.");
+        setResetLoading(true);
+      }
+      setResetLoading(false);
+    }
+    getContext();
+  };
+
   useEffect(() => {
     if (localStorage.getItem("did")) {
       handleLogin();
@@ -137,10 +174,14 @@ const Context: NextPage = () => {
           <div className="flex-1 overflow-y-scroll no-scrollbar p-6">
             <div className={styles.contextGroup}>
               <textarea
+                id="contextArea"
                 className="w-1/2 h-1/2 p-2 border border-gray-300 rounded mt-1 overflow-y-hidden break-words color-black bg-gray-200"
                 defaultValue={context}
                 onChange={(e) => {
                   setContext(e.target.value);
+                  if (e.target.value === "") {
+                    setContext(" ");
+                  }
                 }}
               />
               <button
@@ -149,12 +190,27 @@ const Context: NextPage = () => {
                   borderRadius: "5px",
                   padding: "5px",
                   margin: "5% 0",
+                  width: "15%",
                 }}
                 onClick={() => {
                   updateContext();
                 }}
               >
                 {loading ? "Loading..." : "Update Context"}
+              </button>
+              <button
+                style={{
+                  backgroundColor: "lightgray",
+                  borderRadius: "5px",
+                  padding: "5px",
+                  margin: "2% 0",
+                  width: "15%",
+                }}
+                onClick={() => {
+                  resetContext();
+                }}
+              >
+                {resetLoading ? "Loading..." : "Reset"}
               </button>
             </div>
           </div>
@@ -164,23 +220,21 @@ const Context: NextPage = () => {
         </>
       ) : (
         <div className="h-full flex items-center justify-center flex-col space-y-2.5">
-          {status === "loading" ? null : (
-            <>
-              <p className="text-lg md:text-2xl lg:text-3xl font-medium text-white">
-                Sign in with MetaMask to join the chat!
-              </p>
-              <p>
-                <a
-                  href="https://grafbase.com?ref=chatbase"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-white/50 transition hover:text-[#4a9c6d]/100"
-                >
-                  Powered by Grafbase &amp; GraphQL Live Queries
-                </a>
-              </p>
-            </>
-          )}
+          <>
+            <p className="text-lg md:text-2xl lg:text-3xl font-medium text-white">
+              Sign in with MetaMask to join the chat!
+            </p>
+            <p>
+              <a
+                href="https://composedb.js.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-white/50 transition hover:text-[#4a9c6d]/100"
+              >
+                Powered by ComposeDB &amp; OpenAI Live Queries
+              </a>
+            </p>
+          </>
         </div>
       )}
     </div>

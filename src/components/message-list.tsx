@@ -15,7 +15,7 @@ export const MessageList = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState("");
   const [body, setBody] = useState("");
-  const [context, setContext] = useState<string >();
+  const [context, setContext] = useState<string>();
   const { ceramic, composeClient } = clients;
   const [write, setWrite] = useState<boolean>(false);
   const [newPost, setNewPost] = useState<PostProps>();
@@ -24,6 +24,7 @@ export const MessageList = () => {
   const [robotDID, setRobotDID] = useState<DID | undefined>();
   const messageRef = useRef<HTMLDivElement>(null);
 
+  //allows us to create a robot DID for the bot in order to post messages as another user
   const createRobotDID = async () => {
     const uniqueKey = "0x7a8b9cde";
     const rng = seedrandom(uniqueKey);
@@ -46,12 +47,14 @@ export const MessageList = () => {
     return staticDid;
   };
 
+  /* we can get context based on index in this case since we only allow users to edit their
+  own context on the /context page */
   const getContext = async () => {
     setLoading(true);
     await authenticateCeramic(ceramic, composeClient);
     const existingContext = await composeClient.executeQuery<{
-        contextIndex: { edges: { node: { id: string; context: string } }[] };
-      }>(`
+      contextIndex: { edges: { node: { id: string; context: string } }[] };
+    }>(`
         query {
             contextIndex(first: 1) {
                 edges {
@@ -64,7 +67,9 @@ export const MessageList = () => {
         }
       `);
     console.log(existingContext);
-    if (existingContext?.data?.contextIndex?.edges[0]?.node?.context !== undefined) {
+    if (
+      existingContext?.data?.contextIndex?.edges[0]?.node?.context !== undefined
+    ) {
       setContext(existingContext?.data?.contextIndex?.edges[0]?.node?.context);
     }
     setLoading(false);
@@ -127,7 +132,6 @@ export const MessageList = () => {
           }
         }
       `);
-
       console.log(profile);
       if (profile?.data?.viewer?.basicProfile !== null) {
         setProfile(profile?.data?.viewer?.basicProfile);
@@ -211,13 +215,27 @@ export const MessageList = () => {
     }
   };
 
+  /* a response is triggered each time we sent a message
+  which then hits our api found in /pages/api/ai, and stream the response
+  back to the frontend */
   const triggerResponse = async (message: string, inputPost: PostProps) => {
     try {
       setLoading(true);
-      const response = await fetch("/api/chat/other", {
+      const messages: { role: string; content: string; }[] = [];
+      posts.forEach((post) => {
+        messages.push({
+          role:
+            post.profile.author?.id === robotProfile?.author?.id
+              ? "assistant"
+              : "user",
+          content: post.body,
+        });
+      });
+      const response = await fetch("/api/chat/ai", {
         method: "POST",
         body: JSON.stringify({
           message,
+          messages,
           context,
         }),
         headers: {

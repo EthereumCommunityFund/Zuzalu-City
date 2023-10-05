@@ -16,12 +16,17 @@ npm install
 npm run generate
 ```
 
+The server configuration that's auto-generated when running this command is inmemory.
+
 3. Create a .env file and enter the three required environment variables outlined in .env.example
+
+(the only environment variable needed for this app is an openai API key)
 
 4. Run the application (make sure you are using node version 16):
 
 #### Development
 ```bash
+nvm use 16
 npm run dev
 ```
 

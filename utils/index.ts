@@ -60,6 +60,7 @@ export const authenticateCeramic = async (
   compose.setDID(session.did);
   //@ts-ignore
   ceramic.did = session.did;
+  localStorage.setItem("id", session.did.parent);
   const accounts = await window.ethereum.request({ method: "eth_accounts" });
   return accounts;
 };
@@ -80,15 +81,8 @@ export const connectWallet = async () => {
 };
 
 export const disconnect = async () => {
-  // We enable the ethereum provider to get the user's addresses.
   if (localStorage.getItem("did")) {
     localStorage.removeItem("did");
   }
-  const ethProvider = window.ethereum;
-  await ethProvider.request({
-    method: 'wallet_requestPermissions',
-    params: [{
-      eth_accounts: {},
-    }]
-  });
+  localStorage.removeItem("id");
 };

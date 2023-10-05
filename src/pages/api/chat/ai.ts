@@ -10,20 +10,23 @@ const openai = new OpenAIApi(configuration);
 type NextProps = NextRequest & {
   body: {
     message: string;
-  }
-}
+  };
+};
 
 const handler = async (req: NextProps) => {
-  const res = await req.json()
-  console.log(res.message)
+  const res = await req.json();
+  console.log(res.message);
+  let context = res.context || "You are a helpful assistant.";
 
   try {
     const response = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       stream: true,
       messages: [
-        { role: "system", content: res.context },
-        { role: "user", content: res.message }],
+        { role: "system", content: context },
+        ...res.messages,
+        { role: "user", content: res.message },
+      ],
       max_tokens: 500,
       temperature: 0.7,
       top_p: 1,

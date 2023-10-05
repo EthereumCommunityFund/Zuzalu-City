@@ -1,23 +1,21 @@
 import { formatRelative, formatDistance, differenceInHours } from "date-fns";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { PostProps } from "../../utils/types";
 
 
 export const Message = ({profile, body, created}: PostProps) => {
-  const { data: session } = useSession();
+  const session = localStorage.getItem("id");
 
   return (
     <div
       className={`flex flex-col relative space-x-1 space-y-1 ${
-        profile.username === session?.username
+        profile.author?.id === session
           ? "text-right"
           : "text-left"
       }`}
     >
       <div
         className={`flex relative space-x-1 ${
-          profile.username === session?.username
+          profile.author?.id === session
             ? "flex-row-reverse space-x-reverse"
             : "flex-row"
         }`}
@@ -35,12 +33,12 @@ export const Message = ({profile, body, created}: PostProps) => {
         )}
         <span
           className={`inline-flex rounded space-x-2 items-start p-3 text-white ${
-            profile.username === session?.username
+            profile.author?.id === session
               ? "bg-[#4a9c6d]"
               : "bg-[#363739]"
           } `}
         >
-          {profile.username !== session?.username && (
+          {profile.author?.id !== session && (
             <span className="font-bold">{profile.username}:&nbsp;</span>
           )}
           <span className="max-w-sm">{body}</span>

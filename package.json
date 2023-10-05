@@ -1,5 +1,5 @@
 {
-  "name": "chatbase",
+  "name": "cerchat",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,7 +22,6 @@
     "@composedb/devtools-node": "0.5.0",
     "@didtools/cacao": "2.0.0",
     "@didtools/pkh-ethereum": "^0.4.1",
-    "@grafbase/apollo-link": "1.1.0",
     "@magicul/react-chat-stream": "^0.1.4",
     "@types/node": "18.14.5",
     "@types/react": "18.0.28",

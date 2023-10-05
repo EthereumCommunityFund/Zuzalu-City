@@ -36,7 +36,12 @@ export const writeComposite = async (spinner) => {
     schema: postsSchema,
   });
 
-  const followingSchema = readFileSync("./composites/02-following.graphql", {
+  const contextComposite = await createComposite(
+    ceramic,
+    "./composites/02-context.graphql"
+  );
+
+  const followingSchema = readFileSync("./composites/03-following.graphql", {
     encoding: "utf-8",
   }).replace("$PROFILE_ID", profileComposite.modelIDs[0]);
 
@@ -46,7 +51,7 @@ export const writeComposite = async (spinner) => {
   });
 
   const postProfileSchema = readFileSync(
-    "./composites/03-postsProfile.graphql",
+    "./composites/04-postsProfile.graphql",
     {
       encoding: "utf-8",
     }
@@ -59,43 +64,11 @@ export const writeComposite = async (spinner) => {
     schema: postProfileSchema,
   });
 
-  const commentsSchema = readFileSync("./composites/04-comments.graphql", {
-    encoding: "utf-8",
-  })
-    .replace("$POSTS_ID", postsComposite.modelIDs[1])
-    .replace("$PROFILE_ID", profileComposite.modelIDs[0]);
-
-  const commentsComposite = await Composite.create({
-    ceramic,
-    schema: commentsSchema,
-  });
-
-  const commentsPostsSchema = readFileSync(
-    "./composites/05-commentsPosts.graphql",
-    {
-      encoding: "utf-8",
-    }
-  )
-    .replace("$COMMENTS_ID", commentsComposite.modelIDs[2])
-    .replace("$POSTS_ID", postsComposite.modelIDs[1]);
-
-  const commentsPostsComposite = await Composite.create({
-    ceramic,
-    schema: commentsPostsSchema,
-  });
-
-  const contextComposite = await createComposite(
-    ceramic,
-    "./composites/02-context.graphql"
-  );
-
   const composite = Composite.from([
     profileComposite,
     postsComposite,
     followingComposite,
     postsProfileComposite,
-    commentsComposite,
-    commentsPostsComposite,
     contextComposite
   ]);
 
