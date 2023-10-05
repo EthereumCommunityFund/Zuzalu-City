@@ -118,8 +118,10 @@ type Posts
     @createModel(accountRelation: LIST, description: "A simple Post")
     @createIndex(fields: [{ path: "created" }])
     @createIndex(fields: [{ path: "edited" }])
+    @createIndex(fields: [{ path: "authorId" }])
     @createIndex(fields: [{ path: "tag" }]) {
-    author: DID! @documentAccount 
+    author: DID! @documentAccount
+    authorId: String! @string(maxLength: 100)
     body: String! @string(minLength: 1, maxLength: 100000)
     tag: String @string(minLength: 1, maxLength: 100)
     edited: DateTime
@@ -165,7 +167,7 @@ type BasicProfile @loadModel(id: "$PROFILE_ID") {
 
 You'll also notice that some of the models (take `BasicProfile` for example) contain a "SINGLE" accountRelation, while other models like `Posts` contain a "LIST" accountRelation. What this means is that any authenticated user is restricted to only one model instance document of any model type defining a "SINGLE" accountRelation, while users can have as many model instance documents of models defining a "LIST" accountRelation as they'd like. You can see how this might make sense in the context of a message or a post in a chat environment - each user will create many messages, whereas developers might want to ensure there is only one canonical user profile for each user. 
 
-You'll also notice `@createIndex` directives used within the `Posts` model, for example. This designation enabled developers to query, filter, and order their data based on these fields (without these directives, this would not be possible). While this particular tutorial will not make use of filtering and ordering functionality, you can see how to craft queries using filtering and ordering in our [ComposeDB Sandbox](https://composedb.js.org/sandbox).
+You'll also notice `@createIndex` directives used within the `Posts` model, for example. This designation enabled developers to query, filter, and order their data based on these fields (without these directives, this would not be possible). Since our application we'll be using in this tutorial needs to support multiple users with their own corresponding chats and contexts, this will be necessary to deliver a personalized experience.
 
 Finally, you'll see that we import models defined elsewhere within several of our files (importing `BasicProfile` into 01-posts.graphql, for example). This allows us to define relations (used in the `profileId` field of `Posts`). Since we want to dynamically import the stream ID's created at runtime to be used to define those relations, you can see how the file in /scripts/composites.mjs methodically pairs together with those import statements to guarantee they'll be defined when we start up our node. When booted, this script will dynamically write definitions to the files located in `/src/__generated__` that our client library will utilize throughout our application. 
 

@@ -39,6 +39,7 @@ export type PostProps = {
   id: string
   tag?: string
   created?: string
+  authorId?: string
 }
 
 export type SidebarProps = {

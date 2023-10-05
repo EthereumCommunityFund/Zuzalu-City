@@ -85,4 +85,5 @@ export const disconnect = async () => {
     localStorage.removeItem("did");
   }
   localStorage.removeItem("id");
+  localStorage.removeItem("robotDID");
 };

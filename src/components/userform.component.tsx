@@ -23,25 +23,28 @@ export const Userform = () => {
   };
 
   const createRobotDID = async () => {
-    const uniqueKey = "0x7a8b9cde";
-    const rng = seedrandom(uniqueKey);
-    const seed = new Uint8Array(32);
-    for (let i = 0; i < 32; i += 1) {
-      seed[i] = Math.floor(rng() * 256);
+    const uniqueKey = localStorage.getItem("did");
+    if(uniqueKey){
+      const rng = seedrandom(uniqueKey);
+      const seed = new Uint8Array(32);
+      for (let i = 0; i < 32; i += 1) {
+        seed[i] = Math.floor(rng() * 256);
+      }
+      const staticDid = new DID({
+        provider: new Ed25519Provider(seed),
+        //@ts-ignore
+        resolver: KeyResolver.getResolver(),
+      });
+      await staticDid.authenticate();
+      //authenticate on ceramic instance
+      composeClient.setDID(staticDid);
+      ceramic.did = staticDid;
+      setRobotDID(staticDid);
+      if(!localStorage.getItem("robotDID")) {
+        localStorage.setItem("robotDID", staticDid.id);
+      }
+      return staticDid;
     }
-    const staticDid = new DID({
-      provider: new Ed25519Provider(seed),
-      //@ts-ignore
-      resolver: KeyResolver.getResolver(),
-    });
-    await staticDid.authenticate();
-    //authenticate on ceramic instance
-    composeClient.setDID(staticDid);
-    ceramic.did = staticDid;
-
-    setRobotDID(staticDid);
-    console.log(staticDid);
-    return staticDid;
   };
 
   const getProfile = async () => {
@@ -236,10 +239,6 @@ export const Userform = () => {
       setRobotLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   getProfile();
-  // }, []);
 
   useEffect(() => {
     getProfile();

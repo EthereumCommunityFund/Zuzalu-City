@@ -26,25 +26,29 @@ export const MessageList = () => {
 
   //allows us to create a robot DID for the bot in order to post messages as another user
   const createRobotDID = async () => {
-    const uniqueKey = "0x7a8b9cde";
-    const rng = seedrandom(uniqueKey);
-    const seed = new Uint8Array(32);
-    for (let i = 0; i < 32; i += 1) {
-      seed[i] = Math.floor(rng() * 256);
-    }
-    const staticDid = new DID({
-      provider: new Ed25519Provider(seed),
-      //@ts-ignore
-      resolver: KeyResolver.getResolver(),
-    });
-    await staticDid.authenticate();
-    //authenticate on ceramic instance
-    composeClient.setDID(staticDid);
-    ceramic.did = staticDid;
+    const uniqueKey = localStorage.getItem("did");
+    if (uniqueKey) {
+      const rng = seedrandom(uniqueKey);
+      const seed = new Uint8Array(32);
+      for (let i = 0; i < 32; i += 1) {
+        seed[i] = Math.floor(rng() * 256);
+      }
+      const staticDid = new DID({
+        provider: new Ed25519Provider(seed),
+        //@ts-ignore
+        resolver: KeyResolver.getResolver(),
+      });
+      await staticDid.authenticate();
+      //authenticate on ceramic instance
+      composeClient.setDID(staticDid);
+      ceramic.did = staticDid;
 
-    setRobotDID(staticDid);
-    console.log(staticDid);
-    return staticDid;
+      setRobotDID(staticDid);
+      if (!localStorage.getItem("robotDID")) {
+        localStorage.setItem("robotDID", staticDid.id);
+      }
+      return staticDid;
+    }
   };
 
   /* we can get context based on index in this case since we only allow users to edit their
@@ -80,7 +84,22 @@ export const MessageList = () => {
       postsIndex: { edges: { node: PostProps }[] };
     }>(`
       query  {
-        postsIndex(last: 100) {
+        postsIndex(
+          filters: {
+            or: [
+              {where: 
+                { authorId: 
+                   { equalTo: "${localStorage.getItem("id")}" } 
+                }
+              }
+              {where: 
+                { authorId: 
+                   { equalTo: "${localStorage.getItem("robotDID")}" } 
+                  }
+                 }
+                ]
+             } 
+          last: 100) {
           edges {
             node {
               id
@@ -94,6 +113,7 @@ export const MessageList = () => {
                 emoji
                 gender
               }
+              authorId
             }
           }
         }
@@ -107,6 +127,7 @@ export const MessageList = () => {
         profile: edge.node.profile,
         tag: edge.node.tag,
         created: edge.node.created,
+        authorId: edge.node.authorId,
       }));
       console.log(newPosts);
       setPosts([...posts, ...newPosts]);
@@ -182,6 +203,7 @@ export const MessageList = () => {
               body: "${thisPost}"
               created: "${new Date().toISOString()}"
               profileId: "${profile.id}"
+              authorId: "${localStorage.getItem("id")}"
             }
           })
           {
@@ -197,6 +219,7 @@ export const MessageList = () => {
                 emoji
                 gender
               }
+              authorId
             }
           }
         }
@@ -209,6 +232,7 @@ export const MessageList = () => {
           profile: post.data?.createPosts?.document?.profile,
           tag: post.data?.createPosts?.document?.tag,
           created: post.data?.createPosts?.document?.created,
+          authorId: post.data?.createPosts?.document?.authorId,
         };
         return createdPost;
       }
@@ -221,7 +245,7 @@ export const MessageList = () => {
   const triggerResponse = async (message: string, inputPost: PostProps) => {
     try {
       setLoading(true);
-      const messages: { role: string; content: string; }[] = [];
+      const messages: { role: string; content: string }[] = [];
       posts.forEach((post) => {
         messages.push({
           role:
@@ -257,6 +281,7 @@ export const MessageList = () => {
         },
         tag: "bot",
         created: new Date().toISOString(),
+        authorId: robotProfile?.author?.id,
       };
       setNewPost(blankPost);
       setWrite(true);
@@ -279,6 +304,7 @@ export const MessageList = () => {
                   body: """${str}"""
                   created: "${new Date().toISOString()}"
                   profileId: "${robotProfile?.id}"
+                  authorId: "${localStorage.getItem("robotDID")}"
                 }
               })
               {
@@ -294,6 +320,7 @@ export const MessageList = () => {
                     emoji
                     gender
                   }
+                  authorId
                 }
               }
             }
@@ -306,6 +333,7 @@ export const MessageList = () => {
               profile: post.data?.createPosts?.document?.profile,
               tag: post.data?.createPosts?.document?.tag,
               created: post.data?.createPosts?.document?.created,
+              authorId: post.data?.createPosts?.document?.authorId,
             };
             console.log(posts);
             setWrite(false);

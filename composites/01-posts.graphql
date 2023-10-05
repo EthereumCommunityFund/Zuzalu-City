@@ -6,8 +6,10 @@ type Posts
     @createModel(accountRelation: LIST, description: "A simple Post")
     @createIndex(fields: [{ path: "created" }])
     @createIndex(fields: [{ path: "edited" }])
+    @createIndex(fields: [{ path: "authorId" }])
     @createIndex(fields: [{ path: "tag" }]) {
-    author: DID! @documentAccount 
+    author: DID! @documentAccount
+    authorId: String! @string(maxLength: 100)
     body: String! @string(minLength: 1, maxLength: 100000)
     tag: String @string(minLength: 1, maxLength: 100)
     edited: DateTime
