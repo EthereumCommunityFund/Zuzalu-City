@@ -45,4 +45,8 @@ To learn more about Ceramic please visit the following links
 - [Ceramic Documentation](https://developers.ceramic.network/learn/welcome/) - Learn more about the Ceramic Ecosystem.
 - [ComposeDB](https://composedb.js.org/) - Details on how to use and develop with ComposeDB!
 
+## Credit
+
+Credit to [ChatBase](https://github.com/notrab/chatbase) for an awesome template to work with.
+
 
