@@ -198,13 +198,19 @@ d. Finally, starts up our Next.JS application which we can then view in our brow
 
 Once your terminal reads `[NextJS] ready - started server on 0.0.0.0:3000, url: http://localhost:3000`, you can view the frontend in your browser by visiting http://localhost:3000/.
 
-You can also now view the resulting composite deployed on your node in /src/__generated__/.
+<div style={{textAlign: 'center'}}>
+
+![sign in with metamask](./public/sign_in_cerChat.png)
+
+</div>
+
+You can also now view the resulting composite deployed on your node in `/src/__generated__/`.
 
 ## Authenticating Users
 
 Navigating to your browser you'll be prompted to sign in with your MetaMask wallet. If you jump back to your code editor and locate file /src/pages/index.tsx, you'll see that the UseEffect lifecycle hook calls a method we've defined called `handleLogin`, which in turn triggers an imported method called `authenticateCeramic` (which we'll talk about in a moment). But first, you'll also notice that `authenticateCeramic` takes two arguments: "ceramic" and "composeClient". If you follow the variable chain, you'll again notice that we're able to define these constants derived from yet another imported method called `useCeramicContext`.
 
-Jump over to /context/index.tsx to locate this method. You'll notice here that we use our client libraries to instantiate our clients on the same port our local node is running on (7007). Please observe how we also import our composite definition from /src/__generated__/definition.js which is used when instantiating our ComposeClient instance. This is necessary in order to be able to run queries against the same model definitions we just created during our start-up process. Finally, you can see how both clients are returned within the CeramicContext closure, yielding an object containing both clients when invoked.
+Jump over to /context/index.tsx to locate this method. You'll notice here that we use our client libraries to instantiate our clients on the same port our local node is running on (7007). Please observe how we also import our composite definition from `/src/__generated__/definition.js` which is used when instantiating our ComposeClient instance. This is necessary in order to be able to run queries against the same model definitions we just created during our start-up process. Finally, you can see how both clients are returned within the CeramicContext closure, yielding an object containing both clients when invoked.
 
 Jumping back to /src/pages/index.tsx, you'll see how both client instances are used to invoked `authenticateCeramic`. This definition can be found in /utils/index.ts. The important item to recognize during this sequence is which DID method is being used. While Ceramic supports multiple [DID methods](https://developers.ceramic.network/protocol/accounts/decentralized-identifiers/), this application authorizes Ethereum accounts using [@didtools/pkh-ethereum](https://did.js.org/docs/api/modules/pkh_ethereum/) (visit [User Sessions](https://composedb.js.org/docs/0.5.x/guides/composedb-client/user-sessions) for more information).
 
@@ -215,6 +221,12 @@ Within `authenticateCeramic`, you can see how we not only detect whether or not 
 Finally, for the purpose of this application and tutorial specifically, you'll notice that we also save the parent `did:pkh` to the user's local storage. We will discuss how this will be used later in the tutorial.
 
 Go ahead and authenticate yourself by pressing the "Sign in with MetaMask" button in the navigation and observe the new key-value pairs that now appear in your local storage.
+
+<div style={{textAlign: 'center'}}>
+
+![creating a ceramic session with metamask](./public/metamask_cerChat.png)
+
+</div>
 
 ### Checking for Profiles
 
@@ -235,6 +247,12 @@ Similar to `getProfile`, the call to `getRobotProfile` will also redirect users 
 ### Creating Profiles
 
 The component found in /src/components/userform.component.tsx is the one imported and rendered on the /profile page - jump over to that file in your text editor.
+
+<div style={{textAlign: 'center'}}>
+
+![creating user profiles in cerchat](./public/profiles_cerchat.png)
+
+</div>
 
 Similar to /src/components/message-list.tsx, you'll notice that our useEffect lifecycle hook checks for user and chatbot profiles, if they exist. 
 
@@ -264,6 +282,12 @@ While this tutorial is more focused on illustrating how to work with ComposeDB, 
 
 Jumping back to `triggerResponse` in /src/components/message-list.tsx, you'll also notice how we call `createRobotDID` before writing our mutation query to authenticate our chatbot user on our node. This hand-off procedure of authenticating our user and chatbot is something we'll do each time we generate a message-response action, and is unique to this use-case. The majority of your other use-case scenarios might find that a single session is sufficient to map back to a single user interaction (if your application was a social platform, for example). 
 
+<div style={{textAlign: 'center'}}>
+
+![cerchat conversing with chatbot without context](./public/chat_noContext.png)
+
+</div>
+
 Go ahead and submit a message to your chatbot. You'll notice that our bot's responses should currently be fairly neutral given we have yet to set context. If you jump back to /src/pages/api/chat/api, you'll see how if no context exists, our default system context is set to "You are a helpful assistant".
 
 ## Setting Context
@@ -272,19 +296,35 @@ If you click the "Create Context" button in your navigation, you'll arrive on th
 
 If you look at the query used within `getContext`, you'll see that we're filtering through our node's index of `Context` documents for any instance that has an "authorId" field matching the did:pkh we saved to our local storage. Notice how this is different from the "or" operator we used in the filter for our `GetRecentMessagesQuery` mentioned in the previous section. 
 
+<div style={{textAlign: 'center'}}>
+
+![cerchat setting chatbot context](./public/set_context.png)
+
+</div>
+
 Finally, you'll see how our `updateContext` and `resetContext` methods are respectively tied to the "Update Context" and "Reset" buttons in our UI, both containing mutation queries on our `Context` model instance document. Go ahead and try setting a unique context for your chatbot. If you need help thinking of one, here's an example you can use: "You are an AI assistant designed to help your user better understand both sides of an argument, illustrating steel man arguments for opposing viewpoints applicable to each prompt. Please ensure to answer with at least 2 viewpoints that outline opposing viewpoints when responding to each prompt."
 
 ### Sending Messages with Context
 
 Now that we've set specific context for our chatbot to use, we can jump back to our homepage. If you look back at the `triggerResponse` method in the /src/components/message-list.tsx component, you'll notice that our context (if it exists) is already being sent to our API endpoint. In /src/pages/api/chat/ai.ts you'll also notice how we assign our context to a "system" role. This role assignment helps set the behavior of the assistant, and is taken into account as each response is generated (for more information on role settings, visit the [chat completions API](https://platform.openai.com/docs/guides/gpt/chat-completions-api) page in OpenAI's documentation).
 
-If you've set the context to the example provided above, go ahead and try out the following prompt: "Help me understand data sharding". While without the context we previously set might result in a general conceptual overview, you'll notice that our chatbot follows the instructions we defined in our context, providing opposing viewpoints related to sharding.
+If you've set the context to the example provided above, go ahead and try out the following prompt: "Help me understand graph databases". While without the context we previously set might result in a general conceptual overview, you'll notice that our chatbot follows the instructions we defined in our context, providing opposing viewpoints related to graph databases.
+
+<div style={{textAlign: 'center'}}>
+
+![cerchat send messages with context](./public/with_context.png)
+
+</div>
 
 While this is just a simple example, you can see how providing context can be extremely powerful. For example, engineering teams could feed their chatbot the entirety of their technical documentation and therefore allow their bot to respond to user questions in a specific and helpful way that it might otherwise not be capable of doing. 
 
 ## Logging In as Different Users
 
 At this point we've walked through the majority of the key features and themes relevant to this tutorial. However, we suggest that you experiment logging out using the "Sign Out" button in the navigation, and try logging in with a different MetaMask account. Given the specific query filtering we walked through (used in our chat, profile, and context pages), you'll notice that the application therefore delivers a unique session for each user, ensuring not to pull in message exchanges relevant to other users.
+
+## Using GraphiQL
+
+Remember that you can always test your queries on your GraphiQL instance, which can be found at http://localhost:5001/graphql when you're running the application in development. 
 
 ## Next Steps
 
