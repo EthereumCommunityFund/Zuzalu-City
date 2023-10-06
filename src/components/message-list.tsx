@@ -26,7 +26,7 @@ export const MessageList = () => {
 
   //allows us to create a robot DID for the bot in order to post messages as another user
   const createRobotDID = async () => {
-    const uniqueKey = localStorage.getItem("did");
+    const uniqueKey = localStorage.getItem("id");
     if (uniqueKey) {
       const rng = seedrandom(uniqueKey);
       const seed = new Uint8Array(32);

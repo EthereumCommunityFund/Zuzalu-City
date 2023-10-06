@@ -23,7 +23,7 @@ export const Userform = () => {
   };
 
   const createRobotDID = async () => {
-    const uniqueKey = localStorage.getItem("did");
+    const uniqueKey = localStorage.getItem("id");
     if(uniqueKey){
       const rng = seedrandom(uniqueKey);
       const seed = new Uint8Array(32);
@@ -35,6 +35,7 @@ export const Userform = () => {
         //@ts-ignore
         resolver: KeyResolver.getResolver(),
       });
+
       await staticDid.authenticate();
       //authenticate on ceramic instance
       composeClient.setDID(staticDid);
