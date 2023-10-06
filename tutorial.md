@@ -268,5 +268,41 @@ Go ahead and submit a message to your chatbot. You'll notice that our bot's resp
 
 ## Setting Context
 
-If you click the "Create Context" button in your navigation, you'll arrive on the /context page (corresponding code found in /src/pages/context.tsx). 
+If you click the "Create Context" button in your navigation, you'll arrive on the /context page (corresponding code found in /src/pages/context.tsx). Notice how our `useEffect` lifecycle hook first checks whether the user is logged in and then calls the `getProfile` and `getContext` methods to grab any existing BasicProfile and Context model instance documents, if they exist.
 
+If you look at the query used within `getContext`, you'll see that we're filtering through our node's index of `Context` documents for any instance that has an "authorId" field matching the did:pkh we saved to our local storage. Notice how this is different from the "or" operator we used in the filter for our `GetRecentMessagesQuery` mentioned in the previous section. 
+
+Finally, you'll see how our `updateContext` and `resetContext` methods are respectively tied to the "Update Context" and "Reset" buttons in our UI, both containing mutation queries on our `Context` model instance document. Go ahead and try setting a unique context for your chatbot. If you need help thinking of one, here's an example you can use: "You are an AI assistant designed to help your user better understand both sides of an argument, illustrating steel man arguments for opposing viewpoints applicable to each prompt. Please ensure to answer with at least 2 viewpoints that outline opposing viewpoints when responding to each prompt."
+
+### Sending Messages with Context
+
+Now that we've set specific context for our chatbot to use, we can jump back to our homepage. If you look back at the `triggerResponse` method in the /src/components/message-list.tsx component, you'll notice that our context (if it exists) is already being sent to our API endpoint. In /src/pages/api/chat/ai.ts you'll also notice how we assign our context to a "system" role. This role assignment helps set the behavior of the assistant, and is taken into account as each response is generated (for more information on role settings, visit the [chat completions API](https://platform.openai.com/docs/guides/gpt/chat-completions-api) page in OpenAI's documentation).
+
+If you've set the context to the example provided above, go ahead and try out the following prompt: "Help me understand data sharding". While without the context we previously set might result in a general conceptual overview, you'll notice that our chatbot follows the instructions we defined in our context, providing opposing viewpoints related to sharding.
+
+While this is just a simple example, you can see how providing context can be extremely powerful. For example, engineering teams could feed their chatbot the entirety of their technical documentation and therefore allow their bot to respond to user questions in a specific and helpful way that it might otherwise not be capable of doing. 
+
+## Logging In as Different Users
+
+At this point we've walked through the majority of the key features and themes relevant to this tutorial. However, we suggest that you experiment logging out using the "Sign Out" button in the navigation, and try logging in with a different MetaMask account. Given the specific query filtering we walked through (used in our chat, profile, and context pages), you'll notice that the application therefore delivers a unique session for each user, ensuring not to pull in message exchanges relevant to other users.
+
+## Next Steps
+
+While this tutorial outlined a fairly specific use-case for ComposeDB, there are other patterns and examples developers will find useful to learn more about building on ceramic:
+
+- Walk through a tutorial that shows how to generate Attestations (using Ethereum Attestation Service) and store them on ComposeDB by visiting [EAS on Ceramic](https://docs.attest.sh/docs/tutorials/ceramic-storage)
+- To migrate from local development to running ComposeDB in the cloud, visit [Running in the Cloud](https://composedb.js.org/docs/0.5.x/guides/composedb-server/running-in-the-cloud).
+- To move from Ceramic Testnet to Mainnet, visit [Access Ceramic Mainnet](https://composedb.js.org/docs/0.5.x/guides/composedb-server/access-mainnet).
+- To view an example application built around a social platform use-case, visit this [Social App ComposeDB Starter](https://github.com/ceramicstudio/EthDenver2023Demo).
+- To allow users to encrypt and decrypt data on ComposeDB, visit this [Blog Article](https://blog.ceramic.network/tutorial-encrypted-data-on-composedb/).
+- Use the [ComposeDB API Sandbox](https://composedb.js.org/sandbox) to test example queries on a real dataset
+
+### Looking for Support from the Ceramic Team?
+
+Developers are encouraged to join the Ceramic community, engage with members from the Ceramic team, and ask for help along their development journey! Here are a few ways to get in touch:
+
+- Join the [Forum](https://forum.ceramic.network/) to ask questions and receive support
+- Join the [Discord](https://discord.com/invite/ceramic) to chat directly with both community members and the Ceramic team
+- Follow the Ceramic Network on [Twitter](https://twitter.com/ceramicnetwork) for updates
+- Browse technical tutorials and feature release announcements on the Ceramic [blog](https://blog.ceramic.network/)
+- Check out the [YouTube Channel](https://www.youtube.com/channel/UCgCLq5dx7sX-yUrrEbtYqVw) for presentations and videos

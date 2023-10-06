@@ -70,7 +70,7 @@ export function Header({ logged }: Props) {
                 }}
                 className="bg-white/5 rounded h-12 px-6 font-medium text-white border border-transparent"
               >
-                Sign out
+                Sign Out
               </button>
               <button
                 onClick={() => (window.location.href = "/profile")}
