@@ -2,6 +2,8 @@
 
 Realtime chat using GraphQL Live Queries, Next.js, and ComposeDB.
 
+To follow the full tutorial, go to the [tutorial](/tutorial.md) page.
+
 ## Getting Started
 
 1. Install your dependencies:
