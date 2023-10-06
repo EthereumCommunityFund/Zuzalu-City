@@ -224,7 +224,7 @@ Go ahead and authenticate yourself by pressing the "Sign in with MetaMask" butto
 
 <div style={{textAlign: 'center'}}>
 
-![creating a ceramic session with metamask](./public/metamask_cerChat.png)
+![creating a ceramic session with metamask](./public/metamask_cerchat.png)
 
 </div>
 
