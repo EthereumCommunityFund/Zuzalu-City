@@ -49,7 +49,7 @@ Visit [Ceramic Nodes](https://developers.ceramic.network/build/cli/installation/
 First, clone the repository and install your dependencies:
 
 ```bash
-git clone https://github.com/ceramicstudio/ai-ceramic && cd ai-ceramic
+git clone https://github.com/ceramicstudio/ceramic-ai && cd ceramic-ai
 npm install
 ```
 
