@@ -1,4 +1,10 @@
-type Context @createModel(accountRelation: SINGLE, description: "A basic context for a user") {
-  author: DID! @documentAccount 
+type Context
+  @createModel(
+    accountRelation: SINGLE
+    description: "A basic context for a user"
+  )
+  @createIndex(fields: [{ path: "authorId" }]) {
+  author: DID! @documentAccount
+  authorId: String! @string(maxLength: 100)
   context: String! @string(maxLength: 100000)
 }

@@ -134,8 +134,14 @@ type Posts
 ```graphql
 # 02-context.graphql
 
-type Context @createModel(accountRelation: SINGLE, description: "A basic context for a user") {
-  author: DID! @documentAccount 
+type Context
+  @createModel(
+    accountRelation: SINGLE
+    description: "A basic context for a user"
+  )
+  @createIndex(fields: [{ path: "authorId" }]) {
+  author: DID! @documentAccount
+  authorId: String! @string(maxLength: 100)
   context: String! @string(maxLength: 100000)
 }
 ```
@@ -238,4 +244,29 @@ Go ahead and create profiles for yourself and your chatbot. Observe your console
 
 Once you've successfully created profiles for both yourself and your chatbot, we can start a conversation. 
 
-### Creating Profiles
+## Conversing with the ChatBot without Context
+
+If you jump back to the homepage by clicking "CerChat" in your navigation, you can start a message thread with your chatbot. As mentioned at the beginning of this tutorial, we will eventually be layering in context to help pre-prompt our language model, but let's first chat with our bot without any context added.
+
+The code for the main chat component will take us back to /src/components/message-list.tsx. If you navigate back to that file in your text editor, you'll see that after our useEffect lifecycle hooks checks for both a user and chatbot profile, it then calls a method called `GetRecentMessagesQuery`. Similar to the checks for user and chatbot profiles on our /profiles page, this method is designed to grab recent messages relevant to the user logged in and the user's chatbot, and render them in the UI prior to engaging in further chats.
+
+Look closely at the read query syntax and you'll see that we're using the user's did:pkh and the robot's did:key values from local storage as filters. You'll also notice how we're grabbing all of the necessary values from each `Posts` node to set the "posts" state variable.
+
+### Sending Messages and Generating Responses
+
+Jump down to the return statement in the same file and you'll find an asynchronous method definition tied to the "onClick" action for the "Send" button. Each time a message is sent, a method called `createPost` is invoked, using the "body" value as the argument (the input of the field). If you jump up to this method definition you'll notice that `authenticateCeramic` is first called before performing our mutation query. This is necessary to ensure that our human user is authenticated on the node first before performing a mutation query. 
+
+The rest of the query should look fairly similar to the mutation query used to create our profiles on the /profile page. You'll also notice that we're using the stream ID of our user's BasicProfile model instance document we grabbed in the `getProfile` method invoked at the beginning of our `useEffect` lifecycle hook. If you look back at the schema definition in /composites/01-posts.graphql, you'll see that while we have a field for both "profileId" and "profile" defined, our mutation query only requires input into the "profileId" field. Our field definition of "profile" in /composites/01-posts.graphql simply allows us to expose querying of the body of the BasicProfile model instance document corresponding to that user. 
+
+Jumping back to the execution thread in the method invoked by our "onClick" action you'll see that we later invoke yet another method called `triggerResponse` to generate a response from our chatbot. If you jump up to this method definition, you can see how we first construct a "messages" array of objects accounting for any existing chat history we've already had (if applicable) with our chatbot, and making a call to our API using the most recent user's message, the existing chat history, and context (which we'll talk about later) as the stringified body. 
+
+While this tutorial is more focused on illustrating how to work with ComposeDB, you might want to take a look at /src/pages/api/chat/ai to observe which OpenAI libraries we're using, and how we're streaming text responses back to the frontend.
+
+Jumping back to `triggerResponse` in /src/components/message-list.tsx, you'll also notice how we call `createRobotDID` before writing our mutation query to authenticate our chatbot user on our node. This hand-off procedure of authenticating our user and chatbot is something we'll do each time we generate a message-response action, and is unique to this use-case. The majority of your other use-case scenarios might find that a single session is sufficient to map back to a single user interaction (if your application was a social platform, for example). 
+
+Go ahead and submit a message to your chatbot. You'll notice that our bot's responses should currently be fairly neutral given we have yet to set context. If you jump back to /src/pages/api/chat/api, you'll see how if no context exists, our default system context is set to "You are a helpful assistant".
+
+## Setting Context
+
+If you click the "Create Context" button in your navigation, you'll arrive on the /context page (corresponding code found in /src/pages/context.tsx). 
+

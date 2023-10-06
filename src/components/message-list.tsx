@@ -79,6 +79,9 @@ export const MessageList = () => {
     setLoading(false);
   };
 
+  /*
+  Get only messages relevant to the user and the bot using filters
+  */
   const GetRecentMessagesQuery = async () => {
     const messages = await composeClient.executeQuery<{
       postsIndex: { edges: { node: PostProps }[] };

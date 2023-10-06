@@ -64,18 +64,29 @@ const Context: NextPage = () => {
   const getContext = async () => {
     setLoading(true);
     const existingContext = await composeClient.executeQuery<{
-      contextIndex: { edges: { node: { id: string; context: string } }[] };
+      contextIndex: {
+        edges: { node: { id: string; context: string; authorId: string } }[];
+      };
     }>(`
-        query {
-            contextIndex(first: 1) {
-                edges {
-                    node {
-                        id
-                        context
-                    }
-                }
-            }
+    query{
+      contextIndex(
+        filters: { 
+          where: { 
+            authorId: { 
+              equalTo: "${localStorage.getItem("id")}" 
+              } 
+            } 
+          }
+        first: 1){
+        edges{
+          node{
+            id
+            context
+            authorId
+          }
         }
+      }
+    }
       `);
     console.log(existingContext);
     if (
@@ -97,6 +108,7 @@ const Context: NextPage = () => {
           createContext(input: {
             content: {
               context: "${context || ""}"
+              authorId: "${localStorage.getItem("id")}"
             }
           }) 
           {
@@ -132,6 +144,7 @@ const Context: NextPage = () => {
           createContext(input: {
             content: {
               context: "${""}"
+              authorId: "${localStorage.getItem("id")}"
             }
           }) 
           {
