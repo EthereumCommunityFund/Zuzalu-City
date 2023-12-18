@@ -24,11 +24,11 @@ The server configuration that's auto-generated when running this command is inme
 
 (the only environment variable needed for this app is an openai API key)
 
-4. Run the application (make sure you are using node version 16):
+4. Run the application (make sure you are using node version 20):
 
 #### Development
 ```bash
-nvm use 16
+nvm use 20
 npm run dev
 ```
 
