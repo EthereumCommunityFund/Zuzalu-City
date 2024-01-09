@@ -49,7 +49,7 @@ export const authenticateCeramic = async (
      */
     // TODO: update resources to only provide access to our composities
     session = await DIDSession.authorize(authMethod, {
-      resources: ["ceramic://*"],
+      resources: compose.resources,
     });
     // Set the session in localStorage.
     localStorage.setItem("did", session.serialize());

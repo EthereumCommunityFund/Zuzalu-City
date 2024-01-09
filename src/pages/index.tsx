@@ -41,7 +41,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="text-sm text-white/50 transition hover:text-[#4a9c6d]/100"
               >
-                Powered by ComposeDB &amp; OpenAI Live Queries
+                Powered by ComposeDB 
               </a>
             </p>
           </>

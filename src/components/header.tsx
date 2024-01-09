@@ -48,7 +48,7 @@ export function Header({ logged }: Props) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://developers.ceramic.network/images/ceramic-no-shadow.png"
+                src="https://blog.ceramic.network/content/images/2020/11/ceramic-no-shadow.png"
                 alt="ComposeDB"
                 className="w-7 h-7"
               />
@@ -58,7 +58,7 @@ export function Header({ logged }: Props) {
               onClick={() => (window.location.href = "/")}
             >
               {" "}
-              CerChat
+              Ceramic Developer Application
             </button>
           </p>
           {loggedIn ? (
@@ -72,7 +72,7 @@ export function Header({ logged }: Props) {
               >
                 Sign Out
               </button>
-              <button
+              {/* <button
                 onClick={() => (window.location.href = "/profile")}
                 className="bg-white/5 rounded h-12 px-6 font-medium text-white text-lg border border-transparent inline-flex items-center"
               >
@@ -83,7 +83,7 @@ export function Header({ logged }: Props) {
                 className="bg-white/5 rounded h-12 px-6 font-medium text-white text-lg border border-transparent inline-flex items-center"
               >
                 Create Context
-              </button>
+              </button> */}
             </div>
           ) : (
             <div className="flex items-center">

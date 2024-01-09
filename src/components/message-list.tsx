@@ -8,73 +8,95 @@ import KeyResolver from "key-did-resolver";
 import { DID } from "dids";
 import seedrandom from "seedrandom";
 import { Ed25519Provider } from "key-did-provider-ed25519";
+import { CeramicDeveloper, CeramicDeveloperResult } from "../../utils/types";
+import { set } from "date-fns";
 
 export const MessageList = () => {
   const clients = useCeramicContext();
   const [posts, setPosts] = useState<PostProps[] | []>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState("");
   const [body, setBody] = useState("");
-  const [context, setContext] = useState<string>();
+  const [context, setContext] = useState<CeramicDeveloperResult>();
   const { ceramic, composeClient } = clients;
   const [write, setWrite] = useState<boolean>(false);
-  const [newPost, setNewPost] = useState<PostProps>();
-  const [profile, setProfile] = useState<Profile | undefined>();
-  const [robotProfile, setRobotProfile] = useState<Profile | undefined>();
-  const [robotDID, setRobotDID] = useState<DID | undefined>();
+  const [profiles, setProfiles] = useState<CeramicDeveloper[] | undefined>();
   const messageRef = useRef<HTMLDivElement>(null);
 
-  //allows us to create a robot DID for the bot in order to post messages as another user
-  const createRobotDID = async () => {
-    const uniqueKey = localStorage.getItem("id");
-    if (uniqueKey) {
-      const rng = seedrandom(uniqueKey);
-      const seed = new Uint8Array(32);
-      for (let i = 0; i < 32; i += 1) {
-        seed[i] = Math.floor(rng() * 256);
-      }
-      const staticDid = new DID({
-        provider: new Ed25519Provider(seed),
-        //@ts-ignore
-        resolver: KeyResolver.getResolver(),
-      });
-      await staticDid.authenticate();
-      //authenticate on ceramic instance
-      composeClient.setDID(staticDid);
-      ceramic.did = staticDid;
-
-      setRobotDID(staticDid);
-      if (!localStorage.getItem("robotDID")) {
-        localStorage.setItem("robotDID", staticDid.id);
-      }
-      return staticDid;
-    }
-  };
-
-  /* we can get context based on index in this case since we only allow users to edit their
-  own context on the /context page */
   const getContext = async () => {
     setLoading(true);
     await authenticateCeramic(ceramic, composeClient);
     const existingContext = await composeClient.executeQuery<{
-      contextIndex: { edges: { node: { id: string; context: string } }[] };
+      viewer: {
+        ceramicDev: {
+          id: string;
+          developer: {
+            id: string;
+          };
+          languages: {
+            JavaScript: boolean;
+            Python: boolean;
+            Rust: boolean;
+            Java: boolean;
+            Swift: boolean;
+            Go: boolean;
+            Cpp: boolean;
+            Scala: boolean;
+            WebAssembly: boolean;
+            Solidity: boolean;
+            Other: boolean;
+          };
+          attestations: {
+            edges: {
+              node: {
+                id: string;
+                attester: {
+                  id: string;
+                };
+                signal: string;
+              };
+            }[];
+          };
+        };
+      };
     }>(`
         query {
-            contextIndex(first: 1) {
+          viewer {
+            ceramicDev {
+              id
+              developer {
+                id
+              }
+              languages {
+                  JavaScript
+                  Python
+                  Rust
+                  Java
+                  Swift
+                  Go
+                  Cpp
+                  Scala
+                  WebAssembly
+                  Solidity
+                  Other
+              }
+              attestations(first: 100) {
                 edges {
-                    node {
-                        id
-                        context
+                  node {
+                    id
+                    attester {
+                      id
                     }
+                    signal
+                  }
                 }
+              }
             }
+          }
         }
       `);
     console.log(existingContext);
-    if (
-      existingContext?.data?.contextIndex?.edges[0]?.node?.context !== undefined
-    ) {
-      setContext(existingContext?.data?.contextIndex?.edges[0]?.node?.context);
+    if (existingContext?.data?.viewer?.ceramicDev !== undefined) {
+      setContext(existingContext?.data?.viewer?.ceramicDev);
     }
     setLoading(false);
   };
@@ -82,285 +104,152 @@ export const MessageList = () => {
   /*
   Get only messages relevant to the user and the bot using filters
   */
-  const GetRecentMessagesQuery = async () => {
-    const messages = await composeClient.executeQuery<{
-      postsIndex: { edges: { node: PostProps }[] };
+  const getProfilesQuery = async () => {
+    const profiles = await composeClient.executeQuery<{
+      ceramicDevIndex: {
+        edges: {
+          node: {
+            id: string;
+            developer: {
+              id: string;
+            };
+            languages: {
+              JavaScript: boolean;
+              Python: boolean;
+              Rust: boolean;
+              Java: boolean;
+              Swift: boolean;
+              Go: boolean;
+              Cpp: boolean;
+              Scala: boolean;
+              WebAssembly: boolean;
+              Solidity: boolean;
+              Other: boolean;
+            };
+            attestations: {
+              edges: {
+                node: {
+                  id: string;
+                  attester: {
+                    id: string;
+                  };
+                  signal: string;
+                };
+              };
+            };
+          };
+        }[];
+      };
     }>(`
       query  {
-        postsIndex(
-          filters: {
-            or: [
-              {where: 
-                { authorId: 
-                   { equalTo: "${localStorage.getItem("id")}" } 
+        ceramicDevIndex(last: 100){
+          edges{
+            node{
+              id
+              developer{
+                id
+              }
+              languages{
+                JavaScript
+                Python
+                Rust
+                Java
+                Swift
+                Go
+                Cpp
+                Scala
+                WebAssembly
+                Solidity
+                Other
+              }
+              attestations(first: 100){
+                edges{
+                  node{
+                    id
+                    attester{
+                      id
+                    }
+                    signal
+                  }
                 }
               }
-              {where: 
-                { authorId: 
-                   { equalTo: "${localStorage.getItem("robotDID")}" } 
-                  }
-                 }
-                ]
-             } 
-          last: 100) {
-          edges {
-            node {
-              id
-              body
-              tag
-              created
-              profile{
-                id
-                name
-                username
-                emoji
-                gender
-              }
-              authorId
             }
           }
         }
       }
     `);
-    console.log(messages);
-    if (messages?.data?.postsIndex?.edges) {
-      const newPosts = messages?.data?.postsIndex?.edges.map((edge) => ({
-        id: edge.node.id,
-        body: edge.node.body,
-        profile: edge.node.profile,
-        tag: edge.node.tag,
-        created: edge.node.created,
-        authorId: edge.node.authorId,
-      }));
-      console.log(newPosts);
-      setPosts([...posts, ...newPosts]);
-      return messages?.data?.postsIndex?.edges;
+
+    console.log(profiles);
+    if (profiles?.data?.ceramicDevIndex?.edges) {
+      const newProfiles = profiles?.data?.ceramicDevIndex?.edges.map(
+        (edge) => ({
+          id: edge.node.id,
+          developer: edge.node.developer,
+          languages: edge.node.languages,
+          // @ts-ignore
+          attestations: edge.node.attestations.edges.map((edge: any) => ({
+            id: edge.node.id,
+            attester: edge.node.attester,
+            signal: edge.node.signal,
+          })),
+        })
+      );
+      console.log(newProfiles);
+      setProfiles(newProfiles);
     }
   };
 
-  const getProfile = async () => {
-    await authenticateCeramic(ceramic, composeClient);
-    if (ceramic.did !== undefined) {
-      const profile = await composeClient.executeQuery<{
-        viewer: { basicProfile: Profile };
-      }>(`
-        query {
-          viewer {
-            basicProfile {
-              id
-              name
-              username
-              description
-              gender
-              emoji
-            }
-          }
-        }
-      `);
-      console.log(profile);
-      if (profile?.data?.viewer?.basicProfile !== null) {
-        setProfile(profile?.data?.viewer?.basicProfile);
-      } else {
-        window.location.href = "/profile";
-      }
-      return profile?.data?.viewer?.basicProfile;
-    }
-  };
-
-  const getRobotProfile = async () => {
-    await createRobotDID();
-    const profile = await composeClient.executeQuery<{
-      viewer: { basicProfile: Profile };
-    }>(`
-      query {
-        viewer {
-          basicProfile {
-            id
-            name
-            username
-            description
-            gender
-            emoji
-          }
-        }
-      }
-      `);
-    console.log(profile);
-    if (profile?.data?.viewer?.basicProfile !== null) {
-      setRobotProfile(profile?.data?.viewer?.basicProfile);
-    } else {
-      window.location.href = "/profile";
-    }
-  };
-
-  const createPost = async (thisPost: string) => {
-    if (profile !== undefined) {
+  const createAttestation = async (thisProfile: string) => {
       await authenticateCeramic(ceramic, composeClient);
-      const post = await composeClient.executeQuery<{
-        createPosts: {
-          document: PostProps;
+      const attest = await composeClient.executeQuery<{
+        createAttestToDev: {
+          document: {
+            id: string;
+            attester: {
+              id: string;
+            };
+            attestedProfileId: string;
+            signal: boolean;
+          };
         };
       }>(`
         mutation {
-          createPosts(input: {
+          createAttestToDev(input: {
             content: {
-              body: "${thisPost}"
-              created: "${new Date().toISOString()}"
-              profileId: "${profile.id}"
-              authorId: "${localStorage.getItem("id")}"
+              attestedProfileId: "${thisProfile}"
+              signal: true
             }
           })
           {
             document {
               id
-              body
-              tag
-              created
-              profile{
+              attester {
                 id
-                name
-                username
-                emoji
-                gender
               }
-              authorId
+              attestedProfileId
+              signal
             }
           }
         }
       `);
-      console.log(post);
-      if (post.data?.createPosts?.document?.body) {
-        const createdPost: PostProps = {
-          id: post.data?.createPosts?.document?.id,
-          body: post.data?.createPosts?.document?.body,
-          profile: post.data?.createPosts?.document?.profile,
-          tag: post.data?.createPosts?.document?.tag,
-          created: post.data?.createPosts?.document?.created,
-          authorId: post.data?.createPosts?.document?.authorId,
+      console.log(attest);
+      if (attest.data?.createAttestToDev?.document?.id) {
+        const createdAttestation = {
+          id: attest.data?.createAttestToDev?.document?.id,
+          attester: attest.data?.createAttestToDev?.document?.attester,
+          attestedProfileId:
+            attest.data?.createAttestToDev?.document?.attestedProfileId,
+          signal: attest.data?.createAttestToDev?.document?.signal,
         };
-        return createdPost;
+        console.log(createdAttestation);
+       await getProfilesQuery();
       }
-    }
   };
 
-  /* a response is triggered each time we sent a message
-  which then hits our api found in /pages/api/ai, and stream the response
-  back to the frontend */
-  const triggerResponse = async (message: string, inputPost: PostProps) => {
-    try {
-      setLoading(true);
-      const messages: { role: string; content: string }[] = [];
-      posts.forEach((post) => {
-        messages.push({
-          role:
-            post.profile.author?.id === robotProfile?.author?.id
-              ? "assistant"
-              : "user",
-          content: post.body,
-        });
-      });
-      const response = await fetch("/api/chat/ai", {
-        method: "POST",
-        body: JSON.stringify({
-          message,
-          messages,
-          context,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok || !response.body) {
-        throw response.statusText;
-      }
-      const blankPost: PostProps = {
-        id: "",
-        body: "",
-        profile: {
-          description: robotProfile?.description,
-          username: robotProfile?.username,
-          gender: robotProfile?.gender,
-          emoji: robotProfile?.emoji,
-        },
-        tag: "bot",
-        created: new Date().toISOString(),
-        authorId: robotProfile?.author?.id,
-      };
-      setNewPost(blankPost);
-      setWrite(true);
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let str = "";
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
-          setLoading(false);
-          await createRobotDID();
-          const post = await composeClient.executeQuery<{
-            createPosts: {
-              document: PostProps;
-            };
-          }>(`
-            mutation {
-              createPosts(input: {
-                content: {
-                  body: """${str}"""
-                  created: "${new Date().toISOString()}"
-                  profileId: "${robotProfile?.id}"
-                  authorId: "${localStorage.getItem("robotDID")}"
-                }
-              })
-              {
-                document {
-                  id
-                  body
-                  tag
-                  created
-                  profile{
-                    id
-                    name
-                    username
-                    emoji
-                    gender
-                  }
-                  authorId
-                }
-              }
-            }
-          `);
-          console.log(post);
-          if (post.data?.createPosts?.document?.body) {
-            const createdPost: PostProps = {
-              id: post.data?.createPosts?.document?.id,
-              body: post.data?.createPosts?.document?.body,
-              profile: post.data?.createPosts?.document?.profile,
-              tag: post.data?.createPosts?.document?.tag,
-              created: post.data?.createPosts?.document?.created,
-              authorId: post.data?.createPosts?.document?.authorId,
-            };
-            console.log(posts);
-            setWrite(false);
-            setNewPost(undefined);
-            setPosts([...posts, inputPost, createdPost]);
-            setData("");
-          }
-          break;
-        }
-        const decodedChunk = decoder.decode(value, { stream: true });
-        setData((prevValue) => `${prevValue.concat(decodedChunk)}`);
-        str = str.concat(decodedChunk);
-      }
-    } catch (error) {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    getProfile();
-    getRobotProfile();
-    GetRecentMessagesQuery();
     getContext();
+    getProfilesQuery();
   }, []);
 
   useEffect(() => {
@@ -379,27 +268,9 @@ export const MessageList = () => {
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center">
             <div className="flex flex-col w-full space-y-3 overflow-y-scroll no-scrollbar">
-              {posts.length &&
-                posts.map((post) => (
-                  <Message
-                    key={post?.id}
-                    profile={post.profile}
-                    body={post.body}
-                    created={post.created}
-                    id={post.id}
-                    authorId={post.authorId}
-                  />
-                ))}
-              {write && newPost && (
-                <Message
-                  key={newPost?.id}
-                  profile={newPost.profile}
-                  body={data}
-                  created={newPost.created}
-                  id={newPost.id}
-                  authorId={newPost.authorId}
-                />
-              )}
+              {profiles !== undefined &&
+                profiles.length &&
+                profiles.map((prof) => <Message key={prof?.id} node={prof} func={createAttestation} />)}
               <div ref={messageRef}></div>
             </div>
           </div>
@@ -410,17 +281,17 @@ export const MessageList = () => {
           <form
             onClick={async (e) => {
               e.preventDefault();
-              if (body) {
-                console.log(body);
-                const resultPost = await createPost(body);
-                if (resultPost) {
-                  setPosts([...posts, resultPost]);
-                }
-                if (resultPost) {
-                  await triggerResponse(body, resultPost);
-                }
-                setBody("");
-              }
+              // if (body) {
+              //   console.log(body);
+              //   const resultPost = await createPost(body);
+              //   if (resultPost) {
+              //     setPosts([...posts, resultPost]);
+              //   }
+              //   if (resultPost) {
+              //     await triggerResponse(body, resultPost);
+              //   }
+              //   setBody("");
+              // }
             }}
             className="flex items-center space-x-3"
           >
