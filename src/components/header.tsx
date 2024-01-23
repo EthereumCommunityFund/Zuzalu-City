@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useCeramicContext } from "@/context";
-import { authenticateCeramic, disconnect } from "../../utils";
+import { authenticateCeramic, disconnect } from "@/utils";
 
 type Props = {
   logged: boolean;

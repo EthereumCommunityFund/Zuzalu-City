@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { authenticateCeramic } from "../../utils";
+import { authenticateCeramic } from "@/utils";
 import { Header } from "@/components/header";
 import { MessageList } from "@/components/message-list";
 import { useCeramicContext } from "@/context";

@@ -1,0 +1,34 @@
+
+type CeramicDev
+  @createModel(accountRelation: SINGLE, description: "A Ceramic developer") {
+  developer: DID! @documentAccount
+  languages: Language!
+}
+
+type AttestToDev @createModel(accountRelation: LIST, description: "Signals if user attests to another developer profile") {
+  attester: DID! @documentAccount
+  attestedProfileId: StreamID! @documentReference(model: "CeramicDev")
+  profile: CeramicDev! @relationDocument(property: "attestedProfileId")
+  signal: Boolean!
+}
+
+enum Proficiency {
+  Beginner
+  Intermediate
+  Advanced
+  Expert
+}
+
+type Language {
+  JavaScript: Proficiency
+  Python: Proficiency
+  Rust: Proficiency
+  Java: Proficiency
+  Swift: Proficiency
+  Go: Proficiency
+  Cpp: Proficiency
+  Scala: Proficiency
+  WebAssembly: Proficiency
+  Solidity: Proficiency
+  Other: Proficiency
+}

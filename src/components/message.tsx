@@ -1,6 +1,4 @@
-import { formatRelative, formatDistance, differenceInHours } from "date-fns";
-import { PostProps } from "../../utils/types";
-import { ProfProps } from "../../utils/types";
+import { ProfProps } from "@/types";
 
 export const Message = ({ node, func }: ProfProps) => {
   const session = localStorage.getItem("id");
@@ -18,17 +16,6 @@ export const Message = ({ node, func }: ProfProps) => {
             : "flex-row"
         }`}
       >
-        {/* {profile.username && profile.emoji && (
-          <div className="w-12 h-12 overflow-hidden flex-shrink-0 rounded">
-            <a
-              href={`https://github.com/${profile.username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-             {profile.emoji}
-            </a>
-          </div>
-        )} */}
         <span
           className={`flex relative flex-col rounded space-x-2 items-start p-3 text-white ${
             node.developer.id === session ? "bg-[#4a9c6d]" : "bg-[#363739]"
@@ -82,12 +69,21 @@ export const Message = ({ node, func }: ProfProps) => {
             className="mt-5 bg-transparent hover:bg-gray-500 text-white-900 font-semibold hover:text-white py-2 px-4 border border-white-900 hover:border-transparent rounded"
             onClick={() => func(node.id)}
           >
-            Attest to Profile
+            Verify Profile
           </button>
         </span>
       </div>
       <div className="text-sm text-gray-400">
-        <p> Attestations: {node.attestations.length}</p>
+        <p>
+          {" "}
+          Unique Verifications:{" "}
+          {
+            node.attestations
+              .map((attestation) => attestation.attester.id)
+              .filter((value, index, self) => self.indexOf(value) === index)
+              .length
+          }
+        </p>
       </div>
     </div>
   );

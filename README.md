@@ -1,6 +1,10 @@
 # Ceramic Developer Local Sandbox
 
-Complete the Ceramic Developer onboarding by attesting to your own profile and others!
+Complete the Ceramic Developer onboarding by verifying your own profile and others! This repository is organized as an extension of the [ComposeDB Sandbox](https://developers.ceramic.network/docs/composedb/sandbox), so it is recommended that you complete the instruction on that page first.
+
+## How does this Application Work?
+
+This Sandbox Extension application uses the same Ceramic node endpoint as the [ComposeDB Sandbox](https://developers.ceramic.network/docs/composedb/sandbox), as well as an extended [runtime definition](./src/__generated__/definition.js) that allows developers to verify their developer profiles, as well as others.
 
 ## Getting Started
 

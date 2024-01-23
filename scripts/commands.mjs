@@ -4,7 +4,10 @@ import { toString } from "uint8arrays/to-string";
 import { writeFile } from "fs";
 import { DID } from "dids";
 import { Ed25519Provider } from "key-did-provider-ed25519";
-import { homedir } from "os";
+
+/* this file is not used in the sandbox extension app, but included here to show
+how to create a local server configuration
+*/
 
 export const RunCommands = async () => {
   const generateAdminKeyDid = async () => {

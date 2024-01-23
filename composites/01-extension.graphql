@@ -1,0 +1,7 @@
+type AttestToDev @loadModel(id: "$ATTEST_ID") {
+  id: ID!
+}
+
+type CeramicDev @loadModel(id: "$DEVELOPER_ID") {
+  attestations: [AttestToDev] @relationFrom(model: "AttestToDev", property: "attestedProfileId")
+}

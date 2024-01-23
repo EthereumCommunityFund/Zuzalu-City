@@ -12,7 +12,11 @@ import { Ed25519Provider } from "key-did-provider-ed25519";
 import { getResolver } from "key-did-resolver";
 import { fromString } from "uint8arrays/from-string";
 
-const ceramic = new CeramicClient('http://localhost:7007');
+/* this file is not used in the sandbox extension app, but included here to show
+how to create a composite and deploy locally
+*/
+
+const ceramic = new CeramicClient("http://localhost:7007");
 
 /**
  * @param {Ora} spinner - to provide progress status.
@@ -22,54 +26,25 @@ export const writeComposite = async (spinner) => {
   await authenticate();
   spinner.info("writing composite to Ceramic");
 
-  const profileComposite = await createComposite(
+  const combinedComposite = await createComposite(
     ceramic,
-    "./composites/00-basicProfile.graphql"
+    "./composites/00-dev.graphql"
   );
 
-  const postsSchema = readFileSync("./composites/01-posts.graphql", {
+  const extensionSchema = readFileSync("./composites/01-extension.graphql", {
     encoding: "utf-8",
-  }).replace("$PROFILE_ID", profileComposite.modelIDs[0]);
+  })
+    .replace("$ATTEST_ID", combinedComposite.modelIDs[1])
+    .replace("$DEVELOPER_ID", combinedComposite.modelIDs[0]);
 
-  const postsComposite = await Composite.create({
+  const extensionComposite = await Composite.create({
     ceramic,
-    schema: postsSchema,
-  });
-
-  const contextComposite = await createComposite(
-    ceramic,
-    "./composites/02-context.graphql"
-  );
-
-  const followingSchema = readFileSync("./composites/03-following.graphql", {
-    encoding: "utf-8",
-  }).replace("$PROFILE_ID", profileComposite.modelIDs[0]);
-
-  const followingComposite = await Composite.create({
-    ceramic,
-    schema: followingSchema,
-  });
-
-  const postProfileSchema = readFileSync(
-    "./composites/04-postsProfile.graphql",
-    {
-      encoding: "utf-8",
-    }
-  )
-    .replace("$POSTS_ID", postsComposite.modelIDs[1])
-    .replace("$PROFILE_ID", profileComposite.modelIDs[0]);
-
-  const postsProfileComposite = await Composite.create({
-    ceramic,
-    schema: postProfileSchema,
+    schema: extensionSchema,
   });
 
   const composite = Composite.from([
-    profileComposite,
-    postsComposite,
-    followingComposite,
-    postsProfileComposite,
-    contextComposite
+    combinedComposite,
+    extensionComposite
   ]);
 
   await writeEncodedComposite(composite, "./src/__generated__/definition.json");
