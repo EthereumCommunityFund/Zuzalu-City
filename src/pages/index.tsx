@@ -32,7 +32,7 @@ export default function Home() {
         <div className="h-full flex items-center justify-center flex-col space-y-2.5">
           <>
             <p className="text-lg md:text-2xl lg:text-3xl font-medium text-white">
-              Sign in with MetaMask to join the chat!
+              Sign in with MetaMask to issue verifications!
             </p>
             <p>
               <a
