@@ -2,6 +2,11 @@ import { ProfProps } from "@/types";
 
 export const Message = ({ node, func }: ProfProps) => {
   const session = localStorage.getItem("id");
+  //check if node.attestations contains an attester with id that matches session
+  const verified = node.attestations.some(
+    (attestation) => attestation.attester.id === session
+  );
+
   return (
     <div
       className={`flex flex-col relative space-x-1 space-y-1 ${
@@ -18,11 +23,12 @@ export const Message = ({ node, func }: ProfProps) => {
       >
         <span
           className={`flex relative flex-col rounded space-x-2 items-start p-3 text-white ${
-            node.developer.id === session ? "bg-[#4a9c6d]" : "bg-[#363739]"
+            node.developer.id === session && verified
+              ? "bg-[#4a9c6d]"
+              : "bg-[#363739]"
           } `}
         >
           <div className="font-bold">{node.developer.id}&nbsp;</div>
-
           <div className="max-w-sm text-left mt-2">
             <div>
               {node.languages.JavaScript != null &&
@@ -65,12 +71,18 @@ export const Message = ({ node, func }: ProfProps) => {
                 "Other: " + node.languages.Other}
             </div>
           </div>
-          <button
-            className="mt-5 bg-transparent hover:bg-gray-500 text-white-900 font-semibold hover:text-white py-2 px-4 border border-white-900 hover:border-transparent rounded"
-            onClick={() => func(node.id)}
-          >
-            Verify Profile
-          </button>
+          {!verified ? (
+            <button
+              className="mt-5 bg-transparent hover:bg-gray-500 text-white-900 font-semibold hover:text-white py-2 px-4 border border-white-900 hover:border-transparent rounded"
+              onClick={() => func(node.id)}
+            >
+              Verify Profile
+            </button>
+          ) : (
+            <button className="mt-5 bg-transparent text-white-900 font-semibold hover:text-white py-2 px-4 border border-white-900 rounded">
+              Verified
+            </button>
+          )}
         </span>
       </div>
       <div className="text-sm text-gray-400">

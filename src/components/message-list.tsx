@@ -104,7 +104,7 @@ export const MessageList = () => {
         })
       );
       console.log(newProfiles);
-      setProfiles(newProfiles);
+      setProfiles(newProfiles.reverse());
     }
   };
 
@@ -159,15 +159,6 @@ export const MessageList = () => {
     getProfilesQuery();
   }, []);
 
-  useEffect(() => {
-    if (messageRef.current) {
-      messageRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-        inline: "nearest",
-      });
-    }
-  }, [profiles]);
 
   return (
     <>
