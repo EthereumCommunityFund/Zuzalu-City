@@ -90,20 +90,25 @@ export const MessageList = () => {
 
     console.log(profiles);
     if (profiles?.data?.ceramicDevIndex?.edges) {
-      const newProfiles = profiles?.data?.ceramicDevIndex?.edges.map(
-        (edge) => ({
-          id: edge.node.id,
-          developer: edge.node.developer,
-          languages: edge.node.languages,
-          // @ts-ignore
-          attestations: edge.node.attestations.edges.map((edge: any) => ({
+      const filtered = profiles?.data?.ceramicDevIndex?.edges.filter((edge) => edge.node !== null);
+      console.log(filtered);
+      const newProfiles = filtered?.map(
+        (edge) => (
+          edge.node !== null && {
             id: edge.node.id,
-            attester: edge.node.attester,
-            signal: edge.node.signal,
-          })),
-        })
+            developer: edge.node.developer,
+            languages: edge.node.languages,
+            // @ts-ignore
+            attestations: edge.node.attestations.edges.map((edge: any) => ({
+              id: edge.node.id,
+              attester: edge.node.attester,
+              signal: edge.node.signal,
+            })),
+          }
+        )
       );
       console.log(newProfiles);
+      // @ts-ignore
       setProfiles(newProfiles.reverse());
     }
   };
