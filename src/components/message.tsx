@@ -28,6 +28,12 @@ export const Message = ({ node, func }: ProfProps) => {
               : "bg-[#363739]"
           } `}
         >
+          {node.developer.id === session && (
+            <div className="text-xs text-white-400">
+              <p>Your Profile: </p>
+              <br />
+            </div>
+          )}
           <div className="font-bold">{node.developer.id}&nbsp;</div>
           <div className="max-w-sm text-left mt-2">
             <div>
@@ -86,16 +92,7 @@ export const Message = ({ node, func }: ProfProps) => {
         </span>
       </div>
       <div className="text-sm text-gray-400">
-        <p>
-          {" "}
-          Unique Verifications:{" "}
-          {
-            node.attestations
-              .map((attestation) => attestation.attester.id)
-              .filter((value, index, self) => self.indexOf(value) === index)
-              .length
-          }
-        </p>
+        <p> Unique Verifications: {node.attestations.length}</p>
       </div>
     </div>
   );
