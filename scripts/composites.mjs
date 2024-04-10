@@ -16,7 +16,7 @@ import { fromString } from "uint8arrays/from-string";
 how to create a composite and deploy locally
 */
 
-const ceramic = new CeramicClient("http://localhost:7007");
+const ceramic = new CeramicClient("https://experiments.ceramic.dev");
 
 /**
  * @param {Ora} spinner - to provide progress status.
