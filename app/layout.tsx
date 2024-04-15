@@ -7,7 +7,6 @@ import theme from '../theme';
 
 import Header from '../components/Layout/Header';
 import Sidebar from '../components/Layout/Sidebar';
-import { Box, Grid } from '@mui/material';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,7 +15,7 @@ export const metadata: Metadata = {
   description: 'Zuzalu City Powered By Ethereum Community Fund',
 };
 
-export default function RootLayout({
+function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -26,24 +25,16 @@ export default function RootLayout({
       <body className={inter.className}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Header />
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Sidebar />
-                  </Grid>
-                  <Grid item xs={8}>
-                    {children}
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+            <Header />
+            <div className="flex">
+              <Sidebar />
+              {children}
+            </div>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>
   );
 }
+
+export default RootLayout;

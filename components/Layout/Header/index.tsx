@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import {
   Box,
@@ -8,7 +9,7 @@ import {
 } from '@mui/material';
 import { SearchIcon, MenuIcon } from '../../icons';
 
-const Header: React.FC = () => {
+const Header = () => {
   return (
     <Box
       height="50px"
@@ -65,7 +66,7 @@ const Header: React.FC = () => {
           }
         />
       </FormControl>
-      <Box display="flex" gap="10px">
+      <Box display="flex" alignItems="center">
         <Box component="img" src="drivenfast.webp" height="30px" />
       </Box>
     </Box>
