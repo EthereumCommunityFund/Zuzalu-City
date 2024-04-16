@@ -29,5 +29,5 @@ export {
   RightArrowIcon,
   LotteryIcon,
   MapIcon,
-  LockIcon
+  LockIcon,
 };
