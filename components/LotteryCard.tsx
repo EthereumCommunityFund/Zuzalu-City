@@ -17,7 +17,12 @@ const LotteryCard: React.FC = () => {
       </Box>
       <Box flexGrow={1} display="flex" flexDirection="column" gap="30px">
         <Box>
-          <Typography color="white" fontSize="31px" fontWeight={400}>
+          <Typography
+            color="white"
+            fontSize="31px"
+            fontWeight={400}
+            fontFamily="Inter"
+          >
             Zuzalu City Lottery
           </Typography>
           {/* <Typography color='white' fontSize='16px' fontweight={600}>Donate to ZuCity Development for a chance to win!</Typography> */}
@@ -42,6 +47,7 @@ const LotteryCard: React.FC = () => {
               fontWeight: 600,
               borderRadius: '10px',
               padding: '10px 14px',
+              fontFamily: 'Inter',
             }}
             startIcon={<RightArrowIcon />}
           >
@@ -55,6 +61,7 @@ const LotteryCard: React.FC = () => {
               fontWeight: 600,
               borderRadius: '10px',
               padding: '10px 14px',
+              fontFamily: 'Inter',
             }}
             startIcon={<RightArrowIcon />}
           >

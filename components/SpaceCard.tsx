@@ -17,7 +17,14 @@ type SpaceCardProps = {
 
 const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
   return (
-    <Card sx={{ width: 290, borderRadius: '10px' }}>
+    <Card
+      sx={{
+        borderRadius: '10px',
+        scrollSnapAlign: 'start',
+        flexShrink: 0,
+        width: '290px',
+      }}
+    >
       <CardMedia sx={{ height: 106 }} image={bgImage} title="green iguana" />
       <CardContent
         sx={{
@@ -42,14 +49,25 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
           color="white"
           component="div"
           marginTop="30px"
+          fontFamily="Inter"
         >
           Zuzalu City Contributors
         </Typography>
-        <Typography fontSize="14px" fontWeight={500} color="white">
+        <Typography
+          fontSize="14px"
+          fontWeight={500}
+          color="white"
+          fontFamily="Inter"
+        >
           A Popup Village of Innovation in the Heart of Istanbul
         </Typography>
         <Box display="flex" marginY="10px" sx={{ opacity: 0.5 }}>
-          <Typography color="white" fontSize="10px" fontWeight={400}>
+          <Typography
+            color="white"
+            fontSize="10px"
+            fontWeight={400}
+            fontFamily="Inter"
+          >
             AI
           </Typography>
           <Typography
@@ -57,10 +75,16 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
             fontSize="10px"
             fontWeight={400}
             marginX="10px"
+            fontFamily="Inter"
           >
             COMMUNITY TOOLS
           </Typography>
-          <Typography color="white" fontSize="10px" fontWeight={400}>
+          <Typography
+            color="white"
+            fontSize="10px"
+            fontWeight={400}
+            fontFamily="Inter"
+          >
             +3
           </Typography>
         </Box>
@@ -80,6 +104,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
             fontSize="13px"
             fontWeight={500}
             sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
+            fontFamily="Inter"
           >
             1.4k
           </Typography>
@@ -95,6 +120,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
             borderRadius: '10px',
             fontSize: '14px',
             fontWeight: 500,
+            fontFamily: 'Inter',
           }}
         >
           Join Space
