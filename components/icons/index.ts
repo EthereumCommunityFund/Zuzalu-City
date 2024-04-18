@@ -13,6 +13,13 @@ import { RightArrowIcon } from './RightArrow';
 import { LotteryIcon } from './Lottery';
 import { MapIcon } from './Map';
 import { LockIcon } from './Lock';
+import { GroupIcon } from './Group';
+import { ThreeVerticalIcon } from './ThreeVertical';
+import { CheckCircleIcon } from './CheckCircle';
+import { PlusIcon } from './Plus';
+import { XMarkIcon } from './XMark';
+import { EyeSlashIcon } from './EyeSlash';
+import { LeftArrowIcon } from './LeftArrow';
 
 export {
   HomeIcon,
@@ -29,5 +36,12 @@ export {
   RightArrowIcon,
   LotteryIcon,
   MapIcon,
-  LockIcon
+  LockIcon,
+  GroupIcon,
+  ThreeVerticalIcon,
+  CheckCircleIcon,
+  PlusIcon,
+  XMarkIcon,
+  EyeSlashIcon,
+  LeftArrowIcon,
 };
