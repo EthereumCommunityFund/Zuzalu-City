@@ -20,6 +20,7 @@ import {
   XMarkIcon,
   RightArrowCircleIcon,
   EyeSlashIcon, 
+  PlusCircleIcon
 } from 'components/icons';
 
 const IOSSwitch = styled((props: SwitchProps) => (
@@ -257,17 +258,14 @@ const Ticket: React.FC = () => {
             rows={6}
             sx={{
               backgroundColor: '#2d2d2d',
-              padding: '12px 5px',
               borderRadius: '8px',
               height: '200px',
               width: '100%',
-              '& .MuiInputBase-input-MuiOutlinedInput-input': {
-                fontFamily: 'Inter',
-              },
               '& .MuiOutlinedInput-notchedOutline': {
                 border: 'none',
               },
               '& .MuiInputBase-inputMultiline': {
+                fontFamily: 'Inter',
                 color: 'white',
               },
             }}
@@ -713,9 +711,47 @@ const Ticket: React.FC = () => {
             </Box>
           </Box>
         </Box>
-        <Typography fontFamily="Inter">
+        <Typography fontFamily="Inter" color='white' fontStyle='italic' fontSize='14px' sx={{opacity: 0.5}}>
           Prototype Note: Below shows an empty state
         </Typography>
+        <Box display='flex' flexDirection='column' gap='10px'>
+          <Box display="flex" justifyContent="space-between">
+            <Box>
+              <Typography
+                color="white"
+                fontSize="18px"
+                fontWeight={700}
+                fontFamily="Inter"
+              >
+                Event Tickets
+              </Typography>
+            </Box>
+            <Button
+              sx={{
+                color: 'white',
+                borderRadius: '10px',
+                backgroundColor: '#2d2d2d',
+                fontFamily: 'Inter',
+                fontSize: '13px',
+                padding: '4px 10px'
+              }}
+              startIcon={<PlusIcon size={4} />}
+              onClick={toggleDrawer('right', true)}
+            >
+              New Ticket
+            </Button>
+          </Box>
+          <Typography fontFamily="Inter" color='white' fontSize='13px'>These are tickets for this event </Typography>
+          <Box display='flex' flexDirection='column' justifyContent='center' bgcolor='#383838' borderRadius='10px' padding='20px 10px' gap='10px'>
+            <Box textAlign='center'>
+              <PlusCircleIcon color='#6c6c6c' size={15} />
+            </Box>
+            <Box display='flex' flexDirection='column' gap='6px'>
+              <Typography textAlign='center' fontFamily="Inter" color='white' fontSize='16px' fontWeight={600}>No Tickets</Typography>
+              <Typography textAlign='center' fontFamily="Inter" color='white' fontSize='13px'>Create a ticket</Typography>
+            </Box>
+          </Box>
+        </Box>
         <Box
           display="flex"
           flexDirection="column"
@@ -772,7 +808,7 @@ const Ticket: React.FC = () => {
             </Typography>
           </Box>
         </Box>
-        <Box
+        {/* <Box
           display="flex"
           flexDirection="column"
           gap="20px"
@@ -828,7 +864,7 @@ const Ticket: React.FC = () => {
               create a question
             </Typography>
           </Box>
-        </Box>
+        </Box> */}
       </Box>
       <SwipeableDrawer
         anchor="right"
