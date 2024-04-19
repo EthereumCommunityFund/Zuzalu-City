@@ -100,8 +100,9 @@ const Header = () => {
             fontSize: '16px',
             fontWeight: 500,
             fontFamily: 'Inter',
-            backgroundColor: '#2d2d2d',
+            backgroundColor: 'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
             borderRadius: '10px',
+            opacity: 0.7
           }}
         >
           Sign In
