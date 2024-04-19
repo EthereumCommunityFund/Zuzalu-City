@@ -10,7 +10,7 @@ export interface CarouselProps {
 
 const Carousel: React.FC<CarouselProps> = ({ items }) => {
   const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
