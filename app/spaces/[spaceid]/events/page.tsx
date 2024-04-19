@@ -2,7 +2,7 @@ import React from 'react';
 
 const Space = () => {
   return (
-    <div style={{color: 'white'}}>SpaceID</div>
+    <div style={{color: 'white'}}>events</div>
   )
 }
 
