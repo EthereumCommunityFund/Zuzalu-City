@@ -156,7 +156,7 @@ const Home: React.FC = () => {
                 </Typography>
               </Box>
               <Carousel items={items} />
-              {/* {isDesktop && <LotteryCard />} */}
+              {isDesktop && <LotteryCard />}
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   flexGrow={1}

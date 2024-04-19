@@ -30,23 +30,24 @@ const Header = () => {
         <MenuIcon />
         <Box component="img" src="/logo.webp" height="40px" />
         {!isMobile ? (
-          <Box display="flex" alignItems="end">
-            <Box>
-              <Typography
-                sx={{
-                  color: 'white',
-                  fontSize: '30px',
-                  fontWeight: 700,
-                  fontFamily: 'Roboto',
-                }}
-              >
-                Zuzalu
-              </Typography>
+          <Box>
+            <Box
+              component='span'
+              sx={{
+                color: 'white',
+                fontSize: '24px',
+                fontWeight: 700,
+                fontFamily: 'Merriweather',
+              }}
+            >
+              Zuzalu
             </Box>
-            <Box>
-              <Typography sx={{ color: 'grey', fontSize: '18px' }}>
-                .city
-              </Typography>
+            <Box
+              component='span'
+              sx={{ color: 'white', fontSize: '16px', opacity: 0.3,
+              fontFamily: 'Merriweather'
+               }}>
+              .city
             </Box>
           </Box>
         ) : (
