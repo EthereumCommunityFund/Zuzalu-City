@@ -13,14 +13,14 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material';
 
-import {
+import { 
   ThreeVerticalIcon,
   CheckCircleIcon,
   PlusIcon,
   XMarkIcon,
   RightArrowCircleIcon,
-  EyeSlashIcon,
-} from '../../../../../../../components/icons';
+  EyeSlashIcon, 
+} from 'components/icons';
 
 const IOSSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />

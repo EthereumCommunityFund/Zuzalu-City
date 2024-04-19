@@ -2,20 +2,20 @@
 import * as React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
-import Carousel from '../components/Carousel';
-import Header from '../components/Layout/Header';
-import Sidebar from '../components/Layout/Sidebar';
+import Carousel from 'components/Carousel';
+import { Header, Sidebar } from 'components/Layout';
 import {
   RightArrowCircleIcon,
   SpaceIcon,
   RightArrowIcon,
   EventIcon,
-} from '../components/icons';
-import { SpaceCard, EventCard, LotteryCard } from '../components';
+} from 'components/icons';
+import { SpaceCard, EventCard, LotteryCard } from 'components';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
+// import ZuSelect from 'components/core/Select';
 
 interface SpaceCardItem {
   bgImage: string;
@@ -295,6 +295,9 @@ const Home: React.FC = () => {
                         }}
                       />
                     </Box>
+                    {/* <Box>
+                      <ZuSelect></ZuSelect>
+                    </Box> */}
                   </Box>
                 )}
               </Box>

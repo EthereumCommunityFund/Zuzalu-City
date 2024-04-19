@@ -9,7 +9,7 @@ import {
   Button,
 } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
-import { SearchIcon, MenuIcon } from '../../icons';
+import { SearchIcon, MenuIcon } from 'components/icons';
 
 const Header = () => {
   const theme = useTheme();

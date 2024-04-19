@@ -8,7 +8,7 @@ import {
   BoltIcon,
   HomeIcon,
   SpacePlusIcon,
-} from '../../icons';
+} from 'components/icons';
 
 const Sidebar: React.FC = () => {
   return (

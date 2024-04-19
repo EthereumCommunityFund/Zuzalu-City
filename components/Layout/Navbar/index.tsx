@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { LeftArrowIcon } from '../../icons';
+import { LeftArrowIcon } from 'components/icons';
 
 const Navbar = () => {
   return (
