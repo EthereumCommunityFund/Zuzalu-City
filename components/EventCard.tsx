@@ -54,7 +54,7 @@ const EventCard: React.FC = () => {
             <Box
               component="span"
               color="white"
-              fontSize="14px"
+              fontSize="13px"
               fontWeight={500}
               fontFamily="Inter"
             >

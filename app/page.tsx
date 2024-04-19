@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
-// import Carousel from 'react-material-ui-carousel';
 import Carousel from '../components/Carousel';
 import Header from '../components/Layout/Header';
 import Sidebar from '../components/Layout/Sidebar';
@@ -24,6 +23,22 @@ interface SpaceCardItem {
 }
 
 const items: SpaceCardItem[] = [
+  {
+    bgImage: '5.webp',
+    logoImage: '1.webp',
+  },
+  {
+    bgImage: '7.webp',
+    logoImage: '8.webp',
+  },
+  {
+    bgImage: '9.webp',
+    logoImage: '0.webp',
+  },
+  {
+    bgImage: '10.webp',
+    logoImage: '11.webp',
+  },
   {
     bgImage: '5.webp',
     logoImage: '1.webp',
@@ -65,6 +80,8 @@ const Home: React.FC = () => {
               sx={{
                 backgroundImage: 'url("4.webp")',
                 backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover'
               }}
             >
               <Typography
@@ -242,34 +259,35 @@ const Home: React.FC = () => {
                       <DateCalendar
                         defaultValue={dayjs('2022-04-17')}
                         sx={{
-                          '& .mui-s6c4tz-MuiButtonBase-root-MuiPickersDay-root':
+                          '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin':
                             {
                               fontFamily: 'Inter',
                               color: 'white',
                               fontSize: '16px',
                               fontWeight: 500,
                             },
-                          '& .mui-1aqny2q-MuiPickersCalendarHeader-root': {
+                          '& .MuiPickersCalendarHeader-root': {
                             color: 'white',
                             fontSize: '20px',
                             fontWeight: 700,
                           },
-                          '& .mui-dplwbx-MuiPickersCalendarHeader-label': {
+                          '& .MuiDayCalendar-header': {
+                            color: 'white',
                             fontFamily: 'Inter',
                             fontSize: '20px',
                             fontWeight: 700,
                           },
-                          '& .mui-1vooibu-MuiSvgIcon-root': {
+                          '& .MuiSvgIcon-root': {
                             color: 'white',
                           },
-                          '& .mui-3xxbjo-MuiTypography-root-MuiDayCalendar-weekDayLabel':
+                          '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel':
                             {
                               color: 'white',
                               fontSize: '18px',
                               fontWeight: 500,
                               fontFamily: 'Inter',
                             },
-                          '& .mui-s6c4tz-MuiButtonBase-root-MuiPickersDay-root.Mui-selected':
+                          '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin':
                             {
                               backgroundColor: 'rgba(215, 255, 196, 0.20)',
                               color: '#D7FFC4',
