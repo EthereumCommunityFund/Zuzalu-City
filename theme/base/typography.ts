@@ -1,8 +1,7 @@
 import { TypographyOptions } from '@mui/material/styles/createTypography';
 
 const baseProperties = {
-  fontFamily:
-    '"IBM Plex Sans", "Nunito Sans", "Arial", "Helvetica", sans-serif',
+  fontFamily: '"Inter", sans-serif',
   fontFamily2: '"Restora", "Nunito Sans", sans-serif',
   fontWeightLighter: 200,
   fontWeightLight: 300,
@@ -20,7 +19,7 @@ export const Typography: TypographyOptions = {
   fontWeightBold: baseProperties.fontWeightBold,
 
   h1: {
-    fontFamily: baseProperties.fontFamily2,
+    fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightLighter,
     fontSize: '4.6875rem',
     lineHeight: 1.167,
@@ -28,7 +27,7 @@ export const Typography: TypographyOptions = {
   },
 
   h2: {
-    fontFamily: baseProperties.fontFamily2,
+    fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightLighter,
     fontSize: '4.35025rem',
     lineHeight: 1.2,
@@ -36,7 +35,7 @@ export const Typography: TypographyOptions = {
   },
 
   h3: {
-    fontFamily: baseProperties.fontFamily2,
+    fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightLighter,
     fontSize: '3.5rem',
     lineHeight: 1.167,
@@ -44,7 +43,7 @@ export const Typography: TypographyOptions = {
   },
 
   h4: {
-    fontFamily: baseProperties.fontFamily2,
+    fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightLighter,
     fontSize: '3rem',
     lineHeight: 1.235,
@@ -52,7 +51,7 @@ export const Typography: TypographyOptions = {
   },
 
   h5: {
-    fontFamily: baseProperties.fontFamily2,
+    fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightExtraBold,
     fontSize: '2.5rem',
     lineHeight: 1.334,
@@ -60,7 +59,7 @@ export const Typography: TypographyOptions = {
   },
 
   h6: {
-    fontFamily: baseProperties.fontFamily2,
+    fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightExtraBold,
     fontSize: '2rem',
     lineHeight: 1.6,

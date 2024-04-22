@@ -1,14 +1,8 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../theme';
-
-import Header from '../components/Layout/Header';
-import Sidebar from '../components/Layout/Sidebar';
-
-const inter = Inter({ subsets: ['latin'] });
+import theme from 'theme';
 
 export const metadata: Metadata = {
   title: 'Zuzalu City',
@@ -22,15 +16,9 @@ function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <Header />
-            <div className="flex">
-              <Sidebar />
-              {children}
-            </div>
-          </ThemeProvider>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

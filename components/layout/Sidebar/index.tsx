@@ -8,7 +8,7 @@ import {
   BoltIcon,
   HomeIcon,
   SpacePlusIcon,
-} from '../../icons';
+} from 'components/icons';
 
 const Sidebar: React.FC = () => {
   return (
@@ -30,7 +30,12 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <HomeIcon />
-          <Typography color="white" fontWeight={700} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={700}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Home
           </Typography>
         </Box>
@@ -43,7 +48,12 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <StreamIcon />
-          <Typography color="white" fontWeight={700} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={700}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Stream
           </Typography>
         </Box>
@@ -56,7 +66,12 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <SpaceIcon />
-          <Typography color="white" fontWeight={700} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={700}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Spaces
           </Typography>
         </Box>
@@ -69,7 +84,12 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <EventIcon />
-          <Typography color="white" fontWeight={700} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={700}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Events
           </Typography>
         </Box>
@@ -82,7 +102,12 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <BoltIcon />
-          <Typography color="white" fontWeight={700} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={700}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Zapps
           </Typography>
         </Box>
@@ -99,42 +124,63 @@ const Sidebar: React.FC = () => {
           marginTop="15px"
           marginBottom="10px"
           marginLeft="10px"
+          fontFamily="Inter"
         >
           YOUR SPACES
         </Typography>
         <Box display="flex" alignItems="center" gap="10px">
-          <Box component="img" src="0.webp" height="40px" />
-          <Typography color="white" fontWeight={600} fontSize="14px">
+          <Box component="img" src="/0.webp" height="40px" />
+          <Typography
+            color="white"
+            fontWeight={600}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Zuzalu City Contributors
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="10px">
           <Box
             component="img"
-            src="0.webp"
+            src="/0.webp"
             height="40px"
             width="40px"
             borderRadius="20px"
           />
-          <Typography color="white" fontWeight={600} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={600}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             FendiWeb3
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="10px">
           <Box
             component="img"
-            src="0.webp"
+            src="/0.webp"
             height="40px"
             borderRadius="20px"
             width="40px"
           />
-          <Typography color="white" fontWeight={600} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={600}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Green Odin
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="10px" paddingLeft="5px">
           <SpacePlusIcon />
-          <Typography color="white" fontWeight={600} fontSize="14px">
+          <Typography
+            color="white"
+            fontWeight={600}
+            fontSize="14px"
+            fontFamily="Inter"
+          >
             Create a Space
           </Typography>
         </Box>

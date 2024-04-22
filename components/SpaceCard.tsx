@@ -8,16 +8,26 @@ import {
   CardActions,
   Box,
 } from '@mui/material';
-import { PlusCircleIcon, UsersIcon } from './icons';
+import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from './icons';
 
-type SpaceCardProps = {
+export type SpaceCardProps = {
   bgImage: string;
   logoImage: string;
+  title: string,
+  description: string,
+  joined: boolean
 };
 
-const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
+const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage, title, description, joined }) => {
   return (
-    <Card sx={{ width: 290, borderRadius: '10px' }}>
+    <Card
+      sx={{
+        borderRadius: '10px',
+        scrollSnapAlign: 'start',
+        flexShrink: 0,
+        width: '290px',
+      }}
+    >
       <CardMedia sx={{ height: 106 }} image={bgImage} title="green iguana" />
       <CardContent
         sx={{
@@ -42,14 +52,25 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
           color="white"
           component="div"
           marginTop="30px"
+          fontFamily="Inter"
         >
-          Zuzalu City Contributors
+          {title}
         </Typography>
-        <Typography fontSize="14px" fontWeight={500} color="white">
-          A Popup Village of Innovation in the Heart of Istanbul
+        <Typography
+          fontSize="14px"
+          fontWeight={500}
+          color="white"
+          fontFamily="Inter"
+        >
+          {description}
         </Typography>
         <Box display="flex" marginY="10px" sx={{ opacity: 0.5 }}>
-          <Typography color="white" fontSize="10px" fontWeight={400}>
+          <Typography
+            color="white"
+            fontSize="10px"
+            fontWeight={400}
+            fontFamily="Inter"
+          >
             AI
           </Typography>
           <Typography
@@ -57,10 +78,16 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
             fontSize="10px"
             fontWeight={400}
             marginX="10px"
+            fontFamily="Inter"
           >
             COMMUNITY TOOLS
           </Typography>
-          <Typography color="white" fontSize="10px" fontWeight={400}>
+          <Typography
+            color="white"
+            fontSize="10px"
+            fontWeight={400}
+            fontFamily="Inter"
+          >
             +3
           </Typography>
         </Box>
@@ -80,24 +107,26 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
             fontSize="13px"
             fontWeight={500}
             sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
+            fontFamily="Inter"
           >
             1.4k
           </Typography>
         </Box>
         <Button
           size="small"
-          startIcon={<PlusCircleIcon />}
+          startIcon={joined ? <CheckCircleIcon color='#D7FFC4' /> : <PlusCircleIcon />}
           sx={{
-            backgroundColor: 'var(--Main-Grey, #383838)',
-            color: 'white',
+            backgroundColor: joined ? '#606C5A' : '#383838',
+            color: joined ? '#D7FFC4' : 'white',
             flexGrow: 1,
             padding: '6px 10px',
             borderRadius: '10px',
             fontSize: '14px',
             fontWeight: 500,
+            fontFamily: 'Inter',
           }}
         >
-          Join Space
+          {joined ? 'Joined' : 'Join'}
         </Button>
       </CardActions>
     </Card>

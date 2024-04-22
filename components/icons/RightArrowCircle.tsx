@@ -1,10 +1,15 @@
-export const RightArrowCircleIcon = () => {
+import * as React from 'react';
+import { IconProps } from 'types';
+
+export const RightArrowCircleIcon: React.FC<IconProps> = ({
+  color = 'rgb(255, 255, 255)',
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      color="rgb(255, 255, 255)"
+      color={color}
       className="w-6 h-6"
     >
       <path
