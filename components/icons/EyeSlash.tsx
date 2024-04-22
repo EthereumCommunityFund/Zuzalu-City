@@ -1,9 +1,7 @@
 import * as React from 'react';
+import { IconProps } from 'types';
 
-type EyeSlashIconType = {
-  color?: string;
-};
-export const EyeSlashIcon: React.FC<EyeSlashIconType> = ({
+export const EyeSlashIcon: React.FC<IconProps> = ({
   color = 'black',
 }) => {
   return (

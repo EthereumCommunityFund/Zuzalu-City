@@ -20,6 +20,11 @@ import { PlusIcon } from './Plus';
 import { XMarkIcon } from './XMark';
 import { EyeSlashIcon } from './EyeSlash';
 import { LeftArrowIcon } from './LeftArrow';
+import { ShareIcon } from './Share';
+import { ThreeHorizonIcon } from './ThreeHorizon';
+import { EyeIcon } from './Eye';
+import { InformationIcon } from './Information';
+import { ArchiveIcon } from './Archive';
 
 export {
   HomeIcon,
@@ -44,4 +49,9 @@ export {
   XMarkIcon,
   EyeSlashIcon,
   LeftArrowIcon,
+  ShareIcon,
+  ThreeHorizonIcon,
+  EyeIcon,
+  InformationIcon,
+  ArchiveIcon
 };

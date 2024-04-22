@@ -8,14 +8,17 @@ import {
   CardActions,
   Box,
 } from '@mui/material';
-import { PlusCircleIcon, UsersIcon } from './icons';
+import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from './icons';
 
-type SpaceCardProps = {
+export type SpaceCardProps = {
   bgImage: string;
   logoImage: string;
+  title: string,
+  description: string,
+  joined: boolean
 };
 
-const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
+const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage, title, description, joined }) => {
   return (
     <Card
       sx={{
@@ -51,7 +54,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
           marginTop="30px"
           fontFamily="Inter"
         >
-          Zuzalu City Contributors
+          {title}
         </Typography>
         <Typography
           fontSize="14px"
@@ -59,7 +62,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
           color="white"
           fontFamily="Inter"
         >
-          A Popup Village of Innovation in the Heart of Istanbul
+          {description}
         </Typography>
         <Box display="flex" marginY="10px" sx={{ opacity: 0.5 }}>
           <Typography
@@ -111,10 +114,10 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
         </Box>
         <Button
           size="small"
-          startIcon={<PlusCircleIcon />}
+          startIcon={joined ? <CheckCircleIcon color='#D7FFC4' /> : <PlusCircleIcon />}
           sx={{
-            backgroundColor: 'var(--Main-Grey, #383838)',
-            color: 'white',
+            backgroundColor: joined ? '#606C5A' : '#383838',
+            color: joined ? '#D7FFC4' : 'white',
             flexGrow: 1,
             padding: '6px 10px',
             borderRadius: '10px',
@@ -123,7 +126,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage }) => {
             fontFamily: 'Inter',
           }}
         >
-          Join Space
+          {joined ? 'Joined' : 'Join'}
         </Button>
       </CardActions>
     </Card>

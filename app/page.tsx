@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import Carousel from 'components/Carousel';
-import { Header, Sidebar } from 'components/Layout';
+import { Header, Sidebar } from 'components/layout';
 import {
   RightArrowCircleIcon,
   SpaceIcon,
@@ -16,46 +16,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
 // import ZuSelect from 'components/core/Select';
-
-interface SpaceCardItem {
-  bgImage: string;
-  logoImage: string;
-}
-
-const items: SpaceCardItem[] = [
-  {
-    bgImage: '5.webp',
-    logoImage: '1.webp',
-  },
-  {
-    bgImage: '7.webp',
-    logoImage: '8.webp',
-  },
-  {
-    bgImage: '9.webp',
-    logoImage: '0.webp',
-  },
-  {
-    bgImage: '10.webp',
-    logoImage: '11.webp',
-  },
-  {
-    bgImage: '5.webp',
-    logoImage: '1.webp',
-  },
-  {
-    bgImage: '7.webp',
-    logoImage: '8.webp',
-  },
-  {
-    bgImage: '9.webp',
-    logoImage: '0.webp',
-  },
-  {
-    bgImage: '10.webp',
-    logoImage: '11.webp',
-  },
-];
+import { MOCK_DATA } from 'mock';
 
 const Home: React.FC = () => {
   const theme = useTheme();
@@ -155,8 +116,8 @@ const Home: React.FC = () => {
                   Most Active Spaces
                 </Typography>
               </Box>
-              <Carousel items={items} />
-              {isDesktop && <LotteryCard />}
+              <Carousel items={MOCK_DATA.spaces} />
+              {/* {isDesktop && <LotteryCard />} */}
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   flexGrow={1}

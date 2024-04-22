@@ -1,22 +1,16 @@
 import * as React from 'react';
+import { IconProps } from 'types';
 
-type CheckCircleIconType = {
-  fill?: string;
-  size?: string;
-  color?: string;
-};
-
-export const CheckCircleIcon: React.FC<CheckCircleIconType> = ({
-  fill = 'currentColor',
-  size = '6',
+export const CheckCircleIcon: React.FC<IconProps> = ({
+  size = 6,
   color = 'white',
 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 ${Number(size) * 4} ${Number(size) * 4}`}
-      fill={fill}
-      className={`w-${size} h-${size}`}
+      width={`${size * 4}px`}
+      height={`${size * 4}px`}
       color={color}
     >
       <path

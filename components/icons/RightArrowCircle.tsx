@@ -1,10 +1,7 @@
 import * as React from 'react';
+import { IconProps } from 'types';
 
-type RightArrowCircleIconType = {
-  color?: string;
-};
-
-export const RightArrowCircleIcon: React.FC<RightArrowCircleIconType> = ({
+export const RightArrowCircleIcon: React.FC<IconProps> = ({
   color = 'rgb(255, 255, 255)',
 }) => {
   return (

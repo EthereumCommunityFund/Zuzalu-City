@@ -25,6 +25,8 @@ const Header = () => {
       paddingX="20px"
       paddingY="8px"
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+      zIndex={1000}
+      position='relative'
     >
       <Box display="flex" alignItems="center" gap="10px">
         <MenuIcon />

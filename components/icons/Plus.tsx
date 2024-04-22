@@ -1,11 +1,7 @@
 import React from 'react';
+import { IconProps } from 'types';
 
-type PlusIconType = {
-  color?: string,
-  size?: number
-}
-
-export const PlusIcon: React.FC<PlusIconType> = ({size = 6}) => {
+export const PlusIcon: React.FC<IconProps> = ({size = 6}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
