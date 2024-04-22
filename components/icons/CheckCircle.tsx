@@ -11,7 +11,7 @@ export const CheckCircleIcon: React.FC<IconProps> = ({
       viewBox={`0 0 ${Number(size) * 4} ${Number(size) * 4}`}
       width={`${size * 4}px`}
       height={`${size * 4}px`}
-      color={color}
+      fill={color}
     >
       <path
         fillRule="evenodd"

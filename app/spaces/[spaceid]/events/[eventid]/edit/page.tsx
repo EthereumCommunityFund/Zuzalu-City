@@ -4,6 +4,8 @@ import * as React from 'react';
 import { Box, Typography, Button, Input, TextField, Select, SwipeableDrawer } from '@mui/material';
 import { ShareIcon, ThreeHorizonIcon, PlusIcon, InformationIcon, XMarkIcon, RightArrowCircleIcon } from 'components/icons';
 import { EventMCard } from 'components';
+import ZuButton from 'components/core/Button';
+import ZuTypography from 'components/core/Typograpy';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -565,17 +567,7 @@ const Event = () => {
                   fontFamily="Inter">Invite Event Admins</Typography>
                 <InformationIcon color="#919191" size={5} />
               </Box>
-              <Button 
-                startIcon={<PlusIcon size={4} />}
-                sx={{
-                  color: 'white',
-                  borderRadius: '10px',
-                  backgroundColor: '#2d2d2d',
-                  fontFamily: 'Inter',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  textTransform: 'none'
-                }}>Invite</Button>
+              <ZuButton startIcon={<PlusIcon size={4} />}>Invite</ZuButton>
             </Box>
             <Typography 
               color="white"
@@ -587,14 +579,18 @@ const Event = () => {
           </Box>
           <Box bgcolor='#262626' borderRadius='10px' padding='10px' sx={{opacity: 0.8}}>
             <Typography  
-            color="white"
-            fontSize="16px"
-            fontWeight={700}
-            fontFamily="Inter">No Invites</Typography>
+              color="white"
+              fontSize="16px"
+              fontWeight={700}
+              fontFamily="Inter">
+            No Invites
+            </Typography>
             <Typography
               color="white"
               fontSize="10px"
-              fontFamily="Inter">You can invite members or other individuals via email</Typography>
+              fontFamily="Inter">
+              You can invite members or other individuals via email
+            </Typography>
           </Box>
         </Box>
       </Box>
