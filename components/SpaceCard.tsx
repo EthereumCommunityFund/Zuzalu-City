@@ -13,12 +13,18 @@ import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from './icons';
 export type SpaceCardProps = {
   bgImage: string;
   logoImage: string;
-  title: string,
-  description: string,
-  joined: boolean
+  title: string;
+  description: string;
+  joined: boolean;
 };
 
-const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage, title, description, joined }) => {
+const SpaceCard: React.FC<SpaceCardProps> = ({
+  bgImage,
+  logoImage,
+  title,
+  description,
+  joined,
+}) => {
   return (
     <Card
       sx={{
@@ -114,7 +120,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage, title, descri
         </Box>
         <Button
           size="small"
-          startIcon={joined ? <CheckCircleIcon color='#D7FFC4' /> : <PlusCircleIcon />}
+          startIcon={
+            joined ? <CheckCircleIcon color="#D7FFC4" /> : <PlusCircleIcon />
+          }
           sx={{
             backgroundColor: joined ? '#606C5A' : '#383838',
             color: joined ? '#D7FFC4' : 'white',

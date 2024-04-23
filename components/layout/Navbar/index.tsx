@@ -10,7 +10,7 @@ const Navbar = () => {
       display="flex"
       gap="20px"
       alignItems="center"
-      borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+      borderBottom="1px solid #383838"
     >
       <Button
         startIcon={<LeftArrowIcon />}

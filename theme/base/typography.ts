@@ -2,7 +2,7 @@ import { TypographyOptions } from '@mui/material/styles/createTypography';
 
 const baseProperties = {
   fontFamily: '"Inter", sans-serif',
-  fontFamily2: '"Restora", "Nunito Sans", sans-serif',
+  fontFamily2: '"Merriweather", sans-serif',
   fontWeightLighter: 200,
   fontWeightLight: 300,
   fontWeightRegular: 400,
@@ -20,18 +20,18 @@ export const Typography: TypographyOptions = {
 
   h1: {
     fontFamily: baseProperties.fontFamily,
-    fontWeight: baseProperties.fontWeightLighter,
-    fontSize: '4.6875rem',
-    lineHeight: 1.167,
-    letterSpacing: '-0.01562em',
+    fontWeight: baseProperties.fontWeightBold,
+    fontSize: '3.75rem',
+    lineHeight: 1.5,
+    letterSpacing: '0.00938em',
   },
 
   h2: {
     fontFamily: baseProperties.fontFamily,
-    fontWeight: baseProperties.fontWeightLighter,
-    fontSize: '4.35025rem',
-    lineHeight: 1.2,
-    letterSpacing: '-0.00833em',
+    fontWeight: baseProperties.fontWeightBold,
+    fontSize: '3.375rem',
+    lineHeight: 1.5,
+    letterSpacing: '0.00938em',
   },
 
   h3: {
@@ -45,23 +45,23 @@ export const Typography: TypographyOptions = {
   h4: {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightLighter,
-    fontSize: '3rem',
+    fontSize: '3.375rem',
     lineHeight: 1.235,
     letterSpacing: '0.00935em',
   },
 
   h5: {
     fontFamily: baseProperties.fontFamily,
-    fontWeight: baseProperties.fontWeightExtraBold,
-    fontSize: '2.5rem',
+    fontWeight: baseProperties.fontWeightBold,
+    fontSize: '1.5rem',
     lineHeight: 1.334,
     letterSpacing: '0em',
   },
 
   h6: {
     fontFamily: baseProperties.fontFamily,
-    fontWeight: baseProperties.fontWeightExtraBold,
-    fontSize: '2rem',
+    fontWeight: baseProperties.fontWeightBold,
+    fontSize: '1.25rem',
     lineHeight: 1.6,
     letterSpacing: '0.0075em',
   },
@@ -69,15 +69,15 @@ export const Typography: TypographyOptions = {
   subtitle1: {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightRegular,
-    fontSize: '1.5rem',
+    fontSize: '24px',
     lineHeight: 1.75,
     letterSpacing: '0.00938em',
   },
 
   subtitle2: {
     fontFamily: baseProperties.fontFamily,
-    fontWeight: baseProperties.fontWeightMedium,
-    fontSize: '0.875rem',
+    fontWeight: baseProperties.fontWeightBold,
+    fontSize: '16px',
     lineHeight: 1.57,
     letterSpacing: '0.00714em',
   },
@@ -93,7 +93,7 @@ export const Typography: TypographyOptions = {
   body2: {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightRegular,
-    fontSize: '0.875rem',
+    fontSize: '13px',
     lineHeight: 1.43,
     letterSpacing: '0.01071em',
   },
@@ -101,7 +101,7 @@ export const Typography: TypographyOptions = {
   button: {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightMedium,
-    fontSize: '0.875rem',
+    fontSize: '14px',
     lineHeight: 1.75,
     letterSpacing: '0.02857em',
     textTransform: 'uppercase',
@@ -110,7 +110,7 @@ export const Typography: TypographyOptions = {
   caption: {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightRegular,
-    fontSize: '0.75rem',
+    fontSize: '10px',
     lineHeight: 1.66,
     letterSpacing: '0.03333em',
   },

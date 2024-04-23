@@ -1,7 +1,10 @@
 import React from 'react';
 import { IconProps } from 'types';
 
-export const PlusCircleIcon: React.FC<IconProps> = ({ color = 'white', size = 6 }) => {
+export const PlusCircleIcon: React.FC<IconProps> = ({
+  color = 'white',
+  size = 6,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

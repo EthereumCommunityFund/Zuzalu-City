@@ -116,7 +116,7 @@ const Sidebar: React.FC = () => {
         display="flex"
         flexDirection="column"
         gap="15px"
-        sx={{ borderTop: '1px solid grey', marginX: '10px' }}
+        sx={{ borderTop: '1px solid #383838', marginX: '10px' }}
       >
         <Typography
           color="white"

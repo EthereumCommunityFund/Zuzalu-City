@@ -24,9 +24,9 @@ const Header = () => {
       justifyContent="space-between"
       paddingX="20px"
       paddingY="8px"
-      borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+      borderBottom="1px solid #383838"
       zIndex={1000}
-      position='relative'
+      position="relative"
     >
       <Box display="flex" alignItems="center" gap="10px">
         <MenuIcon />
@@ -34,7 +34,7 @@ const Header = () => {
         {!isMobile ? (
           <Box>
             <Box
-              component='span'
+              component="span"
               sx={{
                 color: 'white',
                 fontSize: '24px',
@@ -45,21 +45,23 @@ const Header = () => {
               Zuzalu
             </Box>
             <Box
-              component='span'
-              sx={{ color: 'white', fontSize: '16px', opacity: 0.3,
-              fontFamily: 'Merriweather'
-               }}>
+              component="span"
+              sx={{
+                color: 'white',
+                fontSize: '16px',
+                opacity: 0.3,
+                fontFamily: 'Merriweather',
+              }}
+            >
               .city
             </Box>
           </Box>
         ) : (
           <Box>
             <Typography
+              variant="body2"
+              color={theme.palette.text.primary}
               sx={{
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: 400,
-                fontFamily: 'Inter',
                 fontStyle: 'italic',
               }}
             >
@@ -104,7 +106,7 @@ const Header = () => {
             fontFamily: 'Inter',
             backgroundColor: 'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
             borderRadius: '10px',
-            opacity: 0.7
+            opacity: 0.7,
           }}
         >
           Sign In

@@ -1,8 +1,9 @@
+'use client';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 // Base styles
 import { Colors } from './base/colors';
-// import { Typography } from './base/typography';
+import { Typography } from './base/typography';
 
 let theme = createTheme({
   palette: { ...Colors },
@@ -15,7 +16,7 @@ let theme = createTheme({
       xl: 1536,
     },
   },
-  // typography: { ...Typography },
+  typography: { ...Typography },
 });
 
 theme = responsiveFontSizes(theme);

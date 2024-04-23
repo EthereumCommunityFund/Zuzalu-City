@@ -5,7 +5,13 @@ import SpaceCard from './SpaceCard';
 import { useTheme, useMediaQuery } from '@mui/material';
 
 export interface CarouselProps {
-  items: { bgImage: string; logoImage: string; title: string; description: string; joined: boolean }[];
+  items: {
+    bgImage: string;
+    logoImage: string;
+    title: string;
+    description: string;
+    joined: boolean;
+  }[];
 }
 
 const Carousel: React.FC<CarouselProps> = ({ items }) => {

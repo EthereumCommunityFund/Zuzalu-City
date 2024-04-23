@@ -22,7 +22,7 @@ const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const isDesktop = useMediaQuery(theme.breakpoints.up('xl'));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -31,7 +31,7 @@ const Home: React.FC = () => {
         <Box display="flex">
           {!isTablet && <Sidebar />}
           <Box
-            borderLeft="1px solid grey"
+            borderLeft="1px solid #383838"
             flexGrow={1}
             padding={isMobile ? '10px' : '30px'}
           >
@@ -42,11 +42,11 @@ const Home: React.FC = () => {
                 backgroundImage: 'url("4.webp")',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover'
+                backgroundSize: 'cover',
               }}
             >
               <Typography
-                color="white"
+                color={theme.palette.text.primary}
                 fontWeight={700}
                 fontSize={isMobile ? '54px' : '61px'}
                 fontFamily="Inter"
@@ -181,7 +181,7 @@ const Home: React.FC = () => {
                       fontSize="18px"
                       fontWeight={600}
                       padding="20px 10px"
-                      borderBottom="1px solid rgba(255, 255, 255, 0.10)"
+                      borderBottom="1px solid #383838"
                       fontFamily="Inter"
                     >
                       Sort & Filter Sessions

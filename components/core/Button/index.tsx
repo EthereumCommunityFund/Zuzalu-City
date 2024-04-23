@@ -4,7 +4,7 @@ const ZuButton = styled(Button)(({ theme }) => ({
   color: 'white',
   borderRadius: '10px', // Example style
   fontSize: 14,
-  padding: '10px 14px',
+  padding: '6px 10px',
   backgroundColor: '#383838', // Use theme for color consistency
   textTransform: 'none',
   fontFamily: 'Inter',
@@ -20,4 +20,3 @@ const ZuButton = styled(Button)(({ theme }) => ({
 }));
 
 export default ZuButton;
-

@@ -53,5 +53,5 @@ export {
   ThreeHorizonIcon,
   EyeIcon,
   InformationIcon,
-  ArchiveIcon
+  ArchiveIcon,
 };
