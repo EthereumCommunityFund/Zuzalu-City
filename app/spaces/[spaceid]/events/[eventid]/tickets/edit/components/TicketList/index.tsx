@@ -1,16 +1,19 @@
 import * as React from 'react';
 import { Stack, Typography } from '@mui/material';
-import ZuButton from 'components/core/Button';
+import { ZuButton } from 'components/core';
 import TicketCard from './TicketCard';
 import { TicketCardProps } from './TicketCard';
 import { PlusIcon } from 'components/icons';
 import { MOCK_DATA } from 'mock';
 
+type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
 interface TicketListProps {
-  onToggle: (anchor: string, open: boolean) => void;
+  onToggle: (anchor: Anchor, open: boolean) => void;
 }
 
-const TicketList: React.FC<TicketListProps> = ({ onToggle }) => {
+const TicketList: React.FC<TicketListProps> = ({ onToggle = (anchor: Anchor, open: boolean) => {} }) => {
+
   return (
     <Stack direction="column" spacing={3}>
       <Stack direction="column" spacing={2}>

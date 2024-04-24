@@ -18,7 +18,7 @@ const TicketAdd = () => {
       <Stack
         direction="column"
         alignItems="center"
-        bgcolor="#383838"
+        bgcolor="#2d2d2d"
         padding="20px 10px"
         borderRadius={2}
       >

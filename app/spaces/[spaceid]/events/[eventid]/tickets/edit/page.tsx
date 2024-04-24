@@ -34,7 +34,7 @@ const Ticket: React.FC = () => {
   });
 
   const toggleDrawer =
-    (anchor: Anchor, open: boolean) => (event: React.MouseEvent) => {
+    (anchor: Anchor, open: boolean) => {
       setState({ ...state, [anchor]: open });
     };
 
@@ -62,7 +62,7 @@ const Ticket: React.FC = () => {
             },
           }}
           startIcon={<XMarkIcon />}
-          onClick={toggleDrawer('right', false)}
+          onClick={() => toggleDrawer('right', false)}
         >
           Close
         </Button>
@@ -373,15 +373,15 @@ const Ticket: React.FC = () => {
         paddingY="10px"
       >
         <TicketHeader />
-        <TicketList onToggle={() => toggleDrawer('right', true)} />
+        <TicketList onToggle={toggleDrawer} />
         <TicketAdd />
         <TicketAccess />
       </Box>
       <SwipeableDrawer
         anchor="right"
         open={state['right']}
-        onClose={toggleDrawer('right', false)}
-        onOpen={toggleDrawer('right', true)}
+        onClose={() => toggleDrawer('right', false)}
+        onOpen={() => toggleDrawer('right', true)}
       >
         {list('right')}
       </SwipeableDrawer>
