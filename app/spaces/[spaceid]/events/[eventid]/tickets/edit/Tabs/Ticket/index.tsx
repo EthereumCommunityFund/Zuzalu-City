@@ -7,7 +7,7 @@ import {
   TicketAccess,
 } from './components';
 import { XMarkIcon, RightArrowCircleIcon } from 'components/icons';
-import { ZuSwitch } from 'components/core';
+import { ZuSwitch, ZuButton } from 'components/core';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -29,53 +29,25 @@ const Ticket = () => {
   const list = (anchor: Anchor) => (
     <Box
       sx={{
-        width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '500px',
+        width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
         backgroundColor: '#222222',
       }}
       role="presentation"
       zIndex="100"
-      padding="30px"
+      borderLeft='1px solid #383838'
     >
-      <Box display="flex" justifyContent="space-between">
-        <Button
-          sx={{
-            color: 'white',
-            fontSize: '14px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
-            borderRadius: '10px',
-            opacity: 0.7,
-            '&:hover': {
-              backgroundColor: '#2d2d2d',
-            },
-          }}
+      <Box display="flex" alignItems='center' justifyContent="space-between" height='50px' borderBottom='1px solid #383838' paddingX={3}>
+        <ZuButton
           startIcon={<XMarkIcon />}
           onClick={() => toggleDrawer('right', false)}
         >
           Close
-        </Button>
-        <Button
-          sx={{
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
-            backgroundColor: '#2d2d2d',
-            borderRadius: '10px',
-          }}
-        >
+        </ZuButton>
+        <ZuButton>
           Open Session
-        </Button>
+        </ZuButton>
       </Box>
-      <Box display="flex" flexDirection="column" gap="20px">
-        {/* <Typography
-          color="white"
-          fontSize="18px"
-          fontWeight={500}
-          fontFamily="Inter"
-        >
-          Ticket Basics
-        </Typography> */}
+      <Box display="flex" flexDirection="column" gap="20px" padding={3}>
         <Typography fontSize="18px" fontWeight="bold">
           Ticket Basics
         </Typography>
@@ -358,6 +330,14 @@ const Ticket = () => {
       <TicketAdd />
       <TicketAccess />
       <SwipeableDrawer
+        hideBackdrop={true}
+        sx={{
+          '& .MuiDrawer-paper': {
+            marginTop: '67px',
+            height: 'calc(100% - 67px)',
+            boxShadow: 'none'
+          }
+        }}
         anchor="right"
         open={state['right']}
         onClose={() => toggleDrawer('right', false)}

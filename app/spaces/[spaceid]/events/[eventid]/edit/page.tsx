@@ -14,6 +14,7 @@ import {
   XMarkIcon,
 } from 'components/icons';
 import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
+import { ZuButton } from 'components/core';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -38,40 +39,20 @@ const Event = () => {
       }}
       role="presentation"
       zIndex="10"
-      paddingTop="50px"
+      borderLeft='1px solid #383838'
     >
-      <Box display="flex" justifyContent="space-between">
-        <Button
-          sx={{
-            color: 'white',
-            fontSize: '14px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
-            borderRadius: '10px',
-            opacity: 0.7,
-            '&:hover': {
-              backgroundColor: '#2d2d2d',
-            },
-          }}
+      <Box display="flex" alignItems='center' justifyContent="space-between" height='50px' borderBottom='1px solid #383838' paddingX={3}>
+        <ZuButton
           startIcon={<XMarkIcon />}
           onClick={() => toggleDrawer('right', false)}
         >
           Close
-        </Button>
-        <Button
-          sx={{
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
-            backgroundColor: '#2d2d2d',
-            borderRadius: '10px',
-          }}
-        >
+        </ZuButton>
+        <ZuButton>
           Open Session
-        </Button>
+        </ZuButton>
       </Box>
-      <Box display="flex" flexDirection="column" gap="30px" padding="10px">
+      <Box display="flex" flexDirection="column" gap="20px" padding={3}>
         <Typography
           color="white"
           fontSize="24px"
@@ -654,6 +635,14 @@ const Event = () => {
       <PastEvents />
       <Invite />
       <SwipeableDrawer
+        hideBackdrop={true}
+        sx={{
+          '& .MuiDrawer-paper': {
+            marginTop: '128px',
+            height: 'calc(100% - 128px)',
+            boxShadow: 'none'
+          }
+        }}
         anchor="right"
         open={state['right']}
         onClose={() => toggleDrawer('right', false)}
