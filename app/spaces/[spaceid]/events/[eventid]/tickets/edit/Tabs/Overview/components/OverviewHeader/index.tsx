@@ -11,7 +11,7 @@ const OverviewHeader = () => {
         </Typography>
         <Stack direction='row'>
           <Typography variant='body1' color='white'>
-            Today's Date:&nbsp;
+            Today&apos;s Date:&nbsp;
           </Typography>
           <Typography variant='body1' color='white' sx={{opacity: 0.7}}>
             Wednesday, April 24, 2024
