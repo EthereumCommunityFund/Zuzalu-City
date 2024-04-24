@@ -8,6 +8,7 @@ const ZuButton = styled(Button)(({ theme }) => ({
   backgroundColor: '#383838', // Use theme for color consistency
   textTransform: 'none',
   fontFamily: 'Inter',
+  height: 'fit-content',
 
   '&:hover': {
     backgroundColor: '#4c4c4c', // Adjust on hover

@@ -1,10 +1,16 @@
-export const MapIcon = () => {
+import * as React from 'react';
+import { IconProps } from 'types';
+
+export const MapIcon: React.FC<IconProps> = ({
+  size = 6
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="white"
-      className="w-6 h-6"
+      width={`${size * 4}px`}
+      height={`${size * 4}px`}
     >
       <path
         fillRule="evenodd"
@@ -14,3 +20,4 @@ export const MapIcon = () => {
     </svg>
   );
 };
+

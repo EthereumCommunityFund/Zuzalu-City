@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
 
-const Menubar = () => {
+const Tabbar = () => {
   return (
     <Box
       bgcolor="#2b2b2bcc"
@@ -72,4 +72,4 @@ const Menubar = () => {
   );
 };
 
-export default Menubar;
+export default Tabbar;

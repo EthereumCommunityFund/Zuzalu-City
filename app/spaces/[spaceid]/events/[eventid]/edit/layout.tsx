@@ -3,7 +3,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from 'theme/theme';
 
-import { Header, Navbar, Menubar, Sidebar } from 'components/layout';
+import { Header, Navbar, Tabbar, Sidebar } from 'components/layout';
 
 export const metadata: Metadata = {
   title: 'Zuzalu City',

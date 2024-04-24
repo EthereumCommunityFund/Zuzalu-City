@@ -30,45 +30,17 @@ const Header = () => {
     >
       <Box display="flex" alignItems="center" gap="10px">
         <MenuIcon />
-        <Box component="img" src="/logo.webp" height="40px" />
-        {!isMobile ? (
-          <Box>
-            <Box
-              component="span"
-              sx={{
-                color: 'white',
-                fontSize: '24px',
-                fontWeight: 700,
-                fontFamily: 'Merriweather',
-              }}
-            >
-              Zuzalu
-            </Box>
-            <Box
-              component="span"
-              sx={{
-                color: 'white',
-                fontSize: '16px',
-                opacity: 0.3,
-                fontFamily: 'Merriweather',
-              }}
-            >
-              .city
-            </Box>
-          </Box>
-        ) : (
-          <Box>
-            <Typography
-              variant="body2"
-              color={theme.palette.text.primary}
-              sx={{
-                fontStyle: 'italic',
-              }}
-            >
-              beta
-            </Typography>
-          </Box>
-        )}
+        <Box component="img" src={isMobile ? "/ZuCityLogo-IconOnly.svg" : "/ZuCityLogo.svg"} height="40px" />
+        <Typography
+          variant="body2"
+          color={theme.palette.text.primary}
+          sx={{
+            fontStyle: 'italic',
+            opacity: 0.8
+          }}
+        >
+          beta
+        </Typography>
       </Box>
       {!isMobile && (
         <FormControl focused sx={{ width: '30%', border: 'none' }}>
