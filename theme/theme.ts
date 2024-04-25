@@ -17,6 +17,18 @@ let theme = createTheme({
     },
   },
   typography: { ...Typography },
+  // components: {
+  //   MuiButton: {
+  //     variants: [
+  //       {
+  //         props: { variant: 'quiet' },
+  //         style: {
+  //           color: 'white'
+  //         }
+  //       }
+  //     ]
+  //   }
+  // }
 });
 
 theme = responsiveFontSizes(theme);

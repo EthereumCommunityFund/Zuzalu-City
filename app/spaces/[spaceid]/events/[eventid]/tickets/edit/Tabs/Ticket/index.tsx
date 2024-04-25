@@ -333,8 +333,8 @@ const Ticket = () => {
         hideBackdrop={true}
         sx={{
           '& .MuiDrawer-paper': {
-            marginTop: '67px',
-            height: 'calc(100% - 67px)',
+            marginTop: '50px',
+            height: 'calc(100% - 50px)',
             boxShadow: 'none'
           }
         }}

@@ -17,12 +17,12 @@ const Header = () => {
 
   return (
     <Box
-      height="50px"
+      height="33px"
       bgcolor="#2D2D2D"
       display="flex"
       alignItems="center"
       justifyContent="space-between"
-      paddingX="20px"
+      paddingX="10px"
       paddingY="8px"
       borderBottom="1px solid #383838"
       zIndex={1000}

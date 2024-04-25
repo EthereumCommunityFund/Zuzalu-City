@@ -37,7 +37,7 @@ const Home: React.FC = () => {
           >
             <Box
               borderRadius="10px"
-              padding="40px 25px"
+              padding="40px 40px"
               sx={{
                 backgroundImage: 'url("4.webp")',
                 backgroundPosition: 'center center',
@@ -47,9 +47,7 @@ const Home: React.FC = () => {
             >
               <Typography
                 color={theme.palette.text.primary}
-                fontWeight={700}
-                fontSize={isMobile ? '54px' : '61px'}
-                fontFamily="Inter"
+                variant={isMobile ? 'h1' : 'hB'}
               >
                 Zuzalu City
               </Typography>

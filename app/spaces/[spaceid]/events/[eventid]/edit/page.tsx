@@ -638,8 +638,8 @@ const Event = () => {
         hideBackdrop={true}
         sx={{
           '& .MuiDrawer-paper': {
-            marginTop: '128px',
-            height: 'calc(100% - 128px)',
+            marginTop: '111px',
+            height: 'calc(100% - 111px)',
             boxShadow: 'none'
           }
         }}
