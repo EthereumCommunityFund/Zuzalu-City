@@ -27,6 +27,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         height="100%"
         lineHeight="45px"
         borderBottom={tabName === 'Overview' ? "1px solid white" : "none"}
+        sx={{ cursor: 'pointer' }}
       >
         Overview
       </Typography>
@@ -40,6 +41,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         height="100%"
         lineHeight="45px"
         borderBottom={tabName === 'Event Sessions' ? "1px solid white" : "none"}
+        sx={{ cursor: 'pointer' }}
       >
         Event Sessions
       </Typography>
@@ -53,6 +55,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         height="100%"
         lineHeight="45px"
         borderBottom={tabName === 'Venue' ? "1px solid white" : "none"}
+        sx={{ cursor: 'pointer' }}
       >
         Venue
       </Typography>
@@ -66,6 +69,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         height="100%"
         lineHeight="45px"
         borderBottom={tabName === 'Tickets' ? "1px solid white" : "none"}
+        sx={{ cursor: 'pointer' }}
       >
         Tickets
       </Typography>
@@ -79,6 +83,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         height="100%"
         lineHeight="45px"
         borderBottom={tabName === 'Attendees' ? "1px solid white" : "none"}
+        sx={{ cursor: 'pointer' }}
       >
         Attendees
       </Typography>
