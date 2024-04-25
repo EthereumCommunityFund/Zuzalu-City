@@ -32,9 +32,7 @@ const Sidebar: React.FC = () => {
           <HomeIcon />
           <Typography
             color="white"
-            fontWeight={700}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Home
           </Typography>
@@ -50,9 +48,7 @@ const Sidebar: React.FC = () => {
           <StreamIcon />
           <Typography
             color="white"
-            fontWeight={700}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Stream
           </Typography>
@@ -68,9 +64,7 @@ const Sidebar: React.FC = () => {
           <SpaceIcon />
           <Typography
             color="white"
-            fontWeight={700}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Spaces
           </Typography>
@@ -86,9 +80,7 @@ const Sidebar: React.FC = () => {
           <EventIcon />
           <Typography
             color="white"
-            fontWeight={700}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Events
           </Typography>
@@ -104,9 +96,7 @@ const Sidebar: React.FC = () => {
           <BoltIcon />
           <Typography
             color="white"
-            fontWeight={700}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Zapps
           </Typography>
@@ -120,11 +110,10 @@ const Sidebar: React.FC = () => {
       >
         <Typography
           color="white"
-          fontSize="12px"
+          variant='bodyS'
           marginTop="15px"
           marginBottom="10px"
           marginLeft="10px"
-          fontFamily="Inter"
         >
           YOUR SPACES
         </Typography>
@@ -132,9 +121,7 @@ const Sidebar: React.FC = () => {
           <Box component="img" src="/0.webp" height="40px" />
           <Typography
             color="white"
-            fontWeight={600}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Zuzalu City Contributors
           </Typography>
@@ -149,9 +136,7 @@ const Sidebar: React.FC = () => {
           />
           <Typography
             color="white"
-            fontWeight={600}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             FendiWeb3
           </Typography>
@@ -166,9 +151,7 @@ const Sidebar: React.FC = () => {
           />
           <Typography
             color="white"
-            fontWeight={600}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Green Odin
           </Typography>
@@ -177,9 +160,7 @@ const Sidebar: React.FC = () => {
           <SpacePlusIcon />
           <Typography
             color="white"
-            fontWeight={600}
-            fontSize="14px"
-            fontFamily="Inter"
+            variant='bodyMB'
           >
             Create a Space
           </Typography>

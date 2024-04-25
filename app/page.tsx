@@ -36,6 +36,8 @@ const Home: React.FC = () => {
             padding={isMobile ? '10px' : '30px'}
           >
             <Box
+              display='flex'
+              flexDirection='column'
               borderRadius="10px"
               padding="40px 40px"
               sx={{
@@ -53,10 +55,8 @@ const Home: React.FC = () => {
               </Typography>
               <Typography
                 color="white"
-                fontSize="16px"
-                fontWeight={400}
+                variant='bodyB'
                 marginBottom="20px"
-                fontFamily="Inter"
               >
                 Welcome to the new Zuzalu City
               </Typography>
@@ -84,10 +84,8 @@ const Home: React.FC = () => {
                 <Box display="flex" alignItems="center" gap="10px">
                   <SpaceIcon />
                   <Typography
+                    variant={isMobile ? 'subtitleMB' : 'subtitleLB'}
                     color="white"
-                    fontSize={isMobile ? '20px' : '25px'}
-                    fontWeight={700}
-                    fontFamily="Inter"
                   >
                     Explore Spaces
                   </Typography>
@@ -95,9 +93,7 @@ const Home: React.FC = () => {
                 <Box display="flex" alignItems="center" gap="10px">
                   <Typography
                     color="white"
-                    fontSize="14px"
-                    fontWeight={400}
-                    fontFamily="Inter"
+                    variant='bodyM'
                   >
                     View All Spaces
                   </Typography>
@@ -107,9 +103,7 @@ const Home: React.FC = () => {
               <Box marginY="20px">
                 <Typography
                   color="white"
-                  fontSize="14px"
-                  fontWeight={400}
-                  fontFamily="Inter"
+                  variant='bodyM'
                 >
                   Most Active Spaces
                 </Typography>
@@ -128,9 +122,7 @@ const Home: React.FC = () => {
                       <EventIcon />
                       <Typography
                         color="white"
-                        fontSize="25px"
-                        fontWeight={700}
-                        fontFamily="Inter"
+                        variant='subtitleLB'
                       >
                         Events
                       </Typography>
@@ -138,9 +130,7 @@ const Home: React.FC = () => {
                     <Box display="flex" alignItems="center" gap="10px">
                       <Typography
                         color="white"
-                        fontSize="16px"
-                        fontWeight={400}
-                        fontFamily="Inter"
+                        variant='bodyB'
                       >
                         View All Events
                       </Typography>
@@ -149,13 +139,11 @@ const Home: React.FC = () => {
                   </Box>
                   <Typography
                     color="white"
-                    align="center"
-                    border="2px solid rgba(255, 255, 255, 0.1)"
-                    padding="8px 14px"
+                    border="2px solid #383838"
+                    align='center'
+                    paddingY="8px"
                     borderRadius="40px"
-                    fontSize="18px"
-                    fontWeight={600}
-                    fontFamily="Inter"
+                    variant='subtitleS'
                   >
                     October 2023
                   </Typography>
@@ -176,11 +164,9 @@ const Home: React.FC = () => {
                   >
                     <Typography
                       color="white"
-                      fontSize="18px"
-                      fontWeight={600}
+                      variant='subtitleS'
                       padding="20px 10px"
                       borderBottom="1px solid #383838"
-                      fontFamily="Inter"
                     >
                       Sort & Filter Sessions
                     </Typography>
