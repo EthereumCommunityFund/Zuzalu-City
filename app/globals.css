@@ -23,6 +23,13 @@ body {
   background-color: black;
   margin: 0;
 }
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  width: 0px;
+}
 
 .w-6 {
   width: 24px;
@@ -35,13 +42,3 @@ body {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-}

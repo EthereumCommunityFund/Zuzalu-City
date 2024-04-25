@@ -53,7 +53,7 @@ export default function AnnouncementCard({
           <div className="uppercase text-[10px] opacity-70">2 days ago</div>
         </div>
       </div>
-      <div className="relative w-[160px] h-[160px]">
+      <div className="relative md:min-w-[160px] md:min-h-[160px] min-w-[80px] min-h-[80px] md:w-[160px] md:h-[160px] w-[80px] h-[80px]">
         <Image
           loader={() => image}
           src={image}

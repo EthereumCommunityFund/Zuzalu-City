@@ -30,7 +30,7 @@ export default function SpaceDetailPage() {
   }, [showMore]);
 
   return (
-    <div className="lg:w-[calc(100%-530px)] w-[calc(100%-250px)] h-screen overflow-scroll">
+    <div className="lg:w-[calc(100%-530px)] w-full">
       <div className="p-[20px] w-full bg-[#2b2b2b] flex flex-col gap-[20px] border-b border-b-[#ffffff1a]">
         <div className="relative w-full h-[240px]">
           <Image
