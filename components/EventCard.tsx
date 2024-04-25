@@ -25,14 +25,12 @@ const EventCard: React.FC = () => {
           gap="10px"
         >
           <Box display="flex" alignItems="center" gap="6px">
-            <Box
-              component="span"
+            <Typography
               color="white"
-              fontSize="10px"
-              fontWeight={400}
+              variant='caption'
             >
               BY:
-            </Box>
+            </Typography>
             <Box
               component="img"
               width="18px"
@@ -40,42 +38,30 @@ const EventCard: React.FC = () => {
               src="0.webp"
               borderRadius="40px"
             />
-            <Box
-              component="span"
+            <Typography
               color="white"
-              fontSize="13px"
-              fontWeight={500}
-              fontFamily="Inter"
+              variant='bodyS'
             >
               Zuzalu Contributor
-            </Box>
+            </Typography>
           </Box>
-          <Box>
-            <Box
-              component="span"
-              color="white"
-              fontSize="13px"
-              fontWeight={500}
-              fontFamily="Inter"
-            >
-              October 8 - October 20
-            </Box>
-          </Box>
-        </Box>
-        <Box>
           <Typography
             color="white"
-            fontSize={isMobile ? '18px' : '25px'}
-            fontWeight={700}
-            fontFamily="Inter"
+            variant='bodyS'
+          >
+            October 8 - October 20
+          </Typography>
+        </Box>
+        <Box display='flex' flexDirection='column'>
+          <Typography
+            color="white"
+            variant={isMobile ? 'subtitleSB' : 'subtitleLB'}
           >
             HackZuzalu ChiangMai
           </Typography>
           <Typography
             color="white"
-            fontSize="13px"
-            fontWeight={400}
-            fontFamily="Inter"
+            variant='bodyM'
           >
             A Popup Village of Innovation in the Heart of Istanbul{' '}
           </Typography>
@@ -84,9 +70,7 @@ const EventCard: React.FC = () => {
           <MapIcon />
           <Typography
             color="white"
-            fontSize="10px"
-            fontWeight={400}
-            fontFamily="Inter"
+            variant='caption'
           >
             ISTANBUL, TURKEY
           </Typography>
@@ -106,9 +90,7 @@ const EventCard: React.FC = () => {
           {!isMobile && (
             <Typography
               color="white"
-              fontSize="13px"
-              fontWeight={600}
-              fontFamily="Inter"
+              variant='bodyS'
             >
               Gated
             </Typography>

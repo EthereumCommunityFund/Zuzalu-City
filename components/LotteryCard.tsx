@@ -16,27 +16,27 @@ const LotteryCard: React.FC = () => {
         <LotteryIcon />
       </Box>
       <Box flexGrow={1} display="flex" flexDirection="column" gap="14px">
-        <Box display='flex' flexDirection='column'>
+        <Box display="flex" flexDirection="column">
           <Box
-            component='span'
+            component="span"
             sx={{
               color: 'white',
               fontSize: '25px',
               fontWeight: 400,
-              fontFamily: 'Inter'
+              fontFamily: 'Inter',
             }}
           >
             Zuzalu City Lottery
           </Box>
-          <Box 
-            component='span'
+          <Box
+            component="span"
             sx={{
               color: 'white',
               fontSize: '14px',
               fontWeight: 500,
-              fontFamily: 'Inter'
+              fontFamily: 'Inter',
             }}
-            >
+          >
             Donate to ZuCity Development for a chance to win!
           </Box>
         </Box>
@@ -47,36 +47,56 @@ const LotteryCard: React.FC = () => {
           display="flex"
           flexDirection="column"
           gap="10px"
-        > 
-          <Box display='flex' gap='10px' alignItems='center'>
-            <Box component='span' sx={{
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: 700,
-              fontFamily: 'Inter'
-            }}>Prize Pool</Box>
-            <Box component='span' sx={{
-              color: 'white',
-              fontSize: '14px',
-              fontWeight: 500,
-              fontFamily: 'Inter',
-              opacity: 0.8
-            }}>4.20 ETH</Box>
+        >
+          <Box display="flex" gap="10px" alignItems="center">
+            <Box
+              component="span"
+              sx={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 700,
+                fontFamily: 'Inter',
+              }}
+            >
+              Prize Pool
+            </Box>
+            <Box
+              component="span"
+              sx={{
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 500,
+                fontFamily: 'Inter',
+                opacity: 0.8,
+              }}
+            >
+              4.20 ETH
+            </Box>
           </Box>
-          <Box display='flex' gap='10px' alignItems='center'>
-            <Box component='span' sx={{
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: 700,
-              fontFamily: 'Inter'
-            }}>Ticket Price</Box>
-            <Box component='span' sx={{
-              color: 'white',
-              fontSize: '14px',
-              fontWeight: 500,
-              fontFamily: 'Inter',
-              opacity: 0.8
-            }}>0.00069 ETH</Box>
+          <Box display="flex" gap="10px" alignItems="center">
+            <Box
+              component="span"
+              sx={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 700,
+                fontFamily: 'Inter',
+              }}
+            >
+              Ticket Price
+            </Box>
+            <Box
+              component="span"
+              sx={{
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 500,
+                fontFamily: 'Inter',
+                opacity: 0.8,
+              }}
+            >
+              0.00069 ETH
+            </Box>
           </Box>
         </Box>
         <Box display="flex" gap="20px">
@@ -109,11 +129,20 @@ const LotteryCard: React.FC = () => {
             Draw Tickets
           </Button>
         </Box>
-        <Box display='flex' alignItems='center' gap='5px'>
-          <Box component='span' sx={{ color: 'white', fontSize: '13px', fontWeight: 500, opacity: 0.5 , fontFamily: 'Inter'}}>
+        <Box display="flex" alignItems="center" gap="5px">
+          <Box
+            component="span"
+            sx={{
+              color: 'white',
+              fontSize: '13px',
+              fontWeight: 500,
+              opacity: 0.5,
+              fontFamily: 'Inter',
+            }}
+          >
             Powered by Lotto PGF
           </Box>
-          <Box component='img' src='pgf.png' width='18px' height='18px'></Box>
+          <Box component="img" src="pgf.png" width="18px" height="18px"></Box>
         </Box>
       </Box>
     </Box>

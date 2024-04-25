@@ -1,7 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { Select, Input, MenuItem, styled, SelectChangeEvent } from '@mui/material';
+import {
+  Select,
+  Input,
+  MenuItem,
+  styled,
+  SelectChangeEvent,
+} from '@mui/material';
 import { BoltIcon } from 'components/icons';
 
 interface ZuInputProps {
@@ -17,9 +23,8 @@ const ZuInput = styled(Input)(({ theme }) => ({
   },
   color: 'white',
   padding: '6px 12px',
-  borderRadius: '10px'
+  borderRadius: '10px',
 })) as React.FC<ZuInputProps>;
-
 
 const options = [
   { value: 'option1', label: 'Option 1' },
@@ -44,9 +49,7 @@ const ZuSelect = () => {
         </MenuItem>
       ))}
     </Select>
-  )
-}
+  );
+};
 
 export default ZuSelect;
-
-

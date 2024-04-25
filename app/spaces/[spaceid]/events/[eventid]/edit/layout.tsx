@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from 'theme';
+import theme from 'theme/theme';
 
-import { Header, Navbar, Menubar, Sidebar } from 'components/layout';
+import { Header, Navbar, Tabbar, Sidebar } from 'components/layout';
 
 export const metadata: Metadata = {
   title: 'Zuzalu City',
@@ -19,7 +19,7 @@ function EventLayout({
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
         <Header />
-        <div style={{display: 'flex'}}>
+        <div style={{ display: 'flex' }}>
           <Sidebar />
           {/* <Navbar /> */}
           {/* <Menubar /> */}
@@ -28,7 +28,7 @@ function EventLayout({
               display: 'flex',
               justifyContent: 'center',
               position: 'relative',
-              flex: 1
+              flex: 1,
             }}
           >
             {children}

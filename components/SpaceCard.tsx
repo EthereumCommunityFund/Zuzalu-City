@@ -13,12 +13,18 @@ import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from './icons';
 export type SpaceCardProps = {
   bgImage: string;
   logoImage: string;
-  title: string,
-  description: string,
-  joined: boolean
+  title: string;
+  description: string;
+  joined: boolean;
 };
 
-const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage, title, description, joined }) => {
+const SpaceCard: React.FC<SpaceCardProps> = ({
+  bgImage,
+  logoImage,
+  title,
+  description,
+  joined,
+}) => {
   return (
     <Card
       sx={{
@@ -47,46 +53,36 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage, title, descri
         ></Box>
         <Typography
           gutterBottom
-          fontSize="18px"
-          fontWeight={600}
+          variant='subtitleS'
+          component='div'
           color="white"
-          component="div"
           marginTop="30px"
-          fontFamily="Inter"
         >
           {title}
         </Typography>
         <Typography
-          fontSize="14px"
-          fontWeight={500}
+          variant='bodyM'
           color="white"
-          fontFamily="Inter"
         >
           {description}
         </Typography>
         <Box display="flex" marginY="10px" sx={{ opacity: 0.5 }}>
           <Typography
             color="white"
-            fontSize="10px"
-            fontWeight={400}
-            fontFamily="Inter"
+            variant='caption'
           >
             AI
           </Typography>
           <Typography
             color="white"
-            fontSize="10px"
-            fontWeight={400}
+            variant='caption'
             marginX="10px"
-            fontFamily="Inter"
           >
             COMMUNITY TOOLS
           </Typography>
           <Typography
             color="white"
-            fontSize="10px"
-            fontWeight={400}
-            fontFamily="Inter"
+            variant='caption'
           >
             +3
           </Typography>
@@ -104,17 +100,17 @@ const SpaceCard: React.FC<SpaceCardProps> = ({ bgImage, logoImage, title, descri
           <UsersIcon />
           <Typography
             color="white"
-            fontSize="13px"
-            fontWeight={500}
+            variant='bodyS'
             sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
-            fontFamily="Inter"
           >
             1.4k
           </Typography>
         </Box>
         <Button
           size="small"
-          startIcon={joined ? <CheckCircleIcon color='#D7FFC4' /> : <PlusCircleIcon />}
+          startIcon={
+            joined ? <CheckCircleIcon color="#D7FFC4" /> : <PlusCircleIcon />
+          }
           sx={{
             backgroundColor: joined ? '#606C5A' : '#383838',
             color: joined ? '#D7FFC4' : 'white',

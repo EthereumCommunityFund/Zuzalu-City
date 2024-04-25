@@ -25,6 +25,8 @@ import { ThreeHorizonIcon } from './ThreeHorizon';
 import { EyeIcon } from './Eye';
 import { InformationIcon } from './Information';
 import { ArchiveIcon } from './Archive';
+import { PencilIcon } from './Pencil';
+import { EditIcon } from './Edit';
 
 export {
   HomeIcon,
@@ -53,5 +55,7 @@ export {
   ThreeHorizonIcon,
   EyeIcon,
   InformationIcon,
-  ArchiveIcon
+  ArchiveIcon,
+  PencilIcon,
+  EditIcon
 };
