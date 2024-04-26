@@ -5,20 +5,17 @@ import { PlusIcon, InformationIcon } from 'components/icons';
 
 const Invite = () => {
   return (
-    <Stack direction='column' spacing={1} padding={2.5}>
-      <Stack direction='row' justifyContent="space-between">
-        <Stack direction='row' spacing={1} alignItems="center">
-          <Typography
-            variant='h6'
-            color="white"
-          >
+    <Stack direction="column" spacing={1} padding={2.5}>
+      <Stack direction="row" justifyContent="space-between">
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="h6" color="white">
             Invite Event Admins
           </Typography>
           <InformationIcon color="#919191" size={5} />
         </Stack>
         <ZuButton startIcon={<PlusIcon size={4} />}>Invite</ZuButton>
       </Stack>
-      <Typography color='white'> 
+      <Typography color="white">
         Invite users to manage access of attendees and scan tickets
       </Typography>
       <Stack
@@ -27,18 +24,15 @@ const Invite = () => {
         padding={1}
         sx={{ opacity: 0.8 }}
       >
-        <Typography
-          variant='h6'
-          color="white"
-        >
+        <Typography variant="h6" color="white">
           No Invites
         </Typography>
-        <Typography variant='caption' color="white">
+        <Typography variant="caption" color="white">
           You can invite members or other individuals via email
         </Typography>
       </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default Invite;

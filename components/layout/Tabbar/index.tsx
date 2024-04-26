@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 
 interface TabbarProps {
   tabName: string;
-  setTabName:  (value: string | ((prevVar: string) => string)) => void;
+  setTabName: (value: string | ((prevVar: string) => string)) => void;
 }
 
 const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
@@ -16,7 +16,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
       alignItems="center"
       padding="0px 10px"
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
-    > 
+    >
       <Typography
         onClick={() => setTabName('Overview')}
         color="white"
@@ -26,7 +26,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         paddingX="10px"
         height="100%"
         lineHeight="45px"
-        borderBottom={tabName === 'Overview' ? "1px solid white" : "none"}
+        borderBottom={tabName === 'Overview' ? '1px solid white' : 'none'}
         sx={{ cursor: 'pointer' }}
       >
         Overview
@@ -40,7 +40,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         paddingX="10px"
         height="100%"
         lineHeight="45px"
-        borderBottom={tabName === 'Event Sessions' ? "1px solid white" : "none"}
+        borderBottom={tabName === 'Event Sessions' ? '1px solid white' : 'none'}
         sx={{ cursor: 'pointer' }}
       >
         Event Sessions
@@ -54,13 +54,13 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         paddingX="10px"
         height="100%"
         lineHeight="45px"
-        borderBottom={tabName === 'Venue' ? "1px solid white" : "none"}
+        borderBottom={tabName === 'Venue' ? '1px solid white' : 'none'}
         sx={{ cursor: 'pointer' }}
       >
         Venue
       </Typography>
       <Typography
-        onClick={() => setTabName('Tickets')}  
+        onClick={() => setTabName('Tickets')}
         color="white"
         fontFamily="Inter"
         fontSize="15px"
@@ -68,7 +68,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         paddingX="10px"
         height="100%"
         lineHeight="45px"
-        borderBottom={tabName === 'Tickets' ? "1px solid white" : "none"}
+        borderBottom={tabName === 'Tickets' ? '1px solid white' : 'none'}
         sx={{ cursor: 'pointer' }}
       >
         Tickets
@@ -82,7 +82,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         paddingX="10px"
         height="100%"
         lineHeight="45px"
-        borderBottom={tabName === 'Attendees' ? "1px solid white" : "none"}
+        borderBottom={tabName === 'Attendees' ? '1px solid white' : 'none'}
         sx={{ cursor: 'pointer' }}
       >
         Attendees

@@ -6,29 +6,41 @@ const BUTTON_GROUP = [
   {
     name: 'Create Session',
     description: 'Create Sessions for this event',
-    icon: <PlusCircleIcon />
+    icon: <PlusCircleIcon />,
   },
   {
     name: 'Scan QR',
     description: 'Scan atendee tickets',
-    icon: <PlusCircleIcon />
-  }
-]
+    icon: <PlusCircleIcon />,
+  },
+];
 
 type OverviewButtonProps = {
-  type: number
-}
+  type: number;
+};
 
 const OverviewButton: React.FC<OverviewButtonProps> = ({ type }) => {
   return (
-    <Stack direction='row' alignItems='center' bgcolor='#383838' borderRadius={2} padding="5px 10px" spacing={1} flex={1}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      bgcolor="#383838"
+      borderRadius={2}
+      padding="5px 10px"
+      spacing={1}
+      flex={1}
+    >
       {BUTTON_GROUP[type].icon}
       <Stack>
-        <Typography variant='subtitle2' color='white'>{BUTTON_GROUP[type].name}</Typography>
-        <Typography variant='caption' color='white'>{BUTTON_GROUP[type].description}</Typography>
+        <Typography variant="subtitle2" color="white">
+          {BUTTON_GROUP[type].name}
+        </Typography>
+        <Typography variant="caption" color="white">
+          {BUTTON_GROUP[type].description}
+        </Typography>
       </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default OverviewButton;

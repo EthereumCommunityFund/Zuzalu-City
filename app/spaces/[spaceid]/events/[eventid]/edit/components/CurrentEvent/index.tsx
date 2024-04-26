@@ -10,19 +10,14 @@ interface CurrentEventsProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
 }
 
-const CurrentEvents: React.FC<CurrentEventsProps> = ({ onToggle = (anchor: Anchor, open: boolean) => {} }) => {
-  const click = () => {
-    console.log("hello")
-    onToggle('right', true)
-  }
+const CurrentEvents: React.FC<CurrentEventsProps> = ({
+  onToggle = (anchor: Anchor, open: boolean) => {},
+}) => {
 
   return (
-    <Stack direction='column' spacing={3} padding={2.5}>
-      <Stack direction='row' spacing={3}>
-        <Typography
-          variant='h5'
-          color="white"
-        >
+    <Stack direction="column" spacing={3} padding={2.5}>
+      <Stack direction="row" spacing={3}>
+        <Typography variant="h5" color="white">
           Events
         </Typography>
         <ZuButton
@@ -32,8 +27,13 @@ const CurrentEvents: React.FC<CurrentEventsProps> = ({ onToggle = (anchor: Ancho
           Add New Event
         </ZuButton>
       </Stack>
-      <Stack direction='column' spacing={2}>
-        <Typography variant='body2' color='white' fontStyle='italic' sx={{opacity: 0.5}}>
+      <Stack direction="column" spacing={2}>
+        <Typography
+          variant="body2"
+          color="white"
+          fontStyle="italic"
+          sx={{ opacity: 0.5 }}
+        >
           Prototype Note: First card is click-able
         </Typography>
         <EventCard type={0} applicants={14} isSideEventActive={true} />
@@ -42,7 +42,7 @@ const CurrentEvents: React.FC<CurrentEventsProps> = ({ onToggle = (anchor: Ancho
         <EventCard type={1} applicants={3} />
       </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default CurrentEvents;

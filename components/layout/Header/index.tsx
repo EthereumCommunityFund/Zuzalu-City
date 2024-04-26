@@ -30,13 +30,17 @@ const Header = () => {
     >
       <Box display="flex" alignItems="center" gap="10px">
         <MenuIcon />
-        <Box component="img" src={isMobile ? "/ZuCityLogo-IconOnly.svg" : "/ZuCityLogo.svg"} height="40px" />
+        <Box
+          component="img"
+          src={isMobile ? '/ZuCityLogo-IconOnly.svg' : '/ZuCityLogo.svg'}
+          height="40px"
+        />
         <Typography
           variant="body2"
           color={theme.palette.text.primary}
           sx={{
             fontStyle: 'italic',
-            opacity: 0.8
+            opacity: 0.8,
           }}
         >
           beta

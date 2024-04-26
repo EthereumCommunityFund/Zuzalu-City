@@ -1,7 +1,7 @@
 import { styled, Button, ButtonProps } from '@mui/material';
 
 interface ZuButtonProps extends ButtonProps {
-  zuvariant?: string; 
+  zuvariant?: string;
 }
 
 const ZuButtonContained = styled(Button)(({ theme }) => ({
@@ -12,12 +12,10 @@ const ZuButtonContained = styled(Button)(({ theme }) => ({
   boxShadow: 'none',
   '&:hover': {
     backgroundColor: theme.palette.primary.main,
-  }
+  },
 }));
 
-const ZuButtonOutlined = styled(Button)(({ theme }) => ({
-
-}))
+const ZuButtonOutlined = styled(Button)(({ theme }) => ({}));
 
 const ZuButton = styled(Button)(({ theme }) => ({
   color: 'white',

@@ -57,5 +57,5 @@ export {
   InformationIcon,
   ArchiveIcon,
   PencilIcon,
-  EditIcon
+  EditIcon,
 };

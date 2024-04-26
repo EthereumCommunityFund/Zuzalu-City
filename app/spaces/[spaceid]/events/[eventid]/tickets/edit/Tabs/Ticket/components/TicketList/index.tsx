@@ -12,8 +12,9 @@ interface TicketListProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
 }
 
-const TicketList: React.FC<TicketListProps> = ({ onToggle = (anchor: Anchor, open: boolean) => {} }) => {
-
+const TicketList: React.FC<TicketListProps> = ({
+  onToggle = (anchor: Anchor, open: boolean) => {},
+}) => {
   return (
     <Stack direction="column" spacing={3}>
       <Stack direction="column" spacing={2}>

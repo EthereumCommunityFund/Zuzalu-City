@@ -25,10 +25,7 @@ const EventCard: React.FC = () => {
           gap="10px"
         >
           <Box display="flex" alignItems="center" gap="6px">
-            <Typography
-              color="white"
-              variant='caption'
-            >
+            <Typography color="white" variant="caption">
               BY:
             </Typography>
             <Box
@@ -38,40 +35,28 @@ const EventCard: React.FC = () => {
               src="0.webp"
               borderRadius="40px"
             />
-            <Typography
-              color="white"
-              variant='bodyS'
-            >
+            <Typography color="white" variant="bodyS">
               Zuzalu Contributor
             </Typography>
           </Box>
-          <Typography
-            color="white"
-            variant='bodyS'
-          >
+          <Typography color="white" variant="bodyS">
             October 8 - October 20
           </Typography>
         </Box>
-        <Box display='flex' flexDirection='column'>
+        <Box display="flex" flexDirection="column">
           <Typography
             color="white"
             variant={isMobile ? 'subtitleSB' : 'subtitleLB'}
           >
             HackZuzalu ChiangMai
           </Typography>
-          <Typography
-            color="white"
-            variant='bodyM'
-          >
+          <Typography color="white" variant="bodyM">
             A Popup Village of Innovation in the Heart of Istanbul{' '}
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="6px">
           <MapIcon />
-          <Typography
-            color="white"
-            variant='caption'
-          >
+          <Typography color="white" variant="caption">
             ISTANBUL, TURKEY
           </Typography>
         </Box>
@@ -88,10 +73,7 @@ const EventCard: React.FC = () => {
         >
           <LockIcon />
           {!isMobile && (
-            <Typography
-              color="white"
-              variant='bodyS'
-            >
+            <Typography color="white" variant="bodyS">
               Gated
             </Typography>
           )}

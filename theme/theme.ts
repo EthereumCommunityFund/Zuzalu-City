@@ -7,17 +7,32 @@ import { Typography } from './base/typography';
 
 let theme = createTheme({
   palette: { ...Colors },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 900,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
+  // breakpoints: {
+  //   values: {
+  //     xs: 0,
+  //     sm: 600,
+  //     md: 900,
+  //     lg: 1200,
+  //     xl: 1536,
+  //   },
+  // },
   typography: { ...Typography },
   // components: {
+  //   MuiGrid: {
+  //     defaultProps: {
+  //       sx: {
+  //         width: 'initial',
+  //         margin: 0
+  //       }
+  //     },
+  //     styleOverrides: {
+  //       root: {
+  //         width: 'initial',
+  //         margin: 0
+  //       }
+  //     }
+  //   }
+  // }
   //   MuiButton: {
   //     variants: [
   //       {
@@ -28,7 +43,6 @@ let theme = createTheme({
   //       }
   //     ]
   //   }
-  // }
 });
 
 theme = responsiveFontSizes(theme);
