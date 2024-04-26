@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { Stack, Box, SwipeableDrawer, Button, Typography, Input, Select, TextField } from '@mui/material';
+import {
+  Stack,
+  Box,
+  SwipeableDrawer,
+  Button,
+  Typography,
+  Input,
+  Select,
+  TextField,
+} from '@mui/material';
 import {
   TicketHeader,
   TicketList,
@@ -21,10 +30,9 @@ const Ticket = () => {
     right: false,
   });
 
-  const toggleDrawer =
-    (anchor: Anchor, open: boolean) => {
-      setState({ ...state, [anchor]: open });
-    };
+  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+    setState({ ...state, [anchor]: open });
+  };
 
   const list = (anchor: Anchor) => (
     <Box
@@ -34,18 +42,23 @@ const Ticket = () => {
       }}
       role="presentation"
       zIndex="100"
-      borderLeft='1px solid #383838'
+      borderLeft="1px solid #383838"
     >
-      <Box display="flex" alignItems='center' justifyContent="space-between" height='50px' borderBottom='1px solid #383838' paddingX={3}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        height="50px"
+        borderBottom="1px solid #383838"
+        paddingX={3}
+      >
         <ZuButton
           startIcon={<XMarkIcon />}
           onClick={() => toggleDrawer('right', false)}
         >
           Close
         </ZuButton>
-        <ZuButton>
-          Open Session
-        </ZuButton>
+        <ZuButton>Open Session</ZuButton>
       </Box>
       <Box display="flex" flexDirection="column" gap="20px" padding={3}>
         <Typography fontSize="18px" fontWeight="bold">
@@ -335,8 +348,8 @@ const Ticket = () => {
           '& .MuiDrawer-paper': {
             marginTop: '50px',
             height: 'calc(100% - 50px)',
-            boxShadow: 'none'
-          }
+            boxShadow: 'none',
+          },
         }}
         anchor="right"
         open={state['right']}
@@ -346,7 +359,7 @@ const Ticket = () => {
         {list('right')}
       </SwipeableDrawer>
     </Stack>
-  )
-}
+  );
+};
 
 export default Ticket;

@@ -53,37 +53,24 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
         ></Box>
         <Typography
           gutterBottom
-          variant='subtitleS'
-          component='div'
+          variant="subtitleS"
+          component="div"
           color="white"
           marginTop="30px"
         >
           {title}
         </Typography>
-        <Typography
-          variant='bodyM'
-          color="white"
-        >
+        <Typography variant="bodyM" color="white">
           {description}
         </Typography>
         <Box display="flex" marginY="10px" sx={{ opacity: 0.5 }}>
-          <Typography
-            color="white"
-            variant='caption'
-          >
+          <Typography color="white" variant="caption">
             AI
           </Typography>
-          <Typography
-            color="white"
-            variant='caption'
-            marginX="10px"
-          >
+          <Typography color="white" variant="caption" marginX="10px">
             COMMUNITY TOOLS
           </Typography>
-          <Typography
-            color="white"
-            variant='caption'
-          >
+          <Typography color="white" variant="caption">
             +3
           </Typography>
         </Box>
@@ -100,7 +87,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           <UsersIcon />
           <Typography
             color="white"
-            variant='bodyS'
+            variant="bodyS"
             sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
           >
             1.4k

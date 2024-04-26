@@ -10,12 +10,11 @@ import {
   RightArrowIcon,
   EventIcon,
 } from 'components/icons';
-import { SpaceCard, EventCard, LotteryCard } from 'components';
+import { EventCard } from 'components';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
-// import ZuSelect from 'components/core/Select';
 import { MOCK_DATA } from 'mock';
 
 const Home: React.FC = () => {
@@ -36,8 +35,8 @@ const Home: React.FC = () => {
             padding={isMobile ? '10px' : '30px'}
           >
             <Box
-              display='flex'
-              flexDirection='column'
+              display="flex"
+              flexDirection="column"
               borderRadius="10px"
               padding="40px 40px"
               sx={{
@@ -53,22 +52,16 @@ const Home: React.FC = () => {
               >
                 Zuzalu City
               </Typography>
-              <Typography
-                color="white"
-                variant='bodyB'
-                marginBottom="20px"
-              >
+              <Typography color="white" variant="bodyB" marginBottom="20px">
                 Welcome to the new Zuzalu City
               </Typography>
               <Button
+                variant='contained'
                 sx={{
                   backgroundColor: '#383838',
                   color: 'white',
-                  fontWeight: 700,
                   width: isMobile ? '100%' : '200px',
                   borderRadius: '10px',
-                  padding: '10px 14px',
-                  fontFamily: 'Inter',
                 }}
                 startIcon={<RightArrowIcon />}
               >
@@ -91,20 +84,14 @@ const Home: React.FC = () => {
                   </Typography>
                 </Box>
                 <Box display="flex" alignItems="center" gap="10px">
-                  <Typography
-                    color="white"
-                    variant='bodyM'
-                  >
+                  <Typography color="white" variant="bodyM">
                     View All Spaces
                   </Typography>
                   <RightArrowCircleIcon />
                 </Box>
               </Box>
               <Box marginY="20px">
-                <Typography
-                  color="white"
-                  variant='bodyM'
-                >
+                <Typography color="white" variant="bodyM">
                   Most Active Spaces
                 </Typography>
               </Box>
@@ -120,18 +107,12 @@ const Home: React.FC = () => {
                   <Box display="flex" justifyContent="space-between">
                     <Box display="flex" alignItems="center" gap="10px">
                       <EventIcon />
-                      <Typography
-                        color="white"
-                        variant='subtitleLB'
-                      >
+                      <Typography color="white" variant="subtitleLB">
                         Events
                       </Typography>
                     </Box>
                     <Box display="flex" alignItems="center" gap="10px">
-                      <Typography
-                        color="white"
-                        variant='bodyB'
-                      >
+                      <Typography color="white" variant="bodyB">
                         View All Events
                       </Typography>
                       <RightArrowCircleIcon />
@@ -140,10 +121,10 @@ const Home: React.FC = () => {
                   <Typography
                     color="white"
                     border="2px solid #383838"
-                    align='center'
+                    align="center"
                     paddingY="8px"
                     borderRadius="40px"
-                    variant='subtitleS'
+                    variant="subtitleS"
                   >
                     October 2023
                   </Typography>
@@ -164,7 +145,7 @@ const Home: React.FC = () => {
                   >
                     <Typography
                       color="white"
-                      variant='subtitleS'
+                      variant="subtitleS"
                       padding="20px 10px"
                       borderBottom="1px solid #383838"
                     >

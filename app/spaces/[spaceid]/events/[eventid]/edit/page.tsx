@@ -10,9 +10,7 @@ import {
   Select,
   SwipeableDrawer,
 } from '@mui/material';
-import {
-  XMarkIcon,
-} from 'components/icons';
+import { XMarkIcon } from 'components/icons';
 import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
 import { ZuButton } from 'components/core';
 
@@ -26,10 +24,9 @@ const Event = () => {
     right: false,
   });
 
-  const toggleDrawer =
-    (anchor: Anchor, open: boolean) => {
-      setState({ ...state, [anchor]: open });
-    };
+  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+    setState({ ...state, [anchor]: open });
+  };
 
   const list = (anchor: Anchor) => (
     <Box
@@ -39,18 +36,23 @@ const Event = () => {
       }}
       role="presentation"
       zIndex="10"
-      borderLeft='1px solid #383838'
+      borderLeft="1px solid #383838"
     >
-      <Box display="flex" alignItems='center' justifyContent="space-between" height='50px' borderBottom='1px solid #383838' paddingX={3}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        height="50px"
+        borderBottom="1px solid #383838"
+        paddingX={3}
+      >
         <ZuButton
           startIcon={<XMarkIcon />}
           onClick={() => toggleDrawer('right', false)}
         >
           Close
         </ZuButton>
-        <ZuButton>
-          Open Session
-        </ZuButton>
+        <ZuButton>Open Session</ZuButton>
       </Box>
       <Box display="flex" flexDirection="column" gap="20px" padding={3}>
         <Typography
@@ -426,18 +428,17 @@ const Event = () => {
                   placeholder="Enter Link Title"
                 />
               </Box>
-              <Button
+              <ZuButton
+                variant='contained'
                 sx={{
                   backgroundColor: '#353535',
                   color: 'white',
                   borderRadius: '10px',
-                  fontSize: '14px',
-                  fontFamily: 'Inter',
                   textTransform: 'none',
                 }}
               >
                 Add Address
-              </Button>
+              </ZuButton>
             </Box>
           </Box>
         </Box>
@@ -474,19 +475,19 @@ const Event = () => {
             >
               200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
             </Typography>
-            <Button
+            <ZuButton
+              variant='outlined'
               sx={{
-                width: 'min-content',
                 color: 'white',
                 borderRadius: '30px',
                 backgroundColor: '#373737',
-                fontSize: '14px',
-                padding: '6px 16px',
+                // fontSize: '14px',
+                // padding: '6px 16px',
                 border: '1px solid #383838',
               }}
             >
               Upload
-            </Button>
+            </ZuButton>
             <Box
               width="200px"
               height="200px"
@@ -640,8 +641,8 @@ const Event = () => {
           '& .MuiDrawer-paper': {
             marginTop: '111px',
             height: 'calc(100% - 111px)',
-            boxShadow: 'none'
-          }
+            boxShadow: 'none',
+          },
         }}
         anchor="right"
         open={state['right']}

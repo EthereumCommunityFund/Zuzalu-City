@@ -2,7 +2,6 @@ import React from 'react';
 import { IconProps } from 'types';
 
 export const ArchiveIcon: React.FC<IconProps> = ({
-  size = 6,
   color = 'white',
 }) => {
   return (

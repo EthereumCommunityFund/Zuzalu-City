@@ -23,16 +23,16 @@ export const Typography: TypographyOptions = {
     fontSize: '61px',
     lineHeight: 1.5,
     letterSpacing: '-0.04em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   h1: {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightBold,
     fontSize: '49px',
-    lineHeight: 3.675,
+    lineHeight: 1.3,
     letterSpacing: '-0.04em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   h2: {
@@ -41,7 +41,7 @@ export const Typography: TypographyOptions = {
     fontSize: '40px',
     lineHeight: 3.026,
     letterSpacing: '0.00938em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   h3: {
@@ -50,7 +50,7 @@ export const Typography: TypographyOptions = {
     fontSize: '31px',
     lineHeight: 2.325,
     letterSpacing: '0em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   h4: {
@@ -59,7 +59,7 @@ export const Typography: TypographyOptions = {
     fontSize: '24px',
     lineHeight: 1.8,
     letterSpacing: '0.00935em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   h5: {
@@ -68,7 +68,7 @@ export const Typography: TypographyOptions = {
     fontSize: '1.5rem',
     lineHeight: 1.334,
     letterSpacing: '0em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   h6: {
@@ -77,7 +77,7 @@ export const Typography: TypographyOptions = {
     fontSize: '1.25rem',
     lineHeight: 1.6,
     letterSpacing: '0.0075em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   subtitleLB: {
@@ -86,7 +86,7 @@ export const Typography: TypographyOptions = {
     fontSize: '25px',
     lineHeight: 1.875,
     letterSpacing: '0.0075em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   subtitleL: {
@@ -95,7 +95,7 @@ export const Typography: TypographyOptions = {
     fontSize: '25px',
     lineHeight: 1.875,
     letterSpacing: '0.0075em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   subtitleMB: {
@@ -104,7 +104,7 @@ export const Typography: TypographyOptions = {
     fontSize: '20px',
     lineHeight: 1.5,
     letterSpacing: '0.0075em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   subtitleM: {
@@ -113,7 +113,7 @@ export const Typography: TypographyOptions = {
     fontSize: '20px',
     lineHeight: 1.5,
     letterSpacing: '0.0075em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   subtitleSB: {
@@ -122,7 +122,7 @@ export const Typography: TypographyOptions = {
     fontSize: '18px',
     lineHeight: 1.35,
     letterSpacing: '0.0075em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   subtitleS: {
@@ -131,7 +131,7 @@ export const Typography: TypographyOptions = {
     fontSize: '18px',
     lineHeight: 1.35,
     letterSpacing: '0.0075em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
 
   subtitle1: {
@@ -239,7 +239,7 @@ export const Typography: TypographyOptions = {
     letterSpacing: '0.02857em',
     textTransform: 'none',
   },
-  
+
   buttonMSB: {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightMedium,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { LotteryIcon, RightArrowIcon } from './icons';
 
 const LotteryCard: React.FC = () => {

@@ -9,22 +9,22 @@ export const Colors: PaletteOptions = {
   },
   primary: {
     main: '#383838',
-    dark: '#303030'
+    dark: '#303030',
   },
   secondary: {
     main: '#222222',
-    dark: '#2D2D2D'
+    dark: '#2D2D2D',
   },
   error: {
-    main: '#FF5E5E'
+    main: '#FF5E5E',
   },
   info: {
     main: '#67DBFF',
-    light: '#7DFFD1'
+    light: '#7DFFD1',
   },
   success: {
     main: '#D7FFC4',
     dark: '#FF9C66',
-    light: '#FFC77D'
-  }
+    light: '#FFC77D',
+  },
 };

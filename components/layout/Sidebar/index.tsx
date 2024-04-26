@@ -30,10 +30,7 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <HomeIcon />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Home
           </Typography>
         </Box>
@@ -46,10 +43,7 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <StreamIcon />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Stream
           </Typography>
         </Box>
@@ -62,10 +56,7 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <SpaceIcon />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Spaces
           </Typography>
         </Box>
@@ -78,10 +69,7 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <EventIcon />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Events
           </Typography>
         </Box>
@@ -94,10 +82,7 @@ const Sidebar: React.FC = () => {
           borderRadius="10px"
         >
           <BoltIcon />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Zapps
           </Typography>
         </Box>
@@ -110,7 +95,7 @@ const Sidebar: React.FC = () => {
       >
         <Typography
           color="white"
-          variant='bodyS'
+          variant="bodyS"
           marginTop="15px"
           marginBottom="10px"
           marginLeft="10px"
@@ -119,10 +104,7 @@ const Sidebar: React.FC = () => {
         </Typography>
         <Box display="flex" alignItems="center" gap="10px">
           <Box component="img" src="/0.webp" height="40px" />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Zuzalu City Contributors
           </Typography>
         </Box>
@@ -134,10 +116,7 @@ const Sidebar: React.FC = () => {
             width="40px"
             borderRadius="20px"
           />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             FendiWeb3
           </Typography>
         </Box>
@@ -149,19 +128,13 @@ const Sidebar: React.FC = () => {
             borderRadius="20px"
             width="40px"
           />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Green Odin
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="10px" paddingLeft="5px">
           <SpacePlusIcon />
-          <Typography
-            color="white"
-            variant='bodyMB'
-          >
+          <Typography color="white" variant="bodyMB">
             Create a Space
           </Typography>
         </Box>

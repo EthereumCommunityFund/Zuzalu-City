@@ -58,19 +58,12 @@ const EventCard: React.FC<EventCardProps> = ({
       border="1px solid #383838"
       bgcolor="#2D2D2D"
     >
-      <Stack direction='row' justifyContent="space-between">
-        <Stack direction='row' alignItems="center" spacing={1}>
-          <Typography
-            variant='h6'
-            color="white"
-          >
+      <Stack direction="row" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Typography variant="h6" color="white">
             ZuVillage Georgia
           </Typography>
-          <Typography
-            variant='body2'
-            color="white"
-            sx={{ opacity: 0.5 }}
-          >
+          <Typography variant="body2" color="white" sx={{ opacity: 0.5 }}>
             October 28 - November 12
           </Typography>
         </Stack>
@@ -85,14 +78,10 @@ const EventCard: React.FC<EventCardProps> = ({
           }}
         />
       </Stack>
-      <Typography
-        variant='body1'
-        color="white"
-        sx={{ opacity: 0.7 }}
-      >
+      <Typography variant="body1" color="white" sx={{ opacity: 0.7 }}>
         A Popup Village of Innovation in the Heart of Istanbul
       </Typography>
-      <Stack direction='row' alignItems="center" spacing={1}>
+      <Stack direction="row" alignItems="center" spacing={1}>
         <ZuButton
           startIcon={EVENT_TYPE[type].icon}
           sx={{
@@ -114,11 +103,7 @@ const EventCard: React.FC<EventCardProps> = ({
             Side Events Active
           </ZuButton>
         )}
-        <Typography
-          variant='body2'
-          color="white"
-          sx={{ opacity: 0.7 }}
-        >
+        <Typography variant="body2" color="white" sx={{ opacity: 0.7 }}>
           Applied: {applicants}
         </Typography>
       </Stack>
