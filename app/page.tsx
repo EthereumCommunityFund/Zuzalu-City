@@ -56,14 +56,12 @@ const Home: React.FC = () => {
                 Welcome to the new Zuzalu City
               </Typography>
               <Button
+                variant='contained'
                 sx={{
                   backgroundColor: '#383838',
                   color: 'white',
-                  fontWeight: 700,
                   width: isMobile ? '100%' : '200px',
                   borderRadius: '10px',
-                  padding: '10px 14px',
-                  fontFamily: 'Inter',
                 }}
                 startIcon={<RightArrowIcon />}
               >

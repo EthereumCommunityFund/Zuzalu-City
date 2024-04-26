@@ -428,18 +428,17 @@ const Event = () => {
                   placeholder="Enter Link Title"
                 />
               </Box>
-              <Button
+              <ZuButton
+                variant='contained'
                 sx={{
                   backgroundColor: '#353535',
                   color: 'white',
                   borderRadius: '10px',
-                  fontSize: '14px',
-                  fontFamily: 'Inter',
                   textTransform: 'none',
                 }}
               >
                 Add Address
-              </Button>
+              </ZuButton>
             </Box>
           </Box>
         </Box>
@@ -476,19 +475,19 @@ const Event = () => {
             >
               200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
             </Typography>
-            <Button
+            <ZuButton
+              variant='outlined'
               sx={{
-                width: 'min-content',
                 color: 'white',
                 borderRadius: '30px',
                 backgroundColor: '#373737',
-                fontSize: '14px',
-                padding: '6px 16px',
+                // fontSize: '14px',
+                // padding: '6px 16px',
                 border: '1px solid #383838',
               }}
             >
               Upload
-            </Button>
+            </ZuButton>
             <Box
               width="200px"
               height="200px"
