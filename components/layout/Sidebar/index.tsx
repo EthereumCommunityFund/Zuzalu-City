@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import {
   EventIcon,
@@ -11,6 +12,8 @@ import {
 } from 'components/icons';
 
 const Sidebar: React.FC = () => {
+  const router = useRouter();
+
   return (
     <Box sx={{ width: '270px', height: '100vh' }}>
       <Box
@@ -54,6 +57,7 @@ const Sidebar: React.FC = () => {
           sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
           gap="10px"
           borderRadius="10px"
+          onClick={() => router.push('/spaces')}
         >
           <SpaceIcon />
           <Typography color="white" variant="bodyMB">

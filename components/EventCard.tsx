@@ -4,7 +4,21 @@ import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from './icons';
 
-const EventCard: React.FC = () => {
+type EventCardProps = {
+  by?: string,
+  name?: string,
+  description?: string,
+  location?: string,
+  logo?: string
+}
+
+const EventCard: React.FC<EventCardProps> = ({
+  by = 'Zuzalu Contributor',
+  name = 'HackZuzalu ChiangMai',
+  description = 'A Popup Village of Innovation in the Heart of Istanbul',
+  location = 'ISTANBUL, TURKEY',
+  logo = '/4.webp'
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -14,7 +28,7 @@ const EventCard: React.FC = () => {
         component="img"
         width={isMobile ? '80px' : '150px'}
         height={isMobile ? '80px' : '150px'}
-        src="4.webp"
+        src={logo}
         borderRadius="10px"
       />
       <Box display="flex" flexDirection="column" gap="10px" flexGrow={1}>
@@ -32,11 +46,11 @@ const EventCard: React.FC = () => {
               component="img"
               width="18px"
               height="18px"
-              src="0.webp"
+              src="/0.webp"
               borderRadius="40px"
             />
             <Typography color="white" variant="bodyS">
-              Zuzalu Contributor
+              {by}
             </Typography>
           </Box>
           <Typography color="white" variant="bodyS">
@@ -48,16 +62,16 @@ const EventCard: React.FC = () => {
             color="white"
             variant={isMobile ? 'subtitleSB' : 'subtitleLB'}
           >
-            HackZuzalu ChiangMai
+            {name}
           </Typography>
           <Typography color="white" variant="bodyM">
-            A Popup Village of Innovation in the Heart of Istanbul{' '}
+            {description}
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="6px">
           <MapIcon />
           <Typography color="white" variant="caption">
-            ISTANBUL, TURKEY
+            {location}
           </Typography>
         </Box>
       </Box>
