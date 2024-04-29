@@ -18,60 +18,34 @@ const Header = () => {
 
   return (
     <Box
-      height="50px"
+      height="33px"
       bgcolor="#2D2D2D"
       display="flex"
       alignItems="center"
       justifyContent="space-between"
-      paddingX="20px"
+      paddingX="10px"
       paddingY="8px"
-      borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+      borderBottom="1px solid #383838"
       zIndex={1000}
       position="relative"
     >
       <Box display="flex" alignItems="center" gap="10px">
         <MenuIcon />
-        <Box component="img" src="/logo.webp" height="40px" />
-        {!isMobile ? (
-          <Box>
-            <Box
-              component="span"
-              sx={{
-                color: 'white',
-                fontSize: '24px',
-                fontWeight: 700,
-                fontFamily: 'Merriweather',
-              }}
-            >
-              Zuzalu
-            </Box>
-            <Box
-              component="span"
-              sx={{
-                color: 'white',
-                fontSize: '16px',
-                opacity: 0.3,
-                fontFamily: 'Merriweather',
-              }}
-            >
-              .city
-            </Box>
-          </Box>
-        ) : (
-          <Box>
-            <Typography
-              sx={{
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: 400,
-                fontFamily: 'Inter',
-                fontStyle: 'italic',
-              }}
-            >
-              beta
-            </Typography>
-          </Box>
-        )}
+        <Box
+          component="img"
+          src={isMobile ? '/ZuCityLogo-IconOnly.svg' : '/ZuCityLogo.svg'}
+          height="40px"
+        />
+        <Typography
+          variant="body2"
+          color={theme.palette.text.primary}
+          sx={{
+            fontStyle: 'italic',
+            opacity: 0.8,
+          }}
+        >
+          beta
+        </Typography>
       </Box>
       {!isMobile && (
         <FormControl focused sx={{ width: '30%', border: 'none' }}>

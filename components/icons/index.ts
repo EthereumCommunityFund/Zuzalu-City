@@ -25,6 +25,14 @@ import { ThreeHorizonIcon } from './ThreeHorizon';
 import { EyeIcon } from './Eye';
 import { InformationIcon } from './Information';
 import { ArchiveIcon } from './Archive';
+import { PencilIcon } from './Pencil';
+import { EditIcon } from './Edit';
+import { ChatIcon } from './Chat';
+import { TableIcon } from './Table';
+import { MegaPhoneIcon } from './Megaphone';
+import { QuestionIcon } from './Question';
+import { ListIcon } from './List';
+import { CalendarIcon } from './Calendar';
 
 export {
   HomeIcon,
@@ -53,5 +61,13 @@ export {
   ThreeHorizonIcon,
   EyeIcon,
   InformationIcon,
-  ArchiveIcon
+  ArchiveIcon,
+  PencilIcon,
+  EditIcon,
+  ChatIcon,
+  TableIcon,
+  MegaPhoneIcon,
+  QuestionIcon,
+  ListIcon,
+  CalendarIcon
 };

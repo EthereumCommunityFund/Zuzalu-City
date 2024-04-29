@@ -10,12 +10,11 @@ import {
   RightArrowIcon,
   EventIcon,
 } from 'components/icons';
-import { SpaceCard, EventCard, LotteryCard } from 'components';
+import { EventCard } from 'components';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
-// import ZuSelect from 'components/core/Select';
 import { MOCK_DATA } from 'mock';
 import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
@@ -25,7 +24,7 @@ const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const isDesktop = useMediaQuery(theme.breakpoints.up('xl'));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -36,13 +35,15 @@ const Home: React.FC = () => {
             <Box display="flex">
               {!isTablet && <Sidebar />}
               <Box
-                borderLeft="1px solid grey"
+                borderLeft="1px solid #383838"
                 flexGrow={1}
                 padding={isMobile ? '10px' : '30px'}
               >
                 <Box
+                  display="flex"
+                  flexDirection="column"
                   borderRadius="10px"
-                  padding="40px 25px"
+                  padding="40px 40px"
                   sx={{
                     backgroundImage: 'url("4.webp")',
                     backgroundPosition: 'center center',
@@ -51,31 +52,21 @@ const Home: React.FC = () => {
                   }}
                 >
                   <Typography
-                    color="white"
-                    fontWeight={700}
-                    fontSize={isMobile ? '54px' : '61px'}
-                    fontFamily="Inter"
+                    color={theme.palette.text.primary}
+                    variant={isMobile ? 'h1' : 'hB'}
                   >
                     Zuzalu City
                   </Typography>
-                  <Typography
-                    color="white"
-                    fontSize="16px"
-                    fontWeight={400}
-                    marginBottom="20px"
-                    fontFamily="Inter"
-                  >
+                  <Typography color="white" variant="bodyB" marginBottom="20px">
                     Welcome to the new Zuzalu City
                   </Typography>
                   <Button
+                    variant="contained"
                     sx={{
                       backgroundColor: '#383838',
                       color: 'white',
-                      fontWeight: 700,
                       width: isMobile ? '100%' : '200px',
                       borderRadius: '10px',
-                      padding: '10px 14px',
-                      fontFamily: 'Inter',
                     }}
                     startIcon={<RightArrowIcon />}
                   >
@@ -91,33 +82,21 @@ const Home: React.FC = () => {
                     <Box display="flex" alignItems="center" gap="10px">
                       <SpaceIcon />
                       <Typography
+                        variant={isMobile ? 'subtitleMB' : 'subtitleLB'}
                         color="white"
-                        fontSize={isMobile ? '20px' : '25px'}
-                        fontWeight={700}
-                        fontFamily="Inter"
                       >
                         Explore Spaces
                       </Typography>
                     </Box>
                     <Box display="flex" alignItems="center" gap="10px">
-                      <Typography
-                        color="white"
-                        fontSize="14px"
-                        fontWeight={400}
-                        fontFamily="Inter"
-                      >
+                      <Typography color="white" variant="bodyM">
                         View All Spaces
                       </Typography>
                       <RightArrowCircleIcon />
                     </Box>
                   </Box>
                   <Box marginY="20px">
-                    <Typography
-                      color="white"
-                      fontSize="14px"
-                      fontWeight={400}
-                      fontFamily="Inter"
-                    >
+                    <Typography color="white" variant="bodyM">
                       Most Active Spaces
                     </Typography>
                   </Box>
@@ -133,22 +112,12 @@ const Home: React.FC = () => {
                       <Box display="flex" justifyContent="space-between">
                         <Box display="flex" alignItems="center" gap="10px">
                           <EventIcon />
-                          <Typography
-                            color="white"
-                            fontSize="25px"
-                            fontWeight={700}
-                            fontFamily="Inter"
-                          >
+                          <Typography color="white" variant="subtitleLB">
                             Events
                           </Typography>
                         </Box>
                         <Box display="flex" alignItems="center" gap="10px">
-                          <Typography
-                            color="white"
-                            fontSize="16px"
-                            fontWeight={400}
-                            fontFamily="Inter"
-                          >
+                          <Typography color="white" variant="bodyB">
                             View All Events
                           </Typography>
                           <RightArrowCircleIcon />
@@ -156,13 +125,11 @@ const Home: React.FC = () => {
                       </Box>
                       <Typography
                         color="white"
+                        border="2px solid #383838"
                         align="center"
-                        border="2px solid rgba(255, 255, 255, 0.1)"
-                        padding="8px 14px"
+                        paddingY="8px"
                         borderRadius="40px"
-                        fontSize="18px"
-                        fontWeight={600}
-                        fontFamily="Inter"
+                        variant="subtitleS"
                       >
                         October 2023
                       </Typography>
@@ -183,11 +150,9 @@ const Home: React.FC = () => {
                       >
                         <Typography
                           color="white"
-                          fontSize="18px"
-                          fontWeight={600}
+                          variant="subtitleS"
                           padding="20px 10px"
-                          borderBottom="1px solid rgba(255, 255, 255, 0.10)"
-                          fontFamily="Inter"
+                          borderBottom="1px solid #383838"
                         >
                           Sort & Filter Sessions
                         </Typography>
