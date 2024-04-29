@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Header = () => {
   const theme = useTheme();
@@ -26,7 +27,7 @@ const Header = () => {
       paddingY="8px"
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
       zIndex={1000}
-      position='relative'
+      position="relative"
     >
       <Box display="flex" alignItems="center" gap="10px">
         <MenuIcon />
@@ -34,7 +35,7 @@ const Header = () => {
         {!isMobile ? (
           <Box>
             <Box
-              component='span'
+              component="span"
               sx={{
                 color: 'white',
                 fontSize: '24px',
@@ -45,10 +46,14 @@ const Header = () => {
               Zuzalu
             </Box>
             <Box
-              component='span'
-              sx={{ color: 'white', fontSize: '16px', opacity: 0.3,
-              fontFamily: 'Merriweather'
-               }}>
+              component="span"
+              sx={{
+                color: 'white',
+                fontSize: '16px',
+                opacity: 0.3,
+                fontFamily: 'Merriweather',
+              }}
+            >
               .city
             </Box>
           </Box>
@@ -95,21 +100,12 @@ const Header = () => {
           />
         </FormControl>
       )}
-      <Box display="flex" alignItems="center">
-        <Button
-          sx={{
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
-            backgroundColor: 'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-            borderRadius: '10px',
-            opacity: 0.7
-          }}
-        >
-          Sign In
-        </Button>
-      </Box>
+      <ConnectButton
+        showBalance={{
+          smallScreen: false,
+          largeScreen: false,
+        }}
+      />
     </Box>
   );
 };
