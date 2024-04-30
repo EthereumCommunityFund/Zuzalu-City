@@ -2,7 +2,7 @@
 
 import { Header, Sidebar } from 'components/layout';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
-import { Stack } from '@mui/material'
+import { Box } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 interface SpacePageLayoutPropTypes {
@@ -16,34 +16,34 @@ export default function SpacePageLayout({
   const theme = useTheme();
 
   return (
-    <Stack sx={{ color: 'white' }}>
-      <Stack
+    <Box sx={{ color: 'white' }}>
+      <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: "space-between"
         }}
       >
-        <Stack
+        <Box
           sx={{
             display: 'flex',
             flexDirection: 'row'
           }}
         >
-          <Stack
+          <Box
             sx={{
-              display: 'none',
-              [theme.breakpoints.up('lg')]: {
-                display: 'block'
+              display: 'block',
+              [theme.breakpoints.down('md')]: {
+                display: 'none'
               }
             }}
           >
             <Sidebar></Sidebar>
-          </Stack>
+          </Box>
           <SubSidebar></SubSidebar>
-        </Stack>
+        </Box>
         {children}
-      </Stack>
-    </Stack>
+      </Box>
+    </Box>
   );
 }

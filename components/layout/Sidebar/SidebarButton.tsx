@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react';
-import { Stack, StackProps } from '@mui/material';
+import { BoxProps, Box } from '@mui/material';
 
-interface SidebarButtonPropTypes extends StackProps {
+interface SidebarButtonPropTypes extends BoxProps {
   isActive?: boolean;
   icon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -19,10 +19,11 @@ export default function SidebarButton({
 }: SidebarButtonPropTypes) {
   console.log(Object.keys.length > 0)
   return (
-    <Stack
+    <Box
       sx={
-        Object.keys.length > 0 ? sx : {
+        sx ? sx : {
           padding: '8px 10px',
+          boxSizing: 'border-box',
           backgroundColor: isActive ? '#ffffff1a' : 'transparent',
           width: '100%',
           display: 'flex',
@@ -39,8 +40,14 @@ export default function SidebarButton({
       }
       {...props}
     >
-      <div>{icon && icon}</div>
-      <Stack
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >{icon && icon}</div>
+      <Box
         sx={{
           fontSize: '16px',
           fontWeight: '700'
@@ -48,8 +55,8 @@ export default function SidebarButton({
       >
         {content}
         {children}
-      </Stack>
+      </Box>
       <div>{rightIcon && rightIcon}</div>
-    </Stack>
+    </Box>
   );
 }

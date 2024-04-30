@@ -1,12 +1,25 @@
+import { Box } from "@mui/material";
+
 export const RightArrowCircleSmallIcon = () => {
   return (
-    <div className="p-1 rounded-full bg-[#ffffff0f]">
+    <Box
+      sx={{
+        padding: '4px',
+        borderRadius: '100%',
+        backgroundColor: '#ffffff0f',
+        width: '16px',
+        height: '16px'
+      }}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
         color="rgb(255, 255, 255)"
-        className="w-[16px] h-[16px]"
+        style={{
+          width: '16px',
+          height: '16px'
+        }}
       >
         <path
           fillRule="evenodd"
@@ -14,6 +27,6 @@ export const RightArrowCircleSmallIcon = () => {
           clipRule="evenodd"
         ></path>
       </svg>
-    </div>
+    </Box>
   );
 };

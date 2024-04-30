@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@mui/material/styles';
-import { Stack, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { EventCard } from 'components';
 import AnnouncementCard from 'components/AnnouncementCart';
 import {
@@ -34,18 +34,19 @@ export default function SpaceDetailPage() {
   }, [showMore]);
 
   return (
-    <Stack
+    <Box
       sx={{
-        width: "100%",
+        width: "calc(100% - 550px)",
         [theme.breakpoints.down('lg')]: {
           width: "calc(100% - 280px)"
         },
         [theme.breakpoints.down('md')]: {
           width: '100%'
-        }
+        },
+        fontFamily: 'Inter'
       }}
     >
-      <Stack
+      <Box
         sx={{
           padding: '20px',
           width: '100%',
@@ -53,10 +54,11 @@ export default function SpaceDetailPage() {
           display: 'flex',
           flexDirection: 'column',
           gap: '20px',
-          borderBottom: '1px solid #ffffff1a'
+          borderBottom: '1px solid #ffffff1a',
+          boxSizing: 'border-box'
         }}
       >
-        <Stack
+        <Box
           sx={{
             position: 'relative',
             width: '100%',
@@ -83,7 +85,7 @@ export default function SpaceDetailPage() {
             }}
             className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
           />
-          <Stack
+          <Box
             sx={{
               width: '90px',
               height: '90px',
@@ -109,16 +111,16 @@ export default function SpaceDetailPage() {
               height={80}
               alt=""
             />
-          </Stack>
-        </Stack>
-        <Stack
+          </Box>
+        </Box>
+        <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'flex-end'
           }}
         >
-          <Stack
+          <Box
             sx={{
               display: 'flex',
               flexDirection: 'row',
@@ -138,7 +140,8 @@ export default function SpaceDetailPage() {
                 flexDirection: 'row',
                 gap: '10px',
                 cursor: 'pointer',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                alignItems: 'center'
               }}
               icon={<PlusCircleIcon />}
             ></SidebarButton>
@@ -166,9 +169,9 @@ export default function SpaceDetailPage() {
               }}
               icon={<MoreIcon />}
             ></SidebarButton>
-          </Stack>
-        </Stack>
-        <Stack
+          </Box>
+        </Box>
+        <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -190,7 +193,7 @@ export default function SpaceDetailPage() {
             First-of-its-kind pop-up city to create, live longer and healthier
             lives, and build self-sustaining communities.
           </Typography>
-          <Stack
+          <Box
             sx={{
               color: '#7b7b7b',
               fontSize: '10px',
@@ -203,24 +206,25 @@ export default function SpaceDetailPage() {
             <p>ai</p>
             <p>community tools</p>
             <p>+3</p>
-          </Stack>
-        </Stack>
-      </Stack>
-      <Stack
+          </Box>
+        </Box>
+      </Box>
+      <Box
         sx={{
           width: '100%',
           backgroundColor: '#222222'
         }}
       >
-        <Stack
+        <Box
           sx={{
             padding: "20px",
             gap: "20px",
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            boxSizing: 'border-box'
           }}
         >
-          <Stack
+          <Box
             sx={{
               fontSize: '18px',
               fontWeight: "700",
@@ -228,42 +232,48 @@ export default function SpaceDetailPage() {
             }}
           >
             About Zuzalu City Contributors
-          </Stack>
-          <Stack
+          </Box>
+          <Box
             sx={{
               padding: "20px",
               width: '100%',
               backgroundColor: '#ffffff05',
               borderRadius: '10px',
-              height: showMore ? 'fit-content' : "147px"
+              height: 'fit-content',
+              boxSizing: 'border-box'
             }}
           >
             {aboutContent.length > 0 &&
               aboutContent.map((content, index) => {
                 return (
-                  <Stack key={index}>
-                    <Stack
+                  <Box key={index}>
+                    <Box
                       sx={{
                         fontWeight: "700",
-                        color: '#bebebe',
-                        marginTop: index !== 0 ? '12px' : ''
+                        color: 'white',
+                        marginTop: index !== 0 ? '12px' : '',
+                        fontSize: '18px',
+                        lineHeight: '160%'
                       }}
                     >
                       {content.title}
-                    </Stack>
-                    <Stack
+                    </Box>
+                    <Box
                       sx={{
                         marginTop: '12px',
-                        color: '#bebebe',
-                        fontWeight: "600"
+                        color: 'white',
+                        opacity: '0.8',
+                        fontWeight: "400",
+                        fontSize: '14px',
+                        lineHeight: '160%'
                       }}
                     >
                       {content.content}
-                    </Stack>
-                  </Stack>
+                    </Box>
+                  </Box>
                 );
               })}
-          </Stack>
+          </Box>
           <SidebarButton
             sx={{
               width: '100%',
@@ -277,7 +287,8 @@ export default function SpaceDetailPage() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              boxSizing: 'border-box'
             }}
             content={showMore ? 'Show Less' : 'Show More'}
             onClick={() => {
@@ -285,15 +296,16 @@ export default function SpaceDetailPage() {
               setShowMore(!showMore);
             }}
           ></SidebarButton>
-        </Stack>
-        <Stack
+        </Box>
+        <Box
           sx={{
             padding: "20px",
             display: 'flex',
-            gap: "20px"
+            gap: "20px",
+            flexDirection: 'column'
           }}
         >
-          <Stack
+          <Box
             sx={{
               display: 'flex',
               flexDirection: 'row',
@@ -302,7 +314,7 @@ export default function SpaceDetailPage() {
               alignItems: 'center'
             }}
           >
-            <Stack
+            <Box
               sx={{
                 fontSize: '18px',
                 fontWeight: '700',
@@ -310,7 +322,7 @@ export default function SpaceDetailPage() {
               }}
             >
               Latest Announcements
-            </Stack>
+            </Box>
             <SidebarButton
               sx={{
                 display: 'flex',
@@ -323,13 +335,14 @@ export default function SpaceDetailPage() {
                   backgroundColor: '#e6e6e61a'
                 },
                 borderRadius: '10px',
-                opacity: 0.7
+                opacity: 0.7,
+                alignItems: 'center'
               }}
               content="View All Posts"
               rightIcon={<RightArrowCircleSmallIcon />}
             ></SidebarButton>
-          </Stack>
-          <Stack
+          </Box>
+          <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -344,9 +357,9 @@ export default function SpaceDetailPage() {
                 ></AnnouncementCard>
               );
             })}
-          </Stack>
-        </Stack>
-        <Stack
+          </Box>
+        </Box>
+        <Box
           sx={{
             padding: '20px',
             display: 'flex',
@@ -354,7 +367,7 @@ export default function SpaceDetailPage() {
             gap: '20px'
           }}
         >
-          <Stack
+          <Box
             sx={{
               display: 'flex',
               width: '100%',
@@ -363,7 +376,7 @@ export default function SpaceDetailPage() {
               flexDirection: 'row'
             }}
           >
-            <Stack
+            <Box
               sx={{
                 fontSize: '18px',
                 fontWeight: '700',
@@ -371,11 +384,12 @@ export default function SpaceDetailPage() {
               }}
             >
               Upcoming Events ({MOCK_DATA.upcomingEvents.length})
-            </Stack>
+            </Box>
             <SidebarButton
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
+                alignItems: 'center',
                 gap: '10px',
                 padding: '4px 10px',
                 cursor: 'pointer',
@@ -389,8 +403,8 @@ export default function SpaceDetailPage() {
               content="View All Events"
               rightIcon={<RightArrowCircleSmallIcon />}
             ></SidebarButton>
-          </Stack>
-          <Stack
+          </Box>
+          <Box
             sx={{
               width: '100%',
               display: 'flex',
@@ -398,9 +412,10 @@ export default function SpaceDetailPage() {
               gap: '10px'
             }}
           >
-            <Stack
+            <Box
               sx={{
                 width: '100%',
+                boxSizing: 'border-box',
                 fontSize: '18px',
                 fontWeight: '600',
                 paddingLeft: '14px',
@@ -419,10 +434,10 @@ export default function SpaceDetailPage() {
               }}
             >
               October 2023
-            </Stack>
+            </Box>
             {MOCK_DATA.upcomingEvents.map((event, index) => {
               return (
-                <Stack
+                <Box
                   key={index}
                   sx={{
                     width: '100%',
@@ -431,7 +446,7 @@ export default function SpaceDetailPage() {
                     gap: '4px'
                   }}
                 >
-                  <Stack
+                  <Box
                     sx={{
                       '&:hover': {
                         backgroundColor: '#ffffff1a'
@@ -444,8 +459,8 @@ export default function SpaceDetailPage() {
                     }}
                   >
                     <EventCard />
-                  </Stack>
-                  <Stack
+                  </Box>
+                  <Box
                     sx={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -472,7 +487,7 @@ export default function SpaceDetailPage() {
                           cursor: 'pointer'
                         }}
                         icon={
-                          <Stack
+                          <Box
                             sx={{
                               width: '24px',
                               height: '24px',
@@ -481,17 +496,17 @@ export default function SpaceDetailPage() {
                               boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                             }}
                           >
-                            <Stack
+                            <Box
                               sx={{
                                 transform: 'scale(0.75)'
                               }}
                             >
                               <HomeIcon />
-                            </Stack>
-                          </Stack>
+                            </Box>
+                          </Box>
                         }
                       >
-                        <Stack
+                        <Box
                           sx={{
                             display: 'flex',
                             flexDirection: 'row',
@@ -508,7 +523,7 @@ export default function SpaceDetailPage() {
                             side events around&nbsp;
                           </span>
                           <span>{event.topic}</span>
-                        </Stack>
+                        </Box>
                       </SidebarButton>
                     )}
                     <SidebarButton
@@ -529,13 +544,13 @@ export default function SpaceDetailPage() {
                       }}
                       content={event.topic}
                     ></SidebarButton>
-                  </Stack>
-                </Stack>
+                  </Box>
+                </Box>
               );
             })}
-          </Stack>
-        </Stack>
-        <Stack
+          </Box>
+        </Box>
+        <Box
           sx={{
             padding: '20px',
             display: 'flex',
@@ -543,7 +558,7 @@ export default function SpaceDetailPage() {
             gap: '20px'
           }}
         >
-          <Stack
+          <Box
             sx={{
               display: 'flex',
               width: '100%',
@@ -552,7 +567,7 @@ export default function SpaceDetailPage() {
               flexDirection: 'row'
             }}
           >
-            <Stack
+            <Box
               sx={{
                 fontSize: '18px',
                 fontWeight: '700',
@@ -560,7 +575,7 @@ export default function SpaceDetailPage() {
               }}
             >
               Past Events ({MOCK_DATA.pastEvents.length})
-            </Stack>
+            </Box>
             <SidebarButton
               sx={{
                 display: 'flex',
@@ -576,10 +591,10 @@ export default function SpaceDetailPage() {
               }}
               content="See All"
             ></SidebarButton>
-          </Stack>
+          </Box>
           {MOCK_DATA.pastEvents.map((event, index) => {
             return (
-              <Stack
+              <Box
                 sx={{
                   '&:hover': {
                     backgroundColor: '#ffffff1a'
@@ -593,11 +608,11 @@ export default function SpaceDetailPage() {
                 key={index}
               >
                 <EventCard />
-              </Stack>
+              </Box>
             );
           })}
-        </Stack>
-      </Stack>
-    </Stack>
+        </Box>
+      </Box>
+    </Box>
   );
 }
