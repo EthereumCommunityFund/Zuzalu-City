@@ -190,7 +190,16 @@ export default function SpaceDetailPage() {
             First-of-its-kind pop-up city to create, live longer and healthier
             lives, and build self-sustaining communities.
           </Typography>
-          <Stack className="text-[#7b7b7b] text-[10px] flex gap-[10px] uppercase">
+          <Stack
+            sx={{
+              color: '#7b7b7b',
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '10px',
+              textTransform: 'uppercase'
+            }}
+          >
             <p>ai</p>
             <p>community tools</p>
             <p>+3</p>
@@ -200,63 +209,15 @@ export default function SpaceDetailPage() {
       <Stack
         sx={{
           width: '100%',
-          height: '187px',
-          gap: 10,
           backgroundColor: '#222222'
         }}
       >
         <Stack
           sx={{
-            width: '100%',
-            height: "187px",
-            padding: "20px"
-          }}
-        >
-          <Stack
-            sx={{
-              position: 'relative',
-              width: '100%',
-              height: '100%'
-            }}
-          >
-            <Image
-              loader={() =>
-                'https://framerusercontent.com/images/TdxVYQUr9Y7YXNQIAMRRg3viRTs.png?scale-down-to=2048'
-              }
-              src={
-                'https://framerusercontent.com/images/TdxVYQUr9Y7YXNQIAMRRg3viRTs.png?scale-down-to=2048'
-              }
-              alt=""
-              width={'100'}
-              height={'240'}
-              className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
-            />
-            <Stack
-              sx={{
-                position: 'absolute',
-                backgroundColor: '#222c',
-                width: '100%',
-                height: '100%',
-                borderRadius: '10px'
-              }}
-            ></Stack>
-            <Stack
-              sx={{
-                position: 'absolute',
-                top: "20px",
-                left: "20px",
-                fontWeight: "700"
-              }}
-            >
-              Community Canvas
-            </Stack>
-          </Stack>
-        </Stack>
-        <Stack
-          sx={{
             padding: "20px",
             gap: "20px",
-            display: 'flex'
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           <Stack
@@ -372,7 +333,7 @@ export default function SpaceDetailPage() {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '20'
+              gap: '20px'
             }}
           >
             {MOCK_DATA.announcements.map((announcement, index) => {
@@ -517,7 +478,7 @@ export default function SpaceDetailPage() {
                               height: '24px',
                               borderRadius: '100%',
                               backgroundColor: '#ffffff14',
-                              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                             }}
                           >
                             <Stack
@@ -530,17 +491,24 @@ export default function SpaceDetailPage() {
                           </Stack>
                         }
                       >
-                        <span>{event.sideEvents}&nbsp;</span>
-                        <span
-                          style={{
-                            color: '#ffffff80',
-                            fontSize: '16px',
-                            fontWeight: '500'
+                        <Stack
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
                           }}
                         >
-                          side events around&nbsp;
-                        </span>
-                        <span>{event.topic}</span>
+                          <span>{event.sideEvents}&nbsp;</span>
+                          <span
+                            style={{
+                              color: '#ffffff80',
+                              fontSize: '16px',
+                              fontWeight: '500'
+                            }}
+                          >
+                            side events around&nbsp;
+                          </span>
+                          <span>{event.topic}</span>
+                        </Stack>
                       </SidebarButton>
                     )}
                     <SidebarButton

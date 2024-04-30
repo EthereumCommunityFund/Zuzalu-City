@@ -17,7 +17,6 @@ export default function SpacePageLayout({
 
   return (
     <Stack sx={{ color: 'white' }}>
-      <Header></Header>
       <Stack
         sx={{
           display: 'flex',
