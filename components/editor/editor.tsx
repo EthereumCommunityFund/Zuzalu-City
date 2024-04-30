@@ -1,75 +1,54 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import EditorJS, { ToolConstructable, ToolSettings } from '@editorjs/editorjs';
-import { tools } from './tools';
+import EditorJS, { OutputData } from "@editorjs/editorjs";
+import { tools } from "./tools";
+import { options } from './options'
+import { useEffect, useRef, Fragment, FC } from "react";
+import { Box, BoxProps } from "@mui/material";
 
-export const useEditor = (
-  toolsList: { [toolName: string]: ToolConstructable | ToolSettings<any> },
-  { data, editorRef }: any,
-  options: EditorJS.EditorConfig = {}
-) => {
-  const [editorInstance, setEditor] = useState<EditorJS | null>(null);
-  const {
-    data: ignoreData,
-    tools: ignoreTools,
-    holder: ignoreHolder,
-    ...editorOptions
-  } = options;
+interface TextEditorPropTypes extends BoxProps {
+  value?: OutputData,
+  setData?: (value: OutputData) => void,
+  holder: string
+}
 
-  // initialize
+export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, setData = (value: OutputData) => { console.log(value) }, holder = "editorjs", children, ...props }: TextEditorPropTypes) => {
+  const ref: any = useRef();
+
   useEffect(() => {
-    const editor = new EditorJS({
-      holder: 'editor-js',
+    if (!ref.current) {
 
-      tools: toolsList,
+      const editor = new EditorJS({
 
-      data: data || {},
+        holder: holder,
+        tools,
+        placeholder: 'Write an Amazing Blog',
+        data: value,
+        async onChange(api, event) {
+          const data = await api.saver.save();
+          setData(data);
+        },
+      })
 
-      initialBlock: 'paragraph',
-
-      ...editorOptions,
-    });
-
-    setEditor(editor);
+      ref.current = editor;
+    }
 
     return () => {
-      editor.isReady
-        .then(() => {
-          editor.destroy();
-          setEditor(null);
-        })
-        .catch((e) => console.error('ERROR editor cleanup', e));
+      if (ref.current && (ref.current as any).destroy) {
+        (ref.current as any).destroy();
+      }
     };
-  }, [toolsList]);
-
-  useEffect(() => {
-    if (!editorInstance) {
-      return;
-    }
-    if (editorRef) {
-      editorRef(editorInstance);
-    }
-  }, [editorInstance, editorRef]);
-
-  return { editor: editorInstance };
-};
-
-export const EditorContainer = ({
-  editorRef,
-  children,
-  data,
-  options,
-}: any) => {
-  useEditor(tools, { data, editorRef }, options);
+  }, [value, setData, holder]);
 
   return (
-    <React.Fragment>
-      {!children && (
-        <div
-          className="w-full bg-[#F0F0F0] p-[10px] sm:p-[20px] max-h-[197px] rounded-[10px] overflow-auto"
-          id="editor-js"
-        ></div>
-      )}
-      {children}
-    </React.Fragment>
-  );
-};
+    <Fragment>
+      {
+        children ? children : <Box
+          id={holder}
+          {
+          ...props
+          }
+        >
+        </Box>
+      }
+    </Fragment>
+  )
+}
