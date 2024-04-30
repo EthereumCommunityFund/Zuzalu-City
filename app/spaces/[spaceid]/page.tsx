@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from '@mui/material/styles';
+import { Stack, Typography } from '@mui/material';
 import { EventCard } from 'components';
 import AnnouncementCard from 'components/AnnouncementCart';
 import {
@@ -21,6 +23,8 @@ export default function SpaceDetailPage() {
   >([]);
   const [showMore, setShowMore] = useState(false);
 
+  const theme = useTheme();
+
   useEffect(() => {
     if (showMore) {
       setAboutContent(MOCK_DATA.zuzaContributorContent);
@@ -30,9 +34,35 @@ export default function SpaceDetailPage() {
   }, [showMore]);
 
   return (
-    <div className="lg:w-[calc(100%-530px)] w-full">
-      <div className="p-[20px] w-full bg-[#2b2b2b] flex flex-col gap-[20px] border-b border-b-[#ffffff1a]">
-        <div className="relative w-full h-[240px]">
+    <Stack
+      sx={{
+        width: "100%",
+        [theme.breakpoints.down('lg')]: {
+          width: "calc(100% - 280px)"
+        },
+        [theme.breakpoints.down('md')]: {
+          width: '100%'
+        }
+      }}
+    >
+      <Stack
+        sx={{
+          padding: '20px',
+          width: '100%',
+          backgroundColor: '#2b2b2b',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          borderBottom: '1px solid #ffffff1a'
+        }}
+      >
+        <Stack
+          sx={{
+            position: 'relative',
+            width: '100%',
+            height: '240px'
+          }}
+        >
           <Image
             loader={() =>
               'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=1024 1024w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png 1920w'
@@ -43,9 +73,31 @@ export default function SpaceDetailPage() {
             alt=""
             width={'100'}
             height={'240'}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              objectFit: 'cover',
+              width: '100%',
+              height: '100%',
+              borderRadius: '10px'
+            }}
             className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
           />
-          <div className="w-[90px] h-[90px] bg-[#2b2b2b] absolute bottom-[-30px] rounded-full left-[20px] items-center justify-center flex">
+          <Stack
+            sx={{
+              width: '90px',
+              height: '90px',
+              backgroundColor: '#2b2b2b',
+              position: 'absolute',
+              bottom: '-30px',
+              borderRadius: '100%',
+              left: '20px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              display: 'flex',
+              flexDirection: 'row'
+            }}
+          >
             <Image
               loader={() =>
                 'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
@@ -57,43 +109,116 @@ export default function SpaceDetailPage() {
               height={80}
               alt=""
             />
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <div className="flex gap-[10px]">
+          </Stack>
+        </Stack>
+        <Stack
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-end'
+          }}
+        >
+          <Stack
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '10px'
+            }}
+          >
             <SidebarButton
               content="Join Space"
-              className="px-[14px] py-[10px] rounded-[10px] bg-[#ffffff0a] hover:bg-[#ffffff1a] flex gap-[10px] cursor-pointer whitespace-nowrap"
+              sx={{
+                padding: '10px 14px',
+                borderRadius: '10px',
+                backgroundColor: '#ffffff0a',
+                '&:hover': {
+                  backgroundColor: '#ffffff1a'
+                },
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '10px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
               icon={<PlusCircleIcon />}
             ></SidebarButton>
             <SidebarButton
-              className="p-[10px] rounded-[10px] bg-[#ffffff0a] hover:bg-[#ffffff1a] cursor-pointer"
+              sx={{
+                padding: '10px',
+                borderRadius: '10px',
+                backgroundColor: '#ffffff0a',
+                '&:hover': {
+                  backgroundColor: '#ffffff1a'
+                },
+                cursor: 'pointer'
+              }}
               icon={<ShareIcon />}
             ></SidebarButton>
             <SidebarButton
-              className="p-[10px] rounded-[10px] bg-[#ffffff0a] hover:bg-[#ffffff1a] cursor-pointer"
+              sx={{
+                padding: '10px',
+                borderRadius: '10px',
+                backgroundColor: '#ffffff0a',
+                '&:hover': {
+                  backgroundColor: '#ffffff1a'
+                },
+                cursor: 'pointer'
+              }}
               icon={<MoreIcon />}
             ></SidebarButton>
-          </div>
-        </div>
-        <div className="flex flex-col gap-[10px] px-[20px]">
-          <p className="font-bold text-[25px] leading-[120%]">
+          </Stack>
+        </Stack>
+        <Stack
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            paddingLeft: '20px',
+            paddingRight: '20px'
+          }}
+        >
+          <Typography
+            fontWeight={700}
+            fontSize={'25px'}
+            lineHeight={'120%'}
+          >
             Zuzalu City Contributors
-          </p>
-          <p className="text-[#bebebe]">
+          </Typography>
+          <Typography
+            color={'#bebebe'}
+          >
             First-of-its-kind pop-up city to create, live longer and healthier
             lives, and build self-sustaining communities.
-          </p>
-          <div className="text-[#7b7b7b] text-[10px] flex gap-[10px] uppercase">
+          </Typography>
+          <Stack className="text-[#7b7b7b] text-[10px] flex gap-[10px] uppercase">
             <p>ai</p>
             <p>community tools</p>
             <p>+3</p>
-          </div>
-        </div>
-      </div>
-      <div className="w-full flex flex-col gap-[10px] bg-[#222222]">
-        <div className="w-full h-[187px] p-[20px]">
-          <div className="relative w-full h-full">
+          </Stack>
+        </Stack>
+      </Stack>
+      <Stack
+        sx={{
+          width: '100%',
+          height: '187px',
+          gap: 10,
+          backgroundColor: '#222222'
+        }}
+      >
+        <Stack
+          sx={{
+            width: '100%',
+            height: "187px",
+            padding: "20px"
+          }}
+        >
+          <Stack
+            sx={{
+              position: 'relative',
+              width: '100%',
+              height: '100%'
+            }}
+          >
             <Image
               loader={() =>
                 'https://framerusercontent.com/images/TdxVYQUr9Y7YXNQIAMRRg3viRTs.png?scale-down-to=2048'
@@ -106,62 +231,150 @@ export default function SpaceDetailPage() {
               height={'240'}
               className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
             />
-            <div className="absolute bg-[#222c] w-full h-full rounded-[10px]"></div>
-            <div className="absolute top-5 left-5 font-bold">
+            <Stack
+              sx={{
+                position: 'absolute',
+                backgroundColor: '#222c',
+                width: '100%',
+                height: '100%',
+                borderRadius: '10px'
+              }}
+            ></Stack>
+            <Stack
+              sx={{
+                position: 'absolute',
+                top: "20px",
+                left: "20px",
+                fontWeight: "700"
+              }}
+            >
               Community Canvas
-            </div>
-          </div>
-        </div>
-        <div className="p-5 gap-5 flex flex-col">
-          <div className="text-[18px] font-bold text-[#919191]">
+            </Stack>
+          </Stack>
+        </Stack>
+        <Stack
+          sx={{
+            padding: "20px",
+            gap: "20px",
+            display: 'flex'
+          }}
+        >
+          <Stack
+            sx={{
+              fontSize: '18px',
+              fontWeight: "700",
+              color: '#919191'
+            }}
+          >
             About Zuzalu City Contributors
-          </div>
-          <div
-            className={
-              'p-5 w-full bg-[#ffffff05] rounded-[10px] ' +
-              (showMore ? 'h-fit' : 'h-[147px]')
-            }
+          </Stack>
+          <Stack
+            sx={{
+              padding: "20px",
+              width: '100%',
+              backgroundColor: '#ffffff05',
+              borderRadius: '10px',
+              height: showMore ? 'fit-content' : "147px"
+            }}
           >
             {aboutContent.length > 0 &&
               aboutContent.map((content, index) => {
                 return (
-                  <div key={index}>
-                    <div
-                      className={
-                        (index !== 0 ? 'mt-3' : '') +
-                        ' font-bold text-[#bebebe]'
-                      }
+                  <Stack key={index}>
+                    <Stack
+                      sx={{
+                        fontWeight: "700",
+                        color: '#bebebe',
+                        marginTop: index !== 0 ? '12px' : ''
+                      }}
                     >
                       {content.title}
-                    </div>
-                    <div className="mt-3 text-[#bebebe] font-semibold">
+                    </Stack>
+                    <Stack
+                      sx={{
+                        marginTop: '12px',
+                        color: '#bebebe',
+                        fontWeight: "600"
+                      }}
+                    >
                       {content.content}
-                    </div>
-                  </div>
+                    </Stack>
+                  </Stack>
                 );
               })}
-          </div>
+          </Stack>
           <SidebarButton
-            className="w-full px-[14px] py-[10px] bg-[#2b2b2b] hover:bg-[#ffffff1a] rounded-[10px] flex items-center justify-center cursor-pointer"
+            sx={{
+              width: '100%',
+              padding: '10px 14px',
+              backgroundColor: '#2b2b2b',
+              '&:hover': {
+                backgroundColor: '#ffffff1a',
+              },
+              borderRadius: '10px',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
             content={showMore ? 'Show Less' : 'Show More'}
             onClick={() => {
               console.log('clicked!');
               setShowMore(!showMore);
             }}
           ></SidebarButton>
-        </div>
-        <div className="p-5 flex flex-col gap-[20px]">
-          <div className="flex w-full justify-between items-center">
-            <div className="text-[18px] font-bold text-[#919191]">
+        </Stack>
+        <Stack
+          sx={{
+            padding: "20px",
+            display: 'flex',
+            gap: "20px"
+          }}
+        >
+          <Stack
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              width: '100%',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <Stack
+              sx={{
+                fontSize: '18px',
+                fontWeight: '700',
+                color: '#919191'
+              }}
+            >
               Latest Announcements
-            </div>
+            </Stack>
             <SidebarButton
-              className="flex gap-[10px] px-[10px] py-1 cursor-pointer hover:bg-[#e6e6e61a] bg-transparent rounded-[10px] opacity-70"
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                padding: '4px 10px',
+                gap: '10px',
+                cursor: 'pointer',
+                backgroundColor: 'transparent',
+                '&:hover': {
+                  backgroundColor: '#e6e6e61a'
+                },
+                borderRadius: '10px',
+                opacity: 0.7
+              }}
               content="View All Posts"
               rightIcon={<RightArrowCircleSmallIcon />}
             ></SidebarButton>
-          </div>
-          <div className="flex flex-col gap-5">
+          </Stack>
+          <Stack
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20'
+            }}
+          >
             {MOCK_DATA.announcements.map((announcement, index) => {
               return (
                 <AnnouncementCard
@@ -170,43 +383,161 @@ export default function SpaceDetailPage() {
                 ></AnnouncementCard>
               );
             })}
-          </div>
-        </div>
-        <div className="p-5 flex flex-col gap-[20px]">
-          <div className="flex w-full justify-between items-center">
-            <div className="text-[18px] font-bold text-[#919191]">
+          </Stack>
+        </Stack>
+        <Stack
+          sx={{
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px'
+          }}
+        >
+          <Stack
+            sx={{
+              display: 'flex',
+              width: '100%',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexDirection: 'row'
+            }}
+          >
+            <Stack
+              sx={{
+                fontSize: '18px',
+                fontWeight: '700',
+                color: '#919191',
+              }}
+            >
               Upcoming Events ({MOCK_DATA.upcomingEvents.length})
-            </div>
+            </Stack>
             <SidebarButton
-              className="flex gap-[10px] px-[10px] py-1 cursor-pointer hover:bg-[#e6e6e61a] bg-transparent rounded-[10px] opacity-70"
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '10px',
+                padding: '4px 10px',
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: '#e6e6e61a'
+                },
+                backgroundColor: 'transparent',
+                borderRadius: '10px',
+                opacity: 0.7
+              }}
               content="View All Events"
               rightIcon={<RightArrowCircleSmallIcon />}
             ></SidebarButton>
-          </div>
-          <div className="w-full flex flex-col gap-[10px]">
-            <div className="w-full text-[18px] font-semibold px-[14px] py-2 border border-[#ffffff1a] rounded-full flex items-center justify-center sticky backdrop-blur-[40px] top-[10px] bg-[#222222cc]">
+          </Stack>
+          <Stack
+            sx={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px'
+            }}
+          >
+            <Stack
+              sx={{
+                width: '100%',
+                fontSize: '18px',
+                fontWeight: '600',
+                paddingLeft: '14px',
+                paddingRight: '14px',
+                paddingTop: '8px',
+                paddingBottom: '8px',
+                border: '1px solid #ffffff1a',
+                borderRadius: '50px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'sticky',
+                backdropFilter: 'blur(40px)',
+                top: '10px',
+                backgroundColor: '#222222cc'
+              }}
+            >
               October 2023
-            </div>
+            </Stack>
             {MOCK_DATA.upcomingEvents.map((event, index) => {
               return (
-                <div key={index} className="w-full flex flex-col gap-1">
-                  <div className="hover:bg-[#ffffff1a] transition ease-in duration-300 cursor-pointer rounded-[10px]">
+                <Stack
+                  key={index}
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px'
+                  }}
+                >
+                  <Stack
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: '#ffffff1a'
+                      },
+                      transition: 'all',
+                      transitionTimingFunction: 'ease-in',
+                      transitionDuration: '300',
+                      cursor: 'pointer',
+                      borderRadius: '10px'
+                    }}
+                  >
                     <EventCard />
-                  </div>
-                  <div className="flex gap-1">
+                  </Stack>
+                  <Stack
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      gap: '20px'
+                    }}
+                  >
                     {event.sideEvents > 0 && (
                       <SidebarButton
-                        className="px-[10px] py-[6px] bg-[#ffffff05] hover:bg-[#e6e6e60f] transition ease-in duration-300 rounded-full flex items-center gap-[10px] w-fit cursor-pointer"
+                        sx={{
+                          padding: '6px 10px',
+                          backgroundColor: '#ffffff05',
+                          '&:hover': {
+                            backgroundColor: '#e6e6e60f'
+                          },
+                          transition: 'all',
+                          transitionTimingFunction: 'ease-in',
+                          transitionDuration: '300',
+                          borderRadius: '100px',
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: '10px',
+                          width: 'fit-content',
+                          cursor: 'pointer'
+                        }}
                         icon={
-                          <div className="w-6 h-6 rounded-full bg-[#ffffff14] shadow-sm">
-                            <div className="scale-75">
+                          <Stack
+                            sx={{
+                              width: '24px',
+                              height: '24px',
+                              borderRadius: '100%',
+                              backgroundColor: '#ffffff14',
+                              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                            }}
+                          >
+                            <Stack
+                              sx={{
+                                transform: 'scale(0.75)'
+                              }}
+                            >
                               <HomeIcon />
-                            </div>
-                          </div>
+                            </Stack>
+                          </Stack>
                         }
                       >
                         <span>{event.sideEvents}&nbsp;</span>
-                        <span className="text-[#ffffff80] text-[16px] font-medium">
+                        <span
+                          style={{
+                            color: '#ffffff80',
+                            fontSize: '16px',
+                            fontWeight: '500'
+                          }}
+                        >
                           side events around&nbsp;
                         </span>
                         <span>{event.topic}</span>
@@ -214,37 +545,91 @@ export default function SpaceDetailPage() {
                     )}
                     <SidebarButton
                       icon={<EventIcon />}
-                      className="px-[10px] py-[6px] hover:bg-[#ffffff1a] bg-transparent rounded-[10px] flex items-center gap-[10px] w-fit cursor-pointer"
+                      sx={{
+                        padding: '6px 10px',
+                        '&:hover': {
+                          backgroundColor: '#ffffff1a'
+                        },
+                        backgroundColor: 'transparent',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: '10px',
+                        width: 'fit-content',
+                        cursor: 'pointer'
+                      }}
                       content={event.topic}
                     ></SidebarButton>
-                  </div>
-                </div>
+                  </Stack>
+                </Stack>
               );
             })}
-          </div>
-        </div>
-        <div className="p-5 flex flex-col gap-5">
-          <div className="flex w-full justify-between items-center">
-            <div className="text-[18px] font-bold text-[#919191]">
+          </Stack>
+        </Stack>
+        <Stack
+          sx={{
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px'
+          }}
+        >
+          <Stack
+            sx={{
+              display: 'flex',
+              width: '100%',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexDirection: 'row'
+            }}
+          >
+            <Stack
+              sx={{
+                fontSize: '18px',
+                fontWeight: '700',
+                color: '#919191'
+              }}
+            >
               Past Events ({MOCK_DATA.pastEvents.length})
-            </div>
+            </Stack>
             <SidebarButton
-              className="flex gap-[10px] px-[10px] py-1 cursor-pointer hover:bg-[#e6e6e61a] bg-transparent rounded-[10px] opacity-70"
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                padding: '4px 10px',
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: '#e6e6e61a',
+                },
+                backgroundColor: 'transparent',
+                borderRadius: '10px',
+                opacity: 0.7
+              }}
               content="See All"
             ></SidebarButton>
-          </div>
+          </Stack>
           {MOCK_DATA.pastEvents.map((event, index) => {
             return (
-              <div
-                className="hover:bg-[#ffffff1a] transition ease-in duration-300 cursor-pointer rounded-[10px]"
+              <Stack
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a'
+                  },
+                  transition: 'all',
+                  transitionTimingFunction: 'ease-in',
+                  transitionDuration: '300',
+                  cursor: 'pointer',
+                  borderRadius: '10px'
+                }}
                 key={index}
               >
                 <EventCard />
-              </div>
+              </Stack>
             );
           })}
-        </div>
-      </div>
-    </div>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }

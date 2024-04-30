@@ -1,5 +1,9 @@
+"use client";
+
 import { Header, Sidebar } from 'components/layout';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
+import { Stack } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 
 interface SpacePageLayoutPropTypes {
   children: React.ReactNode;
@@ -8,18 +12,39 @@ interface SpacePageLayoutPropTypes {
 export default function SpacePageLayout({
   children,
 }: SpacePageLayoutPropTypes) {
+
+  const theme = useTheme();
+
   return (
-    <div style={{ color: 'white' }}>
+    <Stack sx={{ color: 'white' }}>
       <Header></Header>
-      <div className="flex justify-between">
-        <div className="flex">
-          <div className="lg:block hidden">
+      <Stack
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: "space-between"
+        }}
+      >
+        <Stack
+          sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}
+        >
+          <Stack
+            sx={{
+              display: 'none',
+              [theme.breakpoints.up('lg')]: {
+                display: 'block'
+              }
+            }}
+          >
             <Sidebar></Sidebar>
-          </div>
+          </Stack>
           <SubSidebar></SubSidebar>
-        </div>
+        </Stack>
         {children}
-      </div>
-    </div>
+      </Stack>
+    </Stack>
   );
 }
