@@ -429,7 +429,7 @@ const Event = () => {
                 />
               </Box>
               <ZuButton
-                variant='contained'
+                variant="contained"
                 sx={{
                   backgroundColor: '#353535',
                   color: 'white',
@@ -476,7 +476,7 @@ const Event = () => {
               200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
             </Typography>
             <ZuButton
-              variant='outlined'
+              variant="outlined"
               sx={{
                 color: 'white',
                 borderRadius: '30px',

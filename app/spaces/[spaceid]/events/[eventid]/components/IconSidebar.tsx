@@ -17,8 +17,8 @@ const IconSidebar = () => {
       bgcolor="#2D2D2D"
       direction="column"
       spacing={3}
-      width="60px"
-      height="100vh"
+      width="65px"
+      height="auto"
       paddingTop={3}
     >
       <Stack direction="column" spacing={3} alignItems="center">

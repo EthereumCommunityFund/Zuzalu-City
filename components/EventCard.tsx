@@ -5,19 +5,19 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from './icons';
 
 type EventCardProps = {
-  by?: string,
-  name?: string,
-  description?: string,
-  location?: string,
-  logo?: string
-}
+  by?: string;
+  name?: string;
+  description?: string;
+  location?: string;
+  logo?: string;
+};
 
 const EventCard: React.FC<EventCardProps> = ({
   by = 'Zuzalu Contributor',
   name = 'HackZuzalu ChiangMai',
   description = 'A Popup Village of Innovation in the Heart of Istanbul',
   location = 'ISTANBUL, TURKEY',
-  logo = '/4.webp'
+  logo = '/4.webp',
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
