@@ -10,6 +10,7 @@ import {
   HomeIcon,
   SpacePlusIcon,
 } from 'components/icons';
+import Link from 'next/link';
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
