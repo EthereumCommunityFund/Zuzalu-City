@@ -13,7 +13,7 @@ let theme = createTheme({
       sm: 600,
       md: 1024,
       lg: 1200,
-      xl: 1440
+      xl: 1440,
     },
   },
   typography: { ...Typography },
@@ -35,11 +35,11 @@ let theme = createTheme({
           },
           '@media(min-width: 1200px)': {
             ...Typography.buttonLSB,
-            padding: '8px 14px'
+            padding: '8px 14px',
           },
           '@media(min-width: 1536px)': {
             ...Typography.buttonLSB,
-            padding: '10px 14px'
+            padding: '10px 14px',
           },
         },
         outlined: {
@@ -58,16 +58,16 @@ let theme = createTheme({
           },
           '@media(min-width: 1200px)': {
             ...Typography.buttonLSB,
-            padding: '8px 14px'
+            padding: '8px 14px',
           },
           '@media(min-width: 1536px)': {
             ...Typography.buttonLSB,
-            padding: '10px 14px'
+            padding: '10px 14px',
           },
         },
-      }
-    }
-  }
+      },
+    },
+  },
   // components: {
   //   MuiGrid: {
   //     defaultProps: {

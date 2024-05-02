@@ -94,21 +94,21 @@ export const MOCK_DATA = {
       name: 'Eth Improv',
       description: 'A Popup Village of Innovation in the Heart of Istanbul',
       location: 'ISTANBUL, TURKEY',
-      logo: '/13.webp'
+      logo: '/13.webp',
     },
     {
       by: 'Zuzalu Contributor',
       name: 'HackZuzalu',
       description: 'A Popup Village of Innovation in the Heart of Istanbul',
       location: 'ISTANBUL, TURKEY',
-      logo: '/14.webp'
+      logo: '/14.webp',
     },
     {
       by: 'Zuzalu Contributor',
       name: 'ZuCity Meetings',
       description: 'A Popup Village of Innovation in the Heart of Istanbul',
       location: 'online',
-      logo: '/1.webp'
-    }
-  ]
+      logo: '/1.webp',
+    },
+  ],
 };

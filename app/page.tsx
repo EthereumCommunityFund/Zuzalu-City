@@ -27,12 +27,12 @@ const Home: React.FC = () => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
         <Header />
-        <Box display="grid" gridTemplateColumns={"auto 1fr"}>
+        <Box display="grid" gridTemplateColumns={'auto 1fr'}>
           {!isTablet && <Sidebar />}
           <Box
             borderLeft="1px solid #383838"
             padding={isMobile ? '10px' : '30px'}
-            overflow={"hidden"}
+            overflow={'hidden'}
           >
             <Box
               display="flex"
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
                 Welcome to the new Zuzalu City
               </Typography>
               <Button
-                variant='contained'
+                variant="contained"
                 sx={{
                   backgroundColor: '#383838',
                   color: 'white',

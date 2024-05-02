@@ -17,7 +17,9 @@ const BpIcon = styled('span')(({ theme }) => ({
   'input:disabled ~ &': {
     boxShadow: 'none',
     background:
-      theme.palette.mode === 'dark' ? 'rgba(57,75,89,.5)' : 'rgba(206,217,224,.5)',
+      theme.palette.mode === 'dark'
+        ? 'rgba(57,75,89,.5)'
+        : 'rgba(206,217,224,.5)',
   },
 }));
 

@@ -12,8 +12,8 @@ const Header = () => {
       padding="10px 14px"
       borderBottom="1px solid #383838"
       bgcolor="#2d2d2d"
-    > 
-      <Stack direction='row' spacing={2} alignItems="center">
+    >
+      <Stack direction="row" spacing={2} alignItems="center">
         <ZuButton startIcon={<LeftArrowIcon />}>Back</ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">
           HackZuzalu
@@ -40,7 +40,7 @@ const Header = () => {
         </Stack>
       </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default Header;
