@@ -27,12 +27,12 @@ const Home: React.FC = () => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
         <Header />
-        <Box display="flex">
+        <Box display="grid" gridTemplateColumns={"auto 1fr"}>
           {!isTablet && <Sidebar />}
           <Box
             borderLeft="1px solid #383838"
-            flexGrow={1}
             padding={isMobile ? '10px' : '30px'}
+            overflow={"hidden"}
           >
             <Box
               display="flex"
@@ -96,7 +96,6 @@ const Home: React.FC = () => {
                 </Typography>
               </Box>
               <Carousel items={MOCK_DATA.spaces} />
-              {/* {isDesktop && <LotteryCard />} */}
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   flexGrow={1}
@@ -221,9 +220,6 @@ const Home: React.FC = () => {
                         }}
                       />
                     </Box>
-                    {/* <Box>
-                      <ZuSelect></ZuSelect>
-                    </Box> */}
                   </Box>
                 )}
               </Box>

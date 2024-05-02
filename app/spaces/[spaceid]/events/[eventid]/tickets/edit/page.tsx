@@ -7,7 +7,6 @@ import { Tabbar } from 'components/layout';
 
 const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
-  console.log('tab', tabName);
 
   const renderPage = () => {
     switch (tabName) {

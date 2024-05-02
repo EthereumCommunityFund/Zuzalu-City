@@ -18,7 +18,6 @@ function TicketLayout({
   return (
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
-        <Header />
         <Navbar />
         <div>{children}</div>
       </ThemeProvider>
