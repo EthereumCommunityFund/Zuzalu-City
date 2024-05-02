@@ -5,7 +5,7 @@ import { SearchIcon, HomeIcon, MegaPhoneIcon, EventIcon, ArrowDownIcon } from 'c
 const Sidebar = () => {
 
   return (
-    <Stack padding={2} direction='column' spacing={1} width={250} bgcolor='#222222' height='auto'>
+    <Stack padding={2} direction='column' spacing={1} width={"280px"} bgcolor='#222222' height='auto'>
       <Stack>
         <Stack 
           bgcolor='#404440' borderRadius='10px' border='1px solid #383838' 
