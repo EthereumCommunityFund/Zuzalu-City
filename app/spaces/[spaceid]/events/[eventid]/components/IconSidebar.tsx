@@ -6,7 +6,7 @@ import { BoltIcon, CalendarIcon, HomeIcon, SpaceIcon, SpacePlusIcon, StreamIcon 
 
 const IconSidebar = () => {
   return (
-    <Stack bgcolor='#2D2D2D' direction='column' spacing={3} width='60px' height='auto' paddingTop={3}>
+    <Stack bgcolor='#2D2D2D' direction='column' spacing={3} width='65px' height='auto' paddingTop={3}>
       <Stack direction='column' spacing={3} alignItems='center'>
         <Stack>
           <HomeIcon />
