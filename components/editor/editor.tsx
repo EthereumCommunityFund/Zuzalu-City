@@ -36,7 +36,7 @@ export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, se
         (ref.current as any).destroy();
       }
     };
-  }, [value, setData, holder]);
+  }, []);
 
   return (
     <Fragment>
