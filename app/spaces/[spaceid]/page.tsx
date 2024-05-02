@@ -292,7 +292,6 @@ export default function SpaceDetailPage() {
             }}
             content={showMore ? 'Show Less' : 'Show More'}
             onClick={() => {
-              console.log('clicked!');
               setShowMore(!showMore);
             }}
           ></SidebarButton>

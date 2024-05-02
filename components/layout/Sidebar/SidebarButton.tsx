@@ -17,7 +17,6 @@ export default function SidebarButton({
   rightIcon,
   ...props
 }: SidebarButtonPropTypes) {
-  console.log(Object.keys.length > 0)
   return (
     <Box
       sx={
