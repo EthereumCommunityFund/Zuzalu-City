@@ -6,13 +6,13 @@ import { IconSidebar, Header, Thumb, EventName, EventAbout, EventRegister, Event
 const Home = () => {
   const [tabName, setTabName] = React.useState<string>('About');
   const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   return (
     <Stack direction='row'>
-      {!isTablet && <IconSidebar />}
-      {!isTablet && <Sidebar />}
+      {!isDesktop && <IconSidebar />}
+      {!isDesktop && <Sidebar />}
       <Stack flex={1} borderLeft='1px solid #383838'>
         <Header />
         <Thumb tabName={tabName} setTabName={setTabName} />
