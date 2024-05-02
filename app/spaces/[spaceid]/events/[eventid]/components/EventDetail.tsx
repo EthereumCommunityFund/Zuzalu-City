@@ -49,7 +49,7 @@ const EventDetail = () => {
         <Typography color='white' variant='bodyS'>
           Apply to see address
         </Typography>
-        <Box component='img' borderRadius='10px' src='/Map.png' />
+        <Box component='img' borderRadius='10px' height={"182px"} src='/Map.png' />
       </Stack>
     </Stack>
   )
