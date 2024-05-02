@@ -40,7 +40,6 @@ export default function SpacePageLayout({
           >
             <Sidebar></Sidebar>
           </Box>
-          <SubSidebar></SubSidebar>
         </Box>
         {children}
       </Box>
