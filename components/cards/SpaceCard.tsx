@@ -8,7 +8,7 @@ import {
   CardActions,
   Box,
 } from '@mui/material';
-import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from './icons';
+import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
 
 export type SpaceCardProps = {
   bgImage: string;

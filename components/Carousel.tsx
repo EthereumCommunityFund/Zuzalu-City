@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
-import SpaceCard from './SpaceCard';
+import SpaceCard from './cards/SpaceCard';
 import { useTheme, useMediaQuery } from '@mui/material';
 
 export interface CarouselProps {
