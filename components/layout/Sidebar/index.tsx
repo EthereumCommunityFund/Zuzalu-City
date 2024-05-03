@@ -10,12 +10,13 @@ import {
   HomeIcon,
   SpacePlusIcon,
 } from 'components/icons';
+import Link from 'next/link';
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
 
   return (
-    <Box sx={{ width: '270px', height: '100vh' }}>
+    <Box sx={{ width: '260px', height: '100vh' }}>
       <Box
         display="flex"
         flexDirection="column"
@@ -31,6 +32,7 @@ const Sidebar: React.FC = () => {
           bgcolor="#383838"
           gap="10px"
           borderRadius="10px"
+          onClick={() => router.push('/')}
         >
           <HomeIcon />
           <Typography color="white" variant="bodyMB">

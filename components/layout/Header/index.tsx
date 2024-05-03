@@ -18,7 +18,7 @@ const Header = () => {
   const { showAuthPrompt } = useCeramicContext();
   return (
     <Box
-      height="33px"
+      height="50px"
       bgcolor="#2D2D2D"
       display="flex"
       alignItems="center"

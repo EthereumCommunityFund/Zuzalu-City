@@ -65,6 +65,114 @@ export const MOCK_DATA = {
       joined: false,
     },
   ],
+  zuzaContributorContent: [
+    {
+      title: 'Welcome to the Zuzalu City Contributors Community Server!',
+      content:
+        'Greetings, esteemed members and newcomers alike, to our digital hub dedicated to the vibrant community of Zuzalu City Contributors! As part of the illustrious Zuzalu project, our community serves as the beating heart of collaboration, creativity, and camaraderie.',
+    },
+    {
+      title: 'About Zuzalu City Contributors:',
+      content:
+        "Zuzalu City Contributors is a collective of passionate individuals committed to enhancing the fabric of Zuzalu City. Whether you're an artist, developer, urban planner, or simply someone with a deep love for community building, there's a place for you here. Our mission? To foster innovation, inclusivity, and sustainable growth within our beloved city.",
+    },
+    {
+      title: 'What to Expect:',
+      content:
+        "Within these virtual walls, you'll find a plethora of channels tailored to various interests and pursuits. Engage in lively discussions about urban design in #CityPlanning, showcase your latest artistic endeavors in #CreativeCorner, or collaborate on exciting projects in #CollabCentral. The possibilities are as boundless as the imagination of our diverse membership.",
+    },
+    {
+      title: 'Community Guidelines:',
+      content:
+        'To ensure that our server remains a welcoming and constructive space for all, we uphold a set of community guidelines. Respect, empathy, and open-mindedness are the cornerstones of our interactions. We encourage active participation, but kindly request that all discourse remains civil and constructive.',
+    },
+    {
+      title: 'Join the Conversation:',
+      content:
+        "Whether you're a seasoned contributor or a newcomer eager to make your mark, we invite you to dive in, connect with fellow Zuzalu enthusiasts, and contribute your unique perspective to our shared vision.",
+    },
+  ],
+  announcements: [
+    {
+      title: 'Announcement 2024',
+      content:
+        'On May 6-9, we are organizing an intensive crash course for people interested in contributing to advancing longevity 🧬  followed by a training on longevity advocacy and a 2-day hackathon to put your newly acquired longevity knowledge to practical use.  The main longevity course (6-9) will require full-time participation (9am - 5pm each day), but the follow up events are much more flexible.  To attend, please fill out this sign up form on our website! We would like to get an accurate heads count, and an idea of the student background to help teachers prepare the course better.  More information about the course, the syllabus, and the workshops can also be found on the website. https://www.longevitycourse.org/zuzalu-signup ',
+      author: 'slyguy.eth',
+      authorId: '@itsyaboi',
+      avatar:
+        'https://framerusercontent.com/images/MMSanzcf8VST5IJC6gR0qbqxE.png',
+      image:
+        'https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=512 512w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=1024 1024w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=2048 2048w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=4096 4096w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg 5000w',
+      role: 'admin',
+    },
+    {
+      title: 'Announcement 2024',
+      content:
+        'On May 6-9, we are organizing an intensive crash course for people interested in contributing to advancing longevity 🧬  followed by a training on longevity advocacy and a 2-day hackathon to put your newly acquired longevity knowledge to practical use.  The main longevity course (6-9) will require full-time participation (9am - 5pm each day), but the follow up events are much more flexible.  To attend, please fill out this sign up form on our website! We would like to get an accurate heads count, and an idea of the student background to help teachers prepare the course better.  More information about the course, the syllabus, and the workshops can also be found on the website. https://www.longevitycourse.org/zuzalu-signup ',
+      author: 'slyguy.eth',
+      authorId: '@itsyaboi',
+      avatar:
+        'https://framerusercontent.com/images/MMSanzcf8VST5IJC6gR0qbqxE.png',
+      role: 'admin',
+      image:
+        'https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=512 512w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=1024 1024w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=2048 2048w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=4096 4096w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg 5000w',
+    },
+    {
+      title: 'Announcement 2024',
+      content:
+        'On May 6-9, we are organizing an intensive crash course for people interested in contributing to advancing longevity 🧬  followed by a training on longevity advocacy and a 2-day hackathon to put your newly acquired longevity knowledge to practical use.  The main longevity course (6-9) will require full-time participation (9am - 5pm each day), but the follow up events are much more flexible.  To attend, please fill out this sign up form on our website! We would like to get an accurate heads count, and an idea of the student background to help teachers prepare the course better.  More information about the course, the syllabus, and the workshops can also be found on the website. https://www.longevitycourse.org/zuzalu-signup ',
+      author: 'slyguy.eth',
+      authorId: '@itsyaboi',
+      avatar:
+        'https://framerusercontent.com/images/MMSanzcf8VST5IJC6gR0qbqxE.png',
+      role: 'admin',
+      image:
+        'https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=512 512w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=1024 1024w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=2048 2048w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg?scale-down-to=4096 4096w,https://framerusercontent.com/images/IVzfVIuntoNeHlnGSUzpGwP3LQ.jpg 5000w',
+    },
+  ],
+  upcomingEvents: [
+    {
+      eventBy: 'Zuzalu Contributor',
+      startDate: 'October 8',
+      endDate: 'October 28',
+      topic: 'Eth Improv',
+      content: 'A Popup Village of Innovation in the Heart of Istanbul ',
+      location: 'Istanbul, Turkey',
+      gated: true,
+      sideEvents: 0,
+    },
+    {
+      eventBy: 'Zuzalu Contributor',
+      startDate: 'October 8',
+      endDate: 'October 28',
+      topic: 'HackZuzalu',
+      content: 'A Popup Village of Innovation in the Heart of Istanbul ',
+      location: 'Istanbul, Turkey',
+      gated: true,
+      sideEvents: 12,
+    },
+    {
+      eventBy: 'Zuzalu Contributor',
+      startDate: 'October 8',
+      endDate: 'October 28',
+      topic: 'ZuCity Meetings',
+      content: 'A Popup Village of Innovation in the Heart of Istanbul ',
+      location: 'online',
+      gated: true,
+      sideEvents: 0,
+    },
+  ],
+  pastEvents: [
+    {
+      eventBy: 'Zuzalu Contributor',
+      startDate: 'October 8',
+      endDate: 'October 28',
+      topic: 'ZuCity Meetings',
+      content: 'A Popup Village of Innovation in the Heart of Istanbul ',
+      location: 'online',
+      gated: true,
+    },
+  ],
   tickets: [
     {
       name: 'Resident',
@@ -94,21 +202,21 @@ export const MOCK_DATA = {
       name: 'Eth Improv',
       description: 'A Popup Village of Innovation in the Heart of Istanbul',
       location: 'ISTANBUL, TURKEY',
-      logo: '/13.webp'
+      logo: '/13.webp',
     },
     {
       by: 'Zuzalu Contributor',
       name: 'HackZuzalu',
       description: 'A Popup Village of Innovation in the Heart of Istanbul',
       location: 'ISTANBUL, TURKEY',
-      logo: '/14.webp'
+      logo: '/14.webp',
     },
     {
       by: 'Zuzalu Contributor',
       name: 'ZuCity Meetings',
       description: 'A Popup Village of Innovation in the Heart of Istanbul',
       location: 'online',
-      logo: '/1.webp'
-    }
-  ]
+      logo: '/1.webp',
+    },
+  ],
 };

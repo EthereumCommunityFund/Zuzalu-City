@@ -33,6 +33,8 @@ import { MegaPhoneIcon } from './Megaphone';
 import { QuestionIcon } from './Question';
 import { ListIcon } from './List';
 import { CalendarIcon } from './Calendar';
+import { SessionIcon } from './Session';
+import { ArrowDownIcon } from './ArrowDown';
 
 export {
   HomeIcon,
@@ -69,5 +71,7 @@ export {
   MegaPhoneIcon,
   QuestionIcon,
   ListIcon,
-  CalendarIcon
+  CalendarIcon,
+  SessionIcon,
+  ArrowDownIcon,
 };

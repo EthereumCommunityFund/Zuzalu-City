@@ -44,7 +44,6 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
       onMouseMove={handleTouchMove}
       sx={{
         display: 'flex',
-        width: isTablet ? '95vw' : 'calc(100vw - 290px)',
         overflowX: 'scroll',
         scrollSnapType: 'x mandatory',
         gap: '10px',

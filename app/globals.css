@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
 
+* {
+  box-sizing: border-box;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -19,6 +23,13 @@ body {
   background-color: black;
   margin: 0;
 }
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  width: 0px;
+}
 
 .w-6 {
   width: 24px;
@@ -27,3 +38,7 @@ body {
 .h-6 {
   height: 24px;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -13,7 +13,6 @@ interface CurrentEventsProps {
 const CurrentEvents: React.FC<CurrentEventsProps> = ({
   onToggle = (anchor: Anchor, open: boolean) => {},
 }) => {
-
   return (
     <Stack direction="column" spacing={3} padding={2.5}>
       <Stack direction="row" spacing={3}>
