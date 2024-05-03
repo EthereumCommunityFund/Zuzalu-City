@@ -1,13 +1,15 @@
+'use client';
 import * as React from 'react';
 import { Typography, Stack } from '@mui/material';
-import { CalendarIcon, SessionIcon } from 'components/icons';
+import { CalendarIcon, HomeIcon, SessionIcon } from 'components/icons';
+import { ZuButton } from 'components/core';
 
-interface TabbarProps {
+interface SubbarProps {
   tabName: string;
   setTabName: (value: string | ((prevVar: string) => string)) => void;
 }
 
-const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
+const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
   return (
     <Stack
       direction="row"
@@ -62,18 +64,15 @@ const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         alignItems="center"
         sx={{ cursor: 'pointer' }}
       >
-        <Typography
-          onClick={() => setTabName('Values')}
-          color="white"
-          variant="bodyMB"
-          borderBottom={tabName === 'Venue' ? '1px solid white' : 'none'}
-          sx={{ cursor: 'pointer' }}
-        >
-          Host Announcements
-        </Typography>
+        <ZuButton 
+          startIcon={<HomeIcon />}
+          sx={{backgroundColor: '#383838'}}
+          >
+          Event Feed
+        </ZuButton>
       </Stack>
     </Stack>
   );
 };
 
-export default Thumb;
+export default Subbar;

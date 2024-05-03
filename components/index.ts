@@ -1,7 +1,7 @@
-import LotteryCard from './LotteryCard';
-import SpaceCard from './SpaceCard';
-import EventCard from './EventCard';
+import LotteryCard from './cards/LotteryCard';
+import SpaceCard from './cards/SpaceCard';
+import EventCard from './cards/EventCard';
 import Carousel from './Carousel';
-import EventMCard from './EventMCard';
+import EventMCard from './cards/EventMCard';
 
 export { LotteryCard, SpaceCard, EventCard, Carousel, EventMCard };
