@@ -10,12 +10,12 @@ import {
 } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useCeramicContext } from '@/context/CeramicContext';
 
 const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const { showAuthPrompt } = useCeramicContext();
   return (
     <Box
       height="33px"
@@ -74,12 +74,26 @@ const Header = () => {
           />
         </FormControl>
       )}
-      <ConnectButton
-        showBalance={{
-          smallScreen: false,
-          largeScreen: false,
+      <Button
+        sx={{
+          textAlign: 'center',
+          color: 'white',
+          fontSize: 16,
+          fontFamily: 'Inter',
+          fontWeight: 600,
+          lineHeight: '19.2px',
+          wordWrap: 'break-word',
+          background: 'transparent',
+          boxShadow: 'none',
+          '&:hover': {
+            background: 'transparent',
+            boxShadow: 'none',
+          },
         }}
-      />
+        onClick={showAuthPrompt}
+      >
+        Connect
+      </Button>
     </Box>
   );
 };

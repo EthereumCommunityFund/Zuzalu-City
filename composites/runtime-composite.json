@@ -1,0 +1,215 @@
+{
+    "models": {
+        "Event": {
+            "interface": false,
+            "implements": [],
+            "id": "kjzl6hvfrbw6c9mi2ekec4tznglkqhl8y0m9fra666gemf1n70imnbu1ygj3gsn",
+            "accountRelation": {
+                "type": "list"
+            }
+        },
+        "Location": {
+            "interface": false,
+            "implements": [],
+            "id": "kjzl6hvfrbw6cauep4qu5brcjwahuv2ndvylla7toc05vz63pte6j7bq97mfaje",
+            "accountRelation": {
+                "type": "list"
+            }
+        },
+        "MVPProfile": {
+            "interface": false,
+            "implements": [],
+            "id": "kjzl6hvfrbw6c9957frdp3kb202l590wba573vvo460408bfv6blvnga34sz3ef",
+            "accountRelation": {
+                "type": "single"
+            }
+        },
+        "Space": {
+            "interface": false,
+            "implements": [],
+            "id": "kjzl6hvfrbw6c8013ym1fi0egjflnu86nedoo3ru6gkzm7glyej4rp1d2zjm4ii",
+            "accountRelation": {
+                "type": "list"
+            }
+        }
+    },
+    "objects": {
+        "Event": {
+            "title": {
+                "type": "string",
+                "required": true,
+                "immutable": false
+            },
+            "endTime": {
+                "type": "datetime",
+                "required": true,
+                "immutable": false
+            },
+            "spaceId": {
+                "type": "streamid",
+                "required": true,
+                "immutable": false
+            },
+            "location": {
+                "type": "streamid",
+                "required": true,
+                "immutable": false
+            },
+            "profileId": {
+                "type": "streamid",
+                "required": true,
+                "immutable": false
+            },
+            "startTime": {
+                "type": "datetime",
+                "required": true,
+                "immutable": false
+            },
+            "description": {
+                "type": "string",
+                "required": false,
+                "immutable": false
+            },
+            "space": {
+                "type": "view",
+                "viewType": "relation",
+                "relation": {
+                    "source": "document",
+                    "model": "kjzl6hvfrbw6c8013ym1fi0egjflnu86nedoo3ru6gkzm7glyej4rp1d2zjm4ii",
+                    "property": "spaceId"
+                }
+            },
+            "author": {
+                "type": "view",
+                "viewType": "documentAccount"
+            },
+            "profile": {
+                "type": "view",
+                "viewType": "relation",
+                "relation": {
+                    "source": "document",
+                    "model": "kjzl6hvfrbw6c9957frdp3kb202l590wba573vvo460408bfv6blvnga34sz3ef",
+                    "property": "profileId"
+                }
+            }
+        },
+        "Location": {
+            "description": {
+                "type": "string",
+                "required": true,
+                "immutable": false
+            },
+            "author": {
+                "type": "view",
+                "viewType": "documentAccount"
+            }
+        },
+        "MVPProfile": {
+            "username": {
+                "type": "string",
+                "required": true,
+                "immutable": false
+            },
+            "author": {
+                "type": "view",
+                "viewType": "documentAccount"
+            },
+            "events": {
+                "type": "view",
+                "viewType": "relation",
+                "relation": {
+                    "source": "queryConnection",
+                    "model": "kjzl6hvfrbw6c9mi2ekec4tznglkqhl8y0m9fra666gemf1n70imnbu1ygj3gsn",
+                    "property": "profileId"
+                }
+            },
+            "spaces": {
+                "type": "view",
+                "viewType": "relation",
+                "relation": {
+                    "source": "queryConnection",
+                    "model": "kjzl6hvfrbw6c8013ym1fi0egjflnu86nedoo3ru6gkzm7glyej4rp1d2zjm4ii",
+                    "property": "profileId"
+                }
+            }
+        },
+        "Space": {
+            "name": {
+                "type": "string",
+                "required": true,
+                "immutable": false
+            },
+            "admin": {
+                "type": "list",
+                "required": true,
+                "immutable": false,
+                "item": {
+                    "type": "did",
+                    "required": true,
+                    "immutable": false
+                }
+            },
+            "avatar": {
+                "type": "string",
+                "required": false,
+                "immutable": false
+            },
+            "banner": {
+                "type": "string",
+                "required": false,
+                "immutable": false
+            },
+            "profileId": {
+                "type": "streamid",
+                "required": true,
+                "immutable": false
+            },
+            "description": {
+                "type": "string",
+                "required": true,
+                "immutable": false
+            },
+            "author": {
+                "type": "view",
+                "viewType": "documentAccount"
+            },
+            "profile": {
+                "type": "view",
+                "viewType": "relation",
+                "relation": {
+                    "source": "document",
+                    "model": "kjzl6hvfrbw6c9957frdp3kb202l590wba573vvo460408bfv6blvnga34sz3ef",
+                    "property": "profileId"
+                }
+            },
+            "events": {
+                "type": "view",
+                "viewType": "relation",
+                "relation": {
+                    "source": "queryConnection",
+                    "model": "kjzl6hvfrbw6c9mi2ekec4tznglkqhl8y0m9fra666gemf1n70imnbu1ygj3gsn",
+                    "property": "spaceId"
+                }
+            }
+        }
+    },
+    "enums": {},
+    "accountData": {
+        "eventList": {
+            "type": "connection",
+            "name": "Event"
+        },
+        "locationList": {
+            "type": "connection",
+            "name": "Location"
+        },
+        "mvpProfile": {
+            "type": "node",
+            "name": "MVPProfile"
+        },
+        "spaceList": {
+            "type": "connection",
+            "name": "Space"
+        }
+    }
+}
