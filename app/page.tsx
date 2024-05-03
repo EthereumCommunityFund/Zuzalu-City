@@ -27,7 +27,7 @@ const Home: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const { isAuthPromptVisible } = useCeramicContext();
-  // const isDesktop = useMediaQuery(theme.breakpoints.up('xl'));
+  // const isDesktop:q = useMediaQuery(theme.breakpoints.up('xl'));
 
   return (
     <QueryClientProvider client={queryClient}>
