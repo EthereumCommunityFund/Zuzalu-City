@@ -109,9 +109,9 @@ const AuthPrompt: React.FC<{}> = () => {
         }
       `);
       localStorage.setItem('viewer', profile?.data?.viewer?.id);
-      const basicProfile:
-        | { id: string; name: string; username: string }
-        | undefined = profile?.data?.viewer?.basicProfile;
+      console.log(profile, 'profile');
+      const basicProfile: { id: string; username: string } | undefined =
+        profile?.data?.viewer?.mvpProfile;
       console.log('Basic Profile:', basicProfile);
       setProfile(basicProfile);
       setIsLoading(false);
@@ -258,6 +258,7 @@ const AuthPrompt: React.FC<{}> = () => {
         console.log('Wallet is connected with address:', address);
         try {
           await authenticate();
+          console.log(composeClient.did, 'user composedb did');
           await getProfile();
           if (profile) {
             setAuthState('Logged_In');

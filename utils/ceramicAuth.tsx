@@ -119,5 +119,6 @@ const authenticateEthPKH = async (
   ceramic.did = session.did;
   localStorage.setItem('display did', session.did.toString());
   console.log(session.did, 'session did');
+  console.log(compose.did, 'user did');
   return;
 };

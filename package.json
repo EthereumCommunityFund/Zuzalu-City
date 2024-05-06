@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": " rimraf .next && next dev",
+    "dev": " next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -13,6 +13,11 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@ceramicnetwork/observability": "^1.5.4",
+    "@composedb/client": "^0.7.1",
+    "@composedb/devtools": "^0.7.1",
+    "@composedb/server": "^0.7.1",
+    "@composedb/types": "^0.7.1",
     "@editorjs/checklist": "^1.6.0",
     "@editorjs/delimiter": "^1.4.0",
     "@editorjs/editorjs": "^2.29.1",
@@ -23,10 +28,6 @@
     "@editorjs/paragraph": "^2.11.4",
     "@editorjs/quote": "^2.6.0",
     "@editorjs/simple-image": "^1.6.0",
-    "@ceramicnetwork/observability": "^1.5.4",
-    "@composedb/client": "^0.7.1",
-    "@composedb/devtools": "^0.7.1",
-    "@composedb/types": "^0.7.1",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/server": "^11.11.0",
