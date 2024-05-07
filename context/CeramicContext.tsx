@@ -16,36 +16,38 @@ const composeClient = new ComposeClient({
   ceramic: ceramicUrl,
   definition: definition as RuntimeCompositeDefinition,
 });
-
+type Profile = {
+  id?: any;
+  username?: string | undefined;
+};
 const CeramicContext = createContext({
   ceramic,
   composeClient,
   isAuthenticated: false,
   authenticate: async () => {},
   username: '',
-  profile: null,
+  profile: undefined as Profile | undefined,
   newUser: false,
   logout: () => {},
   isAuthPromptVisible: false,
   showAuthPrompt: () => {},
   hideAuthPrompt: () => {},
-  createProfile: async (newName: string) => {}, 
+  createProfile: async (newName: string) => {},
 });
 
 export const CeramicProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
   const [username, setUsername] = useState('');
-  const [newUser,setNewuser ] = useState(false);
-  const [profile, setProfile] = useState(null);
+  const [newUser, setNewuser] = useState(false);
+  const [profile, setProfile] = useState<Profile | undefined>();
 
   const authenticate = async () => {
     console.log('authenticating', ceramicUrl, ceramic, composeClient);
     await authenticateCeramic(ceramic, composeClient);
     setIsAuthenticated(true);
     await getProfile();
-      setIsAuthenticated(true);
-    
+    setIsAuthenticated(true);
   };
 
   const showAuthPrompt = () => {
@@ -114,8 +116,12 @@ export const CeramicProvider = ({ children }: any) => {
         }
       `);
         console.log(updatedProfile, 'updated profile');
-        setProfile(updatedProfile?.data?.viewer?.mvpProfile);
-        setUsername(profile.username);
+        const newProfile: { id: string; username: string } | undefined =
+          updatedProfile?.data?.viewer?.mvpProfile;
+        setProfile(newProfile);
+        if (newProfile?.username) {
+          setUsername(newProfile.username);
+        }
       }
     }
   };
@@ -128,13 +134,13 @@ export const CeramicProvider = ({ children }: any) => {
         isAuthenticated,
         authenticate,
         username,
-  profile,
-  newUser,
+        profile,
+        newUser,
         logout,
         isAuthPromptVisible,
         showAuthPrompt,
         hideAuthPrompt,
-        createProfile
+        createProfile,
       }}
     >
       {children}

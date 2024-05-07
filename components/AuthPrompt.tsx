@@ -35,7 +35,6 @@ type AuthPromptContent =
     }
   | undefined;
 
-
 const AuthPrompt: React.FC<{}> = () => {
   const { address, isConnected } = useAccount();
   const [isVisible, setIsVisible] = useState(true);
@@ -53,7 +52,7 @@ const AuthPrompt: React.FC<{}> = () => {
     newUser,
     profile,
     username,
-    createProfile
+    createProfile,
   } = useCeramicContext();
   //const { ceramic, composeClient } = clients;
   const [authState, setAuthState] = useState('CONNECT_WALLET');
@@ -91,7 +90,6 @@ const AuthPrompt: React.FC<{}> = () => {
     setIsVisible(false);
   };
 
-
   const getDialogContent = useCallback(() => {
     switch (authState) {
       case 'CONNECT_WALLET':
@@ -105,10 +103,6 @@ const AuthPrompt: React.FC<{}> = () => {
                 showBalance={{
                   smallScreen: false,
                   largeScreen: false,
-                }}
-                sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.10)', // Button background color
-                  color: 'white', // Text color
                 }}
               />
             </Fragment>,
@@ -142,7 +136,7 @@ const AuthPrompt: React.FC<{}> = () => {
                 placeholder="Enter text here"
                 value={inputUsername}
                 onChange={handleInputChange}
-                style={{ width: '100%', color: 'white' }} 
+                style={{ width: '100%', color: 'white' }}
               />
               <Box
                 sx={{
@@ -156,12 +150,17 @@ const AuthPrompt: React.FC<{}> = () => {
                 <Button
                   onClick={() => {
                     if (address) {
-                       createProfile((ensName || address.slice(0, 10)) as string);
+                      createProfile(
+                        (ensName || address.slice(0, 10)) as string,
+                      );
                     }
                     setAuthState('Logged_In');
                   }}
                   variant="outlined"
-                  sx={{ color: 'white', borderColor: 'rgba(255, 255, 255, 0.10)' }}
+                  sx={{
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.10)',
+                  }}
                 >
                   Skip
                 </Button>
@@ -171,11 +170,11 @@ const AuthPrompt: React.FC<{}> = () => {
                     setAuthState('Logged_In');
                   }}
                   sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.10)', 
-                    color: 'white', 
+                    bgcolor: 'rgba(255, 255, 255, 0.10)',
+                    color: 'white',
                     '&:hover': {
-                      bgcolor: 'rgba(255, 255, 255, 0.2)' 
-                    }
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                    },
                   }}
                   variant="contained"
                 >
@@ -196,11 +195,11 @@ const AuthPrompt: React.FC<{}> = () => {
                 key="finish"
                 onClick={() => hideAuthPrompt()}
                 sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.10)', 
-                  color: 'white', 
+                  bgcolor: 'rgba(255, 255, 255, 0.10)',
+                  color: 'white',
                   '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.2)' 
-                  }
+                    bgcolor: 'rgba(255, 255, 255, 0.2)',
+                  },
                 }}
                 variant="contained"
               >
@@ -210,7 +209,7 @@ const AuthPrompt: React.FC<{}> = () => {
           };
         }
     }
-  },[authState, setAuthState, profile, hideAuthPrompt]);
+  }, [authState, setAuthState, profile, hideAuthPrompt]);
 
   useEffect(() => {
     if (isAuthPromptVisible) {

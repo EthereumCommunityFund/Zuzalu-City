@@ -38,7 +38,3 @@ body {
 .h-6 {
   height: 24px;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
