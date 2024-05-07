@@ -1,4 +1,3 @@
-import { HTMLAttributes } from 'react';
 import { BoxProps, Box } from '@mui/material';
 
 interface SidebarButtonPropTypes extends BoxProps {

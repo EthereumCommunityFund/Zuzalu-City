@@ -219,4 +219,30 @@ export const MOCK_DATA = {
       logo: '/1.webp',
     },
   ],
+  venueSessions: [
+    {
+      imageLink: "https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg?scale-down-to=1024 682w, https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg?scale-down-to=2048 1365w, https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg?scale-down-to=4096 2730w, https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg 3648w",
+      topic: "Room One",
+      bookingAmount: 22,
+      capacity: 15,
+      categories: ["Book-able", "Live Stream Available", "Live Stream Available", "Live Stream Available", "Live Stream Available", "Live Stream Available"],
+      type: ""
+    },
+    {
+      imageLink: "https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg?scale-down-to=1024 682w, https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg?scale-down-to=2048 1365w, https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg?scale-down-to=4096 2730w, https://framerusercontent.com/images/UdvhoykFsA2wUtTH8I8bPSps8.jpg 3648w",
+      topic: "Moon Cafe",
+      bookingAmount: 22,
+      capacity: 15,
+      categories: ["External Location"],
+      type: "Book-able"
+    },
+    {
+      imageLink: "https://framerusercontent.com/images/0VPrE3J9aXOte21bBSCl6VG8ejE.jpg?scale-down-to=512 512w, https://framerusercontent.com/images/0VPrE3J9aXOte21bBSCl6VG8ejE.jpg?scale-down-to=1024 1024w, https://framerusercontent.com/images/0VPrE3J9aXOte21bBSCl6VG8ejE.jpg?scale-down-to=2048 2048w, https://framerusercontent.com/images/0VPrE3J9aXOte21bBSCl6VG8ejE.jpg?scale-down-to=4096 4096w, https://framerusercontent.com/images/0VPrE3J9aXOte21bBSCl6VG8ejE.jpg 5472w",
+      topic: "1st Floor Theater",
+      bookingAmount: 22,
+      capacity: 80,
+      categories: ["Live Stream Available"],
+      type: "Approval-required Booking"
+    }
+  ]
 };
