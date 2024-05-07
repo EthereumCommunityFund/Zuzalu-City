@@ -84,7 +84,7 @@ export const PostAnnouncementModal = ({ showModal, setShowModal }: ModalProps) =
                                 opacity: '0.7',
                             }}
                         >
-                            <Typography fontSize={'18px'} fontWeight={500} >Post to Stream</Typography>
+                            <Typography fontSize={'18px'} fontWeight={500} >Post to Update</Typography>
                         </Stack>
                         <Stack
                             sx={{
@@ -104,48 +104,6 @@ export const PostAnnouncementModal = ({ showModal, setShowModal }: ModalProps) =
                         >
                             <CloseIcon sx={{ width: '26px', height: '26px' }} />
                         </Stack>
-                    </Stack>
-                    <Stack
-                        sx={{
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            gap: '10px',
-                            borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-                        }}
-                    >
-                        {
-                            tabList.map((tab, index) => {
-                                return (
-                                    <ZuButton
-                                        sx={{
-                                            width: 'auto',
-                                            height: '64px',
-                                            padding: '14px',
-                                            boxSizing: 'border-box',
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            borderBottom: selectedTab === tab.index ? '1px solid rgba(223, 223, 223, 1)' : '',
-                                            cursor: 'pointer',
-                                            opacity: selectedTab === tab.index ? "1" : "0.7",
-                                            borderRadius: '0px',
-                                            '&:hover': {
-                                                opacity: '1'
-                                            }
-                                        }}
-                                        key={index}
-                                        onClick={() => handleClickTab(tab.index)}
-                                    >
-                                        <Typography fontSize={'16px'} fontWeight={600}>
-                                            {
-                                                tab.name
-                                            }
-                                        </Typography>
-                                    </ZuButton>
-                                )
-                            })
-                        }
                     </Stack>
                     <Stack>
                         <TextEditor
