@@ -39,6 +39,10 @@ body {
   height: 24px;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.ce-toolbar__plus {
+  background-color: azure;
+}
+
+.ce-toolbar__settings-btn {
+  background-color: azure;
+}

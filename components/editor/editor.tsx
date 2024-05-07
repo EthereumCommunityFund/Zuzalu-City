@@ -1,16 +1,16 @@
 import EditorJS, { OutputData } from "@editorjs/editorjs";
 import { tools } from "./tools";
-import { options } from './options'
 import { useEffect, useRef, Fragment, FC } from "react";
 import { Box, BoxProps } from "@mui/material";
 
 interface TextEditorPropTypes extends BoxProps {
   value?: OutputData,
+  placeholder?: string,
   setData?: (value: OutputData) => void,
-  holder: string
+  holder: string,
 }
 
-export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, setData = (value: OutputData) => { console.log(value) }, holder = "editorjs", children, ...props }: TextEditorPropTypes) => {
+export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, setData = (value: OutputData) => { console.log(value) }, holder = "editorjs", children, placeholder="Write your amazing Blog!", ...props }: TextEditorPropTypes) => {
   const ref: any = useRef();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, se
 
         holder: holder,
         tools,
-        placeholder: 'Write an Amazing Blog',
+        placeholder,
         data: value,
         async onChange(api, event) {
           const data = await api.saver.save();
