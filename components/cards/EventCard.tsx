@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
-import { MapIcon, LockIcon } from './icons';
+import { MapIcon, LockIcon } from '../icons';
 
 type EventCardProps = {
   by?: string;

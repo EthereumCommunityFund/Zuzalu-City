@@ -8,7 +8,7 @@ import {
   ThreeVerticalIcon,
   EyeSlashIcon,
   ArchiveIcon,
-} from './icons';
+} from '../icons';
 
 const EVENT_TYPE = [
   {
