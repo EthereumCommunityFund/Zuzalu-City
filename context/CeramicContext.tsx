@@ -20,13 +20,28 @@ type Profile = {
   id?: any;
   username?: string | undefined;
 };
-const CeramicContext = createContext({
+interface CeramicContextType {
+  ceramic: CeramicClient;
+  composeClient: ComposeClient;
+  isAuthenticated: boolean;
+  authenticate: () => Promise<void>;
+  username: string | undefined;
+  profile: Profile | undefined;
+  newUser: boolean;
+  logout: () => void;
+  isAuthPromptVisible: boolean;
+  showAuthPrompt: () => void;
+  hideAuthPrompt: () => void;
+  createProfile: (newName: string) => Promise<void>;
+}
+
+const CeramicContext = createContext<CeramicContextType>({
   ceramic,
   composeClient,
   isAuthenticated: false,
   authenticate: async () => {},
-  username: '',
-  profile: undefined as Profile | undefined,
+  username: undefined,
+  profile: undefined,
   newUser: false,
   logout: () => {},
   isAuthPromptVisible: false,
@@ -38,7 +53,7 @@ const CeramicContext = createContext({
 export const CeramicProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState<string | undefined>(undefined);
   const [newUser, setNewuser] = useState(false);
   const [profile, setProfile] = useState<Profile | undefined>();
 
@@ -47,12 +62,16 @@ export const CeramicProvider = ({ children }: any) => {
     await authenticateCeramic(ceramic, composeClient);
     setIsAuthenticated(true);
     await getProfile();
+    console.log(newUser, profile, 'info');
     setIsAuthenticated(true);
   };
 
   const showAuthPrompt = () => {
     setAuthPromptVisible(true);
-    console.log(isAuthPromptVisible, 'showAuthPrompt called');
+    const existingusername = localStorage.getItem('username');
+    if (existingusername) {
+      setIsAuthenticated(true);
+    }
   };
   const hideAuthPrompt = () => setAuthPromptVisible(false);
 
@@ -72,16 +91,21 @@ export const CeramicProvider = ({ children }: any) => {
           }
         }
       `);
-      localStorage.setItem('viewer', profile?.data?.viewer?.id);
       console.log(profile, 'profile');
       const basicProfile: { id: string; username: string } | undefined =
         profile?.data?.viewer?.mvpProfile;
       console.log('Basic Profile:', basicProfile);
+      localStorage.setItem(
+        'username',
+        profile?.data?.viewer?.mvpProfile?.username,
+      );
       setProfile(basicProfile);
-      setUsername(profile.username);
-    } else {
-      setProfile(undefined);
-      setNewuser(true);
+      setUsername(basicProfile?.username);
+      console.log(basicProfile?.username);
+      if (!basicProfile) {
+        setProfile(undefined);
+        setNewuser(true);
+      }
     }
   };
 
@@ -121,6 +145,7 @@ export const CeramicProvider = ({ children }: any) => {
         setProfile(newProfile);
         if (newProfile?.username) {
           setUsername(newProfile.username);
+          localStorage.setItem('username', newProfile.username);
         }
       }
     }

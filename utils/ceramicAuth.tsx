@@ -77,11 +77,9 @@ const authenticateEthPKH = async (
   compose: ComposeClient,
 ) => {
   const sessionStr = localStorage.getItem('ceramic:eth_did');
-  console.log(sessionStr);
   let session;
 
   if (sessionStr) {
-    console.log('here');
     session = await DIDSession.fromSession(sessionStr);
   }
 

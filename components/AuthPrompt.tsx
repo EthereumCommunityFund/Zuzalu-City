@@ -21,6 +21,8 @@ import {
   InputAdornment,
   Button,
 } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 //const AuthPrompt: React.FC<{ onAuthenticated: () => void }> = ({
 type AuthPromptContent =
   | {
@@ -55,7 +57,7 @@ const AuthPrompt: React.FC<{}> = () => {
     createProfile,
   } = useCeramicContext();
   //const { ceramic, composeClient } = clients;
-  const [authState, setAuthState] = useState('CONNECT_WALLET');
+  const [authState, setAuthState] = useState('');
   const isLogged = () => {
     return localStorage.getItem('logged_in') == 'true';
   };
@@ -142,7 +144,7 @@ const AuthPrompt: React.FC<{}> = () => {
                 sx={{
                   display: 'flex',
                   flexDirection: 'row',
-                  justifyContent: 'space-between',
+                  justifyContent: 'center',
                   width: '100%',
                   gap: 2,
                 }}
@@ -209,35 +211,46 @@ const AuthPrompt: React.FC<{}> = () => {
           };
         }
     }
-  }, [authState, setAuthState, profile, hideAuthPrompt]);
+  }, [
+    authState,
+    setAuthState,
+    profile,
+    hideAuthPrompt,
+    inputUsername,
+    setInputUsername,
+  ]);
 
   useEffect(() => {
     if (isAuthPromptVisible) {
+      const existingusername = localStorage.getItem('username');
+      if (existingusername) {
+        setAuthState('Logged_In');
+      }
       getDialogContent();
-      setAuthState('CONNECT_WALLET');
     }
   }, [isAuthPromptVisible]);
 
   useEffect(() => {
-    const authenticateConnected = async () => {
+    const checkUserState = async () => {
       if (isConnected) {
-        console.log('Wallet is connected with address:', address);
         try {
           await authenticate();
-          console.log(composeClient.did, 'user composedb did');
+          console.log('Wallet is connected with address:', address);
           if (newUser) {
-            setAuthState('Logged_In');
-          } else {
             setAuthState('NEW_USER');
+          } else {
+            setAuthState('Logged_In');
           }
-          getDialogContent();
         } catch (error) {
           console.error('Authentication failed:', error);
+          setAuthState('CONNECT_WALLET');
         }
+      } else {
+        setAuthState('CONNECT_WALLET');
       }
     };
-    authenticateConnected();
-  }, [isConnected]);
+    checkUserState();
+  }, [isConnected, newUser]);
 
   const content = getDialogContent();
   if (content) {
@@ -249,17 +262,61 @@ const AuthPrompt: React.FC<{}> = () => {
 
     return (
       <div>
-        <Dialog open={isAuthPromptVisible} onClose={hideAuthPrompt}>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>{message}</DialogContentText>
+        <Dialog
+          open={isAuthPromptVisible}
+          onClose={hideAuthPrompt}
+          PaperProps={{
+            style: {
+              width: '40%',
+              height: 'auto',
+              padding: '20px 16px',
+              backgroundColor: 'rgba(34, 34, 34, 0.9)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.10)',
+              backdropFilter: 'blur(40px)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              gap: '24px',
+            },
+          }}
+        >
+          <DialogTitle
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            {title}
+            <IconButton
+              onClick={hideAuthPrompt}
+              style={{ color: 'white', marginRight: '-16px' }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent
+            style={{ paddingLeft: '24px', width: '100%', color: 'white' }}
+          >
+            <DialogContentText style={{ color: 'white' }}>
+              {message}
+            </DialogContentText>
           </DialogContent>
-          <DialogActions>{actions}</DialogActions>
+          <DialogActions
+            style={{ justifyContent: 'center', width: '100%', padding: 0 }}
+          >
+            {' '}
+            {/* Center align actions */}
+            {actions}
+          </DialogActions>
         </Dialog>
       </div>
     );
   } else {
-    return <div>1111</div>;
+    return <div></div>;
   }
 };
 

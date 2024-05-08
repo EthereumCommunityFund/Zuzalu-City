@@ -1,12 +1,21 @@
 'use client';
-import * as React from 'react';
+import React, {
+  useState,
+  useEffect,
+  Fragment,
+  ReactNode,
+  useCallback,
+} from 'react';
 import {
   Box,
   Typography,
   FormControl,
   OutlinedInput,
   InputAdornment,
-  Button,Menu, MenuItem,Divider
+  Button,
+  Menu,
+  MenuItem,
+  Divider,
 } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
@@ -15,8 +24,9 @@ import { useCeramicContext } from '@/context/CeramicContext';
 const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { isAuthenticated, showAuthPrompt, logout, username } = useCeramicContext();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { isAuthenticated, showAuthPrompt, logout, username } =
+    useCeramicContext();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -95,7 +105,7 @@ const Header = () => {
           />
         </FormControl>
       )}
-{isAuthenticated ? (
+      {isAuthenticated ? (
         <>
           <Button
             sx={{
@@ -106,9 +116,9 @@ const Header = () => {
               fontWeight: 600,
               lineHeight: '19.2px',
               wordWrap: 'break-word',
-              background: 'rgba(255, 255, 255, 0.05)', 
+              background: 'rgba(255, 255, 255, 0.05)',
               '&:hover': {
-                background: 'rgba(255, 255, 255, 0.05)', 
+                background: 'rgba(255, 255, 255, 0.05)',
                 boxShadow: 'none',
               },
             }}
@@ -120,19 +130,33 @@ const Header = () => {
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
+            slotProps={{
+              paper: {
+                style: {
+                  backgroundColor: 'black',
+                },
+              },
+            }}
           >
-            <MenuItem >username</MenuItem>
-            <MenuItem >Wallet Connected</MenuItem>
+            <MenuItem>{username}</MenuItem>
+            <MenuItem>Wallet Connected</MenuItem>
             <MenuItem onClick={handleProfile}>Profile</MenuItem>
             <MenuItem onClick={handleSetting}>Setting</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
             <Divider />
 
-<MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>Blog</MenuItem>
-<MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>Privacy</MenuItem>
-<MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>Terms</MenuItem>
-<MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>About Zuzalu City</MenuItem>
-
+            <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
+              Blog
+            </MenuItem>
+            <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
+              Privacy
+            </MenuItem>
+            <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
+              Terms
+            </MenuItem>
+            <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
+              About Zuzalu City
+            </MenuItem>
           </Menu>
         </>
       ) : (
@@ -145,9 +169,9 @@ const Header = () => {
             fontWeight: 600,
             lineHeight: '19.2px',
             wordWrap: 'break-word',
-            background: 'rgba(255, 255, 255, 0.05)', 
+            background: 'rgba(255, 255, 255, 0.05)',
             '&:hover': {
-              background: 'rgba(255, 255, 255, 0.05)', 
+              background: 'rgba(255, 255, 255, 0.05)',
               boxShadow: 'none',
             },
           }}
