@@ -1,13 +1,13 @@
 'use client';
 import * as React from 'react';
 import { Stack, Grid, useTheme, useMediaQuery } from '@mui/material';
+import { IconSidebar, Header, Thumb, Sidebar } from './components';
 import {
-  IconSidebar,
-  Header,
-  Thumb,
-  Sidebar,
-} from './components';
-import { EventName, EventAbout, EventDetail, EventRegister } from 'components/event';
+  EventName,
+  EventAbout,
+  EventDetail,
+  EventRegister,
+} from 'components/event';
 
 const Home = () => {
   const [tabName, setTabName] = React.useState<string>('About');

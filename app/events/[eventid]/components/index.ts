@@ -1,7 +1,4 @@
-import Thumbnail from "./Thumbnail";
-import Subbar from "./Subbar";
+import Thumbnail from './Thumbnail';
+import Subbar from './Subbar';
 
-export {
-  Thumbnail,
-  Subbar
-}
+export { Thumbnail, Subbar };

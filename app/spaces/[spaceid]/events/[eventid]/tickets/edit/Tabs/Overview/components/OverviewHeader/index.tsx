@@ -18,7 +18,7 @@ const OverviewHeader = () => {
           </Typography>
         </Stack>
       </Stack>
-      <Stack direction="row" spacing={3}>
+      <Stack direction="row" spacing={2}>
         <OverviewButton type={0} />
         <OverviewButton type={1} />
       </Stack>

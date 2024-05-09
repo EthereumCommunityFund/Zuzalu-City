@@ -15,8 +15,9 @@ const Thumbnail = () => {
     >
       <Stack direction="row" spacing={2} alignItems="center">
         <ZuButton
-          sx={{backgroundColor: '#333333'}} 
-          startIcon={<LeftArrowIcon />}>
+          sx={{ backgroundColor: '#333333' }}
+          startIcon={<LeftArrowIcon />}
+        >
           Back
         </ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">
@@ -43,8 +44,8 @@ const Thumbnail = () => {
           <HomeIcon />
         </Stack>
       </Stack>
-  </Stack>
-  )
-}
+    </Stack>
+  );
+};
 
 export default Thumbnail;
