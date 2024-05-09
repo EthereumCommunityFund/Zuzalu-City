@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
 import { Header, Sidebar } from 'components/layout';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
-import { Box } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
+import { Box } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 interface SpacePageLayoutPropTypes {
   children: React.ReactNode;
@@ -12,19 +12,18 @@ interface SpacePageLayoutPropTypes {
 export default function SpacePageLayout({
   children,
 }: SpacePageLayoutPropTypes) {
-
   const theme = useTheme();
 
   return (
     <Box sx={{ color: 'white' }}>
-      <Box
+      {/* <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: "space-between"
+          // justifyContent: "space-between"
         }}
-      >
-        <Box
+      > */}
+      {/* <Box
           sx={{
             display: 'flex',
             flexDirection: 'row'
@@ -40,9 +39,9 @@ export default function SpacePageLayout({
           >
             <Sidebar></Sidebar>
           </Box>
-        </Box>
-        {children}
-      </Box>
+        </Box> */}
+      {children}
+      {/* </Box> */}
     </Box>
   );
 }

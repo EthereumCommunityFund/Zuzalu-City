@@ -2,7 +2,12 @@
 import * as React from 'react';
 import { Stack, Grid } from '@mui/material';
 import { Thumbnail, Subbar } from './components';
-import { EventName, EventDetail, EventRegister, EventAbout } from 'components/event';
+import {
+  EventName,
+  EventDetail,
+  EventRegister,
+  EventAbout,
+} from 'components/event';
 
 const Home = () => {
   const [tabName, setTabName] = React.useState('About');
@@ -10,7 +15,7 @@ const Home = () => {
     <Stack>
       <Thumbnail />
       <Subbar tabName={tabName} setTabName={setTabName} />
-      <Stack padding="40px" direction='row' justifyContent='center'>
+      <Stack padding="40px" direction="row" justifyContent="center">
         <Stack width={'900px'}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={7}>
@@ -29,7 +34,7 @@ const Home = () => {
         </Stack>
       </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default Home;

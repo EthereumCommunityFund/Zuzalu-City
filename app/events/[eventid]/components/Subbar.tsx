@@ -64,10 +64,7 @@ const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
         alignItems="center"
         sx={{ cursor: 'pointer' }}
       >
-        <ZuButton 
-          startIcon={<HomeIcon />}
-          sx={{backgroundColor: '#383838'}}
-          >
+        <ZuButton startIcon={<HomeIcon />} sx={{ backgroundColor: '#383838' }}>
           Event Feed
         </ZuButton>
       </Stack>

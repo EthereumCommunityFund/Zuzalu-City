@@ -24,6 +24,7 @@ const ZuButton = styled(Button)(({ theme }) => ({
   height: 'fit-content',
   width: 'fit-content',
   boxShadow: 'none',
+  backgroundColor: '#2e2e2e',
   // Override default styles if needed
   '&.MuiButton-disabled': {
     color: '#2d2d2d',

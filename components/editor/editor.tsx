@@ -1,23 +1,30 @@
-import EditorJS, { OutputData } from "@editorjs/editorjs";
-import { tools } from "./tools";
-import { useEffect, useRef, Fragment, FC } from "react";
-import { Box, BoxProps } from "@mui/material";
+import EditorJS, { OutputData } from '@editorjs/editorjs';
+import { tools } from './tools';
+import { useEffect, useRef, Fragment, FC } from 'react';
+import { Box, BoxProps } from '@mui/material';
 
 interface TextEditorPropTypes extends BoxProps {
-  value?: OutputData,
-  placeholder?: string,
-  setData?: (value: OutputData) => void,
-  holder: string,
+  value?: OutputData;
+  placeholder?: string;
+  setData?: (value: OutputData) => void;
+  holder: string;
 }
 
-export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, setData = (value: OutputData) => { console.log(value) }, holder = "editorjs", children, placeholder="Write your amazing Blog!", ...props }: TextEditorPropTypes) => {
+export const TextEditor: FC<TextEditorPropTypes> = ({
+  value = { blocks: [] },
+  setData = (value: OutputData) => {
+    console.log(value);
+  },
+  holder = 'editorjs',
+  children,
+  placeholder = 'Write your amazing Blog!',
+  ...props
+}: TextEditorPropTypes) => {
   const ref: any = useRef();
 
   useEffect(() => {
     if (!ref.current) {
-
       const editor = new EditorJS({
-
         holder: holder,
         tools,
         placeholder,
@@ -26,7 +33,7 @@ export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, se
           const data = await api.saver.save();
           setData(data);
         },
-      })
+      });
 
       ref.current = editor;
     }
@@ -40,15 +47,7 @@ export const TextEditor: FC<TextEditorPropTypes> = ({ value = { blocks: [] }, se
 
   return (
     <Fragment>
-      {
-        children ? children : <Box
-          id={holder}
-          {
-          ...props
-          }
-        >
-        </Box>
-      }
+      {children ? children : <Box id={holder} {...props}></Box>}
     </Fragment>
-  )
-}
+  );
+};

@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Box, Stack } from '@mui/material';
 
-import { Ticket, Overview } from './Tabs';
+import { Ticket, Overview, Sessions } from './Tabs';
 import { Tabbar } from 'components/layout';
 
 const Home: React.FC = () => {
@@ -14,6 +14,8 @@ const Home: React.FC = () => {
         return <Overview />;
       case 'Tickets':
         return <Ticket />;
+      case 'Event Sessions':
+        return <Sessions />;
       default:
         return <Overview />;
     }
