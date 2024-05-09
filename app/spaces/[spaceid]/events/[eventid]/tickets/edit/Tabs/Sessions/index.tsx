@@ -64,11 +64,7 @@ const Sessions = () => {
           Session Details
         </Typography>
         <Stack direction={'column'} spacing={1}>
-          <Typography
-            variant='bodyBB'
-          >
-            Session Name
-          </Typography>
+          <Typography variant="bodyBB">Session Name</Typography>
           <Input
             sx={{
               color: 'white',
@@ -90,11 +86,7 @@ const Sessions = () => {
             }}
             placeholder="Enter a name for your event"
           />
-          <Typography
-            variant='bodyBB'
-          >
-            Location
-          </Typography>
+          <Typography variant="bodyBB">Location</Typography>
           <Input
             sx={{
               color: 'white',
@@ -116,11 +108,7 @@ const Sessions = () => {
             }}
             placeholder="Enter a name for your event"
           />
-          <Typography
-            variant='bodyBB'
-          >
-            Session Date & Time
-          </Typography>
+          <Typography variant="bodyBB">Session Date & Time</Typography>
           <Input
             sx={{
               color: 'white',
@@ -144,11 +132,7 @@ const Sessions = () => {
           />
         </Stack>
         <Stack direction={'column'} spacing={1}>
-          <Typography
-            variant='bodyBB'
-          >
-            Description
-          </Typography>
+          <Typography variant="bodyBB">Description</Typography>
           <TextEditor
             holder="space_description"
             sx={{
@@ -197,11 +181,7 @@ const Sessions = () => {
           </Stack>
         </Stack>
         <Stack direction={'column'} spacing={1}>
-          <Typography
-            variant='bodyBB'
-          >
-            Select a Track
-          </Typography>
+          <Typography variant="bodyBB">Select a Track</Typography>
           <Input
             sx={{
               color: 'white',
