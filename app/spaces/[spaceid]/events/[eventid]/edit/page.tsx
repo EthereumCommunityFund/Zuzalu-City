@@ -13,6 +13,7 @@ import {
 import { XMarkIcon } from 'components/icons';
 import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
 import { ZuButton } from 'components/core';
+import { useCeramicContext } from '@/context/CeramicContext';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -23,9 +24,51 @@ const Event = () => {
     bottom: false,
     right: false,
   });
-
+  const {
+    ceramic,
+    composeClient,
+    isAuthenticated,
+    authenticate,
+    logout,
+    showAuthPrompt,
+    hideAuthPrompt,
+    isAuthPromptVisible,
+    newUser,
+    profile,
+    username,
+    createProfile,
+  } = useCeramicContext();
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
+  };
+
+  const updateSpace = async () => {
+    const update = await composeClient.executeQuery(`
+  mutation  {
+    createEvent(
+      input: {content: {title: "", endTime: "", spaceId: "", createdAt: "", profileId: "", startTime: "", max_participant: 10, min_participant: 10, participant_count: 10, description: "", external_url: "", image_url: "", meeting_url: "", status: "", timezone: ""}}
+    ) {
+      document {
+        createdAt
+        description
+        endTime
+        external_url
+        id
+        image_url
+        max_participant
+        meeting_url
+        min_participant
+        participant_count
+        profileId
+        spaceId
+        startTime
+        status
+        timezone
+        title
+      }
+    }
+  }
+`);
   };
 
   const list = (anchor: Anchor) => (
