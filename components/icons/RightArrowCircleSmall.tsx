@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box } from '@mui/material';
 
 export const RightArrowCircleSmallIcon = () => {
   return (
@@ -8,7 +8,7 @@ export const RightArrowCircleSmallIcon = () => {
         borderRadius: '100%',
         backgroundColor: '#ffffff0f',
         width: '16px',
-        height: '16px'
+        height: '16px',
       }}
     >
       <svg
@@ -18,7 +18,7 @@ export const RightArrowCircleSmallIcon = () => {
         color="rgb(255, 255, 255)"
         style={{
           width: '16px',
-          height: '16px'
+          height: '16px',
         }}
       >
         <path

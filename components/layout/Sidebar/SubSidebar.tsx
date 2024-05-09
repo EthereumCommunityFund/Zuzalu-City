@@ -10,7 +10,6 @@ import { Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 export default function SubSidebar() {
-
   const theme = useTheme();
 
   const buttonList = [
@@ -45,21 +44,21 @@ export default function SubSidebar() {
         borderRight: '1px solid #ffffff1a',
         display: 'none',
         [theme.breakpoints.up('lg')]: {
-          display: 'block'
+          display: 'block',
         },
         boxSizing: 'border-box',
-        fontFamily: 'Inter'
+        fontFamily: 'Inter',
       }}
     >
       <Stack
         sx={{
           width: '100%',
-          padding: "10px",
+          padding: '10px',
           borderBottom: '1px solid #ffffff1a',
           display: 'flex',
           flexDirection: 'column',
           gap: '10px',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
         }}
       >
         <Stack
@@ -74,7 +73,7 @@ export default function SubSidebar() {
             gap: '10px',
             overflow: 'hidden',
             position: 'relative',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
           }}
         >
           <Image
@@ -111,7 +110,7 @@ export default function SubSidebar() {
               overflowWrap: 'break-word',
               fontSize: '18px',
               fontWeight: '700',
-              lineHeight: '20px'
+              lineHeight: '20px',
             }}
           >
             Zuzalu City Contributors
@@ -123,7 +122,7 @@ export default function SubSidebar() {
             backgroundColor: '#ffffff05',
             '&:hover': {
               backgroundColor: '#ffffff1a',
-              opacity: '1'
+              opacity: '1',
             },
             padding: '8px 10px',
             borderRadius: '10px',
@@ -137,7 +136,7 @@ export default function SubSidebar() {
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
         }}
       >
         <Stack
@@ -147,7 +146,7 @@ export default function SubSidebar() {
             flexDirection: 'column',
             gap: '10px',
             padding: '20px 10px',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
           }}
         >
           {buttonList.map((item, index) => {
@@ -169,9 +168,9 @@ export default function SubSidebar() {
                     gap: '10px',
                     '&:hover': {
                       backgroundColor: '#ffffff1a',
-                      opacity: '0.8'
+                      opacity: '0.8',
                     },
-                    borderRadius: '10px'
+                    borderRadius: '10px',
                   }}
                 ></SidebarButton>
               );
@@ -193,15 +192,17 @@ export default function SubSidebar() {
             display: 'flex',
             flexDirection: 'column',
             gap: '14px',
-            borderTop: '1px solid #ffffff1a'
+            borderTop: '1px solid #ffffff1a',
           }}
         >
           <p
             style={{
               textTransform: 'uppercase',
-              fontSize: '10px'
+              fontSize: '10px',
             }}
-          >admins</p>
+          >
+            admins
+          </p>
           <SidebarButton
             content="Manage Events"
             icon={<ManageEventsIcon />}

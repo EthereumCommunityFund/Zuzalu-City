@@ -19,22 +19,24 @@ export default function SidebarButton({
   return (
     <Box
       sx={
-        sx ? sx : {
-          padding: '8px 10px',
-          boxSizing: 'border-box',
-          backgroundColor: isActive ? '#ffffff1a' : 'transparent',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'row',
-          gap: '10px',
-          borderRadius: '10px',
-          cursor: 'pointer',
-          '&:hover': {
-            opacity: 1,
-            backgroundColor: '#ffffff1a'
-          },
-          opacity: 0.8,
-        }
+        sx
+          ? sx
+          : {
+              padding: '8px 10px',
+              boxSizing: 'border-box',
+              backgroundColor: isActive ? '#ffffff1a' : 'transparent',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '10px',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              '&:hover': {
+                opacity: 1,
+                backgroundColor: '#ffffff1a',
+              },
+              opacity: 0.8,
+            }
       }
       {...props}
     >
@@ -42,13 +44,15 @@ export default function SidebarButton({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
-      >{icon && icon}</div>
+      >
+        {icon && icon}
+      </div>
       <Box
         sx={{
           fontSize: '16px',
-          fontWeight: '700'
+          fontWeight: '700',
         }}
       >
         {content}

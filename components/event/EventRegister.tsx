@@ -45,12 +45,36 @@ const EventRegister = () => {
         >
           Apply to Event
         </ZuButton>
-        <Stack direction='row' spacing={1} alignItems='center'>
-          <Stack direction='row' spacing={-1} alignItems='center'>
-            <Box component='img' src='/16.jpg' width={25} height={25} borderRadius={20} />
-            <Box component='img' src='/17.jpg' width={25} height={25} borderRadius={20} />
-            <Box component='img' src='/18.jpg' width={25} height={25} borderRadius={20} />
-            <Box component='img' src='/19.jpg' width={25} height={25} borderRadius={20} />
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={-1} alignItems="center">
+            <Box
+              component="img"
+              src="/16.jpg"
+              width={25}
+              height={25}
+              borderRadius={20}
+            />
+            <Box
+              component="img"
+              src="/17.jpg"
+              width={25}
+              height={25}
+              borderRadius={20}
+            />
+            <Box
+              component="img"
+              src="/18.jpg"
+              width={25}
+              height={25}
+              borderRadius={20}
+            />
+            <Box
+              component="img"
+              src="/19.jpg"
+              width={25}
+              height={25}
+              borderRadius={20}
+            />
           </Stack>
           <Typography color="white">+28 Applied</Typography>
         </Stack>

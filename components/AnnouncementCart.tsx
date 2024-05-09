@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import Image from 'next/image';
-import { useTheme } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles';
 
 interface AnnouncementCardProps {
   title: string;
@@ -21,7 +21,6 @@ export default function AnnouncementCard({
   role,
   image,
 }: AnnouncementCardProps) {
-
   const theme = useTheme();
 
   return (
@@ -38,11 +37,11 @@ export default function AnnouncementCard({
         gap: '14px',
         cursor: 'pointer',
         '&:hover': {
-          backgroundColor: '#ffffff1a'
+          backgroundColor: '#ffffff1a',
         },
         transitionProperty: 'all',
         transitionTimingFunction: 'ease-in',
-        transitionDuration: '300'
+        transitionDuration: '300',
       }}
     >
       <Box
@@ -50,28 +49,30 @@ export default function AnnouncementCard({
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          gap: '10px'
+          gap: '10px',
         }}
       >
         <Box
           sx={{
             fontSize: '18px',
-            fontWeight: '600'
+            fontWeight: '600',
           }}
-        >{title}</Box>
+        >
+          {title}
+        </Box>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
           <Box
             sx={{
               display: 'flex',
               gap: '10px',
-              alignItems: 'center'
+              alignItems: 'center',
             }}
           >
             <Image
@@ -83,7 +84,7 @@ export default function AnnouncementCard({
               style={{
                 width: '30px',
                 height: '30px',
-                borderRadius: '100%'
+                borderRadius: '100%',
               }}
             ></Image>
             <Box
@@ -91,7 +92,7 @@ export default function AnnouncementCard({
                 display: 'flex',
                 gap: '6px',
                 flexDirection: 'row',
-                alignItems: 'center'
+                alignItems: 'center',
               }}
             >
               <Box
@@ -99,12 +100,10 @@ export default function AnnouncementCard({
                   display: 'flex',
                   flexDirection: 'row',
                   gap: '8px',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}
               >
-                <Box
-                  fontSize={'13px'}
-                >{author}</Box>
+                <Box fontSize={'13px'}>{author}</Box>
                 <Box
                   fontSize={'11px'}
                   fontWeight={600}
@@ -125,7 +124,7 @@ export default function AnnouncementCard({
               textTransform: 'capitalize',
               color: '#5eafff',
               fontWeight: '600',
-              fontSize: '13px'
+              fontSize: '13px',
             }}
           >
             {role}
@@ -135,14 +134,14 @@ export default function AnnouncementCard({
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px'
+            gap: '20px',
           }}
         >
           <Box
             sx={{
               fontSize: '12px',
               fontWeight: '600',
-              opacity: '0.7'
+              opacity: '0.7',
             }}
           >
             {content.slice(0, 97) + '...'}
@@ -151,9 +150,11 @@ export default function AnnouncementCard({
             sx={{
               textTransform: 'uppercase',
               fontSize: '10px',
-              opacity: '0.7'
+              opacity: '0.7',
             }}
-          >2 days ago</Box>
+          >
+            2 days ago
+          </Box>
         </Box>
       </Box>
       <Box
@@ -163,12 +164,12 @@ export default function AnnouncementCard({
             minWidth: '160px',
             width: '160px',
             minHeight: '160px',
-            height: '160px'
+            height: '160px',
           },
           minWidth: '80px',
           width: '80px',
           minHeight: '80px',
-          height: '80px'
+          height: '80px',
         }}
       >
         <Image
@@ -182,7 +183,7 @@ export default function AnnouncementCard({
             objectFit: 'cover',
             width: '100%',
             height: '100%',
-            borderRadius: '10px'
+            borderRadius: '10px',
           }}
           alt=""
         ></Image>

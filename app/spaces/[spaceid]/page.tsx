@@ -39,17 +39,17 @@ export default function SpaceDetailPage() {
       sx={{
         display: 'flex',
         flexDirection: 'row',
-        width: '100%'
+        width: '100%',
       }}
     >
       <SubSidebar />
       <Box
         sx={{
-          width: "calc(100% - 280px)",
+          width: 'calc(100% - 280px)',
           [theme.breakpoints.down('lg')]: {
-            width: '100%'
+            width: '100%',
           },
-          fontFamily: 'Inter'
+          fontFamily: 'Inter',
         }}
       >
         <Box
@@ -61,14 +61,14 @@ export default function SpaceDetailPage() {
             flexDirection: 'column',
             gap: '20px',
             borderBottom: '1px solid #ffffff1a',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
           }}
         >
           <Box
             sx={{
               position: 'relative',
               width: '100%',
-              height: '240px'
+              height: '240px',
             }}
           >
             <Image
@@ -87,7 +87,7 @@ export default function SpaceDetailPage() {
                 objectFit: 'cover',
                 width: '100%',
                 height: '100%',
-                borderRadius: '10px'
+                borderRadius: '10px',
               }}
               className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
             />
@@ -103,7 +103,7 @@ export default function SpaceDetailPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 display: 'flex',
-                flexDirection: 'row'
+                flexDirection: 'row',
               }}
             >
               <Image
@@ -123,14 +123,14 @@ export default function SpaceDetailPage() {
             sx={{
               display: 'flex',
               flexDirection: 'row',
-              justifyContent: 'flex-end'
+              justifyContent: 'flex-end',
             }}
           >
             <Box
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                gap: '10px'
+                gap: '10px',
               }}
             >
               <SidebarButton
@@ -140,14 +140,14 @@ export default function SpaceDetailPage() {
                   borderRadius: '10px',
                   backgroundColor: '#ffffff0a',
                   '&:hover': {
-                    backgroundColor: '#ffffff1a'
+                    backgroundColor: '#ffffff1a',
                   },
                   display: 'flex',
                   flexDirection: 'row',
                   gap: '10px',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}
                 icon={<PlusCircleIcon />}
               ></SidebarButton>
@@ -157,9 +157,9 @@ export default function SpaceDetailPage() {
                   borderRadius: '10px',
                   backgroundColor: '#ffffff0a',
                   '&:hover': {
-                    backgroundColor: '#ffffff1a'
+                    backgroundColor: '#ffffff1a',
                   },
-                  cursor: 'pointer'
+                  cursor: 'pointer',
                 }}
                 icon={<ShareIcon />}
               ></SidebarButton>
@@ -169,9 +169,9 @@ export default function SpaceDetailPage() {
                   borderRadius: '10px',
                   backgroundColor: '#ffffff0a',
                   '&:hover': {
-                    backgroundColor: '#ffffff1a'
+                    backgroundColor: '#ffffff1a',
                   },
-                  cursor: 'pointer'
+                  cursor: 'pointer',
                 }}
                 icon={<MoreIcon />}
               ></SidebarButton>
@@ -183,19 +183,13 @@ export default function SpaceDetailPage() {
               flexDirection: 'column',
               gap: '10px',
               paddingLeft: '20px',
-              paddingRight: '20px'
+              paddingRight: '20px',
             }}
           >
-            <Typography
-              fontWeight={700}
-              fontSize={'25px'}
-              lineHeight={'120%'}
-            >
+            <Typography fontWeight={700} fontSize={'25px'} lineHeight={'120%'}>
               Zuzalu City Contributors
             </Typography>
-            <Typography
-              color={'#bebebe'}
-            >
+            <Typography color={'#bebebe'}>
               First-of-its-kind pop-up city to create, live longer and healthier
               lives, and build self-sustaining communities.
             </Typography>
@@ -206,7 +200,7 @@ export default function SpaceDetailPage() {
                 display: 'flex',
                 flexDirection: 'row',
                 gap: '10px',
-                textTransform: 'uppercase'
+                textTransform: 'uppercase',
               }}
             >
               <p>ai</p>
@@ -218,35 +212,35 @@ export default function SpaceDetailPage() {
         <Box
           sx={{
             width: '100%',
-            backgroundColor: '#222222'
+            backgroundColor: '#222222',
           }}
         >
           <Box
             sx={{
-              padding: "20px",
-              gap: "20px",
+              padding: '20px',
+              gap: '20px',
               display: 'flex',
               flexDirection: 'column',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
             }}
           >
             <Box
               sx={{
                 fontSize: '18px',
-                fontWeight: "700",
-                color: '#919191'
+                fontWeight: '700',
+                color: '#919191',
               }}
             >
               About Zuzalu City Contributors
             </Box>
             <Box
               sx={{
-                padding: "20px",
+                padding: '20px',
                 width: '100%',
                 backgroundColor: '#ffffff05',
                 borderRadius: '10px',
                 height: 'fit-content',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
               }}
             >
               {aboutContent.length > 0 &&
@@ -255,11 +249,11 @@ export default function SpaceDetailPage() {
                     <Box key={index}>
                       <Box
                         sx={{
-                          fontWeight: "700",
+                          fontWeight: '700',
                           color: 'white',
                           marginTop: index !== 0 ? '12px' : '',
                           fontSize: '18px',
-                          lineHeight: '160%'
+                          lineHeight: '160%',
                         }}
                       >
                         {content.title}
@@ -269,9 +263,9 @@ export default function SpaceDetailPage() {
                           marginTop: '12px',
                           color: 'white',
                           opacity: '0.8',
-                          fontWeight: "400",
+                          fontWeight: '400',
                           fontSize: '14px',
-                          lineHeight: '160%'
+                          lineHeight: '160%',
                         }}
                       >
                         {content.content}
@@ -294,7 +288,7 @@ export default function SpaceDetailPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
               }}
               content={showMore ? 'Show Less' : 'Show More'}
               onClick={() => {
@@ -304,10 +298,10 @@ export default function SpaceDetailPage() {
           </Box>
           <Box
             sx={{
-              padding: "20px",
+              padding: '20px',
               display: 'flex',
-              gap: "20px",
-              flexDirection: 'column'
+              gap: '20px',
+              flexDirection: 'column',
             }}
           >
             <Box
@@ -316,14 +310,14 @@ export default function SpaceDetailPage() {
                 flexDirection: 'row',
                 width: '100%',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
               }}
             >
               <Box
                 sx={{
                   fontSize: '18px',
                   fontWeight: '700',
-                  color: '#919191'
+                  color: '#919191',
                 }}
               >
                 Latest Announcements
@@ -337,11 +331,11 @@ export default function SpaceDetailPage() {
                   cursor: 'pointer',
                   backgroundColor: 'transparent',
                   '&:hover': {
-                    backgroundColor: '#e6e6e61a'
+                    backgroundColor: '#e6e6e61a',
                   },
                   borderRadius: '10px',
                   opacity: 0.7,
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}
                 content="View All Posts"
                 rightIcon={<RightArrowCircleSmallIcon />}
@@ -351,7 +345,7 @@ export default function SpaceDetailPage() {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '20px'
+                gap: '20px',
               }}
             >
               {MOCK_DATA.announcements.map((announcement, index) => {
@@ -369,7 +363,7 @@ export default function SpaceDetailPage() {
               padding: '20px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px'
+              gap: '20px',
             }}
           >
             <Box
@@ -378,7 +372,7 @@ export default function SpaceDetailPage() {
                 width: '100%',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                flexDirection: 'row'
+                flexDirection: 'row',
               }}
             >
               <Box
@@ -399,11 +393,11 @@ export default function SpaceDetailPage() {
                   padding: '4px 10px',
                   cursor: 'pointer',
                   '&:hover': {
-                    backgroundColor: '#e6e6e61a'
+                    backgroundColor: '#e6e6e61a',
                   },
                   backgroundColor: 'transparent',
                   borderRadius: '10px',
-                  opacity: 0.7
+                  opacity: 0.7,
                 }}
                 content="View All Events"
                 rightIcon={<RightArrowCircleSmallIcon />}
@@ -414,7 +408,7 @@ export default function SpaceDetailPage() {
                 width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '10px'
+                gap: '10px',
               }}
             >
               <Box
@@ -435,7 +429,7 @@ export default function SpaceDetailPage() {
                   position: 'sticky',
                   backdropFilter: 'blur(40px)',
                   top: '10px',
-                  backgroundColor: '#222222cc'
+                  backgroundColor: '#222222cc',
                 }}
               >
                 October 2023
@@ -448,19 +442,19 @@ export default function SpaceDetailPage() {
                       width: '100%',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '4px'
+                      gap: '4px',
                     }}
                   >
                     <Box
                       sx={{
                         '&:hover': {
-                          backgroundColor: '#ffffff1a'
+                          backgroundColor: '#ffffff1a',
                         },
                         transition: 'all',
                         transitionTimingFunction: 'ease-in',
                         transitionDuration: '300',
                         cursor: 'pointer',
-                        borderRadius: '10px'
+                        borderRadius: '10px',
                       }}
                     >
                       <EventCard />
@@ -469,7 +463,7 @@ export default function SpaceDetailPage() {
                       sx={{
                         display: 'flex',
                         flexDirection: 'row',
-                        gap: '20px'
+                        gap: '20px',
                       }}
                     >
                       {event.sideEvents > 0 && (
@@ -478,7 +472,7 @@ export default function SpaceDetailPage() {
                             padding: '6px 10px',
                             backgroundColor: '#ffffff05',
                             '&:hover': {
-                              backgroundColor: '#e6e6e60f'
+                              backgroundColor: '#e6e6e60f',
                             },
                             transition: 'all',
                             transitionTimingFunction: 'ease-in',
@@ -489,7 +483,7 @@ export default function SpaceDetailPage() {
                             alignItems: 'center',
                             gap: '10px',
                             width: 'fit-content',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
                           }}
                           icon={
                             <Box
@@ -503,7 +497,7 @@ export default function SpaceDetailPage() {
                             >
                               <Box
                                 sx={{
-                                  transform: 'scale(0.75)'
+                                  transform: 'scale(0.75)',
                                 }}
                               >
                                 <HomeIcon />
@@ -522,7 +516,7 @@ export default function SpaceDetailPage() {
                               style={{
                                 color: '#ffffff80',
                                 fontSize: '16px',
-                                fontWeight: '500'
+                                fontWeight: '500',
                               }}
                             >
                               side events around&nbsp;
@@ -536,7 +530,7 @@ export default function SpaceDetailPage() {
                         sx={{
                           padding: '6px 10px',
                           '&:hover': {
-                            backgroundColor: '#ffffff1a'
+                            backgroundColor: '#ffffff1a',
                           },
                           backgroundColor: 'transparent',
                           borderRadius: '10px',
@@ -545,7 +539,7 @@ export default function SpaceDetailPage() {
                           alignItems: 'center',
                           gap: '10px',
                           width: 'fit-content',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
                         }}
                         content={event.topic}
                       ></SidebarButton>
@@ -560,7 +554,7 @@ export default function SpaceDetailPage() {
               padding: '20px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px'
+              gap: '20px',
             }}
           >
             <Box
@@ -569,14 +563,14 @@ export default function SpaceDetailPage() {
                 width: '100%',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                flexDirection: 'row'
+                flexDirection: 'row',
               }}
             >
               <Box
                 sx={{
                   fontSize: '18px',
                   fontWeight: '700',
-                  color: '#919191'
+                  color: '#919191',
                 }}
               >
                 Past Events ({MOCK_DATA.pastEvents.length})
@@ -592,7 +586,7 @@ export default function SpaceDetailPage() {
                   },
                   backgroundColor: 'transparent',
                   borderRadius: '10px',
-                  opacity: 0.7
+                  opacity: 0.7,
                 }}
                 content="See All"
               ></SidebarButton>
@@ -602,13 +596,13 @@ export default function SpaceDetailPage() {
                 <Box
                   sx={{
                     '&:hover': {
-                      backgroundColor: '#ffffff1a'
+                      backgroundColor: '#ffffff1a',
                     },
                     transition: 'all',
                     transitionTimingFunction: 'ease-in',
                     transitionDuration: '300',
                     cursor: 'pointer',
-                    borderRadius: '10px'
+                    borderRadius: '10px',
                   }}
                   key={index}
                 >
