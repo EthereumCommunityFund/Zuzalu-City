@@ -41,6 +41,7 @@ const Event = () => {
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
+
   const updateSpace = async () => {
     const update = await composeClient.executeQuery(`
   mutation  {
