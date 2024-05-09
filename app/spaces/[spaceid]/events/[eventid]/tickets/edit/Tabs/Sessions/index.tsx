@@ -63,13 +63,9 @@ const Sessions = () => {
         <Typography fontSize="18px" fontWeight="bold">
           Session Details
         </Typography>
-        <Box>
+        <Stack direction={'column'} spacing={1}>
           <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
+            variant='bodyBB'
           >
             Session Name
           </Typography>
@@ -95,11 +91,7 @@ const Sessions = () => {
             placeholder="Enter a name for your event"
           />
           <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
+            variant='bodyBB'
           >
             Location
           </Typography>
@@ -124,14 +116,8 @@ const Sessions = () => {
             }}
             placeholder="Enter a name for your event"
           />
-        </Box>
-        <Box>
           <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
+            variant='bodyBB'
           >
             Session Date & Time
           </Typography>
@@ -156,14 +142,10 @@ const Sessions = () => {
             }}
             placeholder="00-00-0000"
           />
-        </Box>
-        <Box>
+        </Stack>
+        <Stack direction={'column'} spacing={1}>
           <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
+            variant='bodyBB'
           >
             Description
           </Typography>
@@ -177,14 +159,46 @@ const Sessions = () => {
               borderRadius: '10px',
             }}
           />
-        </Box>
-        <Box>
+          <Stack
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '6px',
+              alignItems: 'center',
+            }}
+          >
+            <svg
+              width="20"
+              height="15"
+              viewBox="0 0 20 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clipPath="url(#clip0_4575_7884)">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M4.80085 4.06177H2.83984V11.506H4.88327V7.3727L6.82879 10.0394L8.68199 7.3727V11.506H10.6226V4.06177H8.68199L6.82879 6.81714L4.80085 4.06177ZM1.55636 0.794922H18.4436C19.3028 0.794922 20 1.59076 20 2.57247V13.0174C20 13.9989 19.3032 14.7949 18.4436 14.7949H1.55636C0.697166 14.7949 0 13.9991 0 13.0174V2.57247C0 1.59091 0.696805 0.794922 1.55636 0.794922ZM14.0078 4.10603H13.9884V7.92826H12.1206L15 11.506L17.8795 7.90628H15.9347V4.10603H14.0078Z"
+                  fill="white"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_4575_7884">
+                  <rect
+                    width="20"
+                    height="14"
+                    fill="white"
+                    transform="translate(0 0.794922)"
+                  />
+                </clipPath>
+              </defs>
+            </svg>
+            <Typography>Markdown Available</Typography>
+          </Stack>
+        </Stack>
+        <Stack direction={'column'} spacing={1}>
           <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
+            variant='bodyBB'
           >
             Select a Track
           </Typography>
@@ -209,7 +223,7 @@ const Sessions = () => {
             }}
             placeholder="On Sale"
           />
-        </Box>
+        </Stack>
         <ZuButton
           sx={{
             width: '100%',
