@@ -3,15 +3,7 @@
         "Event": {
             "interface": false,
             "implements": [],
-            "id": "kjzl6hvfrbw6c9mi2ekec4tznglkqhl8y0m9fra666gemf1n70imnbu1ygj3gsn",
-            "accountRelation": {
-                "type": "list"
-            }
-        },
-        "Location": {
-            "interface": false,
-            "implements": [],
-            "id": "kjzl6hvfrbw6cauep4qu5brcjwahuv2ndvylla7toc05vz63pte6j7bq97mfaje",
+            "id": "kjzl6hvfrbw6caoyj2vssxln903jl7ntjubub5cn09cbk4756mkgbeldcm7zwaq",
             "accountRelation": {
                 "type": "list"
             }
@@ -40,6 +32,11 @@
                 "required": true,
                 "immutable": false
             },
+            "status": {
+                "type": "string",
+                "required": false,
+                "immutable": false
+            },
             "endTime": {
                 "type": "datetime",
                 "required": true,
@@ -50,9 +47,19 @@
                 "required": true,
                 "immutable": false
             },
-            "location": {
-                "type": "streamid",
+            "timezone": {
+                "type": "string",
+                "required": false,
+                "immutable": false
+            },
+            "createdAt": {
+                "type": "datetime",
                 "required": true,
+                "immutable": false
+            },
+            "image_url": {
+                "type": "string",
+                "required": false,
                 "immutable": false
             },
             "profileId": {
@@ -68,6 +75,31 @@
             "description": {
                 "type": "string",
                 "required": false,
+                "immutable": false
+            },
+            "meeting_url": {
+                "type": "string",
+                "required": false,
+                "immutable": false
+            },
+            "external_url": {
+                "type": "string",
+                "required": false,
+                "immutable": false
+            },
+            "max_participant": {
+                "type": "integer",
+                "required": true,
+                "immutable": false
+            },
+            "min_participant": {
+                "type": "integer",
+                "required": true,
+                "immutable": false
+            },
+            "participant_count": {
+                "type": "integer",
+                "required": true,
                 "immutable": false
             },
             "space": {
@@ -93,17 +125,6 @@
                 }
             }
         },
-        "Location": {
-            "description": {
-                "type": "string",
-                "required": true,
-                "immutable": false
-            },
-            "author": {
-                "type": "view",
-                "viewType": "documentAccount"
-            }
-        },
         "MVPProfile": {
             "username": {
                 "type": "string",
@@ -119,7 +140,7 @@
                 "viewType": "relation",
                 "relation": {
                     "source": "queryConnection",
-                    "model": "kjzl6hvfrbw6c9mi2ekec4tznglkqhl8y0m9fra666gemf1n70imnbu1ygj3gsn",
+                    "model": "kjzl6hvfrbw6caoyj2vssxln903jl7ntjubub5cn09cbk4756mkgbeldcm7zwaq",
                     "property": "profileId"
                 }
             },
@@ -187,7 +208,7 @@
                 "viewType": "relation",
                 "relation": {
                     "source": "queryConnection",
-                    "model": "kjzl6hvfrbw6c9mi2ekec4tznglkqhl8y0m9fra666gemf1n70imnbu1ygj3gsn",
+                    "model": "kjzl6hvfrbw6caoyj2vssxln903jl7ntjubub5cn09cbk4756mkgbeldcm7zwaq",
                     "property": "spaceId"
                 }
             }
@@ -198,10 +219,6 @@
         "eventList": {
             "type": "connection",
             "name": "Event"
-        },
-        "locationList": {
-            "type": "connection",
-            "name": "Location"
         },
         "mvpProfile": {
             "type": "node",

@@ -78,7 +78,7 @@ const authenticateEthPKH = async (
 ) => {
   const sessionStr = localStorage.getItem('ceramic:eth_did');
   let session;
-
+  console.log('existing session', sessionStr);
   if (sessionStr) {
     session = await DIDSession.fromSession(sessionStr);
   }
@@ -90,11 +90,13 @@ const authenticateEthPKH = async (
 
     // We enable the ethereum provider to get the user's addresses.
     const ethProvider = window.ethereum;
+    console.log('found provider', ethProvider);
     // request ethereum accounts.
     const addresses = await ethProvider.enable({
       method: 'eth_requestAccounts',
     });
     const accountId = await getAccountId(ethProvider, addresses[0]);
+    console.log(accountId, 'account');
     const authMethod = await EthereumWebAuth.getAuthMethod(
       ethProvider,
       accountId,
@@ -104,7 +106,7 @@ const authenticateEthPKH = async (
      * @NOTE: The specific resources (ComposeDB data models) are provided through
      * "compose.resources" below.
      */
-
+    console.log('authenticating');
     session = await DIDSession.authorize(authMethod, {
       resources: compose.resources,
     });
