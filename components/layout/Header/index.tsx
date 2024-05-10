@@ -1,11 +1,6 @@
 'use client';
-import React, {
-  useState,
-  useEffect,
-  Fragment,
-  ReactNode,
-  useCallback,
-} from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -23,6 +18,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 
 const Header = () => {
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { isAuthenticated, showAuthPrompt, logout, username } =
     useCeramicContext();
@@ -60,12 +56,18 @@ const Header = () => {
       zIndex={1000}
       position="relative"
     >
-      <Box display="flex" alignItems="center" gap="10px">
+      <Box
+        display="flex"
+        alignItems="center"
+        gap="10px"
+        sx={{ cursor: 'pointer' }}
+      >
         <MenuIcon />
         <Box
           component="img"
           src={isMobile ? '/ZuCityLogo-IconOnly.svg' : '/ZuCityLogo.svg'}
           height="40px"
+          onClick={() => router.push('/')}
         />
         <Typography
           variant="body2"

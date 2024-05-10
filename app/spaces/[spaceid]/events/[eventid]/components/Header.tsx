@@ -1,10 +1,12 @@
 'use client';
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Stack, Typography } from '@mui/material';
 import { LeftArrowIcon, ShareIcon, ThreeHorizonIcon } from 'components/icons';
 import { ZuButton } from 'components/core';
 
 const Header = () => {
+  const router = useRouter();
   return (
     <Stack
       direction="row"
@@ -14,7 +16,12 @@ const Header = () => {
       bgcolor="#2d2d2d"
     >
       <Stack direction="row" spacing={2} alignItems="center">
-        <ZuButton startIcon={<LeftArrowIcon />}>Back</ZuButton>
+        <ZuButton
+          startIcon={<LeftArrowIcon />}
+          onClick={() => router.push('/')}
+        >
+          Back
+        </ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">
           HackZuzalu
         </Typography>

@@ -22,6 +22,11 @@ import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
 const queryClient = new QueryClient();
+
+interface SidebarProps {
+  selected: string;
+}
+
 const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -37,12 +42,13 @@ const Home: React.FC = () => {
             <Box>
               <Header />
               <AuthPrompt />
-              <Box display="flex">
-                {!isTablet && <Sidebar />}
+              <Box display="grid" gridTemplateColumns={'auto 1fr'}>
+                {!isTablet && <Sidebar selected="Home" />}
                 <Box
                   borderLeft="1px solid #383838"
                   flexGrow={1}
                   padding={isMobile ? '10px' : '30px'}
+                  overflow={'hidden'}
                 >
                   <Box
                     display="flex"

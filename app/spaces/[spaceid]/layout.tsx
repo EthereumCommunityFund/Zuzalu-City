@@ -14,34 +14,5 @@ export default function SpacePageLayout({
 }: SpacePageLayoutPropTypes) {
   const theme = useTheme();
 
-  return (
-    <Box sx={{ color: 'white' }}>
-      {/* <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          // justifyContent: "space-between"
-        }}
-      > */}
-      {/* <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row'
-          }}
-        >
-          <Box
-            sx={{
-              display: 'block',
-              [theme.breakpoints.down('md')]: {
-                display: 'none'
-              }
-            }}
-          >
-            <Sidebar></Sidebar>
-          </Box>
-        </Box> */}
-      {children}
-      {/* </Box> */}
-    </Box>
-  );
+  return <Box sx={{ color: 'white' }}>{children}</Box>;
 }
