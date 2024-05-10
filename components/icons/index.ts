@@ -35,6 +35,11 @@ import { ListIcon } from './List';
 import { CalendarIcon } from './Calendar';
 import { SessionIcon } from './Session';
 import { ArrowDownIcon } from './ArrowDown';
+import { ArrowForwardIcon } from './ArrowForward';
+import { QRCodeIcon } from './QRCode';
+import { CloseIcon } from './Close';
+import { ArrowPathIcon } from './ArrowPath';
+import { ScrollIcon } from "./Scroll";
 
 export {
   HomeIcon,
@@ -74,4 +79,9 @@ export {
   CalendarIcon,
   SessionIcon,
   ArrowDownIcon,
+  ArrowForwardIcon,
+  QRCodeIcon,
+  CloseIcon,
+  ArrowPathIcon,
+  ScrollIcon
 };

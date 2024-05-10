@@ -255,4 +255,21 @@ export const MOCK_DATA = {
       type: 'Approval-required Booking',
     },
   ],
+  eventCredential: [
+    {
+      image: "/20.webp",
+      name: "ZuVillage Georgia",
+      desc: "You have 1 ticket"
+    },
+    {
+      image: "/21.webp",
+      name: "HazkZuzalu",
+      desc: "You have 1 ticket"
+    },
+    {
+      image: "/22.webp",
+      name: "Zu-zah-luh",
+      desc: "You have 1 ticket"
+    },
+  ]
 };

@@ -20,8 +20,10 @@ import {
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
+  const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { isAuthenticated, showAuthPrompt, logout, username } =
@@ -141,6 +143,7 @@ const Header = () => {
             <MenuItem>{username}</MenuItem>
             <MenuItem>Wallet Connected</MenuItem>
             <MenuItem onClick={handleProfile}>Profile</MenuItem>
+            <MenuItem onClick={() => router.push("/passport")}>Passport</MenuItem>
             <MenuItem onClick={handleSetting}>Setting</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
             <Divider />
