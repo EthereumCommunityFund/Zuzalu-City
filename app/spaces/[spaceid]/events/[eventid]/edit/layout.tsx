@@ -19,7 +19,7 @@ function EventLayout({
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
         <div style={{ display: 'flex' }}>
-          <Sidebar selected='Home' />
+          <Sidebar selected="Home" />
           {/* <Navbar /> */}
           {/* <Menubar /> */}
           <div

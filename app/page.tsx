@@ -144,7 +144,7 @@ const Home: React.FC = () => {
                         <Typography
                           sx={{
                             position: 'sticky',
-                            top: 0
+                            top: 0,
                           }}
                           color="white"
                           border="2px solid #383838"
@@ -220,12 +220,12 @@ const Home: React.FC = () => {
                               defaultValue={dayjs('2022-04-17')}
                               sx={{
                                 '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin':
-                                {
-                                  fontFamily: 'Inter',
-                                  color: 'white',
-                                  fontSize: '16px',
-                                  fontWeight: 500,
-                                },
+                                  {
+                                    fontFamily: 'Inter',
+                                    color: 'white',
+                                    fontSize: '16px',
+                                    fontWeight: 500,
+                                  },
                                 '& .MuiPickersCalendarHeader-root': {
                                   color: 'white',
                                   fontSize: '20px',
@@ -241,18 +241,18 @@ const Home: React.FC = () => {
                                   color: 'white',
                                 },
                                 '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel':
-                                {
-                                  color: 'white',
-                                  fontSize: '18px',
-                                  fontWeight: 500,
-                                  fontFamily: 'Inter',
-                                },
+                                  {
+                                    color: 'white',
+                                    fontSize: '18px',
+                                    fontWeight: 500,
+                                    fontFamily: 'Inter',
+                                  },
                                 '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin':
-                                {
-                                  backgroundColor:
-                                    'rgba(215, 255, 196, 0.20)',
-                                  color: '#D7FFC4',
-                                },
+                                  {
+                                    backgroundColor:
+                                      'rgba(215, 255, 196, 0.20)',
+                                    color: '#D7FFC4',
+                                  },
                               }}
                             />
                           </Box>
