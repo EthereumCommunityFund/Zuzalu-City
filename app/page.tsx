@@ -119,10 +119,13 @@ const Home: React.FC = () => {
                     {/* {isDesktop && <LotteryCard />} */}
                     <Box display="flex" gap="20px" marginTop="20px">
                       <Box
+                        position={'relative'}
                         flexGrow={1}
                         display="flex"
                         flexDirection="column"
                         gap="20px"
+                        overflow={'auto'}
+                        maxHeight={'95vh'}
                       >
                         <Box display="flex" justifyContent="space-between">
                           <Box display="flex" alignItems="center" gap="10px">
@@ -139,16 +142,27 @@ const Home: React.FC = () => {
                           </Box>
                         </Box>
                         <Typography
+                          sx={{
+                            position: 'sticky',
+                            top: 0
+                          }}
                           color="white"
                           border="2px solid #383838"
                           align="center"
                           paddingY="8px"
                           borderRadius="40px"
                           variant="subtitleS"
+                          bgcolor={'#000000'}
                         >
                           October 2023
                         </Typography>
                         <Box>
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
                           <EventCard />
                           <EventCard />
                           <EventCard />
@@ -206,12 +220,12 @@ const Home: React.FC = () => {
                               defaultValue={dayjs('2022-04-17')}
                               sx={{
                                 '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin':
-                                  {
-                                    fontFamily: 'Inter',
-                                    color: 'white',
-                                    fontSize: '16px',
-                                    fontWeight: 500,
-                                  },
+                                {
+                                  fontFamily: 'Inter',
+                                  color: 'white',
+                                  fontSize: '16px',
+                                  fontWeight: 500,
+                                },
                                 '& .MuiPickersCalendarHeader-root': {
                                   color: 'white',
                                   fontSize: '20px',
@@ -227,18 +241,18 @@ const Home: React.FC = () => {
                                   color: 'white',
                                 },
                                 '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel':
-                                  {
-                                    color: 'white',
-                                    fontSize: '18px',
-                                    fontWeight: 500,
-                                    fontFamily: 'Inter',
-                                  },
+                                {
+                                  color: 'white',
+                                  fontSize: '18px',
+                                  fontWeight: 500,
+                                  fontFamily: 'Inter',
+                                },
                                 '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin':
-                                  {
-                                    backgroundColor:
-                                      'rgba(215, 255, 196, 0.20)',
-                                    color: '#D7FFC4',
-                                  },
+                                {
+                                  backgroundColor:
+                                    'rgba(215, 255, 196, 0.20)',
+                                  color: '#D7FFC4',
+                                },
                               }}
                             />
                           </Box>
