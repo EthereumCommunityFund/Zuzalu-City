@@ -54,7 +54,8 @@ const Header = () => {
       paddingY="8px"
       borderBottom="1px solid #383838"
       zIndex={1000}
-      position="relative"
+      position={'sticky'}
+      top={0}
     >
       <Box
         display="flex"

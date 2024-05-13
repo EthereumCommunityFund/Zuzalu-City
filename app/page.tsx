@@ -144,15 +144,15 @@ const Home: React.FC = () => {
                         <Typography
                           sx={{
                             position: 'sticky',
-                            top: 0,
+                            top: 60,
                           }}
                           color="white"
-                          border="2px solid #383838"
+                          border="1px solid #383838"
                           align="center"
                           paddingY="8px"
                           borderRadius="40px"
                           variant="subtitleS"
-                          bgcolor={'#000000'}
+                          bgcolor={'rgba(34, 34, 34, 0.8)'}
                         >
                           October 2023
                         </Typography>

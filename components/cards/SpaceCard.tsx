@@ -19,7 +19,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   description,
   joined,
 }) => {
-
   return (
     <Link
       href={`/spaces/${title.split(' ')[0]}`}
@@ -34,14 +33,17 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             bgcolor: '#2d2d2d',
           },
         }}
-        border={'1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))'}
+        border={'1px solid rgba(255, 255, 255, 0.1)'}
         position={'relative'}
       >
         <Box
-          component={'img'}
-          src={bgImage}
+          bgcolor={'red'}
+          sx={{
+            backgroundImage: `url(${bgImage})`,
+            backgroundPosition: 'center center',
+            backgroundSize: 'cover',
+          }}
           height={106}
-          width={'100%'}
           borderRadius={'10px 10px 0 0'}
         />
         <Box
@@ -85,9 +87,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               size="small"
               startIcon={
                 joined ? (
-                  <CheckCircleIcon color="#D7FFC4" />
+                  <CheckCircleIcon size={5} color="#D7FFC4" />
                 ) : (
-                  <PlusCircleIcon />
+                  <PlusCircleIcon size={5} />
                 )
               }
               sx={{
