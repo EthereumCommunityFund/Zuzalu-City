@@ -37,7 +37,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
         position={'relative'}
       >
         <Box
-          bgcolor={'red'}
           sx={{
             backgroundImage: `url(${bgImage})`,
             backgroundPosition: 'center center',
