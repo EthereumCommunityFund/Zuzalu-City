@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { useTheme, useMediaQuery } from '@mui/material';
+import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
+import { ZuCalendar } from '@/components/core';
 import Carousel from 'components/Carousel';
 import { Header, Sidebar } from 'components/layout';
 import {
@@ -13,25 +13,20 @@ import {
 import { EventCard } from 'components';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
 import { MOCK_DATA } from 'mock';
 import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { CeramicProvider } from '../context/CeramicContext';
-import { useCeramicContext } from '../context/CeramicContext';
+// import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
 const queryClient = new QueryClient();
-
-interface SidebarProps {
-  selected: string;
-}
 
 const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const { isAuthPromptVisible } = useCeramicContext();
+  // const { isAuthPromptVisible } = useCeramicContext();
   // const isDesktop:q = useMediaQuery(theme.breakpoints.up('xl'));
 
   return (
@@ -216,49 +211,9 @@ const Home: React.FC = () => {
                             </Button>
                           </Box>
                           <Box>
-                            <DateCalendar
-                              defaultValue={dayjs('2022-04-17')}
-                              sx={{
-                                '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin':
-                                  {
-                                    fontFamily: 'Inter',
-                                    color: 'white',
-                                    fontSize: '16px',
-                                    fontWeight: 500,
-                                  },
-                                '& .MuiPickersCalendarHeader-root': {
-                                  color: 'white',
-                                  fontSize: '20px',
-                                  fontWeight: 700,
-                                },
-                                '& .MuiDayCalendar-header': {
-                                  color: 'white',
-                                  fontFamily: 'Inter',
-                                  fontSize: '20px',
-                                  fontWeight: 700,
-                                },
-                                '& .MuiSvgIcon-root': {
-                                  color: 'white',
-                                },
-                                '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel':
-                                  {
-                                    color: 'white',
-                                    fontSize: '18px',
-                                    fontWeight: 500,
-                                    fontFamily: 'Inter',
-                                  },
-                                '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin':
-                                  {
-                                    backgroundColor:
-                                      'rgba(215, 255, 196, 0.20)',
-                                    color: '#D7FFC4',
-                                  },
-                              }}
-                            />
+
+                            <ZuCalendar defaultValue={dayjs('2022-04-17')} />
                           </Box>
-                          {/* <Box>
-                      <ZuSelect></ZuSelect>
-                    </Box> */}
                         </Box>
                       )}
                     </Box>
