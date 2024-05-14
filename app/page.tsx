@@ -43,7 +43,7 @@ const Home: React.FC = () => {
                   borderLeft="1px solid #383838"
                   flexGrow={1}
                   padding={isMobile ? '10px' : '30px'}
-                  overflow={'hidden'}
+                  overflow='hidden'
                 >
                   <Box
                     display="flex"
@@ -114,13 +114,13 @@ const Home: React.FC = () => {
                     {/* {isDesktop && <LotteryCard />} */}
                     <Box display="flex" gap="20px" marginTop="20px">
                       <Box
-                        position={'relative'}
+                        position='relative'
                         flexGrow={1}
                         display="flex"
                         flexDirection="column"
                         gap="20px"
-                        overflow={'auto'}
-                        maxHeight={'95vh'}
+                        overflow='auto'
+                        maxHeight='95vh'
                       >
                         <Box display="flex" justifyContent="space-between">
                           <Box display="flex" alignItems="center" gap="10px">
@@ -147,7 +147,7 @@ const Home: React.FC = () => {
                           paddingY="8px"
                           borderRadius="40px"
                           variant="subtitleS"
-                          bgcolor={'rgba(34, 34, 34, 0.8)'}
+                          bgcolor='rgba(34, 34, 34, 0.8)'
                         >
                           October 2023
                         </Typography>

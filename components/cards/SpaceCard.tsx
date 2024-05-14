@@ -26,15 +26,15 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
     >
       <Stack
         width={290}
-        borderRadius={'10px'}
-        bgcolor={'#292929'}
+        borderRadius='10px'
+        bgcolor='#292929'
         sx={{
           ':hover': {
             bgcolor: '#2d2d2d',
           },
         }}
-        border={'1px solid rgba(255, 255, 255, 0.1)'}
-        position={'relative'}
+        border='1px solid rgba(255, 255, 255, 0.1)'
+        position='relative'
       >
         <Box
           sx={{
@@ -46,23 +46,23 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           borderRadius={'10px 10px 0 0'}
         />
         <Box
-          component={'img'}
+          component='img'
           src={logoImage}
           height={60}
           width={60}
-          position={'absolute'}
+          position='absolute'
           top={70}
           left={13}
           borderRadius={30}
         />
-        <Stack padding={'10px'} spacing={'10px'} marginTop={'20px'}>
-          <Typography color={'white'} gutterBottom variant="subtitleS">
+        <Stack padding='10px' spacing='10px' marginTop='20px'>
+          <Typography color='white' gutterBottom variant="subtitleS">
             {title}
           </Typography>
           <Typography variant="bodyM" color="white">
             {description}
           </Typography>
-          <Stack direction={'row'}>
+          <Stack direction='row'>
             <Typography color="white" variant="caption">
               AI
             </Typography>
@@ -73,7 +73,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               +3
             </Typography>
           </Stack>
-          <Stack direction={'row'} alignItems={'center'} spacing={'10px'}>
+          <Stack direction='row' alignItems='center' spacing='10px'>
             <UsersIcon size={4} />
             <Typography
               color="white"
