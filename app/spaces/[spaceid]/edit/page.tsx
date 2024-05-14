@@ -249,7 +249,7 @@ export default function SpaceEditPage() {
               }}
             >
               <Uploader3
-                accept={['.svg', '.gif', '.jpeg', '.jpg', '.png']}
+                accept={['.gif', '.jpeg', '.gif']}
                 api={'/api/upload/file'}
                 multiple={false}
                 crop={false} // must be false when accept is svg
