@@ -5,10 +5,15 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { TextEditor } from 'components/editor/editor';
 import Image from 'next/image';
+import { SelectedFile, Uploader3 } from '@lxdao/uploader3'
+import { File } from 'buffer';
+import { PreviewFile } from './components/uploader/PreviewFile';
+
 
 export default function SpaceEditPage() {
   const [isOnInput, setIsOnInput] = useState(false);
   const [isOnTextArea, setIsOnTextArea] = useState(false);
+  const [file, setFile] = useState<SelectedFile>()
 
   const theme = useTheme();
 
@@ -243,42 +248,37 @@ export default function SpaceEditPage() {
                 gap: '10px',
               }}
             >
-              <Stack
-                sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  borderRadius: '58px',
-                  padding: '6px 16px',
-                  width: 'fit-content',
+              <Uploader3
+                accept={['.svg', '.gif', '.jpeg', '.jpg', '.png']}
+                api={'/api/upload/file'}
+                multiple={false}
+                crop={false} // must be false when accept is svg
+                onChange={(files) => {
+                  setFile(files[0]);
                 }}
-                fontSize={'14px'}
-                fontFamily={'Inter'}
-                fontWeight={600}
-                color={'rgba(255, 255, 255, 0.7)'}
-              >
-                Upload
-              </Stack>
-
-              <Stack
-                sx={{
-                  width: '85px',
-                  height: '85px',
-                  borderRadius: '60px',
-                  boxShadow: '0 0 0 6px #2e2e2e',
+                onUpload={(file: any) => {
+                  setFile(file);
+                }}
+                onComplete={(file: any) => {
+                  setFile(file);
                 }}
               >
-                <Image
-                  loader={() =>
-                    'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
-                  }
-                  src="https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"
-                  width={85}
-                  height={85}
-                  alt=""
-                  style={{
-                    borderRadius: '60px',
+                <Stack
+                  sx={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    borderRadius: '58px',
+                    padding: '6px 16px',
+                    width: 'fit-content',
                   }}
-                ></Image>
-              </Stack>
+                  fontSize={'14px'}
+                  fontFamily={'Inter'}
+                  fontWeight={600}
+                  color={'rgba(255, 255, 255, 0.7)'}
+                >
+                  Upload
+                </Stack>
+              </Uploader3>
+              <PreviewFile file={file} />
             </Box>
           </Box>
           <Box
