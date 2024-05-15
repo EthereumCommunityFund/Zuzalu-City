@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -18,7 +18,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Event = () => {
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     top: false,
     left: false,
     bottom: false,
@@ -41,34 +41,65 @@ const Event = () => {
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
+  const [eventName, setEventName] = useState('');
 
+  const handleEventNameChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setEventName(event.target.value);
+  };
+  const [eventTagline, setEventTagline] = useState('');
+
+  const handleEventTaglineChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setEventTagline(event.target.value);
+  };
   const updateSpace = async () => {
     const update = await composeClient.executeQuery(`
-  mutation  {
-    createEvent(
-      input: {content: {title: "", endTime: "", spaceId: "", createdAt: "", profileId: "", startTime: "", max_participant: 10, min_participant: 10, participant_count: 10, description: "", external_url: "", image_url: "", meeting_url: "", status: "", timezone: ""}}
-    ) {
-      document {
-        createdAt
-        description
-        endTime
-        external_url
-        id
-        image_url
-        max_participant
-        meeting_url
-        min_participant
-        participant_count
-        profileId
-        spaceId
-        startTime
-        status
-        timezone
-        title
+      mutation  {
+        createEvent(
+          input: {
+            content: {
+              title: "${eventName}",
+              description: "",
+              startTime: ""2024-09-09T00:00:00Z"",
+              endTime: ""2024-09-010T00:00:00Z"",
+              spaceId: "",
+              createdAt: ""2024-08-09T00:00:00Z"",
+              profileId: "k2t6wzhkhabz4a09lsxkr3jbej43j9ubk0dt841uy8uq3m5c5y2iauknqo87t2",
+              max_participant: 100,
+              min_participant: 10,
+              participant_count: 10,
+              external_url: "",
+              image_url: "",
+              meeting_url: "",
+              status: "",
+              timezone: ""
+            }
+          }
+        ) {
+          document {
+            createdAt
+            description
+            endTime
+            external_url
+            id
+            image_url
+            max_participant
+            meeting_url
+            min_participant
+            participant_count
+            profileId
+            spaceId
+            startTime
+            status
+            timezone
+            title
+          }
+        }
       }
-    }
-  }
-`);
+    `);
   };
 
   const list = (anchor: Anchor) => (
@@ -163,6 +194,8 @@ const Event = () => {
                   },
                 }}
                 placeholder="Type an awesome name"
+                value={eventName}
+                onChange={handleEventNameChange}
               />
             </Box>
             <Box>
@@ -194,6 +227,8 @@ const Event = () => {
                   },
                 }}
                 placeholder="Write a short, one-sentence tagline for your event"
+                value={eventTagline}
+                onChange={handleEventTaglineChange}
               />
             </Box>
             <Box display="flex" justifyContent="space-between" gap="30px">
@@ -664,6 +699,7 @@ const Event = () => {
                 padding: '6px 16px',
                 border: '1px solid #383838',
               }}
+              onClick={updateSpace}
             >
               Add Link
             </Button>
