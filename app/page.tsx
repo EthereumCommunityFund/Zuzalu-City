@@ -88,6 +88,9 @@ const Home: React.FC = () => {
                       display="flex"
                       justifyContent="space-between"
                       alignItems="center"
+                      paddingLeft={isMobile ? '10px' : "30px"}
+                      paddingRight={isMobile ? '10px' : "30px"}
+                      boxSizing={'border-box'}
                     >
                       <Box display="flex" alignItems="center" gap="10px">
                         <SpaceIcon />
@@ -105,14 +108,16 @@ const Home: React.FC = () => {
                         <RightArrowCircleIcon />
                       </Box>
                     </Box>
-                    <Box marginY="20px">
+                    <Box marginY="20px" paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
                       <Typography color="white" variant="bodyM">
                         Most Active Spaces
                       </Typography>
                     </Box>
-                    <Carousel items={MOCK_DATA.spaces} />
+                    <Box height={'317px'} width={'100%'} boxSizing={'border-box'} overflow={'auto'} position={'relative'} paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
+                      <Carousel items={MOCK_DATA.spaces} />
+                    </Box>
                     {/* {isDesktop && <LotteryCard />} */}
-                    <Box display="flex" gap="20px" marginTop="20px">
+                    <Box display="flex" gap="20px" marginTop="20px" boxSizing={'border-box'} paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
                       <Box
                         position='relative'
                         flexGrow={1}
