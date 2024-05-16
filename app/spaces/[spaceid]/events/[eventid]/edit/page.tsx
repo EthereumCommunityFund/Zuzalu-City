@@ -13,7 +13,7 @@ import {
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { XMarkIcon } from 'components/icons';
+import { PlusCircleIcon, PlusIcon, XMarkIcon } from 'components/icons';
 import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
 import { ZuButton } from 'components/core';
 import { TextEditor } from '@/components/editor/editor';
@@ -85,7 +85,7 @@ const Event = () => {
   };
 
   const list = (anchor: Anchor) => {
-    const [person, setPerson] = useState(false);
+    const [person, setPerson] = useState(true);
     const [online, setOnline] = useState(false);
     const [image, setImage] = useState<File | null>(null);
     const [banner, setBanner] = useState<File | null>(null);
@@ -162,23 +162,21 @@ const Event = () => {
             <ZuButton startIcon={<XMarkIcon />} onClick={() => handleClose()}>
               Close
             </ZuButton>
-            <ZuButton>Open Session</ZuButton>
-          </Box>
-          <Box display="flex" flexDirection="column" gap="20px" padding={3}>
             <Typography
               color="white"
-              fontSize="24px"
+              fontSize="18px"
               fontWeight={700}
               fontFamily="Inter"
             >
-              Create your Event
+              Create Event
             </Typography>
+          </Box>
+          <Box display="flex" flexDirection="column" gap="20px" padding={3}>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
               <Box
                 padding="20px"
                 display="flex"
                 justifyContent="space-between"
-                borderBottom="1px solid #383838"
               >
                 <Typography
                   color="white"
@@ -186,19 +184,8 @@ const Event = () => {
                   fontWeight={700}
                   fontFamily="Inter"
                 >
-                  Profile
+                  Event Basic
                 </Typography>
-                {/* <Select
-                  sx={{
-                    width: '30%',
-                    height: '30px',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none',
-                    },
-                    backgroundColor: '#373737',
-                    borderRadius: '10px',
-                  }}
-                ></Select> */}
               </Box>
               <Box
                 padding="20px"
@@ -268,101 +255,6 @@ const Event = () => {
                     placeholder="Write a short, one-sentence tagline for your event"
                   />
                 </Box>
-                <Box display="flex" justifyContent="space-between" gap="30px">
-                  <Box flex={1}>
-                    <Typography
-                      color="white"
-                      fontSize="18px"
-                      fontWeight={700}
-                      fontFamily="Inter"
-                    >
-                      Category
-                    </Typography>
-                    <Input
-                      sx={{
-                        color: 'white',
-                        backgroundColor: '#373737',
-                        padding: '5px 10px',
-                        borderRadius: '8px',
-                        width: '100%',
-                        fontSize: '15px',
-                        fontFamily: 'Inter',
-                        '&::after': {
-                          borderBottom: 'none',
-                        },
-                        '&::before': {
-                          borderBottom: 'none',
-                        },
-                        '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                          borderBottom: 'none',
-                        },
-                      }}
-                      placeholder="Enter Link Title"
-                    />
-                  </Box>
-                  <Box flex={1}>
-                    <Typography
-                      color="white"
-                      fontSize="18px"
-                      fontWeight={700}
-                      fontFamily="Inter"
-                    >
-                      Tags
-                    </Typography>
-                    <Input
-                      sx={{
-                        color: 'white',
-                        backgroundColor: '#373737',
-                        padding: '5px 10px',
-                        borderRadius: '8px',
-                        width: '100%',
-                        fontSize: '15px',
-                        fontFamily: 'Inter',
-                        '&::after': {
-                          borderBottom: 'none',
-                        },
-                        '&::before': {
-                          borderBottom: 'none',
-                        },
-                        '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                          borderBottom: 'none',
-                        },
-                      }}
-                      placeholder="Enter Link Title"
-                    />
-                  </Box>
-                </Box>
-                <Box>
-                  <Typography
-                    color="white"
-                    fontSize="18px"
-                    fontWeight={700}
-                    fontFamily="Inter"
-                  >
-                    Social Hashtag
-                  </Typography>
-                  <Input
-                    sx={{
-                      color: 'white',
-                      backgroundColor: '#373737',
-                      padding: '5px 10px',
-                      borderRadius: '8px',
-                      width: '100%',
-                      fontSize: '15px',
-                      fontFamily: 'Inter',
-                      '&::after': {
-                        borderBottom: 'none',
-                      },
-                      '&::before': {
-                        borderBottom: 'none',
-                      },
-                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                        borderBottom: 'none',
-                      },
-                    }}
-                    placeholder="Enter Link Title"
-                  />
-                </Box>
                 <Box>
                   <Typography
                     color="white"
@@ -371,6 +263,12 @@ const Event = () => {
                     fontFamily="Inter"
                   >
                     Event Description
+                  </Typography>
+                  <Typography
+                    color="white"
+                    variant="caption"
+                  >
+                    This is a description greeting for new members. You can also update descriptions.
                   </Typography>
                   <TextEditor
                     holder="Write"
@@ -384,12 +282,62 @@ const Event = () => {
                     }}
                   />
                 </Box>
+                <Typography
+                  color="white"
+                  fontSize="18px"
+                  fontWeight={700}
+                  fontFamily="Inter"
+                >
+                  Space Avatar
+                </Typography>
+                <Typography
+                  color="white"
+                  fontSize="13px"
+                  fontWeight={500}
+                  fontFamily="Inter"
+                >
+                  Recommend min of 200x200px (1:1 Ratio)
+                </Typography>
+                <Input
+                  type="file"
+                  onChange={handleImageChange}
+                  sx={{ display: 'none' }}
+                  id="raised-button-file"
+                />
+                <Box component="label" htmlFor="raised-button-file">
+                  <Button
+                    component="span"
+                    sx={{
+                      color: 'white',
+                      borderRadius: '30px',
+                      backgroundColor: '#373737',
+                      border: '1px solid #383838',
+                    }}
+                  >
+                    Upload
+                  </Button>
+                </Box>
+                {imagePreview ? (
+                  <Box
+                    component="img"
+                    src={imagePreview}
+                    width="200px"
+                    height="200px"
+                  />
+                ) : (
+                  <Box
+                    width="200px"
+                    height="200px"
+                    bgcolor="#373737"
+                    borderRadius="20px"
+                  />
+                )}
                 <Box
                   display="flex"
                   justifyContent="space-between"
                   gap="20px"
-                  borderTop="1px solid #383838"
-                  borderBottom="1px solid #383838"
+                  // borderTop="1px solid #383838"
+                  // borderBottom="1px solid #383838"
                   paddingY="30px"
                 >
                   <Box flex={1}>
@@ -427,7 +375,97 @@ const Event = () => {
                     />
                   </Box>
                 </Box>
-                <Box display="flex" flexDirection="column" gap="20px">
+
+              </Box>
+            </Box>
+            <Box bgcolor="#2d2d2d" borderRadius="10px">
+              <Box
+                padding="20px"
+                display="flex"
+                justifyContent="space-between"
+                borderBottom="1px solid #383838"
+              >
+                <Typography
+                  color="white"
+                  fontSize="18px"
+                  fontWeight={700}
+                  fontFamily="Inter"
+                >
+                  Event Format
+                </Typography>
+              </Box>
+              <Box display="flex" flexDirection="column" gap="20px" padding="20px">
+                <Box display="flex" justifyContent="space-between" gap="20px">
+                  <Box
+                    bgcolor={person ? '#484E45' : '#373737'}
+                    borderRadius="10px"
+                    padding="10px"
+                    display="flex"
+                    alignItems="center"
+                    gap="10px"
+                    flex={1}
+                  >
+                    <BpCheckbox
+                      checked={person}
+                      onChange={() => {
+                        setPerson((prev) => !prev);
+                        setOnline((prev) => !prev);
+                      }}
+                    />
+                    <Stack>
+                      <Typography
+                        color="white"
+                        fontSize="16px"
+                        fontWeight={600}
+                        fontFamily="Inter"
+                      >
+                        In-Person
+                      </Typography>
+                      <Typography
+                        color="white"
+                        fontSize="10px"
+                        fontFamily="Inter"
+                      >
+                        This is a physical event
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <Box
+                    bgcolor={online ? '#484E45' : '#373737'}
+                    borderRadius="10px"
+                    padding="10px"
+                    display="flex"
+                    alignItems="center"
+                    gap="10px"
+                    flex={1}
+                  >
+                    <BpCheckbox
+                      checked={online}
+                      onChange={() => {
+                        setPerson((prev) => !prev);
+                        setOnline((prev) => !prev);
+                      }}
+                    />
+                    <Stack>
+                      <Typography
+                        color="white"
+                        fontSize="16px"
+                        fontWeight={600}
+                        fontFamily="Inter"
+                      >
+                        Online
+                      </Typography>
+                      <Typography
+                        color="white"
+                        fontSize="10px"
+                        fontFamily="Inter"
+                      >
+                        Specially Online Event
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </Box>
+                <Box>
                   <Typography
                     color="white"
                     fontSize="18px"
@@ -436,119 +474,39 @@ const Event = () => {
                   >
                     Location
                   </Typography>
-                  <Box display="flex" justifyContent="space-between" gap="20px">
-                    <Box
-                      bgcolor={person ? '#484E45' : '#373737'}
-                      borderRadius="10px"
-                      padding="10px"
-                      display="flex"
-                      alignItems="center"
-                      gap="10px"
-                      flex={1}
-                    >
-                      {/* <CircleCheckbox /> */}
-                      <BpCheckbox
-                        checked={person}
-                        onChange={() => {
-                          setPerson((prev) => !prev);
-                          setOnline((prev) => !prev);
-                        }}
-                      />
-                      <Stack>
-                        <Typography
-                          color="white"
-                          fontSize="16px"
-                          fontWeight={600}
-                          fontFamily="Inter"
-                        >
-                          In-Person
-                        </Typography>
-                        <Typography
-                          color="white"
-                          fontSize="10px"
-                          fontFamily="Inter"
-                        >
-                          This is a physical event
-                        </Typography>
-                      </Stack>
-                    </Box>
-                    <Box
-                      bgcolor={online ? '#484E45' : '#373737'}
-                      borderRadius="10px"
-                      padding="10px"
-                      display="flex"
-                      alignItems="center"
-                      gap="10px"
-                      flex={1}
-                    >
-                      <BpCheckbox
-                        checked={online}
-                        onChange={() => {
-                          setPerson((prev) => !prev);
-                          setOnline((prev) => !prev);
-                        }}
-                      />
-                      <Stack>
-                        <Typography
-                          color="white"
-                          fontSize="16px"
-                          fontWeight={600}
-                          fontFamily="Inter"
-                        >
-                          Online
-                        </Typography>
-                        <Typography
-                          color="white"
-                          fontSize="10px"
-                          fontFamily="Inter"
-                        >
-                          Specially Online Event
-                        </Typography>
-                      </Stack>
-                    </Box>
-                  </Box>
-                  <Box>
-                    <Typography
-                      color="white"
-                      fontSize="18px"
-                      fontWeight={700}
-                      fontFamily="Inter"
-                    >
-                      Event Location
-                    </Typography>
-                    <Input
-                      sx={{
-                        color: 'white',
-                        backgroundColor: '#373737',
-                        padding: '5px 10px',
-                        borderRadius: '8px',
-                        width: '100%',
-                        fontSize: '15px',
-                        fontFamily: 'Inter',
-                        '&::after': {
-                          borderBottom: 'none',
-                        },
-                        '&::before': {
-                          borderBottom: 'none',
-                        },
-                        '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                          borderBottom: 'none',
-                        },
-                      }}
-                    />
-                  </Box>
-                  <ZuButton
-                    variant="contained"
+                  <Input
                     sx={{
-                      backgroundColor: '#353535',
                       color: 'white',
-                      borderRadius: '10px',
-                      textTransform: 'none',
+                      backgroundColor: '#373737',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      width: '100%',
+                      fontSize: '15px',
+                      fontFamily: 'Inter',
+                      '&::after': {
+                        borderBottom: 'none',
+                      },
+                      '&::before': {
+                        borderBottom: 'none',
+                      },
+                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                        borderBottom: 'none',
+                      },
                     }}
-                  >
-                    Add Address
-                  </ZuButton>
+                  />
                 </Box>
+                <ZuButton
+                  variant="contained"
+                  endIcon={<PlusIcon />}
+                  sx={{
+                    backgroundColor: '#353535',
+                    color: 'white',
+                    borderRadius: '10px',
+                    textTransform: 'none',
+                  }}
+                >
+                  Add Address
+                </ZuButton>
               </Box>
             </Box>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
@@ -556,7 +514,6 @@ const Event = () => {
                 padding="20px"
                 display="flex"
                 justifyContent="space-between"
-                borderBottom="1px solid #383838"
               >
                 <Typography
                   color="white"
@@ -564,131 +521,7 @@ const Event = () => {
                   fontWeight={700}
                   fontFamily="Inter"
                 >
-                  Event Avatar & Banner
-                </Typography>
-              </Box>
-              <Box
-                padding="20px"
-                display="flex"
-                flexDirection="column"
-                gap="10px"
-              >
-                <Typography
-                  color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
-                >
-                  Event Image
-                </Typography>
-                <Typography
-                  color="white"
-                  fontSize="13px"
-                  fontWeight={500}
-                  fontFamily="Inter"
-                >
-                  200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
-                </Typography>
-                <Input
-                  type="file"
-                  onChange={handleImageChange}
-                  sx={{ display: 'none' }}
-                  id="raised-button-file"
-                />
-                <Box component="label" htmlFor="raised-button-file">
-                  <Button
-                    component="span"
-                    sx={{
-                      color: 'white',
-                      borderRadius: '30px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
-                    }}
-                  >
-                    Upload
-                  </Button>
-                </Box>
-                {imagePreview ? (
-                  <Box
-                    component="img"
-                    src={imagePreview}
-                    width="200px"
-                    height="200px"
-                  />
-                ) : (
-                  <Box
-                    width="200px"
-                    height="200px"
-                    bgcolor="#373737"
-                    borderRadius="20px"
-                  />
-                )}
-                <Typography
-                  color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
-                >
-                  Event Banner
-                </Typography>
-                <Typography
-                  color="white"
-                  fontSize="13px"
-                  fontWeight={500}
-                  fontFamily="Inter"
-                >
-                  200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
-                </Typography>
-                <Input
-                  type="file"
-                  onChange={handleBannerChange}
-                  sx={{ display: 'none' }}
-                  id="banner-button-file"
-                />
-                <Box component="label" htmlFor="banner-button-file">
-                  <Button
-                    component="span"
-                    sx={{
-                      color: 'white',
-                      borderRadius: '30px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
-                    }}
-                  >
-                    Upload
-                  </Button>
-                </Box>
-                {bannerPreview ? (
-                  <Box
-                    component="img"
-                    src={bannerPreview}
-                    width="200px"
-                    height="200px"
-                  />
-                ) : (
-                  <Box
-                    width="100%"
-                    height="200px"
-                    bgcolor="#373737"
-                    borderRadius="20px"
-                  />
-                )}
-              </Box>
-            </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
-              <Box
-                padding="20px"
-                display="flex"
-                justifyContent="space-between"
-                borderBottom="1px solid #383838"
-              >
-                <Typography
-                  color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
-                >
-                  External Links
+                  Links
                 </Typography>
               </Box>
               <Box
@@ -697,7 +530,7 @@ const Event = () => {
                 flexDirection="column"
                 gap="20px"
               >
-                <Box display="flex" justifyContent="space-between" gap="20px">
+                {/* <Box display="flex" justifyContent="space-between" gap="20px">
                   <Box flex={1}>
                     <Typography
                       color="white"
@@ -760,7 +593,7 @@ const Event = () => {
                       placeholder="Enter Link Title"
                     />
                   </Box>
-                </Box>
+                </Box> */}
                 <Button
                   sx={{
                     color: 'white',
@@ -770,10 +603,41 @@ const Event = () => {
                     padding: '6px 16px',
                     border: '1px solid #383838',
                   }}
+                  endIcon={<PlusCircleIcon />}
                 >
                   Add Link
                 </Button>
               </Box>
+            </Box>
+            <Box display="flex" gap="20px">
+              <Button
+                sx={{
+                  color: 'white',
+                  borderRadius: '10px',
+                  backgroundColor: '#373737',
+                  fontSize: '14px',
+                  padding: '6px 16px',
+                  border: '1px solid #383838',
+                  flex: 1
+                }}
+                startIcon={<XMarkIcon />}
+              >
+                Discard
+              </Button>
+              <Button
+                sx={{
+                  color: '#67DBFF',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(103, 219, 255, 0.10)',
+                  fontSize: '14px',
+                  padding: '6px 16px',
+                  flex: 1,
+                  border: '1px solid rgba(103, 219, 255, 0.20)'
+                }}
+                startIcon={<PlusCircleIcon color='#67DBFF' />}
+              >
+                Create Event
+              </Button>
             </Box>
           </Box>
         </Box>
