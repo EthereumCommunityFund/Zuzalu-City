@@ -88,9 +88,7 @@ const Event = () => {
     const [person, setPerson] = useState(true);
     const [online, setOnline] = useState(false);
     const [image, setImage] = useState<File | null>(null);
-    const [banner, setBanner] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null;
@@ -101,19 +99,9 @@ const Event = () => {
       }
     };
 
-    const handleBannerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files ? event.target.files[0] : null;
-      if (file && file.type.substr(0, 5) === 'image') {
-        setBanner(file);
-      } else {
-        setBanner(null);
-      }
-    };
-
     const handleClose = () => {
       toggleDrawer('right', false);
       setImage(null);
-      setBanner(null);
     };
 
     useEffect(() => {
@@ -127,18 +115,6 @@ const Event = () => {
         setImagePreview(null);
       }
     }, [image]);
-
-    useEffect(() => {
-      if (banner) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setBannerPreview(reader.result as string);
-        };
-        reader.readAsDataURL(banner);
-      } else {
-        setBannerPreview(null);
-      }
-    }, [banner]);
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
