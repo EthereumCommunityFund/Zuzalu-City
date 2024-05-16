@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { TextEditor } from 'components/editor/editor';
 import Image from 'next/image';
-import { InitialTicketModal } from '@/components/modals/initialTicketModal/InitialTicketModal';
 
 export default function SpaceEditPage() {
   const [isOnInput, setIsOnInput] = useState(false);
@@ -343,7 +342,6 @@ export default function SpaceEditPage() {
           </Box>
         </Box>
       </Box>
-      <InitialTicketModal showModal={true} setShowModal={() => {}} />
     </Stack>
   );
 }
