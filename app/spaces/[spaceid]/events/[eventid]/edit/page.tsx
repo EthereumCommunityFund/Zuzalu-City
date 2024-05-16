@@ -8,7 +8,7 @@ import {
   SwipeableDrawer,
   Checkbox,
   styled,
-  Stack
+  Stack,
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,13 +20,12 @@ import { TextEditor } from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import BpCheckbox from '../components/Checkbox';
 
-
 const CircleCheckbox = styled(Checkbox)({
   borderRadius: '50px',
   border: '10px solid green',
   '&.Mui-checked': {
     color: '#f50057',
-  }
+  },
 });
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
@@ -95,7 +94,7 @@ const Event = () => {
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null;
-      if (file && file.type.substr(0, 5) === "image") {
+      if (file && file.type.substr(0, 5) === 'image') {
         setImage(file);
       } else {
         setImage(null);
@@ -104,7 +103,7 @@ const Event = () => {
 
     const handleBannerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null;
-      if (file && file.type.substr(0, 5) === "image") {
+      if (file && file.type.substr(0, 5) === 'image') {
         setBanner(file);
       } else {
         setBanner(null);
@@ -115,7 +114,7 @@ const Event = () => {
       toggleDrawer('right', false);
       setImage(null);
       setBanner(null);
-    }
+    };
 
     useEffect(() => {
       if (image) {
@@ -160,10 +159,7 @@ const Event = () => {
             borderBottom="1px solid #383838"
             paddingX={3}
           >
-            <ZuButton
-              startIcon={<XMarkIcon />}
-              onClick={() => handleClose()}
-            >
+            <ZuButton startIcon={<XMarkIcon />} onClick={() => handleClose()}>
               Close
             </ZuButton>
             <ZuButton>Open Session</ZuButton>
@@ -204,7 +200,12 @@ const Event = () => {
                   }}
                 ></Select> */}
               </Box>
-              <Box padding="20px" display="flex" flexDirection="column" gap="20px">
+              <Box
+                padding="20px"
+                display="flex"
+                flexDirection="column"
+                gap="20px"
+              >
                 <Box>
                   <Typography
                     color="white"
@@ -372,7 +373,7 @@ const Event = () => {
                     Event Description
                   </Typography>
                   <TextEditor
-                    holder='Write'
+                    holder="Write"
                     placeholder="Write a short, one-sentence tagline for your event"
                     sx={{
                       backgroundColor: '#ffffff0d',
@@ -400,11 +401,13 @@ const Event = () => {
                     >
                       Start Date
                     </Typography>
-                    <DatePicker sx={{
-                      '& .MuiSvgIcon-root': {
-                        color: 'white'
-                      },
-                    }} />
+                    <DatePicker
+                      sx={{
+                        '& .MuiSvgIcon-root': {
+                          color: 'white',
+                        },
+                      }}
+                    />
                   </Box>
                   <Box flex={1}>
                     <Typography
@@ -415,11 +418,13 @@ const Event = () => {
                     >
                       End Date
                     </Typography>
-                    <DatePicker sx={{
-                      '& .MuiSvgIcon-root': {
-                        color: 'white'
-                      },
-                    }} />
+                    <DatePicker
+                      sx={{
+                        '& .MuiSvgIcon-root': {
+                          color: 'white',
+                        },
+                      }}
+                    />
                   </Box>
                 </Box>
                 <Box display="flex" flexDirection="column" gap="20px">
@@ -438,15 +443,15 @@ const Event = () => {
                       padding="10px"
                       display="flex"
                       alignItems="center"
-                      gap='10px'
+                      gap="10px"
                       flex={1}
                     >
                       {/* <CircleCheckbox /> */}
                       <BpCheckbox
                         checked={person}
                         onChange={() => {
-                          setPerson((prev) => !prev)
-                          setOnline((prev) => !prev)
+                          setPerson((prev) => !prev);
+                          setOnline((prev) => !prev);
                         }}
                       />
                       <Stack>
@@ -458,7 +463,11 @@ const Event = () => {
                         >
                           In-Person
                         </Typography>
-                        <Typography color="white" fontSize="10px" fontFamily="Inter">
+                        <Typography
+                          color="white"
+                          fontSize="10px"
+                          fontFamily="Inter"
+                        >
                           This is a physical event
                         </Typography>
                       </Stack>
@@ -469,14 +478,14 @@ const Event = () => {
                       padding="10px"
                       display="flex"
                       alignItems="center"
-                      gap='10px'
+                      gap="10px"
                       flex={1}
                     >
                       <BpCheckbox
                         checked={online}
                         onChange={() => {
-                          setPerson((prev) => !prev)
-                          setOnline((prev) => !prev)
+                          setPerson((prev) => !prev);
+                          setOnline((prev) => !prev);
                         }}
                       />
                       <Stack>
@@ -488,7 +497,11 @@ const Event = () => {
                         >
                           Online
                         </Typography>
-                        <Typography color="white" fontSize="10px" fontFamily="Inter">
+                        <Typography
+                          color="white"
+                          fontSize="10px"
+                          fontFamily="Inter"
+                        >
                           Specially Online Event
                         </Typography>
                       </Stack>
@@ -554,7 +567,12 @@ const Event = () => {
                   Event Avatar & Banner
                 </Typography>
               </Box>
-              <Box padding="20px" display="flex" flexDirection="column" gap="10px">
+              <Box
+                padding="20px"
+                display="flex"
+                flexDirection="column"
+                gap="10px"
+              >
                 <Typography
                   color="white"
                   fontSize="18px"
@@ -571,32 +589,40 @@ const Event = () => {
                 >
                   200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
                 </Typography>
-                <Input type='file' onChange={handleImageChange} sx={{ display: 'none' }} id="raised-button-file" />
-                <Box component='label' htmlFor="raised-button-file">
-                  <Button component="span"
+                <Input
+                  type="file"
+                  onChange={handleImageChange}
+                  sx={{ display: 'none' }}
+                  id="raised-button-file"
+                />
+                <Box component="label" htmlFor="raised-button-file">
+                  <Button
+                    component="span"
                     sx={{
                       color: 'white',
                       borderRadius: '30px',
                       backgroundColor: '#373737',
                       border: '1px solid #383838',
-                    }}>
+                    }}
+                  >
                     Upload
                   </Button>
                 </Box>
-                {imagePreview ?
+                {imagePreview ? (
                   <Box
                     component="img"
                     src={imagePreview}
                     width="200px"
                     height="200px"
                   />
-                  :
+                ) : (
                   <Box
                     width="200px"
                     height="200px"
                     bgcolor="#373737"
                     borderRadius="20px"
-                  />}
+                  />
+                )}
                 <Typography
                   color="white"
                   fontSize="18px"
@@ -613,32 +639,40 @@ const Event = () => {
                 >
                   200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
                 </Typography>
-                <Input type='file' onChange={handleBannerChange} sx={{ display: 'none' }} id="banner-button-file" />
-                <Box component='label' htmlFor="banner-button-file">
-                  <Button component="span"
+                <Input
+                  type="file"
+                  onChange={handleBannerChange}
+                  sx={{ display: 'none' }}
+                  id="banner-button-file"
+                />
+                <Box component="label" htmlFor="banner-button-file">
+                  <Button
+                    component="span"
                     sx={{
                       color: 'white',
                       borderRadius: '30px',
                       backgroundColor: '#373737',
                       border: '1px solid #383838',
-                    }}>
+                    }}
+                  >
                     Upload
                   </Button>
                 </Box>
-                {bannerPreview ?
+                {bannerPreview ? (
                   <Box
                     component="img"
                     src={bannerPreview}
                     width="200px"
                     height="200px"
                   />
-                  :
+                ) : (
                   <Box
                     width="100%"
                     height="200px"
                     bgcolor="#373737"
                     borderRadius="20px"
-                  />}
+                  />
+                )}
               </Box>
             </Box>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
@@ -657,7 +691,12 @@ const Event = () => {
                   External Links
                 </Typography>
               </Box>
-              <Box padding="20px" display="flex" flexDirection="column" gap="20px">
+              <Box
+                padding="20px"
+                display="flex"
+                flexDirection="column"
+                gap="20px"
+              >
                 <Box display="flex" justifyContent="space-between" gap="20px">
                   <Box flex={1}>
                     <Typography
@@ -739,7 +778,7 @@ const Event = () => {
           </Box>
         </Box>
       </LocalizationProvider>
-    )
+    );
   };
   return (
     <Box width="100%" borderLeft="1px solid #383838">
