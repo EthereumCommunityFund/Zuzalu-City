@@ -1,21 +1,76 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { Stack, Box, Typography, Button, Input } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TextEditor } from '@/components/editor/editor';
 import { Header } from './components';
-import BpCheckbox from '@/components/event/Checkbox';
-import { ZuButton } from '@/components/core';
 import {
   XMarkIcon,
-  PlusCircleIcon,
-  PlusIcon,
   SpacePlusIcon,
 } from '@/components/icons';
 
+import { useCeramicContext } from '@/context/CeramicContext';
+
+interface Space {
+  id: string;
+  avatar?: string;
+  banner?: string;
+  description?: string;
+  name: string;
+  profileId?: string;
+  tagline?: string;
+  website?: string;
+  twitter?: string;
+  telegram?: string;
+  nostr?: string;
+  lens?: string;
+  github?: string;
+  discord?: string;
+  ens?: string;
+}
+
+interface Inputs {
+  name: string;
+  tagline: string;
+}
+
 const Home = () => {
-  const [person, setPerson] = useState(true);
-  const [online, setOnline] = useState(false);
+  const {
+    ceramic,
+    composeClient,
+    isAuthenticated,
+    authenticate,
+    logout,
+    showAuthPrompt,
+    hideAuthPrompt,
+    isAuthPromptVisible,
+    newUser,
+    profile,
+    username,
+    createProfile,
+  } = useCeramicContext();
+
+  const [inputs, setInputs] = useState<Inputs>({
+    name: '',
+    tagline: '',
+  });
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [name]: value
+    }));
+  };
+
+  const [spaceDescription, setSpaceDescription] = useState<string>('');
+
+  // const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = event.target;
+
+  //   setSpaceDescription(value);
+  // }
+
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [banner, setBanner] = useState<File | null>(null);
@@ -63,6 +118,38 @@ const Home = () => {
     }
   }, [image]);
 
+  const createSpace = async () => {
+    console.log("click button")
+    const update = await composeClient.executeQuery(`
+    mutation  {
+      createSpace(
+        input: {
+          content: {
+            name: "${inputs.name}",
+            description: "${spaceDescription}",
+            tagline: "${inputs.tagline}",
+            admin: "${JSON.parse(localStorage.getItem("ceramic:eth_did")!)}",
+            profileId: "k2t6wzhkhabz4a09lsxkr3jbej43j9ubk0dt841uy8uq3m5c5y2iauknqo87t2",
+            avatar: "",
+            banner: "",
+          }
+        }
+      ) {
+        document {
+          avatar
+          banner
+          description
+          name
+          profileId
+          tagline
+        }
+      }
+    }
+    `);
+
+    console.log("UPDATE", update);
+  };
+
   return (
     <Stack>
       <Header />
@@ -101,6 +188,8 @@ const Home = () => {
                   Space Name
                 </Typography>
                 <Input
+                  name='name'
+                  onChange={handleInputChange}
                   sx={{
                     color: 'white',
                     backgroundColor: '#373737',
@@ -132,6 +221,8 @@ const Home = () => {
                   Space Tagline
                 </Typography>
                 <Input
+                  name='tagline'
+                  onChange={handleInputChange}
                   sx={{
                     color: 'white',
                     backgroundColor: '#373737',
@@ -360,6 +451,7 @@ const Home = () => {
                 border: '1px solid rgba(103, 219, 255, 0.20)',
               }}
               startIcon={<SpacePlusIcon color="#67DBFF" />}
+              onClick={createSpace}
             >
               Create Space
             </Button>
