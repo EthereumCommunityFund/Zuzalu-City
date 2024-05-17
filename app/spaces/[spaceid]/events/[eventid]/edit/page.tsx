@@ -37,6 +37,22 @@ const Event = () => {
     bottom: false,
     right: false,
   });
+
+  const [eventName, setEventName] = useState('');
+
+  const handleEventNameChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setEventName(event.target.value);
+  };
+  const [eventTagline, setEventTagline] = useState('');
+
+  const handleEventTaglineChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setEventTagline(event.target.value);
+  };
+
   const {
     ceramic,
     composeClient,
@@ -51,37 +67,56 @@ const Event = () => {
     username,
     createProfile,
   } = useCeramicContext();
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
 
   const updateSpace = async () => {
     const update = await composeClient.executeQuery(`
-  mutation  {
-    createEvent(
-      input: {content: {title: "", endTime: "", spaceId: "", createdAt: "", profileId: "", startTime: "", max_participant: 10, min_participant: 10, participant_count: 10, description: "", external_url: "", image_url: "", meeting_url: "", status: "", timezone: ""}}
-    ) {
-      document {
-        createdAt
-        description
-        endTime
-        external_url
-        id
-        image_url
-        max_participant
-        meeting_url
-        min_participant
-        participant_count
-        profileId
-        spaceId
-        startTime
-        status
-        timezone
-        title
+    mutation  {
+      createEvent(
+        input: {
+          content: {
+            title: "${eventName}",
+            description: "",
+            startTime: ""2024-09-09T00:00:00Z"",
+            endTime: ""2024-09-010T00:00:00Z"",
+            spaceId: "",
+            createdAt: ""2024-08-09T00:00:00Z"",
+            profileId: "k2t6wzhkhabz4a09lsxkr3jbej43j9ubk0dt841uy8uq3m5c5y2iauknqo87t2",
+            max_participant: 100,
+            min_participant: 10,
+            participant_count: 10,
+            external_url: "",
+            image_url: "",
+            meeting_url: "",
+            status: "",
+            timezone: ""
+          }
+        }
+      ) {
+        document {
+          createdAt
+          description
+          endTime
+          external_url
+          id
+          image_url
+          max_participant
+          meeting_url
+          min_participant
+          participant_count
+          profileId
+          spaceId
+          startTime
+          status
+          timezone
+          title
+        }
       }
     }
-  }
-`);
+    `);
+  };
+
+  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+    setState({ ...state, [anchor]: open });
   };
 
   const list = (anchor: Anchor) => {
@@ -194,6 +229,8 @@ const Event = () => {
                       },
                     }}
                     placeholder="Type an awesome name"
+                    value={eventName}
+                    onChange={handleEventNameChange}
                   />
                 </Box>
                 <Box>
@@ -225,6 +262,8 @@ const Event = () => {
                       },
                     }}
                     placeholder="Write a short, one-sentence tagline for your event"
+                    value={eventTagline}
+                    onChange={handleEventTaglineChange}
                   />
                 </Box>
                 <Box>
@@ -500,70 +539,6 @@ const Event = () => {
                 flexDirection="column"
                 gap="20px"
               >
-                {/* <Box display="flex" justifyContent="space-between" gap="20px">
-                  <Box flex={1}>
-                    <Typography
-                      color="white"
-                      fontSize="18px"
-                      fontWeight={700}
-                      fontFamily="Inter"
-                    >
-                      Link
-                    </Typography>
-                    <Input
-                      sx={{
-                        color: 'white',
-                        backgroundColor: '#373737',
-                        padding: '5px 10px',
-                        borderRadius: '8px',
-                        width: '100%',
-                        fontSize: '15px',
-                        fontFamily: 'Inter',
-                        '&::after': {
-                          borderBottom: 'none',
-                        },
-                        '&::before': {
-                          borderBottom: 'none',
-                        },
-                        '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                          borderBottom: 'none',
-                        },
-                      }}
-                      placeholder="Enter Link Title"
-                    />
-                  </Box>
-                  <Box flex={1}>
-                    <Typography
-                      color="white"
-                      fontSize="18px"
-                      fontWeight={700}
-                      fontFamily="Inter"
-                    >
-                      URL
-                    </Typography>
-                    <Input
-                      sx={{
-                        color: 'white',
-                        backgroundColor: '#373737',
-                        padding: '5px 10px',
-                        borderRadius: '8px',
-                        width: '100%',
-                        fontSize: '15px',
-                        fontFamily: 'Inter',
-                        '&::after': {
-                          borderBottom: 'none',
-                        },
-                        '&::before': {
-                          borderBottom: 'none',
-                        },
-                        '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                          borderBottom: 'none',
-                        },
-                      }}
-                      placeholder="Enter Link Title"
-                    />
-                  </Box>
-                </Box> */}
                 <Button
                   sx={{
                     color: 'white',
@@ -605,6 +580,7 @@ const Event = () => {
                   border: '1px solid rgba(103, 219, 255, 0.20)',
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
+                onClick={updateSpace}
               >
                 Create Event
               </Button>

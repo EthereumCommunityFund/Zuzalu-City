@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Stack, Typography, Button } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
@@ -7,9 +7,113 @@ import { ZuButton } from 'components/core';
 import { CalendarIcon, EventIcon, HomeIcon, ListIcon } from 'components/icons';
 import { EventCard } from 'components';
 import { MOCK_DATA } from 'mock';
+import { useCeramicContext } from '@/context/CeramicContext';
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  timezone: string;
+  status: string;
+  tagline?: string;
+  image_url?: string;
+  external_url?: string;
+  meeting_url?: string;
+  profileId?: string;
+  spaceId?: string;
+  participant_count: number;
+  min_participant: number;
+  max_participant: number;
+  createdAt: string;
+}
+
+interface EventEdge {
+  node: Event;
+}
+
+interface EventData {
+  eventIndex: {
+    edges: EventEdge[];
+  };
+}
 
 const Home = () => {
   const router = useRouter();
+
+  const [events, setEvents] = useState<Event[]>([]);
+  const {
+    ceramic,
+    composeClient,
+    isAuthenticated,
+    authenticate,
+    logout,
+    showAuthPrompt,
+    hideAuthPrompt,
+    isAuthPromptVisible,
+    newUser,
+    profile,
+    username,
+    createProfile,
+  } = useCeramicContext();
+
+  const getEvents = async () => {
+    console.log('Fetching events...');
+    try {
+      const response: any = await composeClient.executeQuery(`
+      query {
+        eventIndex(first: 10) {
+          edges {
+            node {
+              id
+              title
+              description
+              startTime
+              endTime
+              timezone
+              status
+              tagline
+              image_url
+              external_url
+              meeting_url
+              profileId
+              spaceId
+              participant_count
+              min_participant
+              max_participant
+              createdAt
+            }
+          }
+        }
+      }
+    `);
+
+      if ('eventIndex' in response.data) {
+        const eventData: EventData = response.data as EventData;
+        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setEvents(fetchedEvents);
+        console.log('Events fetched:', fetchedEvents);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getEvents();
+        console.log(data);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <Stack direction="row">
