@@ -101,6 +101,7 @@ const authenticateEthPKH = async (
       ethProvider,
       accountId,
     );
+    console.log('authMethod', authMethod);
     /**
      * Create DIDSession & provide capabilities for resources that we want to access.
      * @NOTE: The specific resources (ComposeDB data models) are provided through
@@ -110,6 +111,8 @@ const authenticateEthPKH = async (
     session = await DIDSession.authorize(authMethod, {
       resources: compose.resources,
     });
+    console.log(compose.resources, 'resources');
+    console.log(session, 'session');
     // Set the session in localStorage.
     localStorage.setItem('ceramic:eth_did', session.serialize());
   }
