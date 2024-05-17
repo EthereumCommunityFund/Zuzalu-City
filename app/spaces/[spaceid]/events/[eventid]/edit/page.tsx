@@ -149,11 +149,7 @@ const Event = () => {
           </Box>
           <Box display="flex" flexDirection="column" gap="20px" padding={3}>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
-              <Box
-                padding="20px"
-                display="flex"
-                justifyContent="space-between"
-              >
+              <Box padding="20px" display="flex" justifyContent="space-between">
                 <Typography
                   color="white"
                   fontSize="18px"
@@ -240,11 +236,9 @@ const Event = () => {
                   >
                     Event Description
                   </Typography>
-                  <Typography
-                    color="white"
-                    variant="caption"
-                  >
-                    This is a description greeting for new members. You can also update descriptions.
+                  <Typography color="white" variant="caption">
+                    This is a description greeting for new members. You can also
+                    update descriptions.
                   </Typography>
                   <TextEditor
                     holder="Write"
@@ -351,7 +345,6 @@ const Event = () => {
                     />
                   </Box>
                 </Box>
-
               </Box>
             </Box>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
@@ -370,7 +363,12 @@ const Event = () => {
                   Event Format
                 </Typography>
               </Box>
-              <Box display="flex" flexDirection="column" gap="20px" padding="20px">
+              <Box
+                display="flex"
+                flexDirection="column"
+                gap="20px"
+                padding="20px"
+              >
                 <Box display="flex" justifyContent="space-between" gap="20px">
                   <Box
                     bgcolor={person ? '#484E45' : '#373737'}
@@ -486,11 +484,7 @@ const Event = () => {
               </Box>
             </Box>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
-              <Box
-                padding="20px"
-                display="flex"
-                justifyContent="space-between"
-              >
+              <Box padding="20px" display="flex" justifyContent="space-between">
                 <Typography
                   color="white"
                   fontSize="18px"
@@ -594,7 +588,7 @@ const Event = () => {
                   fontSize: '14px',
                   padding: '6px 16px',
                   border: '1px solid #383838',
-                  flex: 1
+                  flex: 1,
                 }}
                 startIcon={<XMarkIcon />}
               >
@@ -608,9 +602,9 @@ const Event = () => {
                   fontSize: '14px',
                   padding: '6px 16px',
                   flex: 1,
-                  border: '1px solid rgba(103, 219, 255, 0.20)'
+                  border: '1px solid rgba(103, 219, 255, 0.20)',
                 }}
-                startIcon={<PlusCircleIcon color='#67DBFF' />}
+                startIcon={<PlusCircleIcon color="#67DBFF" />}
               >
                 Create Event
               </Button>

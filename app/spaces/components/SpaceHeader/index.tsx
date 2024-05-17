@@ -22,7 +22,12 @@ const SpaceHeader = () => {
       <Typography color={theme.palette.text.primary} variant="bodyBB">
         Welcome to the new Zuzalu City
       </Typography>
-      <ZuButton startIcon={<SpacePlusIcon />} onClick={() => router.push("/spaces/create")}>Create a Space</ZuButton>
+      <ZuButton
+        startIcon={<SpacePlusIcon />}
+        onClick={() => router.push('/spaces/create')}
+      >
+        Create a Space
+      </ZuButton>
     </Stack>
   );
 };

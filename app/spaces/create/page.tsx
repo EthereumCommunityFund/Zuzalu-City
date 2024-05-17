@@ -1,12 +1,17 @@
 'use client';
-import { useState, useEffect } from "react";
-import { Stack, Box, Typography, Button, Input } from "@mui/material";
+import { useState, useEffect } from 'react';
+import { Stack, Box, Typography, Button, Input } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TextEditor } from "@/components/editor/editor";
-import { Header } from "./components";
-import BpCheckbox from "@/components/event/Checkbox";
-import { ZuButton } from "@/components/core";
-import { XMarkIcon, PlusCircleIcon, PlusIcon, SpacePlusIcon } from "@/components/icons";
+import { TextEditor } from '@/components/editor/editor';
+import { Header } from './components';
+import BpCheckbox from '@/components/event/Checkbox';
+import { ZuButton } from '@/components/core';
+import {
+  XMarkIcon,
+  PlusCircleIcon,
+  PlusIcon,
+  SpacePlusIcon,
+} from '@/components/icons';
 
 const Home = () => {
   const [person, setPerson] = useState(true);
@@ -62,13 +67,15 @@ const Home = () => {
     <Stack>
       <Header />
       <Stack direction="row" justifyContent="center">
-        <Box display="flex" flexDirection="column" gap="20px" padding={3} width="800px">
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap="20px"
+          padding={3}
+          width="800px"
+        >
           <Box bgcolor="#2d2d2d" borderRadius="10px">
-            <Box
-              padding="20px"
-              display="flex"
-              justifyContent="space-between"
-            >
+            <Box padding="20px" display="flex" justifyContent="space-between">
               <Typography
                 color="white"
                 fontSize="18px"
@@ -146,7 +153,7 @@ const Home = () => {
                   placeholder="Write a short, one-sentence tagline for your event"
                 />
               </Box>
-              <Box>
+              <Stack spacing="10px">
                 <Typography
                   color="white"
                   fontSize="18px"
@@ -155,11 +162,9 @@ const Home = () => {
                 >
                   Space Description
                 </Typography>
-                <Typography
-                  color="white"
-                  variant="caption"
-                >
-                  This is a description greeting for new members. You can also update descriptions.
+                <Typography color="white" variant="caption">
+                  This is a description greeting for new members. You can also
+                  update descriptions.
                 </Typography>
                 <TextEditor
                   holder="Write"
@@ -172,15 +177,54 @@ const Home = () => {
                     borderRadius: '10px',
                   }}
                 />
-              </Box>
+                <Stack direction="row" justifyContent="space-between">
+                  <Stack
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      gap: '6px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <svg
+                      width="20"
+                      height="15"
+                      viewBox="0 0 20 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g clipPath="url(#clip0_4575_7884)">
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M4.80085 4.06177H2.83984V11.506H4.88327V7.3727L6.82879 10.0394L8.68199 7.3727V11.506H10.6226V4.06177H8.68199L6.82879 6.81714L4.80085 4.06177ZM1.55636 0.794922H18.4436C19.3028 0.794922 20 1.59076 20 2.57247V13.0174C20 13.9989 19.3032 14.7949 18.4436 14.7949H1.55636C0.697166 14.7949 0 13.9991 0 13.0174V2.57247C0 1.59091 0.696805 0.794922 1.55636 0.794922ZM14.0078 4.10603H13.9884V7.92826H12.1206L15 11.506L17.8795 7.90628H15.9347V4.10603H14.0078Z"
+                          fill="white"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_4575_7884">
+                          <rect
+                            width="20"
+                            height="14"
+                            fill="white"
+                            transform="translate(0 0.794922)"
+                          />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                    <Typography color="white" variant="caption">
+                      Markdown Available
+                    </Typography>
+                  </Stack>
+                  <Typography variant="caption" color="white">
+                    000 Characters Left
+                  </Typography>
+                </Stack>
+              </Stack>
             </Box>
           </Box>
           <Box bgcolor="#2d2d2d" borderRadius="10px">
-            <Box
-              padding="20px"
-              display="flex"
-              justifyContent="space-between"
-            >
+            <Box padding="20px" display="flex" justifyContent="space-between">
               <Typography
                 color="white"
                 fontSize="18px"
@@ -286,11 +330,7 @@ const Home = () => {
                   height="200px"
                 />
               ) : (
-                <Box
-                  height="200px"
-                  bgcolor="#373737"
-                  borderRadius="10px"
-                />
+                <Box height="200px" bgcolor="#373737" borderRadius="10px" />
               )}
             </Stack>
           </Box>
@@ -303,7 +343,7 @@ const Home = () => {
                 fontSize: '14px',
                 padding: '6px 16px',
                 border: '1px solid #383838',
-                flex: 1
+                flex: 1,
               }}
               startIcon={<XMarkIcon />}
             >
@@ -317,7 +357,7 @@ const Home = () => {
                 fontSize: '14px',
                 padding: '6px 16px',
                 flex: 1,
-                border: '1px solid rgba(103, 219, 255, 0.20)'
+                border: '1px solid rgba(103, 219, 255, 0.20)',
               }}
               startIcon={<SpacePlusIcon color="#67DBFF" />}
             >
@@ -327,7 +367,7 @@ const Home = () => {
         </Box>
       </Stack>
     </Stack>
-  )
-}
+  );
+};
 
 export default Home;

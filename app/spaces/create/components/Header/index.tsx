@@ -17,7 +17,12 @@ const Header = () => {
       bgcolor="#2d2d2d"
     >
       <Stack direction="row" spacing={2} alignItems="center">
-        <ZuButton startIcon={<LeftArrowIcon />} onClick={() => router.push('/spaces')}>Back</ZuButton>
+        <ZuButton
+          startIcon={<LeftArrowIcon />}
+          onClick={() => router.push('/spaces')}
+        >
+          Back
+        </ZuButton>
         <Typography variant="bodyBB" color="white" lineHeight="40px">
           Create Space
         </Typography>
