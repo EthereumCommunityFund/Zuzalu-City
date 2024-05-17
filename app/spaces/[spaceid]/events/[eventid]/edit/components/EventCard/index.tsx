@@ -1,7 +1,7 @@
 'use client';
-
 import * as React from 'react';
 import { Typography, Stack } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import {
   EyeIcon,
   EventIcon,
@@ -49,6 +49,7 @@ const EventCard: React.FC<EventCardProps> = ({
   applicants = 0,
   isSideEventActive = false,
 }) => {
+  const router = useRouter();
   return (
     <Stack
       direction="column"
@@ -57,6 +58,8 @@ const EventCard: React.FC<EventCardProps> = ({
       borderRadius={2}
       border="1px solid #383838"
       bgcolor="#2D2D2D"
+      onClick={() => router.push('/spaces/123/events/456/tickets/edit')}
+      sx={{ cursor: 'pointer' }}
     >
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="row" alignItems="center" spacing={1}>
