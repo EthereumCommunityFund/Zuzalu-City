@@ -21,11 +21,11 @@ const OverviewPostCard = () => {
           src="/drivenfast.webp"
         />
         <Stack>
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} alignItems={'center'}>
             <Typography variant="subtitle2" color="white">
               drivenfast
             </Typography>
-            <InformationIcon />
+            <InformationIcon size={5} />
           </Stack>
           <Typography variant="body1" color="white">
             Love to hear it. We can even expose the DID Session JWT instead?

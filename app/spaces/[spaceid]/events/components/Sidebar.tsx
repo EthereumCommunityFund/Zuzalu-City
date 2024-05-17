@@ -19,7 +19,7 @@ import {
   TableIcon,
   QuestionIcon,
 } from 'components/icons';
-import { ZuButton, ZuSelect } from 'components/core';
+import { ZuButton } from 'components/core';
 
 const Sidebar = () => {
   const router = useRouter();

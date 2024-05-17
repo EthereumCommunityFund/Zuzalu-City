@@ -47,7 +47,22 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
         overflowX: 'scroll',
         scrollSnapType: 'x mandatory',
         gap: '10px',
-        '&::-webkit-scrollbar': { width: 0, backgroundColor: 'transparent' },
+        // '&::-webkit-scrollbar': { width: 10, backgroundColor: 'transparent' },
+        // '&::-webkit-scrollbar': {
+        //   width: '10px',
+        //   backgroundColor: '#ccc',  // Change background color for visibility
+        // },
+        // '&::-webkit-scrollbar-track': {
+        //   backgroundColor: '#f0f0f0',  // Light grey track
+        // },
+        // '&::-webkit-scrollbar-thumb': {
+        //   backgroundColor: '#888',  // Darker grey thumb
+        //   borderRadius: '10px',  // Rounded corners for the scrollbar thumb
+        //   border: '2px solid #f0f0f0',  // Optional: adds border around the thumb
+        // },
+        // '&::-webkit-scrollbar-thumb:hover': {
+        //   backgroundColor: '#555',  // Darker color on hover
+        // }
       }}
     >
       {items.map((item, index) => (

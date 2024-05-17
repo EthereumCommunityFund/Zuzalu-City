@@ -1,5 +1,4 @@
 'use client';
-
 import { useTheme } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
 import { EventCard } from 'components';
@@ -17,6 +16,7 @@ import { MOCK_DATA } from 'mock';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
+// import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
   const [aboutContent, setAboutContent] = useState<

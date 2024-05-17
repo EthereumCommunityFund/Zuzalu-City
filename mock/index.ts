@@ -9,7 +9,7 @@ export const MOCK_DATA = {
       joined: false,
     },
     {
-      bgImage: '/7.webp',
+      bgImage: '/7.PNG',
       logoImage: '/8.webp',
       title: '4Seas',
       description:
@@ -41,7 +41,7 @@ export const MOCK_DATA = {
       joined: false,
     },
     {
-      bgImage: '/7.webp',
+      bgImage: '/7.PNG',
       logoImage: '/8.webp',
       title: '4Seas',
       description:
