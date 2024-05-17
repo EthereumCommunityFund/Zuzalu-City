@@ -97,6 +97,8 @@ const authenticateEthPKH = async (
     });
     const accountId = await getAccountId(ethProvider, addresses[0]);
     console.log(accountId, 'account');
+    console.log(ethProvider, 'ethProvider');
+    console.log(accountId, 'accountId');
     const authMethod = await EthereumWebAuth.getAuthMethod(
       ethProvider,
       accountId,
