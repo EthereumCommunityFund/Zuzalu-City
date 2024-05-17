@@ -36,6 +36,7 @@ interface SpaceData {
 
 const Home = () => {
   const theme = useTheme();
+  const [selected, setSelected] = useState("Spaces")
   const [spaces, setSpaces] = useState<Space[]>([]);
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
@@ -111,7 +112,7 @@ const Home = () => {
 
   return (
     <Stack direction="row">
-      {!isTablet && <Sidebar />}
+      {!isTablet && <Sidebar selected={selected} />}
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
         <Grid container spacing={{ xs: 2, md: 3 }} padding="20px">

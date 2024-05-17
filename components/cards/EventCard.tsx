@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
@@ -20,10 +21,17 @@ const EventCard: React.FC<EventCardProps> = ({
   logo = '/4.webp',
 }) => {
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Box padding="10px" display="flex" gap={isMobile ? '10px' : '14px'}>
+    <Box
+      padding="10px"
+      display="flex"
+      gap={isMobile ? '10px' : '14px'}
+      sx={{ cursor: 'pointer' }}
+      onClick={() => router.push('/spaces/123/events/456')}
+    >
       <Box
         component="img"
         width={isMobile ? '80px' : '150px'}
