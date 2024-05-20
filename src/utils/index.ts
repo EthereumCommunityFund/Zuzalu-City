@@ -1,6 +1,6 @@
 import { DIDSession } from "did-session";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
-import type { CeramicApi } from "@ceramicnetwork/common";
+import type { CeramicClient } from "@ceramicnetwork/http-client";
 import type { ComposeClient } from "@composedb/client";
 
 // If you are relying on an injected provider this must be here otherwise you will have a type error.
@@ -15,7 +15,7 @@ declare global {
  * @returns Promise<DID-Session> - The User's authenticated sesion.
  */
 export const authenticateCeramic = async (
-  ceramic: CeramicApi,
+  ceramic: CeramicClient,
   compose: ComposeClient
 ) => {
   const sessionStr = localStorage.getItem("did"); // for production you will want a better place than localStorage for your sessions.
@@ -47,7 +47,7 @@ export const authenticateCeramic = async (
      * @NOTE: Any production applications will want to provide a more complete list of capabilities.
      *        This is not done here to allow you to add more datamodels to your application.
      */
-    // TODO: update resources to only provide access to our composities
+    // @ts-ignore
     session = await DIDSession.authorize(authMethod, {
       resources: compose.resources,
     });
