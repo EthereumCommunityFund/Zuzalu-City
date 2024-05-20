@@ -2,7 +2,7 @@ import { DIDSession } from 'did-session';
 import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum';
 import type { CeramicClient } from '@ceramicnetwork/http-client';
 import type { ComposeClient } from '@composedb/client';
-
+import { useWalletClient } from 'wagmi';
 /**
  * Checks localStorage for a stored DID Session. If one is found we authenticate it, otherwise we create a new one.
  * @returns Promise<DID-Session> - The User's authenticated sesion.
