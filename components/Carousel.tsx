@@ -44,9 +44,10 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
       onMouseMove={handleTouchMove}
       sx={{
         display: 'flex',
-        overflowX: 'scroll',
         scrollSnapType: 'x mandatory',
         gap: '10px',
+        position: 'absolute',
+        boxSizing: 'border-box',
         '&::-webkit-scrollbar': { width: 0, backgroundColor: 'transparent' },
       }}
     >

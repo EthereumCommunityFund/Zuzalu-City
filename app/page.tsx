@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { useTheme, useMediaQuery } from '@mui/material';
+import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
+import { ZuCalendar } from '@/components/core';
 import Carousel from 'components/Carousel';
 import { Header, Sidebar } from 'components/layout';
 import {
@@ -13,20 +13,20 @@ import {
 import { EventCard } from 'components';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
 import { MOCK_DATA } from 'mock';
 import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { CeramicProvider } from '../context/CeramicContext';
-import { useCeramicContext } from '../context/CeramicContext';
+// import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
 const queryClient = new QueryClient();
+
 const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const { isAuthPromptVisible } = useCeramicContext();
+  // const { isAuthPromptVisible } = useCeramicContext();
   // const isDesktop:q = useMediaQuery(theme.breakpoints.up('xl'));
 
   return (
@@ -37,56 +37,61 @@ const Home: React.FC = () => {
             <Box>
               <Header />
               <AuthPrompt />
-              <Box display="flex">
-                {!isTablet && <Sidebar />}
-                <Box
-                  borderLeft="1px solid #383838"
-                  flexGrow={1}
-                  padding={isMobile ? '10px' : '30px'}
-                >
+              <Box display={"flex"}>
+                {!isTablet && <Sidebar selected="Home" />}
+                <Box width={isTablet ? '100%' : 'calc(100% - 260px)'}>
                   <Box
-                    display="flex"
-                    flexDirection="column"
-                    borderRadius="10px"
-                    padding="40px 40px"
-                    sx={{
-                      backgroundImage: 'url("4.webp")',
-                      backgroundPosition: 'center center',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: 'cover',
-                    }}
+                    borderLeft="1px solid #383838"
+                    flexGrow={1}
+                    padding={isMobile ? '10px' : '30px'}
                   >
-                    <Typography
-                      color={theme.palette.text.primary}
-                      variant={isMobile ? 'h1' : 'hB'}
-                    >
-                      Zuzalu City
-                    </Typography>
-                    <Typography
-                      color="white"
-                      variant="bodyB"
-                      marginBottom="20px"
-                    >
-                      Welcome to the new Zuzalu City
-                    </Typography>
-                    <Button
-                      variant="contained"
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      borderRadius="10px"
+                      padding="40px 40px"
                       sx={{
-                        backgroundColor: '#383838',
-                        color: 'white',
-                        width: isMobile ? '100%' : '200px',
-                        borderRadius: '10px',
+                        backgroundImage: 'url("4.webp")',
+                        backgroundPosition: 'center center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: 'cover',
                       }}
-                      startIcon={<RightArrowIcon />}
                     >
-                      Learn About v2
-                    </Button>
+                      <Typography
+                        color={theme.palette.text.primary}
+                        variant={isMobile ? 'h1' : 'hB'}
+                      >
+                        Zuzalu City
+                      </Typography>
+                      <Typography
+                        color="white"
+                        variant="bodyB"
+                        marginBottom="20px"
+                      >
+                        Welcome to the new Zuzalu City
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: '#383838',
+                          color: 'white',
+                          width: isMobile ? '100%' : '200px',
+                          borderRadius: '10px',
+                        }}
+                        startIcon={<RightArrowIcon />}
+                      >
+                        Learn About v2
+                      </Button>
+                    </Box>
                   </Box>
-                  <Box marginTop="30px">
+                  <Box paddingTop={"30px"} boxSizing={'border-box'} width={'100%'} flexGrow={1} borderLeft="1px solid #383838">
                     <Box
                       display="flex"
                       justifyContent="space-between"
                       alignItems="center"
+                      paddingLeft={isMobile ? '10px' : "30px"}
+                      paddingRight={isMobile ? '10px' : "30px"}
+                      boxSizing={'border-box'}
                     >
                       <Box display="flex" alignItems="center" gap="10px">
                         <SpaceIcon />
@@ -104,19 +109,24 @@ const Home: React.FC = () => {
                         <RightArrowCircleIcon />
                       </Box>
                     </Box>
-                    <Box marginY="20px">
+                    <Box marginY="20px" paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
                       <Typography color="white" variant="bodyM">
                         Most Active Spaces
                       </Typography>
                     </Box>
-                    <Carousel items={MOCK_DATA.spaces} />
+                    <Box height={'317px'} width={'100%'} boxSizing={'border-box'} overflow={'auto'} position={'relative'} paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
+                      <Carousel items={MOCK_DATA.spaces} />
+                    </Box>
                     {/* {isDesktop && <LotteryCard />} */}
-                    <Box display="flex" gap="20px" marginTop="20px">
+                    <Box display="flex" gap="20px" marginTop="20px" boxSizing={'border-box'} paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
                       <Box
+                        position='relative'
                         flexGrow={1}
                         display="flex"
                         flexDirection="column"
                         gap="20px"
+                        overflow='auto'
+                        maxHeight='95vh'
                       >
                         <Box display="flex" justifyContent="space-between">
                           <Box display="flex" alignItems="center" gap="10px">
@@ -133,16 +143,27 @@ const Home: React.FC = () => {
                           </Box>
                         </Box>
                         <Typography
+                          sx={{
+                            position: 'sticky',
+                            top: 60,
+                          }}
                           color="white"
-                          border="2px solid #383838"
+                          border="1px solid #383838"
                           align="center"
                           paddingY="8px"
                           borderRadius="40px"
                           variant="subtitleS"
+                          bgcolor='rgba(34, 34, 34, 0.8)'
                         >
                           October 2023
                         </Typography>
                         <Box>
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
+                          <EventCard />
                           <EventCard />
                           <EventCard />
                           <EventCard />
@@ -196,49 +217,9 @@ const Home: React.FC = () => {
                             </Button>
                           </Box>
                           <Box>
-                            <DateCalendar
-                              defaultValue={dayjs('2022-04-17')}
-                              sx={{
-                                '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin':
-                                  {
-                                    fontFamily: 'Inter',
-                                    color: 'white',
-                                    fontSize: '16px',
-                                    fontWeight: 500,
-                                  },
-                                '& .MuiPickersCalendarHeader-root': {
-                                  color: 'white',
-                                  fontSize: '20px',
-                                  fontWeight: 700,
-                                },
-                                '& .MuiDayCalendar-header': {
-                                  color: 'white',
-                                  fontFamily: 'Inter',
-                                  fontSize: '20px',
-                                  fontWeight: 700,
-                                },
-                                '& .MuiSvgIcon-root': {
-                                  color: 'white',
-                                },
-                                '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel':
-                                  {
-                                    color: 'white',
-                                    fontSize: '18px',
-                                    fontWeight: 500,
-                                    fontFamily: 'Inter',
-                                  },
-                                '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin':
-                                  {
-                                    backgroundColor:
-                                      'rgba(215, 255, 196, 0.20)',
-                                    color: '#D7FFC4',
-                                  },
-                              }}
-                            />
+
+                            <ZuCalendar defaultValue={dayjs('2022-04-17')} />
                           </Box>
-                          {/* <Box>
-                      <ZuSelect></ZuSelect>
-                    </Box> */}
                         </Box>
                       )}
                     </Box>

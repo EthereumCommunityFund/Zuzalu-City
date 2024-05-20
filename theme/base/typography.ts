@@ -127,7 +127,7 @@ export const Typography: TypographyOptions = {
 
   subtitleS: {
     fontFamily: baseProperties.fontFamily,
-    fontWeight: baseProperties.fontWeightMedium,
+    fontWeight: 600,
     fontSize: '18px',
     lineHeight: 1.35,
     letterSpacing: '0.0075em',
