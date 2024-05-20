@@ -8,8 +8,8 @@ import { authenticateCeramic } from '../utils/ceramicAuth';
 /**
  * Configure ceramic Client & create context.
  */
-const ceramicUrl =
-  process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
+const ceramicUrl = 'http://67.207.76.155:7007/';
+//process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
 
 const ceramic = new CeramicClient(ceramicUrl);
 const composeClient = new ComposeClient({
