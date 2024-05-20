@@ -34,8 +34,8 @@ const EventCard: React.FC<EventCardProps> = ({
     >
       <Box
         component="img"
-        width={isMobile ? '80px' : '150px'}
-        height={isMobile ? '80px' : '150px'}
+        width={isMobile ? '80px' : '140px'}
+        height={isMobile ? '80px' : '140px'}
         src={logo}
         borderRadius="10px"
       />
@@ -57,11 +57,11 @@ const EventCard: React.FC<EventCardProps> = ({
               src="/0.webp"
               borderRadius="40px"
             />
-            <Typography color="white" variant="bodyS">
+            <Typography color="white" variant="bodyS" fontWeight={300} fontSize={'13px'} letterSpacing={'0.01em'}>
               {by}
             </Typography>
           </Box>
-          <Typography color="white" variant="bodyS">
+          <Typography color="rgba(225, 225, 225, 0.6)" variant="bodyS" fontWeight={300} fontSize={'16px'}>
             October 8 - October 20
           </Typography>
         </Box>
@@ -76,14 +76,14 @@ const EventCard: React.FC<EventCardProps> = ({
             {description}
           </Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap="6px">
-          <MapIcon />
+        <Box display="flex" alignItems="center" gap="6px" sx={{opacity: '0.7'}}>
+          <MapIcon size={4} />
           <Typography color="white" variant="caption">
             {location}
           </Typography>
         </Box>
       </Box>
-      <Box>
+      {/* <Box>
         <Box
           padding={isMobile ? '4px 4px' : '4px 10px'}
           flex="display"
@@ -95,12 +95,12 @@ const EventCard: React.FC<EventCardProps> = ({
         >
           <LockIcon />
           {!isMobile && (
-            <Typography color="white" variant="bodyS">
+            <Typography color="white" variant="bodyS" fontWeight={300}>
               Gated
             </Typography>
           )}
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
