@@ -20,6 +20,11 @@ export const InitialTicketModal = ({ showModal, setShowModal }: PropTypes) => {
     const [selectedToken, setSelectedToken] = useState('usdt');
     const [hasConfirmed, setHasConfirmed] = useState(false);
 
+    const handleClose = () => {
+        setHasConfirmed(false);
+        setShowModal(false);
+    }
+
     return (
         showModal ? <Stack
             sx={{
@@ -67,7 +72,7 @@ export const InitialTicketModal = ({ showModal, setShowModal }: PropTypes) => {
                         sx={{
                             cursor: 'pointer'
                         }}
-                        onClick={() => setShowModal(false)}
+                        onClick={handleClose}
                     >
                         <CloseIcon sx={{ width: '20px', height: '20px' }} />
                         <Typography fontSize={'14px'} fontWeight={600} lineHeight={'160%'}>

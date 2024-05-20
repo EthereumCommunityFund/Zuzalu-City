@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const router = useRouter();
 
   return (
-    <Box sx={{ width: '260px', height: '100vh' }}>
+    <Box sx={{ width: '260px', height: '100vh', position: 'sticky', top: '0px' }}>
       <Box
         display="flex"
         flexDirection="column"

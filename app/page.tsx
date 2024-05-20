@@ -37,57 +37,61 @@ const Home: React.FC = () => {
             <Box>
               <Header />
               <AuthPrompt />
-              <Box display="grid" gridTemplateColumns={'auto 1fr'}>
+              <Box display={"flex"}>
                 {!isTablet && <Sidebar selected="Home" />}
-                <Box
-                  borderLeft="1px solid #383838"
-                  flexGrow={1}
-                  padding={isMobile ? '10px' : '30px'}
-                  overflow='hidden'
-                >
+                <Box width={isTablet ? '100%' : 'calc(100% - 260px)'}>
                   <Box
-                    display="flex"
-                    flexDirection="column"
-                    borderRadius="10px"
-                    padding="40px 40px"
-                    sx={{
-                      backgroundImage: 'url("4.webp")',
-                      backgroundPosition: 'center center',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: 'cover',
-                    }}
+                    borderLeft="1px solid #383838"
+                    flexGrow={1}
+                    padding={isMobile ? '10px' : '30px'}
                   >
-                    <Typography
-                      color={theme.palette.text.primary}
-                      variant={isMobile ? 'h1' : 'hB'}
-                    >
-                      Zuzalu City
-                    </Typography>
-                    <Typography
-                      color="white"
-                      variant="bodyB"
-                      marginBottom="20px"
-                    >
-                      Welcome to the new Zuzalu City
-                    </Typography>
-                    <Button
-                      variant="contained"
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      borderRadius="10px"
+                      padding="40px 40px"
                       sx={{
-                        backgroundColor: '#383838',
-                        color: 'white',
-                        width: isMobile ? '100%' : '200px',
-                        borderRadius: '10px',
+                        backgroundImage: 'url("4.webp")',
+                        backgroundPosition: 'center center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: 'cover',
                       }}
-                      startIcon={<RightArrowIcon />}
                     >
-                      Learn About v2
-                    </Button>
+                      <Typography
+                        color={theme.palette.text.primary}
+                        variant={isMobile ? 'h1' : 'hB'}
+                      >
+                        Zuzalu City
+                      </Typography>
+                      <Typography
+                        color="white"
+                        variant="bodyB"
+                        marginBottom="20px"
+                      >
+                        Welcome to the new Zuzalu City
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: '#383838',
+                          color: 'white',
+                          width: isMobile ? '100%' : '200px',
+                          borderRadius: '10px',
+                        }}
+                        startIcon={<RightArrowIcon />}
+                      >
+                        Learn About v2
+                      </Button>
+                    </Box>
                   </Box>
-                  <Box marginTop="30px">
+                  <Box paddingTop={"30px"} boxSizing={'border-box'} width={'100%'} flexGrow={1} borderLeft="1px solid #383838">
                     <Box
                       display="flex"
                       justifyContent="space-between"
                       alignItems="center"
+                      paddingLeft={isMobile ? '10px' : "30px"}
+                      paddingRight={isMobile ? '10px' : "30px"}
+                      boxSizing={'border-box'}
                     >
                       <Box display="flex" alignItems="center" gap="10px">
                         <SpaceIcon />
@@ -105,14 +109,16 @@ const Home: React.FC = () => {
                         <RightArrowCircleIcon />
                       </Box>
                     </Box>
-                    <Box marginY="20px">
+                    <Box marginY="20px" paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
                       <Typography color="white" variant="bodyM">
                         Most Active Spaces
                       </Typography>
                     </Box>
-                    <Carousel items={MOCK_DATA.spaces} />
+                    <Box height={'317px'} width={'100%'} boxSizing={'border-box'} overflow={'auto'} position={'relative'} paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
+                      <Carousel items={MOCK_DATA.spaces} />
+                    </Box>
                     {/* {isDesktop && <LotteryCard />} */}
-                    <Box display="flex" gap="20px" marginTop="20px">
+                    <Box display="flex" gap="20px" marginTop="20px" boxSizing={'border-box'} paddingLeft={isMobile ? '10px' : "30px"} paddingRight={isMobile ? '10px' : "30px"}>
                       <Box
                         position='relative'
                         flexGrow={1}
