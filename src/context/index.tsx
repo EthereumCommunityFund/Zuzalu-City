@@ -8,10 +8,10 @@ import { RuntimeCompositeDefinition } from "@composedb/types";
 /**
  * Configure ceramic Client & create context.
  */
-export const ceramic = new CeramicClient("https://experiments.ceramic.dev");
+export const ceramic = new CeramicClient("https://zuzalu-city-dev.com");
 
 export const composeClient = new ComposeClient({
-  ceramic: "https://experiments.ceramic.dev",
+  ceramic: "https://zuzalu-city-dev.com",
   // cast our definition as a RuntimeCompositeDefinition
   definition: definition as RuntimeCompositeDefinition,
 });
