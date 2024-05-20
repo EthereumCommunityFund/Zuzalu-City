@@ -5,7 +5,7 @@ import { RuntimeCompositeDefinition } from '@composedb/types';
 import { definition } from '../composites/definition.js';
 import React from 'react';
 import { authenticateCeramic } from '../utils/ceramicAuth';
-import { getWalletClient, GetWalletClientParameters } from '@wagmi/core';
+
 /**
  * Configure ceramic Client & create context.
  */
@@ -17,6 +17,7 @@ const composeClient = new ComposeClient({
   ceramic: ceramicUrl,
   definition: definition as RuntimeCompositeDefinition,
 });
+
 type Profile = {
   id?: any;
   username?: string | undefined;
@@ -57,7 +58,6 @@ export const CeramicProvider = ({ children }: any) => {
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [newUser, setNewuser] = useState(false);
   const [profile, setProfile] = useState<Profile | undefined>();
-
   const authenticate = async () => {
     console.log('authenticating', ceramicUrl, ceramic, composeClient);
     await authenticateCeramic(ceramic, composeClient);
@@ -69,6 +69,7 @@ export const CeramicProvider = ({ children }: any) => {
 
   const showAuthPrompt = () => {
     setAuthPromptVisible(true);
+    console.log('here', isAuthPromptVisible);
     const existingusername = localStorage.getItem('username');
     if (existingusername) {
       setIsAuthenticated(true);

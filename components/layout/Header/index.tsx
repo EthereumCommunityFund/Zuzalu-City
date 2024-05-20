@@ -24,8 +24,20 @@ import { useCeramicContext } from '@/context/CeramicContext';
 const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { isAuthenticated, showAuthPrompt, logout, username } =
-    useCeramicContext();
+  const {
+    ceramic,
+    composeClient,
+    isAuthenticated,
+    authenticate,
+    logout,
+    showAuthPrompt,
+    hideAuthPrompt,
+    isAuthPromptVisible,
+    newUser,
+    profile,
+    username,
+    createProfile,
+  } = useCeramicContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {

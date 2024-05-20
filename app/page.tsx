@@ -31,8 +31,8 @@ const Home: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CeramicProvider>
-        <WalletProvider>
+      <WalletProvider>
+        <CeramicProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Box>
               <Header />
@@ -247,8 +247,8 @@ const Home: React.FC = () => {
               </Box>
             </Box>
           </LocalizationProvider>
-        </WalletProvider>
-      </CeramicProvider>
+        </CeramicProvider>
+      </WalletProvider>
     </QueryClientProvider>
   );
 };

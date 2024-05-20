@@ -100,13 +100,20 @@ const AuthPrompt: React.FC<{}> = () => {
           message: 'Sign in or register a new account',
           actions: [
             <Fragment key="connectButton">
-              <ConnectButton
+              {/*<ConnectButton
                 key="connect"
                 showBalance={{
                   smallScreen: false,
                   largeScreen: false,
                 }}
-              />
+              />*/}
+              <Button
+                onClick={async () => {
+                  await authenticate();
+                }}
+              >
+                Connect Wallet
+              </Button>
             </Fragment>,
           ],
         };
@@ -234,7 +241,7 @@ const AuthPrompt: React.FC<{}> = () => {
     const checkUserState = async () => {
       if (isConnected) {
         try {
-          await authenticate();
+          //await authenticate();
           console.log('Wallet is connected with address:', address);
           if (newUser) {
             setAuthState('NEW_USER');
