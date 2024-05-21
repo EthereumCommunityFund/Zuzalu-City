@@ -1,5 +1,5 @@
 'use client';
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
 import { ZuCalendar } from '@/components/core';
 import Carousel from 'components/Carousel';
@@ -20,13 +20,86 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
+import { Event, EventData } from '@/types';
 const queryClient = new QueryClient();
 
 const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const { isAuthPromptVisible } = useCeramicContext();
+  const [events, setEvents] = useState<Event[]>([]);
+  const {
+    ceramic,
+    composeClient,
+    isAuthenticated,
+    authenticate,
+    logout,
+    showAuthPrompt,
+    hideAuthPrompt,
+    isAuthPromptVisible,
+    newUser,
+    profile,
+    username,
+    createProfile,
+  } = useCeramicContext();
+
+  const getEvents = async () => {
+    console.log('Fetching events...');
+    try {
+      const response: any = await composeClient.executeQuery(`
+      query {
+        eventIndex(first: 10) {
+          edges {
+            node {
+              id
+              title
+              description
+              startTime
+              endTime
+              timezone
+              status
+              tagline
+              image_url
+              external_url
+              meeting_url
+              profileId
+              spaceId
+              participant_count
+              min_participant
+              max_participant
+              createdAt
+            }
+          }
+        }
+      }
+    `);
+
+      if ('eventIndex' in response.data) {
+        const eventData: EventData = response.data as EventData;
+        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setEvents(fetchedEvents);
+        console.log('Events fetched:', fetchedEvents);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getEvents();
+        console.log(data);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
+  }, []);
   // const isDesktop:q = useMediaQuery(theme.breakpoints.up('xl'));
 
   return (
@@ -111,7 +184,6 @@ const Home: React.FC = () => {
                 </Typography>
               </Box>
               <Carousel items={MOCK_DATA.spaces} />
-              {/* {isDesktop && <LotteryCard />} */}
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   position='relative'
@@ -152,6 +224,7 @@ const Home: React.FC = () => {
                     October 2023
                   </Typography>
                   <Box>
+                    {/* <EventCard />
                     <EventCard />
                     <EventCard />
                     <EventCard />
@@ -161,8 +234,12 @@ const Home: React.FC = () => {
                     <EventCard />
                     <EventCard />
                     <EventCard />
-                    <EventCard />
-                    <EventCard />
+                    <EventCard /> */}
+                    {
+                      events.map((event, index) => (
+                        <EventCard key={`EventCard-${index}`} name={event.title} description={event.description} />
+                      ))
+                    }
                   </Box>
                 </Box>
                 {!isTablet && (

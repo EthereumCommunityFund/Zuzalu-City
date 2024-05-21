@@ -46,7 +46,6 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
         display: 'flex',
         scrollSnapType: 'x mandatory',
         gap: '10px',
-        position: 'absolute',
         boxSizing: 'border-box',
         '&::-webkit-scrollbar': { width: 0, backgroundColor: 'transparent' },
       }}
