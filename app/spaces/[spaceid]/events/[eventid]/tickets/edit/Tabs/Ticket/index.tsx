@@ -34,7 +34,7 @@ const Ticket = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const list = (anchor: Anchor) => (
+  const List = (anchor: Anchor) => (
     <Box
       sx={{
         width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
@@ -356,7 +356,7 @@ const Ticket = () => {
         onClose={() => toggleDrawer('right', false)}
         onOpen={() => toggleDrawer('right', true)}
       >
-        {list('right')}
+        {List('right')}
       </SwipeableDrawer>
     </Stack>
   );

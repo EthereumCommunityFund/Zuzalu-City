@@ -117,7 +117,7 @@ const Home = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const list = (anchor: Anchor) => {
+  const List = (anchor: Anchor) => {
     const [person, setPerson] = useState(true);
     const [online, setOnline] = useState(false);
     const [inputs, setInputs] = useState<Inputs>({
@@ -670,7 +670,7 @@ const Home = () => {
         onClose={() => toggleDrawer('right', false)}
         onOpen={() => toggleDrawer('right', true)}
       >
-        {list('right')}
+        {List('right')}
       </SwipeableDrawer>
     </Box>
   );

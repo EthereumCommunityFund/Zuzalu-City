@@ -92,7 +92,6 @@ export const CeramicProvider = ({ children }: any) => {
           }
         }
       `);
-      console.log(profile, 'profile');
       const basicProfile: { id: string; username: string } | undefined =
         profile?.data?.viewer?.mvpProfile;
       console.log('Basic Profile:', basicProfile);

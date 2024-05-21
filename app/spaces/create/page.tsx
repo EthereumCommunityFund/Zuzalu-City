@@ -1,5 +1,5 @@
 'use client';
-import { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { Stack, Box, Typography, Button, Input } from '@mui/material';
 import { TextEditor } from '@/components/editor/editor';
 import { Header } from './components';
@@ -78,7 +78,6 @@ const Home = () => {
   // }
 
   const createSpace = async () => {
-    console.log("click button")
     if (!isAuthenticated) return;
     try {
       const update = await composeClient.executeQuery(`

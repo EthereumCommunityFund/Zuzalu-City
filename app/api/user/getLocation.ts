@@ -106,7 +106,6 @@ async function getLocationInfo(locationId: any) {
       .select('*')
       .eq('id', locationId)
       .single();
-    console.log('data', data);
 
     if (error) {
       throw error;
