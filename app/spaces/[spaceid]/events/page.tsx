@@ -5,38 +5,10 @@ import { Box, Stack, Typography, Button } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
 import { ZuButton } from 'components/core';
 import { CalendarIcon, EventIcon, HomeIcon, ListIcon } from 'components/icons';
-import { EventCard } from 'components';
+import { EventCard } from '@/components/cards';
 import { MOCK_DATA } from 'mock';
 import { useCeramicContext } from '@/context/CeramicContext';
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  timezone: string;
-  status: string;
-  tagline?: string;
-  image_url?: string;
-  external_url?: string;
-  meeting_url?: string;
-  profileId?: string;
-  spaceId?: string;
-  participant_count: number;
-  min_participant: number;
-  max_participant: number;
-  createdAt: string;
-}
-
-interface EventEdge {
-  node: Event;
-}
-
-interface EventData {
-  eventIndex: {
-    edges: EventEdge[];
-  };
-}
+import { Event, EventData, EventEdge } from '@/types';
 
 const Home = () => {
   const router = useRouter();
@@ -176,7 +148,12 @@ const Home = () => {
           </Typography>
         </Stack>
         <Stack paddingX={20}>
-          <EventCard {...MOCK_DATA.events[0]} />
+          {
+            events.map((event, index) => (
+              <EventCard key={`EventCard-${index}`} name={event.title} description={event.description} />
+            ))
+          }
+          {/* <EventCard {...MOCK_DATA.events[0]} />
           <ZuButton startIcon={<CalendarIcon />}>Eth Imrpov</ZuButton>
           <EventCard {...MOCK_DATA.events[1]} />
           <Stack direction="row" spacing={1}>
@@ -186,7 +163,7 @@ const Home = () => {
             <ZuButton startIcon={<CalendarIcon />}>HackZuzalu</ZuButton>
           </Stack>
           <EventCard {...MOCK_DATA.events[2]} />
-          <ZuButton startIcon={<CalendarIcon />}>ZuCity Meetings</ZuButton>
+          <ZuButton startIcon={<CalendarIcon />}>ZuCity Meetings</ZuButton> */}
         </Stack>
       </Stack>
     </Stack>

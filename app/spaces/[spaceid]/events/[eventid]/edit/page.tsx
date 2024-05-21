@@ -1,15 +1,14 @@
 'use client';
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
 import {
   Box,
   Typography,
   Button,
   Input,
   SwipeableDrawer,
-  Checkbox,
-  styled,
   Stack,
 } from '@mui/material';
+import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -22,14 +21,7 @@ import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '../components/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
-
-const CircleCheckbox = styled(Checkbox)({
-  borderRadius: '50px',
-  border: '10px solid green',
-  '&.Mui-checked': {
-    color: '#f50057',
-  },
-});
+import { Event, EventData } from '@/types';
 
 interface Inputs {
   name: string;
@@ -38,7 +30,7 @@ interface Inputs {
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-const Event = () => {
+const Home = () => {
   const [state, setState] = useState({
     top: false,
     left: false,
@@ -46,6 +38,7 @@ const Event = () => {
     right: false,
   });
 
+  const [events, setEvents] = useState<Event[]>([]);
   const {
     ceramic,
     composeClient,
@@ -61,7 +54,63 @@ const Event = () => {
     createProfile,
   } = useCeramicContext();
 
-  console.log("ceramic", ceramic)
+  const getEvents = async () => {
+    console.log('Fetching events...');
+    try {
+      const response: any = await composeClient.executeQuery(`
+      query {
+        eventIndex(first: 10) {
+          edges {
+            node {
+              id
+              title
+              description
+              startTime
+              endTime
+              timezone
+              status
+              tagline
+              image_url
+              external_url
+              meeting_url
+              profileId
+              spaceId
+              participant_count
+              min_participant
+              max_participant
+              createdAt
+            }
+          }
+        }
+      }
+    `);
+
+      if ('eventIndex' in response.data) {
+        const eventData: EventData = response.data as EventData;
+        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setEvents(fetchedEvents);
+        console.log('Events fetched:', fetchedEvents);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getEvents();
+        console.log(data);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
@@ -75,8 +124,10 @@ const Event = () => {
       name: '',
       tagline: '',
     });
-    const [description, setDescription] = useState<OutputData>();
+    const [description, setDescription] = useState<string>('');
     const [avatar, setAvatar] = useState<SelectedFile>();
+    const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
+    const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -91,52 +142,47 @@ const Event = () => {
       toggleDrawer('right', false);
     };
 
-    const updateSpace = async () => {
+    const createEvent = async () => {
+      console.log("proid", profile?.id, inputs.name, startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'), endTime)
       const update = await composeClient.executeQuery(`
-      mutation {
+      mutation MyMutation {
         createEvent(
           input: {
             content: {
               title: "${inputs.name}",
               description: "${description}",
-              startTime: ""2024-09-09T00:00:00Z"",
-              endTime: ""2024-09-010T00:00:00Z"",
-              spaceId: "",
-              createdAt: ""2024-08-09T00:00:00Z"",
+              startTime: "${startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              endTime: "${endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              spaceId: "kjzl6kcym7w8y64g1qepnwpg3dxyz18qxw0mpr7m0hq1ymxl1jorl71chi7ugmg",
+              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
               profileId: "${profile?.id}",
               max_participant: 100,
               min_participant: 10,
               participant_count: 10,
-              external_url: "",
               image_url: "${avatar?.previewUrl}",
-              meeting_url: "",
-              status: "",
-              timezone: ""
             }
           }
         ) {
           document {
-            createdAt
-            description
-            endTime
-            external_url
             id
-            image_url
+            title
+            description
+            startTime
+            endTime
+            spaceId
+            createdAt
+            profileId
             max_participant
-            meeting_url
             min_participant
             participant_count
-            profileId
-            spaceId
-            startTime
-            status
-            timezone
-            title
+            image_url
           }
         }
       }
       `);
       console.log(update)
+      toggleDrawer('right', false);
+      getEvents();
     };
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -198,6 +244,7 @@ const Event = () => {
                   </Typography>
                   <Input
                     onChange={handleInputChange}
+                    name="name"
                     sx={{
                       color: 'white',
                       backgroundColor: '#373737',
@@ -230,6 +277,7 @@ const Event = () => {
                   </Typography>
                   <Input
                     onChange={handleInputChange}
+                    name="tagline"
                     sx={{
                       color: 'white',
                       backgroundColor: '#373737',
@@ -264,7 +312,7 @@ const Event = () => {
                     This is a description greeting for new members. You can also
                     update descriptions.
                   </Typography>
-                  <TextEditor
+                  {/* <TextEditor
                     holder="Write"
                     placeholder="Write a short, one-sentence tagline for your event"
                     sx={{
@@ -274,6 +322,29 @@ const Event = () => {
                       padding: '12px 12px 12px 80px',
                       borderRadius: '10px',
                     }}
+                  /> */}
+                  <Input
+                    onChange={(e) => setDescription(e.target.value)}
+                    name="description"
+                    sx={{
+                      color: 'white',
+                      backgroundColor: '#373737',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      width: '100%',
+                      fontSize: '15px',
+                      fontFamily: 'Inter',
+                      '&::after': {
+                        borderBottom: 'none',
+                      },
+                      '&::before': {
+                        borderBottom: 'none',
+                      },
+                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                        borderBottom: 'none',
+                      },
+                    }}
+                    placeholder="Write a description for your event"
                   />
                 </Box>
                 <Typography
@@ -346,6 +417,7 @@ const Event = () => {
                       Start Date
                     </Typography>
                     <DatePicker
+                      onChange={(newValue) => setStartTime(newValue)}
                       sx={{
                         '& .MuiSvgIcon-root': {
                           color: 'white',
@@ -363,6 +435,7 @@ const Event = () => {
                       End Date
                     </Typography>
                     <DatePicker
+                      onChange={(newValue) => setEndTime(newValue)}
                       sx={{
                         '& .MuiSvgIcon-root': {
                           color: 'white',
@@ -567,7 +640,7 @@ const Event = () => {
                   border: '1px solid rgba(103, 219, 255, 0.20)',
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
-                onClick={updateSpace}
+                onClick={createEvent}
               >
                 Create Event
               </Button>
@@ -580,8 +653,8 @@ const Event = () => {
   return (
     <Box width="100%" borderLeft="1px solid #383838">
       <EventHeader />
-      <CurrentEvents onToggle={toggleDrawer} />
-      <PastEvents />
+      <CurrentEvents events={events} onToggle={toggleDrawer} />
+      {/* <PastEvents /> */}
       <Invite />
       <SwipeableDrawer
         hideBackdrop={true}
@@ -603,4 +676,4 @@ const Event = () => {
   );
 };
 
-export default Event;
+export default Home;

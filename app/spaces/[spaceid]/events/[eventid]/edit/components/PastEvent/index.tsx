@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Stack, Typography } from '@mui/material';
-import EventCard from '../EventCard';
+import { EventMCard } from '@/components/cards';
 
 const PastEvents = () => {
   return (
@@ -9,8 +9,8 @@ const PastEvents = () => {
         Past Events
       </Typography>
       <Stack direction="column" spacing={2}>
-        <EventCard type={3} applicants={14} />
-        <EventCard type={3} applicants={3} />
+        {/* <EventMCard type={3} applicants={14} />
+        <EventMCard type={3} applicants={3} /> */}
       </Stack>
     </Stack>
   );
