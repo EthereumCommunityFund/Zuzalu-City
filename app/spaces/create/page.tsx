@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
+import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 // import { OutputData } from '@editorjs/editorjs';
 
@@ -63,6 +64,10 @@ const Home = () => {
     tagline: '',
   });
 
+  const connector = createConnector('NFT.storage', {
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+  });
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -92,8 +97,8 @@ const Home = () => {
               tagline: "${inputs.tagline}",
               admin: "${adminId}",
               profileId: "${profileId}",
-              avatar: "${avatar?.previewUrl}",
-              banner: "${banner?.previewUrl}"
+              avatar: "${avatarURL}",
+              banner: "${bannerURL}"
             }
           }
         ) {
@@ -346,13 +351,10 @@ const Home = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.gif']}
-                  api={'/api/upload/file'}
+                  // api={'/api/upload/file'}
+                  connector={connector}
                   multiple={false}
                   crop={false} // must be false when accept is svg
-                  responseFormat={(res: any) => {
-                    console.log('responseFormat', res?.cid);
-                    return res;
-                  }}
                   onChange={(files) => {
                     setAvatar(files[0]);
                   }}
@@ -406,7 +408,8 @@ const Home = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.gif']}
-                  api={'/api/upload/file'}
+                  // api={'/api/upload/file'}
+                  connector={connector}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {
