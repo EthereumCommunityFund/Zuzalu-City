@@ -1,7 +1,7 @@
 'use client';
 import { useTheme } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-import { EventCard } from 'components';
+import { EventCard } from '@/components/cards';
 import AnnouncementCard from 'components/AnnouncementCart';
 import {
   EventIcon,

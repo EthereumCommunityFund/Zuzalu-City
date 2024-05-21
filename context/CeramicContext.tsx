@@ -10,6 +10,7 @@ import { authenticateCeramic } from '../utils/ceramicAuth';
  */
 const ceramicUrl =
   process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
+console.log("ceramic url", ceramicUrl)
 
 const ceramic = new CeramicClient(ceramicUrl);
 const composeClient = new ComposeClient({
@@ -39,15 +40,15 @@ const CeramicContext = createContext<CeramicContextType>({
   ceramic,
   composeClient,
   isAuthenticated: false,
-  authenticate: async () => {},
+  authenticate: async () => { },
   username: undefined,
   profile: undefined,
   newUser: false,
-  logout: () => {},
+  logout: () => { },
   isAuthPromptVisible: false,
-  showAuthPrompt: () => {},
-  hideAuthPrompt: () => {},
-  createProfile: async (newName: string) => {},
+  showAuthPrompt: () => { },
+  hideAuthPrompt: () => { },
+  createProfile: async (newName: string) => { },
 });
 
 export const CeramicProvider = ({ children }: any) => {

@@ -5,19 +5,19 @@ import { Typography, Button, Box, Stack } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
 
 export type SpaceCardProps = {
-  bgImage: string;
-  logoImage: string;
+  bgImage?: string;
+  logoImage?: string;
   title: string;
-  description: string;
-  joined: boolean;
+  description?: string;
+  joined?: boolean;
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
-  bgImage,
-  logoImage,
+  bgImage = '/5.webp',
+  logoImage = '/1.webp',
   title,
-  description,
-  joined,
+  description = 'Welcome Zucity',
+  joined = false,
 }) => {
   return (
     <Link

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, ChangeEvent } from 'react';
 import {
   Box,
   Typography,
@@ -18,7 +18,10 @@ import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
 import { ZuButton } from 'components/core';
 import { TextEditor } from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { PreviewFile } from '@/components';
+import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '../components/Checkbox';
+import { OutputData } from '@editorjs/editorjs';
 
 const CircleCheckbox = styled(Checkbox)({
   borderRadius: '50px',
@@ -27,6 +30,11 @@ const CircleCheckbox = styled(Checkbox)({
     color: '#f50057',
   },
 });
+
+interface Inputs {
+  name: string;
+  tagline: string;
+}
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -37,21 +45,6 @@ const Event = () => {
     bottom: false,
     right: false,
   });
-
-  const [eventName, setEventName] = useState('');
-
-  const handleEventNameChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setEventName(event.target.value);
-  };
-  const [eventTagline, setEventTagline] = useState('');
-
-  const handleEventTaglineChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setEventTagline(event.target.value);
-  };
 
   const {
     ceramic,
@@ -68,52 +61,8 @@ const Event = () => {
     createProfile,
   } = useCeramicContext();
 
-  const updateSpace = async () => {
-    const update = await composeClient.executeQuery(`
-    mutation  {
-      createEvent(
-        input: {
-          content: {
-            title: "${eventName}",
-            description: "",
-            startTime: ""2024-09-09T00:00:00Z"",
-            endTime: ""2024-09-010T00:00:00Z"",
-            spaceId: "",
-            createdAt: ""2024-08-09T00:00:00Z"",
-            profileId: "k2t6wzhkhabz4a09lsxkr3jbej43j9ubk0dt841uy8uq3m5c5y2iauknqo87t2",
-            max_participant: 100,
-            min_participant: 10,
-            participant_count: 10,
-            external_url: "",
-            image_url: "",
-            meeting_url: "",
-            status: "",
-            timezone: ""
-          }
-        }
-      ) {
-        document {
-          createdAt
-          description
-          endTime
-          external_url
-          id
-          image_url
-          max_participant
-          meeting_url
-          min_participant
-          participant_count
-          profileId
-          spaceId
-          startTime
-          status
-          timezone
-          title
-        }
-      }
-    }
-    `);
-  };
+  console.log("ceramic", ceramic)
+
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -122,35 +71,73 @@ const Event = () => {
   const list = (anchor: Anchor) => {
     const [person, setPerson] = useState(true);
     const [online, setOnline] = useState(false);
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [inputs, setInputs] = useState<Inputs>({
+      name: '',
+      tagline: '',
+    });
+    const [description, setDescription] = useState<OutputData>();
+    const [avatar, setAvatar] = useState<SelectedFile>();
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files ? event.target.files[0] : null;
-      if (file && file.type.substr(0, 5) === 'image') {
-        setImage(file);
-      } else {
-        setImage(null);
-      }
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+
+      setInputs((prevInputs) => ({
+        ...prevInputs,
+        [name]: value
+      }));
     };
 
     const handleClose = () => {
       toggleDrawer('right', false);
-      setImage(null);
     };
 
-    useEffect(() => {
-      if (image) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(image);
-      } else {
-        setImagePreview(null);
+    const updateSpace = async () => {
+      const update = await composeClient.executeQuery(`
+      mutation {
+        createEvent(
+          input: {
+            content: {
+              title: "${inputs.name}",
+              description: "${description}",
+              startTime: ""2024-09-09T00:00:00Z"",
+              endTime: ""2024-09-010T00:00:00Z"",
+              spaceId: "",
+              createdAt: ""2024-08-09T00:00:00Z"",
+              profileId: "${profile?.id}",
+              max_participant: 100,
+              min_participant: 10,
+              participant_count: 10,
+              external_url: "",
+              image_url: "${avatar?.previewUrl}",
+              meeting_url: "",
+              status: "",
+              timezone: ""
+            }
+          }
+        ) {
+          document {
+            createdAt
+            description
+            endTime
+            external_url
+            id
+            image_url
+            max_participant
+            meeting_url
+            min_participant
+            participant_count
+            profileId
+            spaceId
+            startTime
+            status
+            timezone
+            title
+          }
+        }
       }
-    }, [image]);
-
+      `);
+      console.log(update)
+    };
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
@@ -210,6 +197,7 @@ const Event = () => {
                     Event Name
                   </Typography>
                   <Input
+                    onChange={handleInputChange}
                     sx={{
                       color: 'white',
                       backgroundColor: '#373737',
@@ -229,8 +217,6 @@ const Event = () => {
                       },
                     }}
                     placeholder="Type an awesome name"
-                    value={eventName}
-                    onChange={handleEventNameChange}
                   />
                 </Box>
                 <Box>
@@ -243,6 +229,7 @@ const Event = () => {
                     Event Tagline
                   </Typography>
                   <Input
+                    onChange={handleInputChange}
                     sx={{
                       color: 'white',
                       backgroundColor: '#373737',
@@ -262,8 +249,6 @@ const Event = () => {
                       },
                     }}
                     placeholder="Write a short, one-sentence tagline for your event"
-                    value={eventTagline}
-                    onChange={handleEventTaglineChange}
                   />
                 </Box>
                 <Box>
@@ -307,40 +292,42 @@ const Event = () => {
                 >
                   Recommend min of 200x200px (1:1 Ratio)
                 </Typography>
-                <Input
-                  type="file"
-                  onChange={handleImageChange}
-                  sx={{ display: 'none' }}
-                  id="raised-button-file"
-                />
-                <Box component="label" htmlFor="raised-button-file">
-                  <Button
-                    component="span"
-                    sx={{
-                      color: 'white',
-                      borderRadius: '30px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}
+                >
+                  <Uploader3
+                    accept={['.gif', '.jpeg', '.gif']}
+                    api={'/api/upload/file'}
+                    multiple={false}
+                    crop={false} // must be false when accept is svg
+                    onChange={(files) => {
+                      setAvatar(files[0]);
+                    }}
+                    onUpload={(file: any) => {
+                      setAvatar(file);
+                    }}
+                    onComplete={(file: any) => {
+                      setAvatar(file);
                     }}
                   >
-                    Upload
-                  </Button>
+                    <Button
+                      component="span"
+                      sx={{
+                        color: 'white',
+                        borderRadius: '10px',
+                        backgroundColor: '#373737',
+                        border: '1px solid #383838',
+                      }}
+                    >
+                      Upload
+                    </Button>
+                  </Uploader3>
+                  <PreviewFile file={avatar} />
                 </Box>
-                {imagePreview ? (
-                  <Box
-                    component="img"
-                    src={imagePreview}
-                    width="200px"
-                    height="200px"
-                  />
-                ) : (
-                  <Box
-                    width="200px"
-                    height="200px"
-                    bgcolor="#373737"
-                    borderRadius="20px"
-                  />
-                )}
                 <Box
                   display="flex"
                   justifyContent="space-between"

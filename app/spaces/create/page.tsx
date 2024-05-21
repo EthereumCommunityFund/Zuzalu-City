@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { Stack, Box, Typography, Button, Input } from '@mui/material';
 import { TextEditor } from '@/components/editor/editor';
 import { Header } from './components';
@@ -7,8 +7,11 @@ import {
   XMarkIcon,
   SpacePlusIcon,
 } from '@/components/icons';
-
+import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { PreviewFile } from '@/components';
+import { Uploader3, SelectedFile } from '@lxdao/uploader3';
+import { OutputData } from '@editorjs/editorjs';
 
 interface Space {
   id: string;
@@ -34,6 +37,10 @@ interface Inputs {
 }
 
 const Home = () => {
+  const router = useRouter();
+  const [avatar, setAvatar] = useState<SelectedFile>();
+  const [banner, setBanner] = useState<SelectedFile>();
+  const [description, setDescription] = useState<OutputData | undefined>();
   const {
     ceramic,
     composeClient,
@@ -62,92 +69,54 @@ const Home = () => {
       [name]: value
     }));
   };
-
-  const [spaceDescription, setSpaceDescription] = useState<string>('');
-
+  const profileId = profile?.id || '';
+  const adminId = ceramic?.did?.parent || '';
   // const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
   //   const { value } = event.target;
 
   //   setSpaceDescription(value);
   // }
 
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [banner, setBanner] = useState<File | null>(null);
-  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file && file.type.substr(0, 5) === 'image') {
-      setImage(file);
-    } else {
-      setImage(null);
-    }
-  };
-
-  const handleBannerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file && file.type.substr(0, 5) === 'image') {
-      setBanner(file);
-    } else {
-      setBanner(null);
-    }
-  };
-
-  useEffect(() => {
-    if (image) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(image);
-    } else {
-      setImagePreview(null);
-    }
-  }, [image]);
-
-  useEffect(() => {
-    if (banner) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBannerPreview(reader.result as string);
-      };
-      reader.readAsDataURL(banner);
-    } else {
-      setBannerPreview(null);
-    }
-  }, [image]);
-
   const createSpace = async () => {
     console.log("click button")
-    const update = await composeClient.executeQuery(`
-    mutation  {
-      createSpace(
-        input: {
-          content: {
-            name: "${inputs.name}",
-            description: "${spaceDescription}",
-            tagline: "${inputs.tagline}",
-            admin: "${JSON.parse(localStorage.getItem("ceramic:eth_did")!)}",
-            profileId: "k2t6wzhkhabz4a09lsxkr3jbej43j9ubk0dt841uy8uq3m5c5y2iauknqo87t2",
-            avatar: "",
-            banner: "",
+    if (!isAuthenticated) return;
+    try {
+      const update = await composeClient.executeQuery(`
+      mutation {
+        createSpace(
+          input: {
+            content: {
+              name: "${inputs.name}",
+              description: "${description}",
+              tagline: "${inputs.tagline}",
+              admin: "${adminId}",
+              profileId: "${profileId}",
+              avatar: "${avatar?.previewUrl}",
+              banner: "${banner?.previewUrl}"
+            }
+          }
+        ) {
+          document {
+            id
+            name
+            description
+            admin {
+              id
+            }
+            profileId,
+            avatar,
+            banner
           }
         }
-      ) {
-        document {
-          avatar
-          banner
-          description
-          name
-          profileId
-          tagline
-        }
       }
-    }
-    `);
+      `);
+      console.log(update)
+      window.alert("Success!")
+      router.push("/spaces")
 
-    console.log("UPDATE", update);
+    } catch (err) {
+      console.log(err)
+    }
   };
 
   return (
@@ -258,7 +227,9 @@ const Home = () => {
                   update descriptions.
                 </Typography>
                 <TextEditor
-                  holder="Write"
+                  holder='Space Description'
+                  value={description}
+                  setData={setDescription}
                   placeholder="Write a short, one-sentence tagline for your event"
                   sx={{
                     backgroundColor: '#ffffff0d',
@@ -342,40 +313,42 @@ const Home = () => {
               >
                 Recommend min of 200x200px (1:1 Ratio)
               </Typography>
-              <Input
-                type="file"
-                onChange={handleImageChange}
-                sx={{ display: 'none' }}
-                id="image-button-file"
-              />
-              <Box component="label" htmlFor="image-button-file">
-                <Button
-                  component="span"
-                  sx={{
-                    color: 'white',
-                    borderRadius: '10px',
-                    backgroundColor: '#373737',
-                    border: '1px solid #383838',
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <Uploader3
+                  accept={['.gif', '.jpeg', '.gif']}
+                  api={'/api/upload/file'}
+                  multiple={false}
+                  crop={false} // must be false when accept is svg
+                  onChange={(files) => {
+                    setAvatar(files[0]);
+                  }}
+                  onUpload={(file: any) => {
+                    setAvatar(file);
+                  }}
+                  onComplete={(file: any) => {
+                    setAvatar(file);
                   }}
                 >
-                  Upload
-                </Button>
+                  <Button
+                    component="span"
+                    sx={{
+                      color: 'white',
+                      borderRadius: '10px',
+                      backgroundColor: '#373737',
+                      border: '1px solid #383838',
+                    }}
+                  >
+                    Upload
+                  </Button>
+                </Uploader3>
+                <PreviewFile file={avatar} />
               </Box>
-              {imagePreview ? (
-                <Box
-                  component="img"
-                  src={imagePreview}
-                  width="200px"
-                  height="200px"
-                />
-              ) : (
-                <Box
-                  width="200px"
-                  height="200px"
-                  bgcolor="#373737"
-                  borderRadius="50%"
-                />
-              )}
             </Stack>
             <Stack spacing="10px" padding="20px">
               <Typography
@@ -394,35 +367,42 @@ const Home = () => {
               >
                 Recommend min of 730x220 (1:1 Ratio)
               </Typography>
-              <Input
-                type="file"
-                onChange={handleBannerChange}
-                sx={{ display: 'none' }}
-                id="banner-button-file"
-              />
-              <Box component="label" htmlFor="banner-button-file">
-                <Button
-                  component="span"
-                  sx={{
-                    color: 'white',
-                    borderRadius: '10px',
-                    backgroundColor: '#373737',
-                    border: '1px solid #383838',
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <Uploader3
+                  accept={['.gif', '.jpeg', '.gif']}
+                  api={'/api/upload/file'}
+                  multiple={false}
+                  crop={false} // must be false when accept is svg
+                  onChange={(files) => {
+                    setBanner(files[0]);
+                  }}
+                  onUpload={(file: any) => {
+                    setBanner(file);
+                  }}
+                  onComplete={(file: any) => {
+                    setBanner(file);
                   }}
                 >
-                  Upload
-                </Button>
+                  <Button
+                    component="span"
+                    sx={{
+                      color: 'white',
+                      borderRadius: '10px',
+                      backgroundColor: '#373737',
+                      border: '1px solid #383838',
+                    }}
+                  >
+                    Upload
+                  </Button>
+                </Uploader3>
+                <PreviewFile file={banner} />
               </Box>
-              {bannerPreview ? (
-                <Box
-                  component="img"
-                  src={bannerPreview}
-                  width="200px"
-                  height="200px"
-                />
-              ) : (
-                <Box height="200px" bgcolor="#373737" borderRadius="10px" />
-              )}
             </Stack>
           </Box>
           <Box display="flex" gap="20px">

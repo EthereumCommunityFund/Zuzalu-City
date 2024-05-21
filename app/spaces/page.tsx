@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { Stack, Grid, useTheme, useMediaQuery } from '@mui/material';
 import { Sidebar } from 'components/layout';
 import { SpaceHeader } from './components';
-import { SpaceCard } from 'components';
+// import { SpaceCard } from 'components';
+import { SpaceCard } from '@/components/cards';
 import { MOCK_DATA } from 'mock';
 import { useCeramicContext } from '@/context/CeramicContext';
 interface Space {
@@ -59,7 +60,7 @@ const Home = () => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          spaceIndex(first: 10) {
+          spaceIndex(first: 20) {
             edges {
               node {
                 id
@@ -116,7 +117,7 @@ const Home = () => {
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
         <Grid container spacing={{ xs: 2, md: 3 }} padding="20px">
-          {MOCK_DATA.spaces.map((item, index) => (
+          {spaces.map((item, index) => (
             <Grid
               item
               key={`SpaceHeader-Card${index}`}
@@ -126,7 +127,7 @@ const Home = () => {
               xl={3}
               sx={{ display: 'flex', justifyContent: 'center' }}
             >
-              <SpaceCard {...item} />
+              <SpaceCard title={item.name} />
             </Grid>
           ))}
         </Grid>
