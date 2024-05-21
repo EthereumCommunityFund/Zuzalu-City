@@ -15,7 +15,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircleIcon, PlusIcon, XMarkIcon } from 'components/icons';
 import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
 import { ZuButton } from 'components/core';
-import { TextEditor } from '@/components/editor/editor';
+import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';

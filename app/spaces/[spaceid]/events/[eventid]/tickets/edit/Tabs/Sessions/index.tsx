@@ -16,7 +16,7 @@ import {
   RightArrowCircleIcon,
   PlusCircleIcon,
 } from 'components/icons';
-import { TextEditor } from 'components/editor/editor';
+import TextEditor from 'components/editor/editor';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 

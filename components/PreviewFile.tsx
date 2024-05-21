@@ -9,6 +9,7 @@ export const PreviewFile = (props: {
   style?: React.CSSProperties;
 }) => {
   const { file } = props;
+
   const tempSrc = "https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w"
   return (
     <Stack

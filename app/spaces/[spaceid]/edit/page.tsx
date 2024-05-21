@@ -3,7 +3,7 @@ import { Box, Input, Stack, Typography } from '@mui/material';
 import SpaceEditSidebar from './components/Sidebar';
 import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { TextEditor } from 'components/editor/editor';
+import TextEditor from 'components/editor/editor';
 import Image from 'next/image';
 import { SelectedFile, Uploader3 } from '@lxdao/uploader3'
 import { PreviewFile } from '@/components';

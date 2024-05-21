@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, ChangeEvent } from 'react';
 import { Stack, Box, Typography, Button, Input } from '@mui/material';
-import TextEditor from '@/components/editor/editor';
+// import TextEditor from '@/components/editor/editor';
 import { Header } from './components';
 import {
   XMarkIcon,
@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
-import { OutputData } from '@editorjs/editorjs';
+// import { OutputData } from '@editorjs/editorjs';
 
 interface Space {
   id: string;
@@ -39,8 +39,10 @@ interface Inputs {
 const Home = () => {
   const router = useRouter();
   const [avatar, setAvatar] = useState<SelectedFile>();
+  const [avatarURL, setAvatarURL] = useState<string>();
   const [banner, setBanner] = useState<SelectedFile>();
-  const [description, setDescription] = useState<OutputData | undefined>();
+  const [bannerURL, setBannerURL] = useState<string>();
+  const [description, setDescription] = useState<string>('');
   const {
     ceramic,
     composeClient,
@@ -90,7 +92,7 @@ const Home = () => {
               tagline: "${inputs.tagline}",
               admin: "${adminId}",
               profileId: "${profileId}",
-              avatar: "${avatar?.name}",
+              avatar: "${avatar?.previewUrl}",
               banner: "${banner?.previewUrl}"
             }
           }
@@ -225,7 +227,30 @@ const Home = () => {
                   This is a description greeting for new members. You can also
                   update descriptions.
                 </Typography>
-                <TextEditor
+                <Input
+                  name='description'
+                  onChange={e => setDescription(e.target.value)}
+                  sx={{
+                    color: 'white',
+                    backgroundColor: '#373737',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    width: '100%',
+                    fontSize: '15px',
+                    fontFamily: 'Inter',
+                    '&::after': {
+                      borderBottom: 'none',
+                    },
+                    '&::before': {
+                      borderBottom: 'none',
+                    },
+                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                      borderBottom: 'none',
+                    },
+                  }}
+                  placeholder="Write a short, one-sentence description for your event"
+                />
+                {/* <TextEditor
                   holder='Space Description'
                   value={description}
                   setData={setDescription}
@@ -237,7 +262,7 @@ const Home = () => {
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
                   }}
-                />
+                /> */}
                 <Stack direction="row" justifyContent="space-between">
                   <Stack
                     sx={{
@@ -324,14 +349,20 @@ const Home = () => {
                   api={'/api/upload/file'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
+                  responseFormat={(res: any) => {
+                    console.log('responseFormat', res?.cid);
+                    return res;
+                  }}
                   onChange={(files) => {
                     setAvatar(files[0]);
                   }}
-                  onUpload={(file: any) => {
-                    setAvatar(file);
+                  onUpload={(result: any) => {
+                    console.log("upload", result);
+                    setAvatar(result);
                   }}
-                  onComplete={(file: any) => {
-                    setAvatar(file);
+                  onComplete={(result: any) => {
+                    console.log("complete", result);
+                    setAvatarURL(result?.url);
                   }}
                 >
                   <Button
@@ -384,8 +415,8 @@ const Home = () => {
                   onUpload={(file: any) => {
                     setBanner(file);
                   }}
-                  onComplete={(file: any) => {
-                    setBanner(file);
+                  onComplete={(result: any) => {
+                    setBannerURL(result?.url);
                   }}
                 >
                   <Button
@@ -437,7 +468,7 @@ const Home = () => {
           </Box>
         </Box>
       </Stack>
-    </Stack>
+    </Stack >
   );
 };
 
