@@ -1,6 +1,7 @@
+'use client';
+import React, { useEffect, useRef, Fragment, FC } from 'react';
 import EditorJS, { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
-import { useEffect, useRef, Fragment, FC } from 'react';
 import { Box, BoxProps } from '@mui/material';
 
 interface TextEditorPropTypes extends BoxProps {
@@ -10,7 +11,7 @@ interface TextEditorPropTypes extends BoxProps {
   holder: string;
 }
 
-export const TextEditor: FC<TextEditorPropTypes> = ({
+const TextEditor: FC<TextEditorPropTypes> = ({
   value = { blocks: [] },
   setData = (value: OutputData) => {
     console.log(value);
@@ -51,3 +52,5 @@ export const TextEditor: FC<TextEditorPropTypes> = ({
     </Fragment>
   );
 };
+
+export default TextEditor;

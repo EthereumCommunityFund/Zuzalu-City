@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, ChangeEvent } from 'react';
 import { Stack, Box, Typography, Button, Input } from '@mui/material';
-import { TextEditor } from '@/components/editor/editor';
+import TextEditor from '@/components/editor/editor';
 import { Header } from './components';
 import {
   XMarkIcon,
@@ -90,7 +90,7 @@ const Home = () => {
               tagline: "${inputs.tagline}",
               admin: "${adminId}",
               profileId: "${profileId}",
-              avatar: "${avatar?.previewUrl}",
+              avatar: "${avatar?.name}",
               banner: "${banner?.previewUrl}"
             }
           }
