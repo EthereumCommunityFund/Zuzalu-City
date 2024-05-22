@@ -5,6 +5,7 @@ import { Typography, Button, Box, Stack } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
 
 export type SpaceCardProps = {
+  id: string,
   bgImage?: string;
   logoImage?: string;
   title: string;
@@ -13,6 +14,7 @@ export type SpaceCardProps = {
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
+  id,
   bgImage = '/5.webp',
   logoImage = '/1.webp',
   title,
@@ -21,7 +23,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
 }) => {
   return (
     <Link
-      href={`/spaces/${title.split(' ')[0]}`}
+      href={`/spaces/${id}`}
       style={{ textDecoration: 'none' }}
     >
       <Stack

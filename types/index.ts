@@ -33,3 +33,31 @@ export interface EventData {
   };
 }
 
+export interface Space {
+  id: string;
+  avatar?: string;
+  banner?: string;
+  description?: string;
+  name: string;
+  profileId?: string;
+  tagline?: string;
+  website?: string;
+  twitter?: string;
+  telegram?: string;
+  nostr?: string;
+  lens?: string;
+  github?: string;
+  discord?: string;
+  ens?: string;
+}
+
+export interface SpaceEdge {
+  node: Space;
+}
+
+export interface SpaceData {
+  spaceIndex: {
+    edges: SpaceEdge[];
+  };
+}
+

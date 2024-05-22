@@ -379,7 +379,13 @@ const Home = () => {
                     Upload
                   </Button>
                 </Uploader3>
-                <PreviewFile file={avatar} />
+                <PreviewFile
+                  sx={{
+                    'width': '150px',
+                    'height': '150px',
+                    'borderRadius': '60%'
+                  }}
+                  file={avatar} />
               </Box>
             </Stack>
             <Stack spacing="10px" padding="20px">
@@ -434,7 +440,9 @@ const Home = () => {
                     Upload
                   </Button>
                 </Uploader3>
-                <PreviewFile file={banner} />
+                <PreviewFile
+                  sx={{ 'width': '100%', 'height': '200px', 'borderRadius': '10px' }}
+                  file={banner} />
               </Box>
             </Stack>
           </Box>

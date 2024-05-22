@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Box, Stack, Typography, Button } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
 import { ZuButton } from 'components/core';
@@ -12,6 +12,9 @@ import { Event, EventData, EventEdge } from '@/types';
 
 const Home = () => {
   const router = useRouter();
+  const params = useParams();
+  const spaceId = params.spaceid.toString();
+  console.log("spaceID", spaceId)
 
   const [events, setEvents] = useState<Event[]>([]);
   const {
@@ -65,7 +68,8 @@ const Home = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        setEvents(fetchedEvents);
+        console.log("filter", fetchedEvents.filter(event => event.spaceId === spaceId))
+        setEvents(fetchedEvents.filter(event => event.spaceId === spaceId));
         console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -90,7 +94,7 @@ const Home = () => {
   return (
     <Stack direction="row">
       <IconSidebar />
-      <Sidebar />
+      <Sidebar spaceId={spaceId} />
       <Stack flex={1}>
         <Header />
         <Stack direction="row" justifyContent="center">

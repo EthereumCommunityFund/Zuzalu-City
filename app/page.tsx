@@ -20,13 +20,14 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
-import { Event, EventData } from '@/types';
+import { Event, EventData, Space, SpaceData } from '@/types';
 const queryClient = new QueryClient();
 
 const Home: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const {
     ceramic,
@@ -42,6 +43,50 @@ const Home: React.FC = () => {
     username,
     createProfile,
   } = useCeramicContext();
+
+  const getSpaces = async () => {
+    console.log('Fetching spaces...');
+    try {
+      const response: any = await composeClient.executeQuery(`
+        query MyQuery {
+          spaceIndex(first: 20) {
+            edges {
+              node {
+                id
+                avatar
+                banner
+                description
+                name
+                profileId
+                tagline
+                website
+                twitter
+                telegram
+                nostr
+                lens
+                github
+                discord
+                ens
+              }
+            }
+          }
+        }
+      `);
+
+      if ('spaceIndex' in response.data) {
+        const spaceData: SpaceData = response.data as SpaceData;
+        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setSpaces(fetchedSpaces);
+        console.log('Spaces fetched:', fetchedSpaces);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch spaces:', error);
+    }
+  };
 
   const getEvents = async () => {
     console.log('Fetching events...');
@@ -92,20 +137,16 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getEvents();
-        console.log(data);
+        await getSpaces();
+        await getEvents();
       } catch (error) {
         console.error('An error occurred:', error);
       }
     };
     fetchData();
   }, []);
-  // const isDesktop:q = useMediaQuery(theme.breakpoints.up('xl'));
 
   return (
-    // <QueryClientProvider client={queryClient}>
-    //   <CeramicProvider>
-    //     <WalletProvider>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
         <Header />
@@ -183,7 +224,7 @@ const Home: React.FC = () => {
                   Most Active Spaces
                 </Typography>
               </Box>
-              <Carousel items={MOCK_DATA.spaces} />
+              <Carousel items={spaces} />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   position='relative'
@@ -299,9 +340,6 @@ const Home: React.FC = () => {
         </Box>
       </Box>
     </LocalizationProvider>
-    //     </WalletProvider>
-    //   </CeramicProvider>
-    // </QueryClientProvider>
   );
 };
 

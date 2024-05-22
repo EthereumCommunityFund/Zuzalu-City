@@ -1,5 +1,6 @@
 'use client';
 import { useState, ChangeEvent, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -22,6 +23,7 @@ import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '../components/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData } from '@/types';
+import { createConnector } from '@lxdao/uploader3-connector';
 
 interface Inputs {
   name: string;
@@ -31,6 +33,14 @@ interface Inputs {
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Home = () => {
+  const params = useParams();
+  const spaceId = params.spaceid.toString();
+  console.log("spaceID", spaceId)
+
+  const connector = createConnector('NFT.storage', {
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+  });
+
   const [state, setState] = useState({
     top: false,
     left: false,
@@ -90,7 +100,7 @@ const Home = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        setEvents(fetchedEvents);
+        setEvents(fetchedEvents.filter(event => event.spaceId === spaceId));
         console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -103,8 +113,7 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getEvents();
-        console.log(data);
+        await getEvents();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -126,6 +135,7 @@ const Home = () => {
     });
     const [description, setDescription] = useState<string>('');
     const [avatar, setAvatar] = useState<SelectedFile>();
+    const [avatarURL, setAvatarURL] = useState<string>();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
 
@@ -153,13 +163,13 @@ const Home = () => {
               description: "${description}",
               startTime: "${startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
               endTime: "${endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              spaceId: "kjzl6kcym7w8y64g1qepnwpg3dxyz18qxw0mpr7m0hq1ymxl1jorl71chi7ugmg",
+              spaceId: "${spaceId}",
               createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
               profileId: "${profile?.id}",
               max_participant: 100,
               min_participant: 10,
               participant_count: 10,
-              image_url: "${avatar?.previewUrl}",
+              image_url: "${avatarURL}",
             }
           }
         ) {
@@ -182,7 +192,7 @@ const Home = () => {
       `);
       console.log(update)
       toggleDrawer('right', false);
-      getEvents();
+      await getEvents();
     };
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -353,7 +363,7 @@ const Home = () => {
                   fontWeight={700}
                   fontFamily="Inter"
                 >
-                  Space Avatar
+                  Event Avatar
                 </Typography>
                 <Typography
                   color="white"
@@ -372,7 +382,7 @@ const Home = () => {
                 >
                   <Uploader3
                     accept={['.gif', '.jpeg', '.gif']}
-                    api={'/api/upload/file'}
+                    connector={connector}
                     multiple={false}
                     crop={false} // must be false when accept is svg
                     onChange={(files) => {
@@ -381,8 +391,8 @@ const Home = () => {
                     onUpload={(file: any) => {
                       setAvatar(file);
                     }}
-                    onComplete={(file: any) => {
-                      setAvatar(file);
+                    onComplete={(result: any) => {
+                      setAvatarURL(result?.url);
                     }}
                   >
                     <Button
@@ -397,7 +407,11 @@ const Home = () => {
                       Upload
                     </Button>
                   </Uploader3>
-                  <PreviewFile file={avatar} />
+                  <PreviewFile sx={{
+                    'width': '150px',
+                    'height': '150px',
+                    'borderRadius': '75px'
+                  }} file={avatar} />
                 </Box>
                 <Box
                   display="flex"
@@ -422,6 +436,20 @@ const Home = () => {
                         '& .MuiSvgIcon-root': {
                           color: 'white',
                         },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          border: 'none'
+                        }
+                      }}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            ...{
+                              '& .MuiPickersDay-root': { color: 'black' },
+                              '& .MuiPickersDay-root.Mui-selected': { backgroundColor: '#D7FFC4' },
+                              '& .MuiPickersCalendarHeader-root': { color: 'black' }
+                            }
+                          }
+                        }
                       }}
                     />
                   </Box>
@@ -440,6 +468,20 @@ const Home = () => {
                         '& .MuiSvgIcon-root': {
                           color: 'white',
                         },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          border: 'none'
+                        }
+                      }}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            ...{
+                              '& .MuiPickersDay-root': { color: 'black' },
+                              '& .MuiPickersDay-root.Mui-selected': { backgroundColor: '#D7FFC4' },
+                              '& .MuiPickersCalendarHeader-root': { color: 'black' }
+                            }
+                          }
+                        }
                       }}
                     />
                   </Box>

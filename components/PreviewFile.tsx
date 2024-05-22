@@ -6,22 +6,22 @@ import { Stack } from '@mui/material';
 
 export const PreviewFile = (props: {
   file?: SelectedFile | UploadFile | UploadResult | CroppedFile;
-  style?: React.CSSProperties;
+  sx: {
+    [key: string]: string
+  }
 }) => {
-  const { file } = props;
+  const { file, sx } = props;
 
   const tempSrc = "https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w"
   return (
     <Stack
       sx={{
-        width: '85px',
-        height: '85px',
-        borderRadius: '60px',
-        boxShadow: '0 0 0 6px #2e2e2e',
+        ...sx,
+        backgroundColor: '#313131'
       }}
     >
       {
-        file && <Img3 style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: '60px' }} src={file ? file.previewUrl : tempSrc} alt={file.name} />
+        file && <Img3 style={{ maxHeight: '100%', maxWidth: '100%', ...sx }} src={file ? file.previewUrl : tempSrc} alt={file.name} />
       }
     </Stack>
   );

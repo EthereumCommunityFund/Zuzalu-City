@@ -127,7 +127,12 @@ const Home = () => {
               xl={3}
               sx={{ display: 'flex', justifyContent: 'center' }}
             >
-              <SpaceCard title={item.name} />
+              <SpaceCard
+                id={item.id}
+                logoImage={item.avatar ? item.avatar : '/1.webp'}
+                bgImage={item.banner ? item.banner : '/5.webp'}
+                title={item.name}
+                description={item.description} />
             </Grid>
           ))}
         </Grid>
