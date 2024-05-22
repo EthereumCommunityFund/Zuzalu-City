@@ -6,7 +6,7 @@ import { Stack } from '@mui/material';
 
 export const PreviewFile = (props: {
   file?: SelectedFile | UploadFile | UploadResult | CroppedFile;
-  sx: {
+  sx?: {
     [key: string]: string
   }
 }) => {
