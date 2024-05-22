@@ -1,13 +1,18 @@
-import type { Metadata } from 'next';
+'use client';
+// import type { Metadata } from 'next';
 import './globals.css';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from 'theme/theme';
+import { WalletProvider } from '../context/WalletContext';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { CeramicProvider } from '../context/CeramicContext';
+const queryClient = new QueryClient();
 
-export const metadata: Metadata = {
-  title: 'Zuzalu City',
-  description: 'Zuzalu City Powered By Ethereum Community Fund',
-};
+// export const metadata: Metadata = {
+//   title: 'Zuzalu City',
+//   description: 'Zuzalu City Powered By Ethereum Community Fund',
+// };
 
 function RootLayout({
   children,
@@ -18,7 +23,15 @@ function RootLayout({
     <html lang="en">
       <body>
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          <ThemeProvider theme={theme}>
+            <QueryClientProvider client={queryClient}>
+              <CeramicProvider>
+                <WalletProvider>
+                  {children}
+                </WalletProvider>
+              </CeramicProvider>
+            </QueryClientProvider>
+          </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

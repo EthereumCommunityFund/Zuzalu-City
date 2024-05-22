@@ -1,17 +1,20 @@
 import * as React from 'react';
 import { Stack, Typography } from '@mui/material';
-import { PlusIcon } from 'components/icons';
-import { ZuButton } from 'components/core';
-import EventCard from '../EventCard';
+import { PlusIcon } from '@/components/icons';
+import { ZuButton } from '@/components/core';
+import { EventMCard } from '@/components/cards';
+import { Event } from '@/types';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface CurrentEventsProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
+  events: Event[]
 }
 
 const CurrentEvents: React.FC<CurrentEventsProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => {},
+  onToggle = (anchor: Anchor, open: boolean) => { },
+  events = []
 }) => {
   return (
     <Stack direction="column" spacing={3} padding={2.5}>
@@ -35,10 +38,15 @@ const CurrentEvents: React.FC<CurrentEventsProps> = ({
         >
           Prototype Note: First card is click-able
         </Typography>
-        <EventCard type={0} applicants={14} isSideEventActive={true} />
-        <EventCard type={0} applicants={14} />
-        <EventCard type={2} applicants={0} />
-        <EventCard type={1} applicants={3} />
+        {/* <EventMCard type={0} applicants={14} isSideEventActive={true} />
+        <EventMCard type={0} applicants={14} />
+        <EventMCard type={2} applicants={0} />
+        <EventMCard type={1} applicants={3} /> */}
+        {
+          events.map((event, index) => (
+            <EventMCard key={`EventMCard-Index${index}`} name={event.title} />
+          ))
+        }
       </Stack>
     </Stack>
   );

@@ -41,12 +41,14 @@ type EventMCardProps = {
   type?: number;
   applicants?: number;
   isSideEventActive?: boolean;
+  name: string;
 };
 
 const EventMCard: React.FC<EventMCardProps> = ({
   type = 0,
   applicants = 0,
   isSideEventActive = false,
+  name
 }) => {
   return (
     <Box
@@ -66,7 +68,7 @@ const EventMCard: React.FC<EventMCardProps> = ({
             color="white"
             fontWeight={700}
           >
-            ZuVillage Georgia
+            {name}
           </Typography>
           <Typography
             fontFamily="Inter"

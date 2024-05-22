@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { HomeIcon, SearchIcon, StreamIcon } from 'components/icons';
 import SidebarButton from './SidebarButton';
 import { ChatsIcon } from 'components/icons/Chats';
@@ -9,7 +10,11 @@ import { Stack, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 
-export default function SubSidebar() {
+interface SubSidebarProps {
+  spaceId: string;
+}
+
+const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
   const theme = useTheme();
   const router = useRouter();
 
@@ -176,7 +181,8 @@ export default function SubSidebar() {
             admins
           </p>
           <SidebarButton
-            onClick={() => router.push('/spaces/123/events/456/edit')}
+            // onClick={() => router.push(`/spaces/${spaceId}/events/456/edit`)}
+            onClick={() => router.push(`/spaces/${spaceId}/events`)}
             content="Manage Events"
             icon={<ManageEventsIcon />}
           ></SidebarButton>
@@ -185,3 +191,5 @@ export default function SubSidebar() {
     </Stack>
   );
 }
+
+export default SubSidebar;
