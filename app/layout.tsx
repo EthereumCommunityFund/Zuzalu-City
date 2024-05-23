@@ -25,11 +25,7 @@ function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
-              <CeramicProvider>
-                <WalletProvider>
-                  {children}
-                </WalletProvider>
-              </CeramicProvider>
+              <CeramicProvider>{children}</CeramicProvider>
             </QueryClientProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
