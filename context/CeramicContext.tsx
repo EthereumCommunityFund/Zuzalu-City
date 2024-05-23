@@ -12,9 +12,9 @@ const ceramicUrl =
   process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
 console.log('ceramic url', ceramicUrl);
 
-const ceramic = new CeramicClient('https://zuzalu-city-dev.com');
+const ceramic = new CeramicClient("https://zuzalu-city-dev.com");
 const composeClient = new ComposeClient({
-  ceramic: 'https://zuzalu-city-dev.com',
+  ceramic: "https://zuzalu-city-dev.com",
   definition: definition as RuntimeCompositeDefinition,
 });
 type Profile = {
