@@ -1,4 +1,4 @@
-import '@rainbow-me/rainbowkit/styles.css';
+/*import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultConfig,
   RainbowKitProvider,
@@ -26,4 +26,4 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       <RainbowKitProvider theme={darkTheme()}>{children}</RainbowKitProvider>
     </WagmiProvider>
   );
-};
+};*/
