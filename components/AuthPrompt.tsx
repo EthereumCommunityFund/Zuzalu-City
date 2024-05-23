@@ -222,7 +222,15 @@ const AuthPrompt: React.FC<{}> = () => {
     inputUsername,
     setInputUsername,
   ]);
-
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
+  const handleLogin = useCallback(async () => {
+    const accounts = await authenticateCeramic(ceramic, composeClient);
+    if (accounts) {
+      setAuthState('Logged_In');
+    }
+    return accounts;
+  }, [ceramic, composeClient]);
   useEffect(() => {
     if (isAuthPromptVisible) {
       const existingusername = localStorage.getItem('username');
@@ -234,15 +242,16 @@ const AuthPrompt: React.FC<{}> = () => {
   }, [isAuthPromptVisible]);
 
   useEffect(() => {
+    if (localStorage.getItem("did")) {
+      handleLogin();
+    }
+  }, [handleLogin]);
+
+  useEffect(() => {
     const checkUserState = async () => {
       if (isConnected) {
         try {
-          const ceramic = new CeramicClient("https://zuzalu-city-dev.com");
-          const composeClient = new ComposeClient({
-            ceramic: "https://zuzalu-city-dev.com",
-            definition: definition as RuntimeCompositeDefinition,
-          });
-          await authenticateCeramic(ceramic, composeClient);
+          await handleLogin();
           console.log('Wallet is connected with address:', address);
           if (newUser) {
             setAuthState('NEW_USER');
