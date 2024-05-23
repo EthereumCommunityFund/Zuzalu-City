@@ -13,6 +13,11 @@ import { CeramicClient } from '@ceramicnetwork/http-client';
 
 const DID_SEED_KEY = 'ceramic:did_seed';
 
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
 /**
  * Checks localStorage for a stored DID Session. If one is found we authenticate it, otherwise we create a new one.
  * @returns Promise<DID-Session> - The User's authenticated sesion.

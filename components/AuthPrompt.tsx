@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { authenticateCeramic } from '@/utils/ceramicAuth';
 //const AuthPrompt: React.FC<{ onAuthenticated: () => void }> = ({
 type AuthPromptContent =
   | {
@@ -234,7 +235,7 @@ const AuthPrompt: React.FC<{}> = () => {
     const checkUserState = async () => {
       if (isConnected) {
         try {
-          await authenticate();
+          await authenticateCeramic(ceramic, composeClient);
           console.log('Wallet is connected with address:', address);
           if (newUser) {
             setAuthState('NEW_USER');
