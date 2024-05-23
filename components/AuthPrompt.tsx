@@ -24,6 +24,10 @@ import {
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { authenticateCeramic } from '@/utils/ceramicAuth';
+import { CeramicClient } from '@ceramicnetwork/http-client';
+import { ComposeClient } from '@composedb/client';
+import { RuntimeCompositeDefinition } from '@composedb/types';
+import { definition } from '../composites/definition.js';
 //const AuthPrompt: React.FC<{ onAuthenticated: () => void }> = ({
 type AuthPromptContent =
   | {
@@ -44,8 +48,6 @@ const AuthPrompt: React.FC<{}> = () => {
   const { data: ensName } = useEnsName({ address });
   const [inputUsername, setInputUsername] = useState('');
   const {
-    ceramic,
-    composeClient,
     isAuthenticated,
     authenticate,
     logout,
@@ -235,6 +237,11 @@ const AuthPrompt: React.FC<{}> = () => {
     const checkUserState = async () => {
       if (isConnected) {
         try {
+          const ceramic = new CeramicClient("https://zuzalu-city-dev.com");
+          const composeClient = new ComposeClient({
+            ceramic: "https://zuzalu-city-dev.com",
+            definition: definition as RuntimeCompositeDefinition,
+          });
           await authenticateCeramic(ceramic, composeClient);
           console.log('Wallet is connected with address:', address);
           if (newUser) {
