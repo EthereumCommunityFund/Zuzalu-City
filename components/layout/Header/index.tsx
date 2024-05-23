@@ -1,5 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, {
+  useState,
+  useEffect,
+  Fragment,
+  ReactNode,
+  useCallback,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -15,15 +21,24 @@ import {
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
-
+import { authenticateCeramic } from '@/utils/ceramicAuth';
 const Header = () => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { isAuthenticated, showAuthPrompt, logout, username } =
-    useCeramicContext();
+  const {
+    ceramic,
+    composeClient,
+    isAuthenticated,
+    showAuthPrompt,
+    logout,
+    username,
+  } = useCeramicContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const handleLogin = useCallback(async () => {
+    const accounts = await authenticateCeramic(ceramic, composeClient);
+    return accounts;
+  }, [ceramic, composeClient]);
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -178,7 +193,10 @@ const Header = () => {
               boxShadow: 'none',
             },
           }}
-          onClick={showAuthPrompt}
+          onClick={async () => {
+            await handleLogin();
+            window.location.href = '/';
+          }}
         >
           Connect
         </Button>
