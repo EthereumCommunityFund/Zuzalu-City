@@ -6,8 +6,8 @@ import React, {
   useCallback,
 } from 'react';
 import { useCeramicContext } from '../context/CeramicContext';
-import { useAccount, useEnsName } from 'wagmi';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+//import { useAccount, useEnsName } F
+//import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -43,9 +43,9 @@ type AuthPromptContent =
   | undefined;
 
 const AuthPrompt: React.FC<{}> = () => {
-  const { address, isConnected } = useAccount();
+  //const { address, isConnected } = useAccount();
   const [isVisible, setIsVisible] = useState(true);
-  const { data: ensName } = useEnsName({ address });
+  //const { data: ensName } = useEnsName({ address });
   const [inputUsername, setInputUsername] = useState('');
   const {
     isAuthenticated,
@@ -80,11 +80,11 @@ const AuthPrompt: React.FC<{}> = () => {
     setIsVisible(false);
   };
 
-  const handleConnectWallet = () => {
+  /*const handleConnectWallet = () => {
     if (isConnected) {
       setAuthState('NEW_USER');
     }
-  };
+  };*/
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputUsername(newValue);
@@ -103,13 +103,13 @@ const AuthPrompt: React.FC<{}> = () => {
           message: 'Sign in or register a new account',
           actions: [
             <Fragment key="connectButton">
-              <ConnectButton
+              {/*<ConnectButton
                 key="connect"
                 showBalance={{
                   smallScreen: false,
                   largeScreen: false,
                 }}
-              />
+              />*/}
             </Fragment>,
           ],
         };
@@ -154,11 +154,11 @@ const AuthPrompt: React.FC<{}> = () => {
               >
                 <Button
                   onClick={() => {
-                    if (address) {
+                    /*if (address) {
                       createProfile(
                         (ensName || address.slice(0, 10)) as string,
                       );
-                    }
+                    }*/
                     setAuthState('Logged_In');
                   }}
                   variant="outlined"
@@ -242,12 +242,12 @@ const AuthPrompt: React.FC<{}> = () => {
   }, [isAuthPromptVisible]);
 
   useEffect(() => {
-    if (localStorage.getItem("did")) {
+    if (localStorage.getItem('did')) {
       handleLogin();
     }
   }, [handleLogin]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const checkUserState = async () => {
       if (isConnected) {
         try {
@@ -267,7 +267,7 @@ const AuthPrompt: React.FC<{}> = () => {
       }
     };
     checkUserState();
-  }, [isConnected, newUser]);
+  }, [isConnected, newUser]);*/
 
   const content = getDialogContent();
   if (content) {

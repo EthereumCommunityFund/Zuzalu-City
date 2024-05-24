@@ -65,10 +65,10 @@
     "react-dom": "^18",
     "react-editor-js": "^2.1.0",
     "react-material-ui-carousel": "^3.4.2",
-    "viem": "^2.9.26",
-    "wagmi": "^2.5.20",
     "react-qr-scanner": "^1.0.0-alpha.11",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.3",
+    "viem": "^2.9.26",
+    "wagmi": "^2.5.20"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
