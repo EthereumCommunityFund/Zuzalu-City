@@ -4,12 +4,12 @@ import { useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import {
   EventIcon,
-  StreamIcon,
   SpaceIcon,
   BoltIcon,
   HomeIcon,
   SpacePlusIcon,
 } from 'components/icons';
+import { useCeramicContext } from '@/context/CeramicContext';
 
 interface SidebarProps {
   selected: string;
@@ -17,9 +17,12 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const router = useRouter();
+  const { isAuthenticated } = useCeramicContext();
 
   return (
-    <Box sx={{ width: '260px', height: '100vh', position: 'sticky', top: '0px' }}>
+    <Box
+      sx={{ width: '260px', height: '100vh', position: 'sticky', top: '0px' }}
+    >
       <Box
         display="flex"
         flexDirection="column"
@@ -48,19 +51,6 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           display="flex"
           padding="10px"
           alignItems="center"
-          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
-          gap="10px"
-          borderRadius="10px"
-        >
-          <StreamIcon />
-          <Typography color="white" variant="bodyMB">
-            Stream
-          </Typography>
-        </Box>
-        <Box
-          display="flex"
-          padding="10px"
-          alignItems="center"
           bgcolor={selected === 'Spaces' ? '#383838' : 'transparent'}
           sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
           gap="10px"
@@ -81,6 +71,9 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
           gap="10px"
           borderRadius="10px"
+          onClick={() => {
+            router.push('/events');
+          }}
         >
           <EventIcon />
           <Typography color="white" variant="bodyMB">
@@ -101,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           </Typography>
         </Box>
       </Box>
-      <Box
+      {isAuthenticated && <Box
         display="flex"
         flexDirection="column"
         gap="15px"
@@ -170,7 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
             Create a Space
           </Typography>
         </Box>
-      </Box>
+      </Box>}
     </Box>
   );
 };

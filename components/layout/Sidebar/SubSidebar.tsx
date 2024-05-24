@@ -1,22 +1,32 @@
 'use client';
-import React from 'react';
-import { HomeIcon, SearchIcon, StreamIcon } from 'components/icons';
+import React, { useState } from 'react';
+import {
+  HomeIcon,
+  SearchIcon,
+  StreamIcon,
+  SettingIcon,
+  ChatsIcon,
+  ArrowDownIcon,
+  AnnouncementsIcon,
+  ManageEventsIcon,
+  UserPlusIcon,
+  ShieldIcon,
+  NotificationIcon,
+} from 'components/icons';
 import SidebarButton from './SidebarButton';
-import { ChatsIcon } from 'components/icons/Chats';
-import { AnnouncementsIcon } from 'components/icons/Announcements';
-import { ManageEventsIcon } from 'components/icons/ManageEvents';
-import { ArrowDownIcon } from 'components/icons';
 import { Stack, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 
 interface SubSidebarProps {
   spaceId: string;
+  title?: string;
 }
 
-const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
+const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
   const theme = useTheme();
   const router = useRouter();
+  const [isMenu, setIsMenu] = useState<boolean>(false);
 
   const buttonList = [
     {
@@ -67,31 +77,119 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
           boxSizing: 'border-box',
         }}
       >
-        <Stack
-          bgcolor="#404440"
-          borderRadius="10px"
-          border="1px solid #383838"
-          padding="10px"
-          direction="row"
-          spacing="10px"
-          alignItems="center"
-          sx={{ cursor: 'pointer' }}
-        >
-          <Box
-            component="img"
-            width={40}
-            height={40}
-            borderRadius={20}
-            src="/1.webp"
-          />
-          <Typography
-            variant="subtitleS"
-            color="white"
-            sx={{ textWrap: 'wrap' }}
+        <Stack spacing="10px" onMouseLeave={() => setIsMenu(false)}>
+          <Stack
+            bgcolor="#525554"
+            borderRadius="10px"
+            border="1px solid #383838"
+            padding="10px"
+            direction="row"
+            spacing="10px"
+            alignItems="center"
+            sx={{
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              '&:hover': { backgroundColor: '#6f7672' },
+            }}
+            onClick={() => setIsMenu(true)}
           >
-            Zuzalu City Contributors
-          </Typography>
-          <ArrowDownIcon />
+            <Box
+              component="img"
+              width={40}
+              height={40}
+              borderRadius={20}
+              src="/1.webp"
+            />
+            <Typography
+              flex={1}
+              variant="subtitleS"
+              color="white"
+              sx={{ textWrap: 'wrap' }}
+            >
+              {title}
+            </Typography>
+            <ArrowDownIcon size={5} />
+          </Stack>
+          {isMenu && (
+            <Stack
+              spacing="10px"
+              padding="5px"
+              border="1px solid #383838"
+              borderRadius="10px"
+            >
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Invite People</Typography>
+                <UserPlusIcon size={5} />
+              </Stack>
+              <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit`)}
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Space Settings</Typography>
+                <SettingIcon size={5} />
+              </Stack>
+              <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit`)}
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Privacy Settings</Typography>
+                <ShieldIcon size={5} />
+              </Stack>
+              <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit`)}
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Notification Settings</Typography>
+                <NotificationIcon size={5} />
+              </Stack>
+            </Stack>
+          )}
         </Stack>
         <SidebarButton
           content="Exit Space"
@@ -190,6 +288,6 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
       </Stack>
     </Stack>
   );
-}
+};
 
 export default SubSidebar;

@@ -37,7 +37,7 @@ export interface Space {
   id: string;
   avatar?: string;
   banner?: string;
-  description?: string;
+  description: string;
   name: string;
   profileId?: string;
   tagline?: string;
@@ -60,4 +60,3 @@ export interface SpaceData {
     edges: SpaceEdge[];
   };
 }
-

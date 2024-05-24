@@ -20,6 +20,7 @@ const Header = () => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const { isAuthenticated, showAuthPrompt, logout, username } =
     useCeramicContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -63,7 +64,7 @@ const Header = () => {
         gap="10px"
         sx={{ cursor: 'pointer' }}
       >
-        <MenuIcon />
+        {isTablet && <MenuIcon />}
         <Box
           component="img"
           src={isMobile ? '/ZuCityLogo-IconOnly.svg' : '/ZuCityLogo.svg'}
@@ -81,7 +82,7 @@ const Header = () => {
           beta
         </Typography>
       </Box>
-      {!isMobile && (
+      {/* {!isMobile && (
         <FormControl focused sx={{ width: '30%', border: 'none' }}>
           <OutlinedInput
             placeholder="Search"
@@ -107,7 +108,7 @@ const Header = () => {
             }
           />
         </FormControl>
-      )}
+      )} */}
       {isAuthenticated ? (
         <>
           <Button

@@ -1,18 +1,102 @@
 'use client';
-import { Box, Input, Stack, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { Box, Input, Stack, Typography, Button } from '@mui/material';
 import SpaceEditSidebar from './components/Sidebar';
 import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import TextEditor from 'components/editor/editor';
 import Image from 'next/image';
-import { SelectedFile, Uploader3 } from '@lxdao/uploader3'
+import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
-
+import { useCeramicContext } from '@/context/CeramicContext';
+import { Space, SpaceData } from '@/types';
+import { createConnector } from '@lxdao/uploader3-connector';
+import { OutputData } from '@editorjs/editorjs';
 
 export default function SpaceEditPage() {
+  const params = useParams();
+  const { composeClient } = useCeramicContext();
+
+  const connector = createConnector('NFT.storage', {
+    token: process.env.CONNECTOR_TOKEN ?? '',
+  });
+
   const [isOnInput, setIsOnInput] = useState(false);
   const [isOnTextArea, setIsOnTextArea] = useState(false);
-  const [file, setFile] = useState<SelectedFile>()
+  const [file, setFile] = useState<SelectedFile>();
+  const [space, setSpace] = useState<Space>();
+  const [avatar, setAvatar] = useState<SelectedFile>();
+  const [avatarURL, setAvatarURL] = useState<string | undefined>(
+    space ? space.avatar : '',
+  );
+  const [bannerURL, setBannerURL] = useState<string | undefined>(
+    space ? space.banner : '',
+  );
+  const [description, setDescription] = useState<OutputData>();
+
+  const getSpace = async () => {
+    console.log('Fetching spaces...');
+    try {
+      const response: any = await composeClient.executeQuery(`
+        query MyQuery {
+          spaceIndex(first: 20) {
+            edges {
+              node {
+                id
+                avatar
+                banner
+                description
+                name
+                profileId
+                tagline
+                website
+                twitter
+                telegram
+                nostr
+                lens
+                github
+                discord
+                ens
+              }
+            }
+          }
+        }
+      `);
+
+      if ('spaceIndex' in response.data) {
+        const spaceData: SpaceData = response.data as SpaceData;
+        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+          (edge) => edge.node,
+        );
+        const editSpace = fetchedSpaces.filter(
+          (space) => space.id === params.spaceid.toString(),
+        )[0];
+        setSpace(editSpace);
+        setDescription(
+          JSON.parse(editSpace.description.replaceAll('\\"', '"')),
+        );
+        console.log('Spaces fetched:', fetchedSpaces);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch spaces:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getSpace();
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  console.log('desc', description);
 
   const theme = useTheme();
 
@@ -99,6 +183,7 @@ export default function SpaceEditPage() {
                   boxSizing: 'border-box',
                   marginBottom: '8px',
                 }}
+                value={space?.name}
               ></input>
             </Stack>
             <Stack>
@@ -170,6 +255,7 @@ export default function SpaceEditPage() {
           </Typography>
           <TextEditor
             holder="space_description"
+            placeholder="Write Space Description"
             sx={{
               backgroundColor: '#ffffff0d',
               fontFamily: 'Inter',
@@ -177,6 +263,8 @@ export default function SpaceEditPage() {
               padding: '12px 12px 12px 80px',
               borderRadius: '10px',
             }}
+            value={description}
+            setData={setDescription}
           />
           <Stack
             sx={{
@@ -249,35 +337,41 @@ export default function SpaceEditPage() {
             >
               <Uploader3
                 accept={['.gif', '.jpeg', '.gif']}
-                api={'/api/upload/file'}
+                connector={connector}
                 multiple={false}
                 crop={false} // must be false when accept is svg
-                onChange={(files) => {
-                  setFile(files[0]);
-                }}
-                onUpload={(file: any) => {
-                  setFile(file);
-                }}
-                onComplete={(file: any) => {
-                  setFile(file);
+                // onChange={(files) => {
+                //   setAvatar(files[0]);
+                // }}
+                // onUpload={(result: any) => {
+                //   console.log("upload", result);
+                //   setAvatar(result);
+                // }}
+                onComplete={(result: any) => {
+                  console.log('complete', result);
+                  setAvatarURL(result?.url);
                 }}
               >
-                <Stack
+                <Button
+                  component="span"
                   sx={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderRadius: '58px',
-                    padding: '6px 16px',
-                    width: 'fit-content',
+                    color: 'white',
+                    borderRadius: '10px',
+                    backgroundColor: '#373737',
+                    border: '1px solid #383838',
                   }}
-                  fontSize={'14px'}
-                  fontFamily={'Inter'}
-                  fontWeight={600}
-                  color={'rgba(255, 255, 255, 0.7)'}
                 >
                   Upload
-                </Stack>
+                </Button>
               </Uploader3>
-              <PreviewFile file={file} />
+              <PreviewFile
+                sx={{
+                  width: '150px',
+                  height: '150px',
+                  borderRadius: '60%',
+                }}
+                file={avatarURL ? avatarURL : space?.avatar}
+              />
             </Box>
           </Box>
           <Box
@@ -294,50 +388,47 @@ export default function SpaceEditPage() {
             <Typography fontSize={'13px'} fontWeight={500} lineHeight={'140%'}>
               200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
             </Typography>
-            <Stack
+            <Box
               sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                borderRadius: '58px',
-                padding: '6px 16px',
-              }}
-              fontSize={'14px'}
-              fontFamily={'Inter'}
-              fontWeight={600}
-              color={'rgba(255, 255, 255, 0.7)'}
-              width={'fit-content'}
-            >
-              Upload
-            </Stack>
-            <Stack
-              sx={{
-                width: '100%',
-                height: '240px',
-                borderRadius: '10px',
-                boxShadow:
-                  '0 .6021873017743928px .6021873017743928px -1.25px #0000002e, 0 2.288533303243457px 2.288533303243457px -2.5px #00000029, 0 10px 10px -3.75px #00000010',
-                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
               }}
             >
-              <Image
-                loader={() =>
-                  'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=1024 1024w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png 1920w'
-                }
-                src={
-                  'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=1024 1024w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png 1920w'
-                }
-                alt=""
-                width={'100'}
-                height={'240'}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  objectFit: 'cover',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '10px',
+              <Uploader3
+                accept={['.gif', '.jpeg', '.gif']}
+                connector={connector}
+                multiple={false}
+                crop={false} // must be false when accept is svg
+                // onChange={(files) => {
+                //   setAvatar(files[0]);
+                // }}
+                // onUpload={(result: any) => {
+                //   console.log("upload", result);
+                //   setAvatar(result);
+                // }}
+                onComplete={(result: any) => {
+                  console.log('complete', result);
+                  setBannerURL(result?.url);
                 }}
+              >
+                <Button
+                  component="span"
+                  sx={{
+                    color: 'white',
+                    borderRadius: '10px',
+                    backgroundColor: '#373737',
+                    border: '1px solid #383838',
+                  }}
+                >
+                  Upload
+                </Button>
+              </Uploader3>
+              <PreviewFile
+                sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
+                file={bannerURL ? bannerURL : space?.banner}
               />
-            </Stack>
+            </Box>
           </Box>
         </Box>
       </Box>

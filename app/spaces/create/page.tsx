@@ -1,18 +1,15 @@
 'use client';
 import React, { useState, ChangeEvent } from 'react';
 import { Stack, Box, Typography, Button, Input } from '@mui/material';
-// import TextEditor from '@/components/editor/editor';
+import TextEditor from '@/components/editor/editor';
 import { Header } from './components';
-import {
-  XMarkIcon,
-  SpacePlusIcon,
-} from '@/components/icons';
+import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
-// import { OutputData } from '@editorjs/editorjs';
+import { OutputData } from '@editorjs/editorjs';
 
 interface Space {
   id: string;
@@ -43,7 +40,8 @@ const Home = () => {
   const [avatarURL, setAvatarURL] = useState<string>();
   const [banner, setBanner] = useState<SelectedFile>();
   const [bannerURL, setBannerURL] = useState<string>();
-  const [description, setDescription] = useState<string>('');
+  // const [description, setDescription] = useState<string>('');
+  const [description, setDescription] = useState<OutputData>();
   const {
     ceramic,
     composeClient,
@@ -65,7 +63,8 @@ const Home = () => {
   });
 
   const connector = createConnector('NFT.storage', {
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+    token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
   });
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +72,7 @@ const Home = () => {
 
     setInputs((prevInputs) => ({
       ...prevInputs,
-      [name]: value
+      [name]: value,
     }));
   };
   const profileId = profile?.id || '';
@@ -86,6 +85,10 @@ const Home = () => {
 
   const createSpace = async () => {
     if (!isAuthenticated) return;
+    let strDesc = JSON.stringify(description);
+    console.log('des', strDesc);
+    strDesc = strDesc.replaceAll('"', '\\"');
+    console.log('des', strDesc);
     try {
       const update = await composeClient.executeQuery(`
       mutation {
@@ -93,7 +96,7 @@ const Home = () => {
           input: {
             content: {
               name: "${inputs.name}",
-              description: "${description}",
+              description: "${strDesc}",
               tagline: "${inputs.tagline}",
               admin: "${adminId}",
               profileId: "${profileId}",
@@ -116,12 +119,11 @@ const Home = () => {
         }
       }
       `);
-      console.log(update)
-      window.alert("Success!")
-      router.push("/spaces")
-
+      console.log(update);
+      window.alert('Success!');
+      router.push('/spaces');
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   };
 
@@ -163,7 +165,7 @@ const Home = () => {
                   Space Name
                 </Typography>
                 <Input
-                  name='name'
+                  name="name"
                   onChange={handleInputChange}
                   sx={{
                     color: 'white',
@@ -196,7 +198,7 @@ const Home = () => {
                   Space Tagline
                 </Typography>
                 <Input
-                  name='tagline'
+                  name="tagline"
                   onChange={handleInputChange}
                   sx={{
                     color: 'white',
@@ -232,7 +234,7 @@ const Home = () => {
                   This is a description greeting for new members. You can also
                   update descriptions.
                 </Typography>
-                <Input
+                {/* <Input
                   name='description'
                   onChange={e => setDescription(e.target.value)}
                   sx={{
@@ -254,9 +256,9 @@ const Home = () => {
                     },
                   }}
                   placeholder="Write a short, one-sentence description for your event"
-                />
-                {/* <TextEditor
-                  holder='Space Description'
+                /> */}
+                <TextEditor
+                  holder="Space Description"
                   value={description}
                   setData={setDescription}
                   placeholder="Write a short, one-sentence tagline for your event"
@@ -267,7 +269,7 @@ const Home = () => {
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
                   }}
-                /> */}
+                />
                 <Stack direction="row" justifyContent="space-between">
                   <Stack
                     sx={{
@@ -359,11 +361,11 @@ const Home = () => {
                     setAvatar(files[0]);
                   }}
                   onUpload={(result: any) => {
-                    console.log("upload", result);
+                    console.log('upload', result);
                     setAvatar(result);
                   }}
                   onComplete={(result: any) => {
-                    console.log("complete", result);
+                    console.log('complete', result);
                     setAvatarURL(result?.url);
                   }}
                 >
@@ -381,11 +383,12 @@ const Home = () => {
                 </Uploader3>
                 <PreviewFile
                   sx={{
-                    'width': '150px',
-                    'height': '150px',
-                    'borderRadius': '60%'
+                    width: '150px',
+                    height: '150px',
+                    borderRadius: '60%',
                   }}
-                  file={avatar} />
+                  file={avatarURL}
+                />
               </Box>
             </Stack>
             <Stack spacing="10px" padding="20px">
@@ -441,8 +444,9 @@ const Home = () => {
                   </Button>
                 </Uploader3>
                 <PreviewFile
-                  sx={{ 'width': '100%', 'height': '200px', 'borderRadius': '10px' }}
-                  file={banner} />
+                  sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
+                  file={bannerURL}
+                />
               </Box>
             </Stack>
           </Box>
@@ -479,7 +483,7 @@ const Home = () => {
           </Box>
         </Box>
       </Stack>
-    </Stack >
+    </Stack>
   );
 };
 

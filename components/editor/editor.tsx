@@ -12,23 +12,22 @@ interface TextEditorPropTypes extends BoxProps {
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
-  value = { blocks: [] },
+  value,
   setData = (value: OutputData) => {
     console.log(value);
   },
   holder = 'editorjs',
   children,
-  placeholder = 'Write your amazing Blog!',
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
+  console.log('value', value);
 
   useEffect(() => {
     if (!ref.current) {
       const editor = new EditorJS({
         holder: holder,
         tools,
-        placeholder,
         data: value,
         async onChange(api, event) {
           const data = await api.saver.save();
