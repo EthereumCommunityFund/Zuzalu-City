@@ -419,7 +419,7 @@ const Home = () => {
                       height: '150px',
                       borderRadius: '75px',
                     }}
-                    file={avatar}
+                    file={avatarURL}
                   />
                 </Box>
                 <Box

@@ -42,6 +42,7 @@ import { ManageEventsIcon } from './ManageEvents';
 import { UserPlusIcon } from './UserPlus';
 import { ShieldIcon } from './Shield';
 import { NotificationIcon } from './Notification';
+import { XCricleIcon } from './XCircle';
 
 export {
   HomeIcon,
@@ -88,4 +89,5 @@ export {
   UserPlusIcon,
   ShieldIcon,
   NotificationIcon,
+  XCricleIcon
 };

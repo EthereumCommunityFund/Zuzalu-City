@@ -2,16 +2,14 @@
 import React, { useState } from 'react';
 import {
   HomeIcon,
-  SearchIcon,
-  StreamIcon,
   SettingIcon,
-  ChatsIcon,
   ArrowDownIcon,
   AnnouncementsIcon,
   ManageEventsIcon,
   UserPlusIcon,
   ShieldIcon,
   NotificationIcon,
+  TableIcon
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
 import { Stack, Typography, Box } from '@mui/material';
@@ -30,24 +28,16 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
 
   const buttonList = [
     {
-      content: 'Search',
-      icon: <SearchIcon />,
-    },
-    {
       content: 'Home',
       icon: <HomeIcon />,
-    },
-    {
-      content: 'Space Stream',
-      icon: <StreamIcon />,
     },
     {
       content: 'Announcements',
       icon: <AnnouncementsIcon />,
     },
     {
-      content: 'Chats',
-      icon: <ChatsIcon />,
+      content: 'Events',
+      icon: <TableIcon />,
     },
   ];
 
@@ -118,6 +108,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
               borderRadius="10px"
             >
               <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit/invite`)}
                 direction="row"
                 justifyContent="space-between"
                 padding="6px 10px"
@@ -191,7 +182,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             </Stack>
           )}
         </Stack>
-        <SidebarButton
+        {/* <SidebarButton
           content="Exit Space"
           sx={{
             backgroundColor: '#ffffff05',
@@ -204,7 +195,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             cursor: 'pointer',
             opacity: '0.6',
           }}
-        ></SidebarButton>
+        ></SidebarButton> */}
       </Stack>
       <Stack
         sx={{
@@ -224,7 +215,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             boxSizing: 'border-box',
           }}
         >
-          {buttonList.map((item, index) => {
+          {/* {buttonList.map((item, index) => {
             if (item.content === 'Search') {
               return (
                 <SidebarButton
@@ -258,9 +249,25 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
                 isActive={false}
               ></SidebarButton>
             );
-          })}
+          })} */}
+          <SidebarButton
+            icon={<HomeIcon />}
+            content="Home"
+            isActive={false}
+          />
+          <SidebarButton
+            icon={<AnnouncementsIcon />}
+            content="Announcements"
+            isActive={false}
+          />
+          <SidebarButton
+            icon={<TableIcon />}
+            content="Events"
+            isActive={false}
+            onClick={() => router.push(`/spaces/${spaceId}/events`)}
+          />
         </Stack>
-        <Stack
+        {/* <Stack
           sx={{
             width: '100%',
             padding: '10px',
@@ -284,7 +291,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             content="Manage Events"
             icon={<ManageEventsIcon />}
           ></SidebarButton>
-        </Stack>
+        </Stack> */}
       </Stack>
     </Stack>
   );
