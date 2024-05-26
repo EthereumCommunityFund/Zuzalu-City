@@ -21,7 +21,11 @@ import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
 import { Event, EventData, Space, SpaceData } from '@/types';
+import LotteryCard from '@/components/cards/LotteryCard'
+import Link from 'next/link';
 const queryClient = new QueryClient();
+
+const doclink = process.env.NEXT_LEARN_DOC_V2_URL || "";
 
 const Home: React.FC = () => {
   const theme = useTheme();
@@ -72,6 +76,8 @@ const Home: React.FC = () => {
           }
         }
       `);
+
+      console.log('response: ', response);
 
       if ('spaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
@@ -148,16 +154,16 @@ const Home: React.FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box>
+      <Box width={'100vw'}>
         <Header />
         <AuthPrompt />
-        <Box display="grid" gridTemplateColumns={'auto 1fr'}>
+        <Box display="grid" gridTemplateColumns={'auto 1fr'} sx={{ backgroundColor: '#222222' }}>
           {!isTablet && <Sidebar selected="Home" />}
           <Box
             borderLeft="1px solid #383838"
             flexGrow={1}
             padding={isMobile ? '10px' : '30px'}
-            overflow='hidden'
+            width={'calc(100vw - 260px)'}
           >
             <Box
               display="flex"
@@ -165,7 +171,7 @@ const Home: React.FC = () => {
               borderRadius="10px"
               padding="40px 40px"
               sx={{
-                backgroundImage: 'url("4.webp")',
+                backgroundImage: 'url("/4.webp")',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
@@ -184,18 +190,22 @@ const Home: React.FC = () => {
               >
                 Welcome to the new Zuzalu City
               </Typography>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: '#383838',
-                  color: 'white',
-                  width: isMobile ? '100%' : '200px',
-                  borderRadius: '10px',
-                }}
-                startIcon={<RightArrowIcon />}
+              <Link
+                href={doclink}
               >
-                Learn About v2
-              </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#383838',
+                    color: 'white',
+                    width: isMobile ? '100%' : '200px',
+                    borderRadius: '10px',
+                  }}
+                  startIcon={<RightArrowIcon />}
+                >
+                  Learn About v2
+                </Button>
+              </Link>
             </Box>
             <Box marginTop="30px">
               <Box
@@ -212,19 +222,28 @@ const Home: React.FC = () => {
                     Explore Spaces
                   </Typography>
                 </Box>
-                <Box display="flex" alignItems="center" gap="10px">
-                  <Typography color="white" variant="bodyM">
-                    View All Spaces
-                  </Typography>
-                  <RightArrowCircleIcon />
-                </Box>
+                <Link
+                  href={'/spaces'}
+                  style={{
+                    textDecoration: 'blink'
+                  }}
+                >
+                  <Box display="flex" alignItems="center" gap="10px">
+                    <Typography color="white" variant="bodyM">
+                      View All Spaces
+                    </Typography>
+                    <RightArrowCircleIcon />
+                  </Box>
+                </Link>
               </Box>
               <Box marginY="20px">
                 <Typography color="white" variant="bodyM">
                   Most Active Spaces
                 </Typography>
               </Box>
+              {/* <Carousel items={spaces} /> */}
               <Carousel items={spaces} />
+              <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   position='relative'
@@ -232,38 +251,54 @@ const Home: React.FC = () => {
                   display="flex"
                   flexDirection="column"
                   gap="20px"
-                  overflow='auto'
-                  maxHeight='95vh'
+                  sx={{
+                    inset: '0'
+                  }}
                 >
-                  <Box display="flex" justifyContent="space-between">
-                    <Box display="flex" alignItems="center" gap="10px">
-                      <EventIcon />
-                      <Typography color="white" variant="subtitleLB">
-                        Events
-                      </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" gap="10px">
-                      <Typography color="white" variant="bodyB">
-                        View All Events
-                      </Typography>
-                      <RightArrowCircleIcon />
-                    </Box>
-                  </Box>
-                  <Typography
+                  <Box
                     sx={{
                       position: 'sticky',
                       top: 60,
+                      display: 'flex',
+                      flexDirection: 'column'
                     }}
-                    color="white"
-                    border="1px solid #383838"
-                    align="center"
-                    paddingY="8px"
-                    borderRadius="40px"
-                    variant="subtitleS"
-                    bgcolor='rgba(34, 34, 34, 0.8)'
                   >
-                    October 2023
-                  </Typography>
+                    <Box display="flex" justifyContent="space-between">
+                      <Box display="flex" alignItems="center" gap="10px">
+                        <EventIcon />
+                        <Typography color="white" variant="subtitleLB">
+                          Events
+                        </Typography>
+                      </Box>
+                      <Link
+                        href={"/events"}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          textDecoration: 'blink'
+                        }}
+                      >
+                        <Box display="flex" alignItems="center" gap="10px">
+                          <Typography color="white" variant="bodyB">
+                            View All Events
+                          </Typography>
+                          <RightArrowCircleIcon />
+                        </Box>
+                      </Link>
+                    </Box>
+                    <Typography
+                      width={'100%'}
+                      color="white"
+                      border="1px solid #383838"
+                      align="center"
+                      paddingY="8px"
+                      borderRadius="40px"
+                      variant="subtitleS"
+                      bgcolor='rgba(34, 34, 34, 0.8)'
+                    >
+                      October 2023
+                    </Typography>
+                  </Box>
                   <Box>
                     {/* <EventCard />
                     <EventCard />
@@ -283,57 +318,63 @@ const Home: React.FC = () => {
                     }
                   </Box>
                 </Box>
-                {!isTablet && (
-                  <Box
-                    width="360px"
-                    display="flex"
-                    flexDirection="column"
-                    gap="20px"
-                  >
-                    <Typography
-                      color="white"
-                      variant="subtitleS"
-                      padding="20px 10px"
-                      borderBottom="1px solid #383838"
-                    >
-                      Sort & Filter Sessions
-                    </Typography>
+                <Box>
+                  {!isTablet && (
                     <Box
+                      width="360px"
                       display="flex"
-                      gap="4px"
-                      padding="2px"
-                      borderRadius="10px"
-                      bgcolor="#2d2d2d"
+                      flexDirection="column"
+                      gap="20px"
+                      sx={{
+                        position: 'sticky',
+                        top: 60,
+                      }}
                     >
-                      <Button
-                        sx={{
-                          flex: 1,
-                          backgroundColor: '#424242',
-                          borderRadius: '8px',
-                          color: 'white',
-                          fontFamily: 'Inter',
-                        }}
+                      <Typography
+                        color="white"
+                        variant="subtitleS"
+                        padding="20px 10px"
+                        borderBottom="1px solid #383838"
                       >
-                        Upcoming
-                      </Button>
-                      <Button
-                        sx={{
-                          flex: 1,
-                          backgroundColor: '#2d2d2d',
-                          borderRadius: '8px',
-                          color: 'white',
-                          fontFamily: 'Inter',
-                        }}
+                        Sort & Filter Events
+                      </Typography>
+                      <Box
+                        display="flex"
+                        gap="4px"
+                        padding="2px"
+                        borderRadius="10px"
+                        bgcolor="#2d2d2d"
                       >
-                        Past
-                      </Button>
-                    </Box>
-                    <Box>
+                        <Button
+                          sx={{
+                            flex: 1,
+                            backgroundColor: '#424242',
+                            borderRadius: '8px',
+                            color: 'white',
+                            fontFamily: 'Inter',
+                          }}
+                        >
+                          Upcoming
+                        </Button>
+                        <Button
+                          sx={{
+                            flex: 1,
+                            backgroundColor: '#2d2d2d',
+                            borderRadius: '8px',
+                            color: 'white',
+                            fontFamily: 'Inter',
+                          }}
+                        >
+                          Past
+                        </Button>
+                      </Box>
+                      <Box>
 
-                      <ZuCalendar defaultValue={dayjs('2022-04-17')} />
+                        <ZuCalendar defaultValue={dayjs((new Date()).toLocaleDateString('en-CA', {year: 'numeric', month: '2-digit', day: '2-digit'}))} />
+                      </Box>
                     </Box>
-                  </Box>
-                )}
+                  )}
+                </Box>
               </Box>
             </Box>
           </Box>

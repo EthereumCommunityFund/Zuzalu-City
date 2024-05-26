@@ -2,6 +2,8 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar"
 import { styled } from "@mui/material"
 
 const ZuCalendar = styled(DateCalendar)({
+  backgroundColor: '#424242',
+  borderRadius: '6px',
   '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin':
   {
     fontFamily: 'Inter',
