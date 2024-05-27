@@ -2,9 +2,13 @@
 
 import { Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { TextButton } from './Button';
 
-export default function SpaceEditSidebar() {
+interface SidebarProps {
+  tabName: string;
+  setTabName: (value: string | ((prevVar: string) => string)) => void;
+}
+
+const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
   const theme = useTheme();
 
   return (
@@ -37,10 +41,10 @@ export default function SpaceEditSidebar() {
           borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
         }}
       >
-        <Typography textTransform={'uppercase'} fontSize={'10px'}>
+        <Typography textTransform='uppercase' variant='caption'>
           General
         </Typography>
-        <TextButton content="space overview" />
+        <Typography variant='bodySB' sx={{ cursor: 'pointer' }} onClick={() => setTabName('Overview')}>Space Overview</Typography>
       </Stack>
       <Stack
         sx={{
@@ -55,8 +59,10 @@ export default function SpaceEditSidebar() {
         <Typography fontSize={'10px'} textTransform={'uppercase'}>
           Member Management
         </Typography>
-        <TextButton content="invites" />
+        <Typography variant='bodySB' sx={{ cursor: 'pointer' }} onClick={() => setTabName('Invite')}>Invite</Typography>
       </Stack>
     </Stack>
   );
 }
+
+export default SpaceEditSidebar;

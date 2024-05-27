@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
-import { Input, Stack, Typography, Box } from '@mui/material';
+import { Stack, Typography, Box } from '@mui/material';
 import { ZuButton, ZuInput } from '@/components/core';
 import { PlusCircleIcon, XCricleIcon } from '@/components/icons';
 
-const Home = () => {
+const Invite = () => {
   return (
     <Stack direction="row" justifyContent="center">
       <Stack spacing="30px" padding="20px 30px" width="700px">
@@ -135,4 +135,4 @@ const Home = () => {
   )
 }
 
-export default Home;
+export default Invite;
