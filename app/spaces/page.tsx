@@ -37,11 +37,12 @@ interface SpaceData {
 
 const Home = () => {
   const theme = useTheme();
-  const [selected, setSelected] = useState("Spaces")
+  const [selected, setSelected] = useState('Spaces');
   const [spaces, setSpaces] = useState<Space[]>([]);
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-
-  const {
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
+  /*const {
     ceramic,
     composeClient,
     isAuthenticated,
@@ -54,7 +55,7 @@ const Home = () => {
     profile,
     username,
     createProfile,
-  } = useCeramicContext();
+  } = useCeramicContext();*/
   const getSpaces = async () => {
     console.log('Fetching spaces...');
     try {
@@ -132,7 +133,8 @@ const Home = () => {
                 logoImage={item.avatar ? item.avatar : '/1.webp'}
                 bgImage={item.banner ? item.banner : '/5.webp'}
                 title={item.name}
-                description={item.description} />
+                description={item.description}
+              />
             </Grid>
           ))}
         </Grid>

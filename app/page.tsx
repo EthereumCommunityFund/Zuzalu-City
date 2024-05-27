@@ -25,7 +25,7 @@ import { MOCK_DATA } from 'mock';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 //import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
-import AuthPrompt from '@/components/AuthPrompt';
+//import AuthPrompt from '@/components/AuthPrompt';
 import { Event, EventData, Space, SpaceData } from '@/types';
 const queryClient = new QueryClient();
 
@@ -158,7 +158,7 @@ const Home: React.FC = () => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
         <Header />
-        <AuthPrompt />
+        {/*<AuthPrompt />*/}
         <Box display="grid" gridTemplateColumns={'auto 1fr'}>
           {!isTablet && <Sidebar selected="Home" />}
           <Box

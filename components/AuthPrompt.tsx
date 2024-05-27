@@ -1,4 +1,4 @@
-import React, {
+/* import React, {
   useState,
   useEffect,
   Fragment,
@@ -59,7 +59,8 @@ const AuthPrompt: React.FC<{}> = () => {
     username,
     createProfile,
   } = useCeramicContext();
-  //const { ceramic, composeClient } = clients;
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
   const [authState, setAuthState] = useState('');
   const isLogged = () => {
     return localStorage.getItem('logged_in') == 'true';
@@ -76,22 +77,22 @@ const AuthPrompt: React.FC<{}> = () => {
   const [isLoading, setIsLoading] = useState(true);
   const handleKeyDid = () => {
     localStorage.setItem('ceramic:auth_type', 'key');
-    authenticate;
+    //authenticate;
     setIsVisible(false);
   };
 
-  /*const handleConnectWallet = () => {
+  const handleConnectWallet = () => {
     if (isConnected) {
       setAuthState('NEW_USER');
     }
-  };*/
+  };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputUsername(newValue);
   };
   const handleEthPkh = () => {
     localStorage.setItem('ceramic:auth_type', 'eth');
-    authenticate;
+    //authenticate;
     setIsVisible(false);
   };
 
@@ -103,13 +104,13 @@ const AuthPrompt: React.FC<{}> = () => {
           message: 'Sign in or register a new account',
           actions: [
             <Fragment key="connectButton">
-              {/*<ConnectButton
+              <ConnectButton
                 key="connect"
                 showBalance={{
                   smallScreen: false,
                   largeScreen: false,
                 }}
-              />*/}
+              />
             </Fragment>,
           ],
         };
@@ -154,11 +155,11 @@ const AuthPrompt: React.FC<{}> = () => {
               >
                 <Button
                   onClick={() => {
-                    /*if (address) {
+                    if (address) {
                       createProfile(
                         (ensName || address.slice(0, 10)) as string,
                       );
-                    }*/
+                    }
                     setAuthState('Logged_In');
                   }}
                   variant="outlined"
@@ -171,7 +172,7 @@ const AuthPrompt: React.FC<{}> = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    createProfile(inputUsername);
+                    //createProfile(inputUsername);
                     setAuthState('Logged_In');
                   }}
                   sx={{
@@ -222,8 +223,6 @@ const AuthPrompt: React.FC<{}> = () => {
     inputUsername,
     setInputUsername,
   ]);
-  const clients = useCeramicContext();
-  const { ceramic, composeClient } = clients;
   const handleLogin = useCallback(async () => {
     const accounts = await authenticateCeramic(ceramic, composeClient);
     if (accounts) {
@@ -247,7 +246,7 @@ const AuthPrompt: React.FC<{}> = () => {
     }
   }, [handleLogin]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     const checkUserState = async () => {
       if (isConnected) {
         try {
@@ -267,7 +266,7 @@ const AuthPrompt: React.FC<{}> = () => {
       }
     };
     checkUserState();
-  }, [isConnected, newUser]);*/
+  }, [isConnected, newUser]);
 
   const content = getDialogContent();
   if (content) {
@@ -326,7 +325,6 @@ const AuthPrompt: React.FC<{}> = () => {
             style={{ justifyContent: 'center', width: '100%', padding: 0 }}
           >
             {' '}
-            {/* Center align actions */}
             {actions}
           </DialogActions>
         </Dialog>
@@ -338,3 +336,4 @@ const AuthPrompt: React.FC<{}> = () => {
 };
 
 export default AuthPrompt;
+ */

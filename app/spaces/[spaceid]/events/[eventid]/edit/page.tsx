@@ -35,10 +35,11 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 const Home = () => {
   const params = useParams();
   const spaceId = params.spaceid.toString();
-  console.log("spaceID", spaceId)
+  console.log('spaceID', spaceId);
 
   const connector = createConnector('NFT.storage', {
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+    token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
   });
 
   const [state, setState] = useState({
@@ -49,7 +50,9 @@ const Home = () => {
   });
 
   const [events, setEvents] = useState<Event[]>([]);
-  const {
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
+  /*const {
     ceramic,
     composeClient,
     isAuthenticated,
@@ -62,7 +65,7 @@ const Home = () => {
     profile,
     username,
     createProfile,
-  } = useCeramicContext();
+  } = useCeramicContext();*/
 
   const getEvents = async () => {
     console.log('Fetching events...');
@@ -100,7 +103,7 @@ const Home = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        setEvents(fetchedEvents.filter(event => event.spaceId === spaceId));
+        setEvents(fetchedEvents.filter((event) => event.spaceId === spaceId));
         console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -120,7 +123,6 @@ const Home = () => {
     };
     fetchData();
   }, []);
-
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -144,7 +146,7 @@ const Home = () => {
 
       setInputs((prevInputs) => ({
         ...prevInputs,
-        [name]: value
+        [name]: value,
       }));
     };
 
@@ -153,7 +155,13 @@ const Home = () => {
     };
 
     const createEvent = async () => {
-      console.log("proid", profile?.id, inputs.name, startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'), endTime)
+      /*console.log(
+        'proid',
+        profile?.id,
+        inputs.name,
+        startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+        endTime,
+      );
       const update = await composeClient.executeQuery(`
       mutation MyMutation {
         createEvent(
@@ -190,9 +198,9 @@ const Home = () => {
         }
       }
       `);
-      console.log(update)
+      console.log(update);
       toggleDrawer('right', false);
-      await getEvents();
+      await getEvents();*/
     };
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -407,11 +415,14 @@ const Home = () => {
                       Upload
                     </Button>
                   </Uploader3>
-                  <PreviewFile sx={{
-                    'width': '150px',
-                    'height': '150px',
-                    'borderRadius': '75px'
-                  }} file={avatar} />
+                  <PreviewFile
+                    sx={{
+                      width: '150px',
+                      height: '150px',
+                      borderRadius: '75px',
+                    }}
+                    file={avatar}
+                  />
                 </Box>
                 <Box
                   display="flex"
@@ -437,19 +448,23 @@ const Home = () => {
                           color: 'white',
                         },
                         '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none'
-                        }
+                          border: 'none',
+                        },
                       }}
                       slotProps={{
                         popper: {
                           sx: {
                             ...{
                               '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': { backgroundColor: '#D7FFC4' },
-                              '& .MuiPickersCalendarHeader-root': { color: 'black' }
-                            }
-                          }
-                        }
+                              '& .MuiPickersDay-root.Mui-selected': {
+                                backgroundColor: '#D7FFC4',
+                              },
+                              '& .MuiPickersCalendarHeader-root': {
+                                color: 'black',
+                              },
+                            },
+                          },
+                        },
                       }}
                     />
                   </Box>
@@ -469,19 +484,23 @@ const Home = () => {
                           color: 'white',
                         },
                         '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none'
-                        }
+                          border: 'none',
+                        },
                       }}
                       slotProps={{
                         popper: {
                           sx: {
                             ...{
                               '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': { backgroundColor: '#D7FFC4' },
-                              '& .MuiPickersCalendarHeader-root': { color: 'black' }
-                            }
-                          }
-                        }
+                              '& .MuiPickersDay-root.Mui-selected': {
+                                backgroundColor: '#D7FFC4',
+                              },
+                              '& .MuiPickersCalendarHeader-root': {
+                                color: 'black',
+                              },
+                            },
+                          },
+                        },
                       }}
                     />
                   </Box>

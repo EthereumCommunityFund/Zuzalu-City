@@ -14,10 +14,12 @@ const Home = () => {
   const router = useRouter();
   const params = useParams();
   const spaceId = params.spaceid.toString();
-  console.log("spaceID", spaceId)
+  console.log('spaceID', spaceId);
 
   const [events, setEvents] = useState<Event[]>([]);
-  const {
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
+  /*const {
     ceramic,
     composeClient,
     isAuthenticated,
@@ -30,7 +32,7 @@ const Home = () => {
     profile,
     username,
     createProfile,
-  } = useCeramicContext();
+  } = useCeramicContext();*/
 
   const getEvents = async () => {
     console.log('Fetching events...');
@@ -68,8 +70,11 @@ const Home = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        console.log("filter", fetchedEvents.filter(event => event.spaceId === spaceId))
-        setEvents(fetchedEvents.filter(event => event.spaceId === spaceId));
+        console.log(
+          'filter',
+          fetchedEvents.filter((event) => event.spaceId === spaceId),
+        );
+        setEvents(fetchedEvents.filter((event) => event.spaceId === spaceId));
         console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -152,11 +157,13 @@ const Home = () => {
           </Typography>
         </Stack>
         <Stack paddingX={20}>
-          {
-            events.map((event, index) => (
-              <EventCard key={`EventCard-${index}`} name={event.title} description={event.description} />
-            ))
-          }
+          {events.map((event, index) => (
+            <EventCard
+              key={`EventCard-${index}`}
+              name={event.title}
+              description={event.description}
+            />
+          ))}
           {/* <EventCard {...MOCK_DATA.events[0]} />
           <ZuButton startIcon={<CalendarIcon />}>Eth Imrpov</ZuButton>
           <EventCard {...MOCK_DATA.events[1]} />
