@@ -21,7 +21,7 @@ type Profile = {
   id?: any;
   username?: string | undefined;
 };
-interface CeramicContextType {
+/*interface CeramicContextType {
   ceramic: CeramicClient;
   composeClient: ComposeClient;
   isAuthenticated: boolean;
@@ -49,9 +49,16 @@ const CeramicContext = createContext<CeramicContextType>({
   showAuthPrompt: () => {},
   hideAuthPrompt: () => {},
   createProfile: async (newName: string) => {},
-});
-
-export const CeramicProvider = ({ children }: any) => {
+});*/
+export const CeramicContext = createContext({ceramic: ceramic, composeClient: composeClient});
+export const CeramicWrapper = ({ children }: any) => {
+  return (
+    <CeramicContext.Provider value={{ceramic, composeClient}}>
+      {children}
+    </CeramicContext.Provider>
+  );
+};
+/*export const CeramicProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
   const [username, setUsername] = useState<string | undefined>(undefined);
@@ -173,5 +180,5 @@ export const CeramicProvider = ({ children }: any) => {
   );
 };
 
-export default CeramicContext;
+export default CeramicContext;*/
 export const useCeramicContext = () => useContext(CeramicContext);

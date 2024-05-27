@@ -26,15 +26,17 @@ const Header = () => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const {
+  /*const {
     ceramic,
     composeClient,
     isAuthenticated,
     showAuthPrompt,
     logout,
     username,
-  } = useCeramicContext();
+  } = useCeramicContext();*/
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
   const handleLogin = useCallback(async () => {
     const accounts = await authenticateCeramic(ceramic, composeClient);
     return accounts;
@@ -48,7 +50,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    logout();
+    //logout();
     handleMenuClose();
   };
   const handleProfile = () => {
@@ -123,7 +125,7 @@ const Header = () => {
           />
         </FormControl>
       )}
-      {isAuthenticated ? (
+      {/*isAuthenticated ? (
         <>
           <Button
             sx={{
@@ -200,7 +202,29 @@ const Header = () => {
         >
           Connect
         </Button>
-      )}
+      )*/}
+      <Button
+        sx={{
+          textAlign: 'center',
+          color: 'white',
+          fontSize: 16,
+          fontFamily: 'Inter',
+          fontWeight: 600,
+          lineHeight: '19.2px',
+          wordWrap: 'break-word',
+          background: 'rgba(255, 255, 255, 0.05)',
+          '&:hover': {
+            background: 'rgba(255, 255, 255, 0.05)',
+            boxShadow: 'none',
+          },
+        }}
+        onClick={async () => {
+          await handleLogin();
+          window.location.href = '/';
+        }}
+      >
+        Connect
+      </Button>
     </Box>
   );
 };

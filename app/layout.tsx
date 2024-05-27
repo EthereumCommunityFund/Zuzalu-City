@@ -6,7 +6,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from 'theme/theme';
 //import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { CeramicProvider } from '../context/CeramicContext';
+import { CeramicWrapper } from '../context/CeramicContext';
 const queryClient = new QueryClient();
 
 // export const metadata: Metadata = {
@@ -25,7 +25,7 @@ function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
-              <CeramicProvider>{children}</CeramicProvider>
+              <CeramicWrapper>{children}</CeramicWrapper>
             </QueryClientProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>

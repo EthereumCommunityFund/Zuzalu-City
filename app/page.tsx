@@ -23,7 +23,7 @@ import dayjs from 'dayjs';
 import { MOCK_DATA } from 'mock';
 //import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { CeramicProvider } from '../context/CeramicContext';
+//import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
 import { Event, EventData, Space, SpaceData } from '@/types';
@@ -35,7 +35,7 @@ const Home: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const {
+  /*const {
     ceramic,
     composeClient,
     isAuthenticated,
@@ -48,7 +48,9 @@ const Home: React.FC = () => {
     profile,
     username,
     createProfile,
-  } = useCeramicContext();
+  } = useCeramicContext();*/
+  const clients = useCeramicContext();
+  const { ceramic, composeClient } = clients;
 
   const getSpaces = async () => {
     console.log('Fetching spaces...');
