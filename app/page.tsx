@@ -146,10 +146,21 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log(selectedDate?.toISOString())
     const fetchData = async () => {
       try {
         await getSpaces();
+        await getEvents(isPast);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
+
+  }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
         await getEvents(isPast);
       } catch (error) {
         console.error('An error occurred:', error);
