@@ -26,7 +26,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
-              <CeramicWrapper>{children}</CeramicWrapper>
+              {children}
             </QueryClientProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
