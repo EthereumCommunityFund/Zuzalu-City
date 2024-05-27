@@ -95,8 +95,8 @@ const Overview = () => {
 
   return (
     <Stack
-      spacing='20px'
-      padding='40px'
+      spacing="20px"
+      padding="40px"
       sx={{
         width: 'calc(100% - 420px)',
         [theme.breakpoints.down('md')]: {

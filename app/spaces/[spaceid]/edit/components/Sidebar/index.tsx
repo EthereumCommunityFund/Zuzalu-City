@@ -13,10 +13,10 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
 
   return (
     <Stack
-      width='260px'
-      height='100vh'
-      padding='20px 0 0 20px'
-      spacing='10px'
+      width="260px"
+      height="100vh"
+      padding="20px 0 0 20px"
+      spacing="10px"
       sx={{
         borderRight: '1px solid rgba(255, 255, 255, 0.10)',
         [theme.breakpoints.down('md')]: {
@@ -25,7 +25,7 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
       }}
     >
       <Stack
-        spacing='10px'
+        spacing="10px"
         sx={{
           paddingBottom: '20px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
@@ -48,7 +48,7 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
         </Typography>
       </Stack>
       <Stack
-        spacing='10px'
+        spacing="10px"
         sx={{
           paddingBottom: '20px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
@@ -70,9 +70,7 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
           Invite
         </Typography>
       </Stack>
-      <Stack
-        spacing='10px'
-      >
+      <Stack spacing="10px">
         <Typography fontSize={'10px'} textTransform={'uppercase'}>
           Apps
         </Typography>

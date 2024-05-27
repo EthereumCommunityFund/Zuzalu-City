@@ -14,6 +14,7 @@ export const PostAnnouncementModal = ({
   setShowModal,
 }: ModalProps) => {
   const [selectedTab, setSelectedTab] = useState('post');
+  const [editor, setEditorInst] = useState<any>();
 
   const tabList = [
     {
@@ -121,6 +122,8 @@ export const PostAnnouncementModal = ({
                 height: '155px',
                 overflow: 'auto',
               }}
+              editor={editor}
+              setEditorInst={setEditorInst}
             />
           </Stack>
           <Stack

@@ -11,12 +11,13 @@ interface IMember {
   id: string;
   mvpProfile?: {
     username: string;
-  }
+  };
 }
 
 const Invite = () => {
   const params = useParams();
-  const { composeClient, isAuthenticated, ceramic, profile } = useCeramicContext();
+  const { composeClient, isAuthenticated, ceramic, profile } =
+    useCeramicContext();
   const [initial, setInitial] = useState<string>('');
   const [extra, setExtra] = useState<string[]>([]);
   // const [space, setSpace] = useState<ISpace>({
@@ -45,13 +46,16 @@ const Invite = () => {
       `);
 
       if ('spaceIndex' in response.data) {
-        const fetchedSpaces = response.data.spaceIndex.edges.map((item: any) => item.node);
-        const editSpace = fetchedSpaces.filter((item: any) => item.id === params.spaceid.toString());
+        const fetchedSpaces = response.data.spaceIndex.edges.map(
+          (item: any) => item.node,
+        );
+        const editSpace = fetchedSpaces.filter(
+          (item: any) => item.id === params.spaceid.toString(),
+        );
         // setSpace(editSpace);
         console.log('Spaces fetched:', editSpace);
         console.log('Spaces fetched:', editSpace[0].members);
         setMembers(editSpace[0].members);
-
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -72,8 +76,7 @@ const Invite = () => {
   }, []);
 
   const updateSpace = async () => {
-    if (!isAuthenticated)
-      return;
+    if (!isAuthenticated) return;
     try {
       const update = await composeClient.executeQuery(`
         mutation {
@@ -81,7 +84,7 @@ const Invite = () => {
             input: {
               id: "${params.spaceid.toString()}",
               content: {
-                members: "${"did:pkh:eip155:1:" + initial}"
+                members: "${'did:pkh:eip155:1:' + initial}"
               }
             }
           ) {
@@ -95,12 +98,12 @@ const Invite = () => {
             }
           }
         }
-      `)
-      console.log("members", update);
+      `);
+      console.log('members', update);
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   return (
     <Stack spacing="30px" padding="40px" width="700px">
@@ -109,7 +112,12 @@ const Invite = () => {
         Disclaimer: During beta, invites will only have one role i.e. admin.
         Admins will have access to all management functions for this event.
       </Typography>
-      <Stack padding="20px" spacing="30px" borderRadius='10px' bgcolor='#262626'>
+      <Stack
+        padding="20px"
+        spacing="30px"
+        borderRadius="10px"
+        bgcolor="#262626"
+      >
         <Stack spacing="10px">
           <>
             <Typography variant="bodyBB">Input Address</Typography>
@@ -202,9 +210,14 @@ const Invite = () => {
         </Stack>
         <Stack spacing="10px">
           <Typography variant="bodySB">Members</Typography>
-          {
-            members.length > 0 && members.map((member: IMember, index: number) => (
-              <Stack direction="row" alignItems="center" spacing="10px">
+          {members.length > 0 &&
+            members.map((member: IMember, index: number) => (
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing="10px"
+                key={`member-${index}`}
+              >
                 <Box
                   component="img"
                   width="24px"
@@ -232,8 +245,7 @@ const Invite = () => {
                   Remove
                 </ZuButton>
               </Stack>
-            ))
-          }
+            ))}
         </Stack>
       </Stack>
     </Stack>
