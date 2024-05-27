@@ -6,6 +6,7 @@ import { Header } from './components';
 import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
+
 import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';

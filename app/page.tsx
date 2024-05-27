@@ -24,7 +24,8 @@ import { MOCK_DATA } from 'mock';
 //import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 //import { CeramicProvider } from '../context/CeramicContext';
-import { useCeramicContext } from '../context/CeramicContext';
+import { useCeramicContext } from '@/context/CeramicContext';
+
 //import AuthPrompt from '@/components/AuthPrompt';
 import { Event, EventData, Space, SpaceData } from '@/types';
 const queryClient = new QueryClient();

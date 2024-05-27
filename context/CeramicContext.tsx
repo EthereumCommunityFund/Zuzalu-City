@@ -4,7 +4,7 @@ import { ComposeClient } from '@composedb/client';
 import { RuntimeCompositeDefinition } from '@composedb/types';
 import { definition } from '../composites/definition.js';
 import React from 'react';
-import { authenticateCeramic } from '../utils/ceramicAuth';
+import { authenticateCeramic } from '../utils/ceramicAuth.js';
 /**
  * Configure ceramic Client & create context.
  */
@@ -12,9 +12,9 @@ const ceramicUrl =
   process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
 console.log('ceramic url', ceramicUrl);
 
-const ceramic = new CeramicClient("https://zuzalu-city-dev.com");
+const ceramic = new CeramicClient('https://zuzalu-city-dev.com');
 const composeClient = new ComposeClient({
-  ceramic: "https://zuzalu-city-dev.com",
+  ceramic: new CeramicClient('https://zuzalu-city-dev.com'),
   definition: definition as RuntimeCompositeDefinition,
 });
 type Profile = {
@@ -50,14 +50,18 @@ const CeramicContext = createContext<CeramicContextType>({
   hideAuthPrompt: () => {},
   createProfile: async (newName: string) => {},
 });*/
-export const CeramicContext = createContext({ceramic: ceramic, composeClient: composeClient});
-export const CeramicWrapper = ({ children }: any) => {
+export const CeramicContext = createContext({
+  ceramic: ceramic,
+  composeClient: composeClient,
+});
+export const CeramicWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <CeramicContext.Provider value={{ceramic, composeClient}}>
+    <CeramicContext.Provider value={{ ceramic, composeClient }}>
       {children}
     </CeramicContext.Provider>
   );
 };
+export const useCeramicContext = () => useContext(CeramicContext);
 /*export const CeramicProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
@@ -181,4 +185,3 @@ export const CeramicWrapper = ({ children }: any) => {
 };
 
 export default CeramicContext;*/
-export const useCeramicContext = () => useContext(CeramicContext);
