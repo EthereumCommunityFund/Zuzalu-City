@@ -7,21 +7,20 @@ import { Box, BoxProps } from '@mui/material';
 interface TextEditorPropTypes extends BoxProps {
   value?: OutputData;
   placeholder?: string;
-  setData?: (value: OutputData) => void;
+  editor: any;
+  setEditorInst?: (editor: any) => void;
   holder: string;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
   value,
-  setData = (value: OutputData) => {
-    console.log(value);
-  },
+  editor,
+  setEditorInst = (editor: any) => { },
   holder = 'editorjs',
   children,
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
-  console.log('value', value);
 
   useEffect(() => {
     if (!ref.current) {
@@ -29,13 +28,10 @@ const TextEditor: FC<TextEditorPropTypes> = ({
         holder: holder,
         tools,
         data: value,
-        async onChange(api, event) {
-          const data = await api.saver.save();
-          setData(data);
-        },
       });
 
       ref.current = editor;
+      setEditorInst(editor);
     }
 
     return () => {
@@ -44,6 +40,10 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       }
     };
   }, []);
+
+  useEffect(() => {
+    editor?.render(value);
+  }, [value])
 
   return (
     <Fragment>

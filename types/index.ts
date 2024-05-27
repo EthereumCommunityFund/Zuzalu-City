@@ -40,7 +40,7 @@ export interface Space {
   description: string;
   name: string;
   profileId?: string;
-  tagline?: string;
+  tagline: string;
   website?: string;
   twitter?: string;
   telegram?: string;

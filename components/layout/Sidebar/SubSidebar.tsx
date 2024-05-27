@@ -12,7 +12,7 @@ import {
   TableIcon
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
-import { Stack, Typography, Box } from '@mui/material';
+import { Stack, Typography, Box, Popover } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 
@@ -24,22 +24,19 @@ interface SubSidebarProps {
 const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
   const theme = useTheme();
   const router = useRouter();
-  const [isMenu, setIsMenu] = useState<boolean>(false);
+  const [isMenu, setIsMenu] = useState<boolean>(true);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLDivElement | null>(null);
 
-  const buttonList = [
-    {
-      content: 'Home',
-      icon: <HomeIcon />,
-    },
-    {
-      content: 'Announcements',
-      icon: <AnnouncementsIcon />,
-    },
-    {
-      content: 'Events',
-      icon: <TableIcon />,
-    },
-  ];
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <Stack
@@ -67,7 +64,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
           boxSizing: 'border-box',
         }}
       >
-        <Stack spacing="10px" onMouseLeave={() => setIsMenu(false)}>
+        <Stack spacing="10px" onMouseLeave={handleClose}>
           <Stack
             bgcolor="#525554"
             borderRadius="10px"
@@ -81,7 +78,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
               backdropFilter: 'blur(10px)',
               '&:hover': { backgroundColor: '#6f7672' },
             }}
-            onClick={() => setIsMenu(true)}
+            onClick={handleClick}
           >
             <Box
               component="img"
@@ -100,12 +97,24 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             </Typography>
             <ArrowDownIcon size={5} />
           </Stack>
-          {isMenu && (
+          <Popover
+            sx={{ width: '100%' }}
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left'
+            }}
+          >
             <Stack
               spacing="10px"
               padding="5px"
               border="1px solid #383838"
-              borderRadius="10px"
+              borderRadius="5px"
+              bgcolor="black"
+              color="white"
             >
               <Stack
                 onClick={() => router.push(`/spaces/${spaceId}/edit/invite`)}
@@ -180,7 +189,9 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
                 <NotificationIcon size={5} />
               </Stack>
             </Stack>
-          )}
+          </Popover>
+          {/* {isMenu && (
+          )} */}
         </Stack>
         {/* <SidebarButton
           content="Exit Space"

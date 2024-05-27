@@ -1,12 +1,10 @@
 'use client';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Box, Input, Stack, Typography, Button } from '@mui/material';
+import { Box, Stack, Typography, Button, useTheme } from '@mui/material';
 import SpaceEditSidebar from './components/Sidebar';
-import { useState } from 'react';
-import { useTheme } from '@mui/material/styles';
+import { ZuInput } from '@/components/core';
 import TextEditor from 'components/editor/editor';
-import Image from 'next/image';
 import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -22,11 +20,9 @@ export default function SpaceEditPage() {
     token: process.env.CONNECTOR_TOKEN ?? '',
   });
 
-  const [isOnInput, setIsOnInput] = useState(false);
-  const [isOnTextArea, setIsOnTextArea] = useState(false);
-  const [file, setFile] = useState<SelectedFile>();
   const [space, setSpace] = useState<Space>();
-  const [avatar, setAvatar] = useState<SelectedFile>();
+  const [name, setName] = useState<string>('');
+  const [tagline, setTagline] = useState<string>('');
   const [avatarURL, setAvatarURL] = useState<string | undefined>(
     space ? space.avatar : '',
   );
@@ -34,6 +30,7 @@ export default function SpaceEditPage() {
     space ? space.banner : '',
   );
   const [description, setDescription] = useState<OutputData>();
+  const [editor, setEditorInst] = useState<any>();
 
   const getSpace = async () => {
     console.log('Fetching spaces...');
@@ -73,9 +70,11 @@ export default function SpaceEditPage() {
           (space) => space.id === params.spaceid.toString(),
         )[0];
         setSpace(editSpace);
+        setName(editSpace.name);
         setDescription(
           JSON.parse(editSpace.description.replaceAll('\\"', '"')),
         );
+        setTagline(editSpace.tagline);
         console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -95,8 +94,6 @@ export default function SpaceEditPage() {
     };
     fetchData();
   }, []);
-
-  console.log('desc', description);
 
   const theme = useTheme();
 
@@ -160,31 +157,7 @@ export default function SpaceEditPage() {
               >
                 Space Name
               </Typography>
-              <input
-                onFocus={() => setIsOnInput(true)}
-                onBlur={() => setIsOnInput(false)}
-                style={{
-                  appearance: 'none',
-                  width: '100%',
-                  height: 'auto',
-                  outline: 'none',
-                  border: 'none',
-                  padding: '12px',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'rgb(255, 255, 255)',
-                  transitionProperty: 'box-shadow',
-                  transitionDuration: '3000',
-                  transitionTimingFunction: 'ease-in',
-                  boxShadow: isOnInput
-                    ? 'rgba(255, 255, 255, 0.2) 0px 0px 0px 2px inset'
-                    : 'rgba(255, 255, 255, 0.2) 0px 0px 0px 0px inset',
-                  boxSizing: 'border-box',
-                  marginBottom: '8px',
-                }}
-                value={space?.name}
-              ></input>
+              <ZuInput value={name} onChange={e => setName(e.target.value)} />
             </Stack>
             <Stack>
               <Typography
@@ -194,30 +167,12 @@ export default function SpaceEditPage() {
               >
                 Space Tagline
               </Typography>
-              <textarea
-                onFocus={() => setIsOnTextArea(true)}
-                onBlur={() => setIsOnTextArea(false)}
-                style={{
-                  appearance: 'none',
-                  width: '100%',
-                  height: 'auto',
-                  outline: 'none',
-                  border: 'none',
-                  padding: '12px',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'rgb(255, 255, 255)',
-                  transitionProperty: 'box-shadow',
-                  transitionDuration: '3000',
-                  transitionTimingFunction: 'ease-in',
-                  boxShadow: isOnTextArea
-                    ? 'rgba(255, 255, 255, 0.2) 0px 0px 0px 2px inset'
-                    : 'rgba(255, 255, 255, 0.2) 0px 0px 0px 0px inset',
-                  boxSizing: 'border-box',
-                  marginBottom: '8px',
-                }}
-              ></textarea>
+              <ZuInput
+                value={tagline}
+                onChange={e => setTagline(e.target.value)}
+                multiline
+                minRows={3}
+              />
               <Stack
                 sx={{
                   width: '100%',
@@ -236,7 +191,6 @@ export default function SpaceEditPage() {
               </Stack>
             </Stack>
           </Box>
-          <Box></Box>
         </Box>
         <Box
           sx={{
@@ -264,7 +218,8 @@ export default function SpaceEditPage() {
               borderRadius: '10px',
             }}
             value={description}
-            setData={setDescription}
+            editor={editor}
+            setEditorInst={setEditorInst}
           />
           <Stack
             sx={{
@@ -340,13 +295,6 @@ export default function SpaceEditPage() {
                 connector={connector}
                 multiple={false}
                 crop={false} // must be false when accept is svg
-                // onChange={(files) => {
-                //   setAvatar(files[0]);
-                // }}
-                // onUpload={(result: any) => {
-                //   console.log("upload", result);
-                //   setAvatar(result);
-                // }}
                 onComplete={(result: any) => {
                   console.log('complete', result);
                   setAvatarURL(result?.url);
@@ -400,13 +348,6 @@ export default function SpaceEditPage() {
                 connector={connector}
                 multiple={false}
                 crop={false} // must be false when accept is svg
-                // onChange={(files) => {
-                //   setAvatar(files[0]);
-                // }}
-                // onUpload={(result: any) => {
-                //   console.log("upload", result);
-                //   setAvatar(result);
-                // }}
                 onComplete={(result: any) => {
                   console.log('complete', result);
                   setBannerURL(result?.url);

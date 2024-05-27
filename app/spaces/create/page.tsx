@@ -42,6 +42,7 @@ const Home = () => {
   const [bannerURL, setBannerURL] = useState<string>();
   // const [description, setDescription] = useState<string>('');
   const [description, setDescription] = useState<OutputData>();
+  const [editor, setEditorInst] = useState<any>();
   const {
     ceramic,
     composeClient,
@@ -85,7 +86,8 @@ const Home = () => {
 
   const createSpace = async () => {
     if (!isAuthenticated) return;
-    let strDesc = JSON.stringify(description);
+    const output = await editor.save();
+    let strDesc = JSON.stringify(output);
     console.log('des', strDesc);
     strDesc = strDesc.replaceAll('"', '\\"');
     console.log('des', strDesc);
@@ -234,33 +236,11 @@ const Home = () => {
                   This is a description greeting for new members. You can also
                   update descriptions.
                 </Typography>
-                {/* <Input
-                  name='description'
-                  onChange={e => setDescription(e.target.value)}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#373737',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
-                  placeholder="Write a short, one-sentence description for your event"
-                /> */}
                 <TextEditor
                   holder="Space Description"
                   value={description}
-                  setData={setDescription}
+                  editor={editor}
+                  setEditorInst={setEditorInst}
                   placeholder="Write a short, one-sentence tagline for your event"
                   sx={{
                     backgroundColor: '#ffffff0d',

@@ -31,7 +31,36 @@ const Home = () => {
           </Stack>
           <Stack spacing="10px">
             <Typography variant="bodySB">
-              Space Admins
+              Pending Invites
+            </Typography>
+            <Stack spacing="10px">
+              <Stack direction="row" alignItems="center" spacing="10px">
+                <Box component="img" width="24px" height="24px" borderRadius="20px" src="/17.jpg" />
+                <Typography variant="bodyM" flex={2}>
+                  drivenfast
+                </Typography>
+                <Typography variant="bodyM" flex={1}>
+                  0x001234
+                </Typography>
+                <Typography variant="bodyM" flex={1}>
+                  Admin
+                </Typography>
+                <ZuButton
+                  startIcon={<XCricleIcon />}
+                  sx={{
+                    color: "#FF5E5E",
+                    borderRadius: "20px",
+                    backgroundColor: "rgba(235, 87, 87, 0.20)",
+                  }}
+                >
+                  Remove
+                </ZuButton>
+              </Stack>
+            </Stack>
+          </Stack>
+          <Stack spacing="10px">
+            <Typography variant="bodySB">
+              Members
             </Typography>
             <Stack direction="row" alignItems="center" spacing="10px">
               <Box component="img" width="24px" height="24px" borderRadius="20px" src="/17.jpg" />
@@ -98,35 +127,6 @@ const Home = () => {
               >
                 Remove
               </ZuButton>
-            </Stack>
-          </Stack>
-          <Stack spacing="10px">
-            <Typography variant="bodySB">
-              Pending Invites
-            </Typography>
-            <Stack spacing="10px">
-              <Stack direction="row" alignItems="center" spacing="10px">
-                <Box component="img" width="24px" height="24px" borderRadius="20px" src="/17.jpg" />
-                <Typography variant="bodyM" flex={2}>
-                  drivenfast
-                </Typography>
-                <Typography variant="bodyM" flex={1}>
-                  0x001234
-                </Typography>
-                <Typography variant="bodyM" flex={1}>
-                  Admin
-                </Typography>
-                <ZuButton
-                  startIcon={<XCricleIcon />}
-                  sx={{
-                    color: "#FF5E5E",
-                    borderRadius: "20px",
-                    backgroundColor: "rgba(235, 87, 87, 0.20)",
-                  }}
-                >
-                  Remove
-                </ZuButton>
-              </Stack>
             </Stack>
           </Stack>
         </Stack>

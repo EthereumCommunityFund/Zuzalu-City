@@ -3,9 +3,7 @@ import { useState, useEffect } from 'react';
 import { Stack, Grid, useTheme, useMediaQuery } from '@mui/material';
 import { Sidebar } from 'components/layout';
 import { SpaceHeader } from './components';
-// import { SpaceCard } from 'components';
 import { SpaceCard } from '@/components/cards';
-import { MOCK_DATA } from 'mock';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, SpaceData } from '@/types';
 
@@ -16,18 +14,7 @@ const Home = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   const {
-    ceramic,
     composeClient,
-    isAuthenticated,
-    authenticate,
-    logout,
-    showAuthPrompt,
-    hideAuthPrompt,
-    isAuthPromptVisible,
-    newUser,
-    profile,
-    username,
-    createProfile,
   } = useCeramicContext();
   const getSpaces = async () => {
     console.log('Fetching spaces...');
@@ -113,13 +100,13 @@ const Home = () => {
               >
                 <SpaceCard
                   id={item.id}
-                  logoImage={item.avatar ? item.avatar : '/1.webp'}
-                  bgImage={item.banner ? item.banner : '/5.webp'}
+                  logoImage={(item.avatar !== "undefined" && item.avatar && !item.avatar.includes("blob")) ? item.avatar : '/1.webp'}
+                  bgImage={(item.banner !== "undefined" && item.banner && !item.banner.includes("blob")) ? item.banner : '/5.webp'}
                   title={item.name}
                   description={
                     isValidJSON(item.description)
                       ? JSON.parse(item.description.replaceAll('\\"', '"'))
-                          .blocks[0].data.text
+                        .blocks[0].data.text
                       : item.description
                   }
                 />
