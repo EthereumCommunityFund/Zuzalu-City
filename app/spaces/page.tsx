@@ -13,9 +13,7 @@ const Home = () => {
   const [spaces, setSpaces] = useState<Space[]>([]);
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const {
-    composeClient,
-  } = useCeramicContext();
+  const { composeClient } = useCeramicContext();
   const getSpaces = async () => {
     console.log('Fetching spaces...');
     try {
@@ -100,13 +98,25 @@ const Home = () => {
               >
                 <SpaceCard
                   id={item.id}
-                  logoImage={(item.avatar !== "undefined" && item.avatar && !item.avatar.includes("blob")) ? item.avatar : '/1.webp'}
-                  bgImage={(item.banner !== "undefined" && item.banner && !item.banner.includes("blob")) ? item.banner : '/5.webp'}
+                  logoImage={
+                    item.avatar !== 'undefined' &&
+                    item.avatar &&
+                    !item.avatar.includes('blob')
+                      ? item.avatar
+                      : '/1.webp'
+                  }
+                  bgImage={
+                    item.banner !== 'undefined' &&
+                    item.banner &&
+                    !item.banner.includes('blob')
+                      ? item.banner
+                      : '/5.webp'
+                  }
                   title={item.name}
                   description={
                     isValidJSON(item.description)
                       ? JSON.parse(item.description.replaceAll('\\"', '"'))
-                        .blocks[0].data.text
+                          .blocks[0].data.text
                       : item.description
                   }
                 />

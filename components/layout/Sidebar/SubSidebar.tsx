@@ -9,7 +9,7 @@ import {
   UserPlusIcon,
   ShieldIcon,
   NotificationIcon,
-  TableIcon
+  TableIcon,
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
 import { Stack, Typography, Box, Popover } from '@mui/material';
@@ -105,7 +105,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             onClose={handleClose}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'left'
+              horizontal: 'left',
             }}
           >
             <Stack
@@ -261,11 +261,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
               ></SidebarButton>
             );
           })} */}
-          <SidebarButton
-            icon={<HomeIcon />}
-            content="Home"
-            isActive={false}
-          />
+          <SidebarButton icon={<HomeIcon />} content="Home" isActive={false} />
           <SidebarButton
             icon={<AnnouncementsIcon />}
             content="Announcements"

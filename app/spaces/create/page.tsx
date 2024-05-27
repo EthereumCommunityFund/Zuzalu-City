@@ -78,6 +78,7 @@ const Home = () => {
   };
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
+  console.log('admin', adminId);
   // const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
   //   const { value } = event.target;
 
@@ -88,9 +89,8 @@ const Home = () => {
     if (!isAuthenticated) return;
     const output = await editor.save();
     let strDesc = JSON.stringify(output);
-    console.log('des', strDesc);
+    console.log('admin', adminId);
     strDesc = strDesc.replaceAll('"', '\\"');
-    console.log('des', strDesc);
     try {
       const update = await composeClient.executeQuery(`
       mutation {

@@ -1,4 +1,4 @@
-import { styled, Input } from "@mui/material";
+import { styled, Input } from '@mui/material';
 
 const ZuInput = styled(Input)(({ theme }) => ({
   color: 'white',
@@ -16,7 +16,7 @@ const ZuInput = styled(Input)(({ theme }) => ({
   },
   '&:hover:not(.Mui-disabled, .Mui-error):before': {
     borderBottom: 'none',
-  }
-}))
+  },
+}));
 
 export default ZuInput;

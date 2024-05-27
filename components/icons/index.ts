@@ -89,5 +89,5 @@ export {
   UserPlusIcon,
   ShieldIcon,
   NotificationIcon,
-  XCricleIcon
+  XCricleIcon,
 };

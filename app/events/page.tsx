@@ -3,11 +3,7 @@ import React from 'react';
 import { Stack } from '@mui/material';
 
 const Home = () => {
-  return (
-    <Stack>
-
-    </Stack>
-  )
-}
+  return <Stack></Stack>;
+};
 
 export default Home;

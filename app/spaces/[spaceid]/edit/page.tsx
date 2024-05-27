@@ -17,15 +17,10 @@ export default function SpaceEditPage() {
         return <Overview />;
     }
   };
-  console.log("tab", tabName)
+  console.log('tab', tabName);
   return (
     <Stack
-      flexDirection='row'
-      spacing='20px'
-      justifyContent='center'
-      sx={{
-        width: 'calc(100% - 260px)',
-      }}
+      flexDirection="row"
     >
       <SpaceEditSidebar tabName={tabName} setTabName={setTabName} />
       {renderPage()}

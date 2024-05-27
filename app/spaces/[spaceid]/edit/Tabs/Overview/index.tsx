@@ -10,7 +10,6 @@ import { createConnector } from '@lxdao/uploader3-connector';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, SpaceData } from '@/types';
 
-
 const Overview = () => {
   const theme = useTheme();
   const params = useParams();
@@ -18,7 +17,6 @@ const Overview = () => {
     token: process.env.CONNECTOR_TOKEN ?? '',
   });
   const { composeClient } = useCeramicContext();
-
 
   const [space, setSpace] = useState<Space>();
   const [name, setName] = useState<string>('');
@@ -96,20 +94,14 @@ const Overview = () => {
   }, []);
 
   return (
-    <Box
+    <Stack
+      spacing='20px'
+      padding='40px'
       sx={{
-        maxWidth: '890px',
-        width: 'calc(100% - 280px)',
+        width: 'calc(100% - 420px)',
         [theme.breakpoints.down('md')]: {
           width: '100%',
         },
-        padding: '20px',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        flexWrap: 'wrap',
-        borderRadius: '10px',
       }}
     >
       <Box
@@ -141,7 +133,7 @@ const Overview = () => {
             >
               Space Name
             </Typography>
-            <ZuInput value={name} onChange={e => setName(e.target.value)} />
+            <ZuInput value={name} onChange={(e) => setName(e.target.value)} />
           </Stack>
           <Stack>
             <Typography
@@ -153,7 +145,7 @@ const Overview = () => {
             </Typography>
             <ZuInput
               value={tagline}
-              onChange={e => setTagline(e.target.value)}
+              onChange={(e) => setTagline(e.target.value)}
               multiline
               minRows={3}
             />
@@ -165,11 +157,7 @@ const Overview = () => {
                 justifyContent: 'flex-end',
               }}
             >
-              <Typography
-                fontSize={'13px'}
-                lineHeight={'120%'}
-                color={'#bbb'}
-              >
+              <Typography fontSize={'13px'} lineHeight={'120%'} color={'#bbb'}>
                 3 characters availale
               </Typography>
             </Stack>
@@ -356,8 +344,8 @@ const Overview = () => {
           </Box>
         </Box>
       </Box>
-    </Box>
-  )
-}
+    </Stack>
+  );
+};
 
 export default Overview;
