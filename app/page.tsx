@@ -13,7 +13,7 @@ import {
 import { EventCard } from '@/components/cards';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { MOCK_DATA } from 'mock';
 import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
@@ -33,6 +33,9 @@ const Home: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [isPast, setIsPast] = useState<boolean>(true);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs((new Date()).toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' })));
+
   const {
     ceramic,
     composeClient,
@@ -94,12 +97,11 @@ const Home: React.FC = () => {
     }
   };
 
-  const getEvents = async () => {
-    console.log('Fetching events...');
+  const getEvents = async (forPast?: boolean) => {
     try {
       const response: any = await composeClient.executeQuery(`
-      query {
-        eventIndex(first: 10) {
+      query ($first: Int, $last: Int, $after: String, $before: String) {
+        eventIndex(first: $first, last: $last, after: $after, before: $before) {
           edges {
             node {
               id
@@ -123,7 +125,10 @@ const Home: React.FC = () => {
           }
         }
       }
-    `);
+    `, {
+        "before": selectedDate?.toISOString(),
+        "first": 10,
+      });
 
       if ('eventIndex' in response.data) {
         const eventData: EventData = response.data as EventData;
@@ -141,16 +146,17 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log(selectedDate?.toISOString())
     const fetchData = async () => {
       try {
         await getSpaces();
-        await getEvents();
+        await getEvents(isPast);
       } catch (error) {
         console.error('An error occurred:', error);
       }
     };
     fetchData();
-  }, []);
+  }, [selectedDate, isPast]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -348,29 +354,34 @@ const Home: React.FC = () => {
                         <Button
                           sx={{
                             flex: 1,
-                            backgroundColor: '#424242',
+                            backgroundColor: isPast ? '#2d2d2d' : '#424242',
                             borderRadius: '8px',
                             color: 'white',
                             fontFamily: 'Inter',
                           }}
+                          onClick={() => setIsPast(false)}
                         >
                           Upcoming
                         </Button>
                         <Button
                           sx={{
                             flex: 1,
-                            backgroundColor: '#2d2d2d',
+                            backgroundColor: isPast ? '#424242' : '#2d2d2d',
                             borderRadius: '8px',
                             color: 'white',
                             fontFamily: 'Inter',
                           }}
+                          onClick={() => setIsPast(true)}
                         >
                           Past
                         </Button>
                       </Box>
                       <Box>
 
-                        <ZuCalendar defaultValue={dayjs((new Date()).toLocaleDateString('en-CA', {year: 'numeric', month: '2-digit', day: '2-digit'}))} />
+                        <ZuCalendar
+                          value={selectedDate}
+                          onChange={(val) => setSelectedDate(val)}
+                        />
                       </Box>
                     </Box>
                   )}
