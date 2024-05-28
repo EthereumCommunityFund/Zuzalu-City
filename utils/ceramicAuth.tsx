@@ -59,62 +59,104 @@ export const authenticateCeramic = async (
     });
 
     const accountId = await getAccountId(ethProvider, addresses[0]);
-    const normAccount = normalizeAccountId(accountId);
-    const keySeed = randomBytes(32);
-    const didKey = await createDIDKey(keySeed);
+    let normAccount, keySeed, didKey;
+    try {
+      normAccount = normalizeAccountId(accountId);
+      console.log(normAccount, 'normAccount');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(
+          'Error occurred in normalizeAccountId method:',
+          error.message,
+        );
+      } else {
+        console.error(
+          'An unknown type of error occurred in normalizeAccountId method',
+        );
+      }
+    }
+
+    try {
+      keySeed = randomBytes(32);
+      console.log(keySeed, 'keySeed');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error occurred in randomBytes method:', error.message);
+      } else {
+        console.error(
+          'An unknown type of error occurred in randomBytes method',
+        );
+      }
+    }
+
+    try {
+      didKey = await createDIDKey(keySeed);
+      console.log(didKey, 'didKey');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error occurred in createDIDKey method:', error.message);
+      } else {
+        console.error(
+          'An unknown type of error occurred in createDIDKey method',
+        );
+      }
+    }
 
     const now = new Date();
     const twentyFiveDaysLater = new Date(
       now.getTime() + 25 * 24 * 60 * 60 * 1000,
     );
-
-    const siweMessage = new SiweMessage({
-      domain: window.location.host,
-      address: getAddress(normAccount.address),
-      statement: 'Give this application access to some of your data on Ceramic',
-      uri: didKey.id,
-      version: '1',
-      chainId: '1',
-      nonce: randomString(10),
-      issuedAt: now.toISOString(),
-      expirationTime: twentyFiveDaysLater.toISOString(),
-      resources: ['ceramic://*'],
-    });
-    console.log(
-      siweMessage.signMessage(),
-      'message',
-      getAddress(accountId.address),
-      'address',
-    );
-    try {
-      siweMessage.signature = await ethProvider.request({
-        method: 'personal_sign',
-        params: [siweMessage.signMessage(), getAddress(accountId.address)],
+    console.log('here');
+    if (normAccount && didKey) {
+      const siweMessage = new SiweMessage({
+        domain: window.location.host,
+        address: getAddress(normAccount.address),
+        statement:
+          'Give this application access to some of your data on Ceramic',
+        uri: didKey.id,
+        version: '1',
+        chainId: '1',
+        nonce: randomString(10),
+        issuedAt: now.toISOString(),
+        expirationTime: twentyFiveDaysLater.toISOString(),
+        resources: ['ceramic://*'],
       });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('error', error.message);
-      } else {
-        console.error('unknown error');
+      console.log(
+        siweMessage.signMessage(),
+        'message',
+        getAddress(accountId.address),
+        'address',
+      );
+      try {
+        siweMessage.signature = await ethProvider.request({
+          method: 'personal_sign',
+          params: [siweMessage.signMessage(), getAddress(accountId.address)],
+        });
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('error', error.message);
+        } else {
+          console.error('unknown error');
+        }
       }
+
+      const cacao = Cacao.fromSiweMessage(siweMessage);
+      const did = await createDIDCacao(didKey, cacao);
+      session = new DIDSession({ cacao, keySeed, did });
+      console.log(session.did);
+      localStorage.setItem('did', session.serialize());
+      // Set the session in localStorage.
     }
 
-    const cacao = Cacao.fromSiweMessage(siweMessage);
-    const did = await createDIDCacao(didKey, cacao);
-    session = new DIDSession({ cacao, keySeed, did });
-    console.log(session.did);
-    localStorage.setItem('did', session.serialize());
-    // Set the session in localStorage.
-  }
-
-  // Set our Ceramic DID to be our session DID.
-  //@ts-ignore
-  if (session) {
-    compose.setDID(session.did);
+    // Set our Ceramic DID to be our session DID.
     //@ts-ignore
-    ceramic.did = session.did;
-    localStorage.setItem('id', session.did.parent);
+    if (session) {
+      compose.setDID(session.did);
+      //@ts-ignore
+      ceramic.did = session.did;
+      localStorage.setItem('id', session.did.parent);
+    }
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    return accounts;
   }
-  const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-  return accounts;
 };
