@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import type { ReactNode } from "react";
-import { CeramicWrapper } from "@/context";
+import { CeramicWrapper, useCeramicContext } from "@/context";
+import React from "react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -8,9 +9,11 @@ interface LayoutProps {
 
 export default function RootLayout({ children }: LayoutProps) {
   return (
-    <html lang="en">
+    <html>
       <body>
-        <CeramicWrapper>{children}</CeramicWrapper>{" "}
+        <CeramicWrapper>
+          <div>{children}</div>
+        </CeramicWrapper>
       </body>
     </html>
   );
