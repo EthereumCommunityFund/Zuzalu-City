@@ -3,10 +3,15 @@ import type { ComposeClient } from '@composedb/client';
 import { Ed25519Provider } from 'key-did-provider-ed25519';
 import { getResolver } from 'key-did-resolver';
 import { DID } from 'dids';
-import { DIDSession } from 'did-session';
 import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum';
 import { SolanaWebAuth, getAccountIdByNetwork } from '@didtools/pkh-solana';
 import { StreamID } from '@ceramicnetwork/streamid';
+import { normalizeAccountId } from '@ceramicnetwork/common';
+import { Cacao, SiweMessage } from '@didtools/cacao';
+import { getAddress } from '@ethersproject/address';
+import { randomBytes, randomString } from '@stablelib/random';
+import { DIDSession, createDIDCacao, createDIDKey } from 'did-session';
+import React, { useCallback, useEffect, useState } from 'react';
 //import { ModelInstanceDocument } from '@composedb/types';
 //import { makeCeramicDaemon } from "@ceramicnetwork/cli/lib/__tests__/make-ceramic-daemon";
 import { CeramicClient } from '@ceramicnetwork/http-client';
@@ -40,35 +45,63 @@ export const authenticateCeramic = async (
 
     // We enable the ethereum provider to get the user's addresses.
     const ethProvider = window.ethereum;
+
+    // if (ethProvider.chainId !== appConfig.testNetwork.chainId) {
+    /*const switchRes = await switchTestNetwork();
+      if (!switchRes) {
+        throw new Error("Network error.");
+        }*/
+    // }
+
     // request ethereum accounts.
     const addresses = await ethProvider.enable({
       method: 'eth_requestAccounts',
     });
+
     const accountId = await getAccountId(ethProvider, addresses[0]);
-    const authMethod = await EthereumWebAuth.getAuthMethod(
-      ethProvider,
-      accountId,
+    const normAccount = normalizeAccountId(accountId);
+    const keySeed = randomBytes(32);
+    const didKey = await createDIDKey(keySeed);
+
+    const now = new Date();
+    const twentyFiveDaysLater = new Date(
+      now.getTime() + 25 * 24 * 60 * 60 * 1000,
     );
 
-    /**
-     * Create DIDSession & provide capabilities that we want to access.
-     * @NOTE: Any production applications will want to provide a more complete list of capabilities.
-     *        This is not done here to allow you to add more datamodels to your application.
-     */
-    // @ts-ignore
-    session = await DIDSession.authorize(authMethod, {
-      resources: compose.resources,
+    const siweMessage = new SiweMessage({
+      domain: window.location.host,
+      address: getAddress(normAccount.address),
+      statement: 'Give this application access to some of your data on Ceramic',
+      uri: didKey.id,
+      version: '1',
+      chainId: '1',
+      nonce: randomString(10),
+      issuedAt: now.toISOString(),
+      expirationTime: twentyFiveDaysLater.toISOString(),
+      resources: ['ceramic://*'],
     });
-    // Set the session in localStorage.
+
+    siweMessage.signature = await ethProvider.request({
+      method: 'personal_sign',
+      params: [siweMessage.signMessage(), getAddress(accountId.address)],
+    });
+
+    const cacao = Cacao.fromSiweMessage(siweMessage);
+    const did = await createDIDCacao(didKey, cacao);
+    session = new DIDSession({ cacao, keySeed, did });
+    console.log(session.did);
     localStorage.setItem('did', session.serialize());
+    // Set the session in localStorage.
   }
 
   // Set our Ceramic DID to be our session DID.
   //@ts-ignore
-  compose.setDID(session.did);
-  //@ts-ignore
-  ceramic.did = session.did;
-  localStorage.setItem('id', session.did.parent);
+  if (session) {
+    compose.setDID(session.did);
+    //@ts-ignore
+    ceramic.did = session.did;
+    localStorage.setItem('id', session.did.parent);
+  }
   const accounts = await window.ethereum.request({ method: 'eth_accounts' });
   return accounts;
 };

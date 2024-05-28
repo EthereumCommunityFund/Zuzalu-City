@@ -14,7 +14,7 @@ console.log('ceramic url', ceramicUrl);
 
 const ceramic = new CeramicClient('https://zuzalu-city-dev.com');
 const composeClient = new ComposeClient({
-  ceramic: new CeramicClient('https://zuzalu-city-dev.com'),
+  ceramic: "https://zuzalu-city-dev.com",
   definition: definition as RuntimeCompositeDefinition,
 });
 type Profile = {
