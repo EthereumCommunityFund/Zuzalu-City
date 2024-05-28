@@ -90,6 +90,19 @@ export const authenticateCeramic = async (
     }
 
     try {
+      console.log(keySeed, 'keySeed');
+      if (keySeed instanceof Uint8Array) {
+        console.log('keySeed is a Uint8Array.');
+      } else {
+        console.log(
+          'keySeed is not a Uint8Array, it is a type of:',
+          typeof keySeed,
+        );
+      }
+
+      if (!(keySeed instanceof Uint8Array)) {
+        throw new Error('keySeed must be a Uint8Array');
+      }
       didKey = await createDIDKey(keySeed);
       console.log(didKey, 'didKey');
     } catch (error: unknown) {
