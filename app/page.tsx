@@ -1,10 +1,12 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { authenticateCeramic } from "@/utils";
 import { Header } from "@/components/header";
 import { MessageList } from "@/components/message-list";
 import { useCeramicContext } from "@/context";
 
-export default function Home() {
+const Home: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const clients = useCeramicContext();
   const { ceramic, composeClient } = clients;
@@ -41,7 +43,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="text-sm text-white/50 transition hover:text-[#4a9c6d]/100"
               >
-                Powered by ComposeDB 
+                Powered by ComposeDB
               </a>
             </p>
           </>
@@ -49,4 +51,5 @@ export default function Home() {
       )}
     </div>
   );
-}
+};
+export default Home;

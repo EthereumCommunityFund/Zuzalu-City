@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useRef } from "react";
 import { authenticateCeramic } from "@/utils";
 import { useCeramicContext } from "@/context";
@@ -90,10 +92,12 @@ export const MessageList = () => {
 
     console.log(profiles);
     if (profiles?.data?.ceramicDevIndex?.edges) {
-      const filtered = profiles?.data?.ceramicDevIndex?.edges.filter((edge) => edge.node !== null);
+      const filtered = profiles?.data?.ceramicDevIndex?.edges.filter(
+        (edge) => edge.node !== null
+      );
       console.log(filtered);
       const newProfiles = filtered?.map(
-        (edge) => (
+        (edge) =>
           edge.node !== null && {
             id: edge.node.id,
             developer: edge.node.developer,
@@ -105,7 +109,6 @@ export const MessageList = () => {
               signal: edge.node.signal,
             })),
           }
-        )
       );
       console.log(newProfiles);
       // @ts-ignore
@@ -163,7 +166,6 @@ export const MessageList = () => {
   useEffect(() => {
     getProfilesQuery();
   }, []);
-
 
   return (
     <>

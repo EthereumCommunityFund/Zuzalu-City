@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { useCeramicContext } from "@/context";
 import { authenticateCeramic, disconnect } from "@/utils";

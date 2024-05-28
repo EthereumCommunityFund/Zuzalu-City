@@ -1,3 +1,5 @@
+"use client";
+
 import { ProfProps } from "@/types";
 
 export const Message = ({ node, func }: ProfProps) => {
