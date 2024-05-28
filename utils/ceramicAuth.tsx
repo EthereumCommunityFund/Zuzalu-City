@@ -80,11 +80,24 @@ export const authenticateCeramic = async (
       expirationTime: twentyFiveDaysLater.toISOString(),
       resources: ['ceramic://*'],
     });
-
-    siweMessage.signature = await ethProvider.request({
-      method: 'personal_sign',
-      params: [siweMessage.signMessage(), getAddress(accountId.address)],
-    });
+    console.log(
+      siweMessage.signMessage(),
+      'message',
+      getAddress(accountId.address),
+      'address',
+    );
+    try {
+      siweMessage.signature = await ethProvider.request({
+        method: 'personal_sign',
+        params: [siweMessage.signMessage(), getAddress(accountId.address)],
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('error', error.message);
+      } else {
+        console.error('unknown error');
+      }
+    }
 
     const cacao = Cacao.fromSiweMessage(siweMessage);
     const did = await createDIDCacao(didKey, cacao);
