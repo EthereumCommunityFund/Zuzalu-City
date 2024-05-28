@@ -5,7 +5,7 @@ import SidebarButton from './SidebarButton';
 import { ChatsIcon } from 'components/icons/Chats';
 import { AnnouncementsIcon } from 'components/icons/Announcements';
 import { ManageEventsIcon } from 'components/icons/ManageEvents';
-import { ArrowDownIcon } from 'components/icons';
+import { ChevronDownIcon } from 'components/icons';
 import { Stack, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
@@ -91,7 +91,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
           >
             Zuzalu City Contributors
           </Typography>
-          <ArrowDownIcon />
+          <ChevronDownIcon />
         </Stack>
         <SidebarButton
           content="Exit Space"
@@ -190,6 +190,6 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
       </Stack>
     </Stack>
   );
-}
+};
 
 export default SubSidebar;

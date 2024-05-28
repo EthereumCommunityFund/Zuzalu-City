@@ -5,14 +5,13 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import TextEditor from 'components/editor/editor';
 import Image from 'next/image';
-import { SelectedFile, Uploader3 } from '@lxdao/uploader3'
+import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
-
 
 export default function SpaceEditPage() {
   const [isOnInput, setIsOnInput] = useState(false);
   const [isOnTextArea, setIsOnTextArea] = useState(false);
-  const [file, setFile] = useState<SelectedFile>()
+  const [file, setFile] = useState<SelectedFile>();
 
   const theme = useTheme();
 

@@ -34,7 +34,9 @@ import { QuestionIcon } from './Question';
 import { ListIcon } from './List';
 import { CalendarIcon } from './Calendar';
 import { SessionIcon } from './Session';
-import { ArrowDownIcon } from './ArrowDown';
+import { ChevronDownIcon } from './ChevronDown';
+import { ArchiveBoxIcon } from './ArchiveBox';
+import { ArrowDownIcon } from './ArrowD';
 
 export {
   HomeIcon,
@@ -73,5 +75,7 @@ export {
   ListIcon,
   CalendarIcon,
   SessionIcon,
+  ChevronDownIcon,
+  ArchiveBoxIcon,
   ArrowDownIcon,
 };

@@ -37,7 +37,7 @@ interface SpaceData {
 
 const Home = () => {
   const theme = useTheme();
-  const [selected, setSelected] = useState("Spaces")
+  const [selected, setSelected] = useState('Spaces');
   const [spaces, setSpaces] = useState<Space[]>([]);
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
@@ -132,7 +132,8 @@ const Home = () => {
                 logoImage={item.avatar ? item.avatar : '/1.webp'}
                 bgImage={item.banner ? item.banner : '/5.webp'}
                 title={item.name}
-                description={item.description} />
+                description={item.description}
+              />
             </Grid>
           ))}
         </Grid>

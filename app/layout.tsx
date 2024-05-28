@@ -26,9 +26,7 @@ function RootLayout({
           <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
               <CeramicProvider>
-                <WalletProvider>
-                  {children}
-                </WalletProvider>
+                <WalletProvider>{children}</WalletProvider>
               </CeramicProvider>
             </QueryClientProvider>
           </ThemeProvider>

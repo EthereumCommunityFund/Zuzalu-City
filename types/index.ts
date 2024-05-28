@@ -60,4 +60,3 @@ export interface SpaceData {
     edges: SpaceEdge[];
   };
 }
-

@@ -3,10 +3,7 @@ import React, { useState, ChangeEvent } from 'react';
 import { Stack, Box, Typography, Button, Input } from '@mui/material';
 // import TextEditor from '@/components/editor/editor';
 import { Header } from './components';
-import {
-  XMarkIcon,
-  SpacePlusIcon,
-} from '@/components/icons';
+import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
@@ -65,7 +62,8 @@ const Home = () => {
   });
 
   const connector = createConnector('NFT.storage', {
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+    token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
   });
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +71,7 @@ const Home = () => {
 
     setInputs((prevInputs) => ({
       ...prevInputs,
-      [name]: value
+      [name]: value,
     }));
   };
   const profileId = profile?.id || '';
@@ -116,12 +114,11 @@ const Home = () => {
         }
       }
       `);
-      console.log(update)
-      window.alert("Success!")
-      router.push("/spaces")
-
+      console.log(update);
+      window.alert('Success!');
+      router.push('/spaces');
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   };
 
@@ -163,7 +160,7 @@ const Home = () => {
                   Space Name
                 </Typography>
                 <Input
-                  name='name'
+                  name="name"
                   onChange={handleInputChange}
                   sx={{
                     color: 'white',
@@ -196,7 +193,7 @@ const Home = () => {
                   Space Tagline
                 </Typography>
                 <Input
-                  name='tagline'
+                  name="tagline"
                   onChange={handleInputChange}
                   sx={{
                     color: 'white',
@@ -233,8 +230,8 @@ const Home = () => {
                   update descriptions.
                 </Typography>
                 <Input
-                  name='description'
-                  onChange={e => setDescription(e.target.value)}
+                  name="description"
+                  onChange={(e) => setDescription(e.target.value)}
                   sx={{
                     color: 'white',
                     backgroundColor: '#373737',
@@ -359,11 +356,11 @@ const Home = () => {
                     setAvatar(files[0]);
                   }}
                   onUpload={(result: any) => {
-                    console.log("upload", result);
+                    console.log('upload', result);
                     setAvatar(result);
                   }}
                   onComplete={(result: any) => {
-                    console.log("complete", result);
+                    console.log('complete', result);
                     setAvatarURL(result?.url);
                   }}
                 >
@@ -381,11 +378,12 @@ const Home = () => {
                 </Uploader3>
                 <PreviewFile
                   sx={{
-                    'width': '150px',
-                    'height': '150px',
-                    'borderRadius': '60%'
+                    width: '150px',
+                    height: '150px',
+                    borderRadius: '60%',
                   }}
-                  file={avatar} />
+                  file={avatar}
+                />
               </Box>
             </Stack>
             <Stack spacing="10px" padding="20px">
@@ -441,8 +439,9 @@ const Home = () => {
                   </Button>
                 </Uploader3>
                 <PreviewFile
-                  sx={{ 'width': '100%', 'height': '200px', 'borderRadius': '10px' }}
-                  file={banner} />
+                  sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
+                  file={banner}
+                />
               </Box>
             </Stack>
           </Box>
@@ -479,7 +478,7 @@ const Home = () => {
           </Box>
         </Box>
       </Stack>
-    </Stack >
+    </Stack>
   );
 };
 

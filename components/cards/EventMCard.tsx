@@ -48,7 +48,7 @@ const EventMCard: React.FC<EventMCardProps> = ({
   type = 0,
   applicants = 0,
   isSideEventActive = false,
-  name
+  name,
 }) => {
   return (
     <Box

@@ -21,7 +21,7 @@ import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 
 export default function SpaceDetailPage() {
   const params = useParams();
-  console.log("router", params)
+  console.log('router', params);
   const [aboutContent, setAboutContent] = useState<
     { title: string; content: string }[]
   >([]);
