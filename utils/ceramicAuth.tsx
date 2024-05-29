@@ -88,7 +88,18 @@ export const authenticateCeramic = async (
         );
       }
     }
-
+    if (globalThis.Buffer) {
+      console.log(
+        'Buffer library is injected, setting to undefined',
+        globalThis.Buffer,
+      );
+      globalThis.Buffer = undefined as any;
+      console.log(
+        'Warning: Buffer library is injected! This will be overwritten in order to avoid conflicts with did-session.',
+      );
+    } else {
+      console.log('Buffer library is not injected (this is good)');
+    }
     try {
       console.log(keySeed, 'keySeed');
       if (keySeed instanceof Uint8Array) {
