@@ -59,7 +59,7 @@ export const authenticateCeramic = async (
     });
 
     const accountId = await getAccountId(ethProvider, addresses[0]);
-    let normAccount, keySeed, didKey;
+    /*let normAccount, keySeed, didKey;
     try {
       normAccount = normalizeAccountId(accountId);
       console.log(normAccount, 'normAccount');
@@ -167,20 +167,39 @@ export const authenticateCeramic = async (
       const cacao = Cacao.fromSiweMessage(siweMessage);
       const did = await createDIDCacao(didKey, cacao);
       session = new DIDSession({ cacao, keySeed, did });
-      console.log(session.did);
-      localStorage.setItem('did', session.serialize());
-      // Set the session in localStorage.
+      */
+    const authMethod = await EthereumWebAuth.getAuthMethod(
+      ethProvider,
+      accountId,
+    );
+    if (globalThis.Buffer) {
+      console.log(
+        'Buffer library is injected, setting to undefined',
+        globalThis.Buffer,
+      );
+      globalThis.Buffer = undefined as any;
+      console.log(
+        'Warning: Buffer library is injected! This will be overwritten in order to avoid conflicts with did-session.',
+      );
+    } else {
+      console.log('Buffer library is not injected (this is good)');
     }
-
-    // Set our Ceramic DID to be our session DID.
-    //@ts-ignore
-    if (session) {
-      compose.setDID(session.did);
-      //@ts-ignore
-      ceramic.did = session.did;
-      localStorage.setItem('id', session.did.parent);
-    }
-    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-    return accounts;
+    session = await DIDSession.authorize(authMethod, {
+      resources: compose.resources,
+    });
+    // Set the session in localStorage.
+    localStorage.setItem('did', session.serialize());
+    // Set the session in localStorage.
   }
+
+  // Set our Ceramic DID to be our session DID.
+  //@ts-ignore
+  if (session) {
+    compose.setDID(session.did);
+    //@ts-ignore
+    ceramic.did = session.did;
+    localStorage.setItem('id', session.did.parent);
+  }
+  const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+  return accounts;
 };
