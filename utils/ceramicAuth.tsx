@@ -12,6 +12,7 @@ import { getAddress } from '@ethersproject/address';
 import { randomBytes, randomString } from '@stablelib/random';
 import { DIDSession, createDIDCacao, createDIDKey } from 'did-session';
 import React, { useCallback, useEffect, useState } from 'react';
+import { datadogLogs } from '@datadog/browser-logs';
 //import { ModelInstanceDocument } from '@composedb/types';
 //import { makeCeramicDaemon } from "@ceramicnetwork/cli/lib/__tests__/make-ceramic-daemon";
 import { CeramicClient } from '@ceramicnetwork/http-client';
@@ -172,11 +173,12 @@ export const authenticateCeramic = async (
       ethProvider,
       accountId,
     );
-    globalThis.Buffer = undefined as any;
-    /*if (globalThis.Buffer) {
-      console.log(
+    if (globalThis.Buffer) {
+      datadogLogs.logger.warn(
         'Buffer library is injected, setting to undefined',
-        globalThis.Buffer,
+        {
+          buffer: `${globalThis.Buffer}`,
+        },
       );
       globalThis.Buffer = undefined as any;
       console.log(
@@ -184,9 +186,9 @@ export const authenticateCeramic = async (
       );
     } else {
       console.log('Buffer library is not injected (this is good)');
-    }*/
+    }
     session = await DIDSession.authorize(authMethod, {
-      resources: compose.resources,
+      resources: ['ceramic://*'],
     });
     // Set the session in localStorage.
     localStorage.setItem('did', session.serialize());
