@@ -172,7 +172,8 @@ export const authenticateCeramic = async (
       ethProvider,
       accountId,
     );
-    if (globalThis.Buffer) {
+    globalThis.Buffer = undefined as any;
+    /*if (globalThis.Buffer) {
       console.log(
         'Buffer library is injected, setting to undefined',
         globalThis.Buffer,
@@ -183,7 +184,7 @@ export const authenticateCeramic = async (
       );
     } else {
       console.log('Buffer library is not injected (this is good)');
-    }
+    }*/
     session = await DIDSession.authorize(authMethod, {
       resources: compose.resources,
     });
