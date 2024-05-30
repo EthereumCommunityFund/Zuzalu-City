@@ -60,3 +60,34 @@ export interface SpaceData {
     edges: SpaceEdge[];
   };
 }
+
+export interface Session {
+  id: string;
+  title: string;
+  createdAt: string;
+  profileId: string;
+  startTime: string;
+  endTime: string;
+  eventId: string;
+  tags?: string;
+  type?: string;
+  track?: string;
+  format?: string;
+  status?: string;
+  tagline?: string;
+  timezone?: string;
+  video_url?: string;
+  description?: string;
+  meeting_url?: string;
+  experience_level?: string;
+}
+
+export interface SessionEdge {
+  node: Session;
+}
+
+export interface SessionData {
+  sessionIndex: {
+    edges: SessionEdge[];
+  }
+}
