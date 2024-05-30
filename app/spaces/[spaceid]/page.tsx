@@ -17,17 +17,79 @@ import { MOCK_DATA } from 'mock';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { Space, SpaceData } from '@/types';
 // import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
   const params = useParams();
-  console.log("router", params)
+  const theme = useTheme();
+  console.log('router', params);
+  const { composeClient } = useCeramicContext();
   const [aboutContent, setAboutContent] = useState<
     { title: string; content: string }[]
   >([]);
   const [showMore, setShowMore] = useState(false);
+  const [space, setSpace] = useState<Space>();
 
-  const theme = useTheme();
+  const getSpace = async () => {
+    console.log('Fetching spaces...');
+    try {
+      const response: any = await composeClient.executeQuery(`
+        query MyQuery {
+          spaceIndex(first: 20) {
+            edges {
+              node {
+                id
+                avatar
+                banner
+                description
+                name
+                profileId
+                tagline
+                website
+                twitter
+                telegram
+                nostr
+                lens
+                github
+                discord
+                ens
+              }
+            }
+          }
+        }
+      `);
+
+      if ('spaceIndex' in response.data) {
+        const spaceData: SpaceData = response.data as SpaceData;
+        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setSpace(
+          fetchedSpaces.filter(
+            (space) => space.id === params.spaceid.toString(),
+          )[0],
+        );
+        console.log('Spaces fetched:', fetchedSpaces);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch spaces:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getSpace();
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (showMore) {
@@ -45,7 +107,7 @@ export default function SpaceDetailPage() {
         width: '100%',
       }}
     >
-      <SubSidebar spaceId={params.spaceid.toString()} />
+      <SubSidebar title={space?.name} spaceId={params.spaceid.toString()} />
       <Box
         sx={{
           width: 'calc(100% - 280px)',

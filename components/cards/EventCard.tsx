@@ -57,11 +57,22 @@ const EventCard: React.FC<EventCardProps> = ({
               src="/0.webp"
               borderRadius="40px"
             />
-            <Typography color="white" variant="bodyS" fontWeight={300} fontSize={'13px'} letterSpacing={'0.01em'}>
+            <Typography
+              color="white"
+              variant="bodyS"
+              fontWeight={300}
+              fontSize={'13px'}
+              letterSpacing={'0.01em'}
+            >
               {by}
             </Typography>
           </Box>
-          <Typography color="rgba(225, 225, 225, 0.6)" variant="bodyS" fontWeight={300} fontSize={'16px'}>
+          <Typography
+            color="rgba(225, 225, 225, 0.6)"
+            variant="bodyS"
+            fontWeight={300}
+            fontSize={'16px'}
+          >
             October 8 - October 20
           </Typography>
         </Box>
@@ -76,7 +87,12 @@ const EventCard: React.FC<EventCardProps> = ({
             {description}
           </Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap="6px" sx={{opacity: '0.7'}}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="6px"
+          sx={{ opacity: '0.7' }}
+        >
           <MapIcon size={4} />
           <Typography color="white" variant="caption">
             {location}

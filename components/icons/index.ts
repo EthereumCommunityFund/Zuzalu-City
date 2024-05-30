@@ -50,6 +50,14 @@ import { SendIcon } from "./Send";
 import { SignCreateIcon } from "./SignCreate";
 import { CheckIcon } from "./Check";
 import { CircleCloseIcon } from "./CircleClose";
+import { SettingIcon } from './Setting';
+import { ChatsIcon } from './Chats';
+import { AnnouncementsIcon } from './Announcements';
+import { ManageEventsIcon } from './ManageEvents';
+import { UserPlusIcon } from './UserPlus';
+import { ShieldIcon } from './Shield';
+import { NotificationIcon } from './Notification';
+import { XCricleIcon } from './XCircle';
 
 export {
   HomeIcon,
@@ -103,5 +111,13 @@ export {
   SendIcon,
   SignCreateIcon,
   CheckIcon,
-  CircleCloseIcon
+  CircleCloseIcon,
+  SettingIcon,
+  ChatsIcon,
+  AnnouncementsIcon,
+  ManageEventsIcon,
+  UserPlusIcon,
+  ShieldIcon,
+  NotificationIcon,
+  XCricleIcon,
 };

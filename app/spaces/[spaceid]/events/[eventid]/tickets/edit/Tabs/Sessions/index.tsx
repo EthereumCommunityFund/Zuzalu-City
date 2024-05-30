@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import {
   Stack,
   Box,
@@ -21,8 +21,9 @@ import TextEditor from 'components/editor/editor';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Sessions = () => {
-  const [isChecked, setIsChecked] = React.useState(true);
-  const [state, setState] = React.useState({
+  const [editor, setEditorInst] = useState<any>();
+  const [isChecked, setIsChecked] = useState(true);
+  const [state, setState] = useState({
     top: false,
     left: false,
     bottom: false,
@@ -142,6 +143,8 @@ const Sessions = () => {
               padding: '12px 12px 12px 80px',
               borderRadius: '10px',
             }}
+            editor={editor}
+            setEditorInst={setEditorInst}
           />
           <Stack
             sx={{
