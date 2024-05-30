@@ -38,7 +38,7 @@ const ZuSelect = ({ icon, options, sx }: {
   }[],
   sx?: SxProps
 }) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState(options ? options[0].value : '');
 
   const handleChange = (event: SelectChangeEvent) => {
     setValue(event.target.value);
@@ -49,10 +49,25 @@ const ZuSelect = ({ icon, options, sx }: {
       sx={{...sx}}
       value={value}
       onChange={handleChange}
+      MenuProps={{
+        PaperProps: {
+          style: {
+            backgroundColor: '#222222'
+          }
+        }
+      }}
       input={icon ? <ZuInput startAdornment={icon} /> : <></>} // Replace YourIcon with your desired icon component
     >
       {options && options.map((option) => (
-        <MenuItem key={option.value} value={option.value}>
+        <MenuItem
+          key={option.value}
+          value={option.value}
+          sx={{
+            '&:hover': {
+              backgroundColor: '#333333'
+            }
+          }}
+        >
           {option.label}
         </MenuItem>
       ))}

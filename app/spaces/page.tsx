@@ -42,6 +42,7 @@ const Home = () => {
   const theme = useTheme();
   const [selected, setSelected] = useState('Spaces');
   const [spaces, setSpaces] = useState<Space[]>([]);
+  const [searchVal, setSearchVal] = useState('');
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   const { composeClient } = useCeramicContext();
@@ -111,7 +112,7 @@ const Home = () => {
   }
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" sx={{backgroundColor: '#222222'}}>
       {!isTablet && <Sidebar selected={selected} />}
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
@@ -143,6 +144,7 @@ const Home = () => {
                 border: 'none',
               },
             }}
+            onChange={(e) => setSearchVal(e.target.value)}
             startAdornment={
               <InputAdornment position="start" sx={{ opacity: 0.6 }}>
                 <SearchIcon />

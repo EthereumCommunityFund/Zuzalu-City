@@ -36,7 +36,7 @@ export default function SidebarLeft() {
                 }}
             >
                 <OutlinedInput
-                    placeholder="Search Events"
+                    placeholder="Search Spaces"
                     sx={{
                         backgroundColor:
                             'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
@@ -68,7 +68,17 @@ export default function SidebarLeft() {
                         Sort & Filter Spaces
                     </Typography>
                 </Stack>
-                <ZuSelect sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', opacity: '0.6' }} icon={<LocalOfferIcon />} options={[{ value: 'category', label: 'By Category' }]} />
+                <ZuSelect 
+                    sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', opacity: '0.6' }} 
+                    icon={<LocalOfferIcon />} 
+                    options={
+                        [
+                            { value: 'category', label: 'By Category1' },
+                            { value: 'category1', label: 'By Category2' },
+                            { value: 'category2', label: 'By Category3' }
+                        ]
+                    } 
+                />
             </Stack>
         </Stack >
     )
