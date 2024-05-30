@@ -35,6 +35,14 @@ import { ListIcon } from './List';
 import { CalendarIcon } from './Calendar';
 import { SessionIcon } from './Session';
 import { ArrowDownIcon } from './ArrowDown';
+import { SettingIcon } from './Setting';
+import { ChatsIcon } from './Chats';
+import { AnnouncementsIcon } from './Announcements';
+import { ManageEventsIcon } from './ManageEvents';
+import { UserPlusIcon } from './UserPlus';
+import { ShieldIcon } from './Shield';
+import { NotificationIcon } from './Notification';
+import { XCricleIcon } from './XCircle';
 
 export {
   HomeIcon,
@@ -74,4 +82,12 @@ export {
   CalendarIcon,
   SessionIcon,
   ArrowDownIcon,
+  SettingIcon,
+  ChatsIcon,
+  AnnouncementsIcon,
+  ManageEventsIcon,
+  UserPlusIcon,
+  ShieldIcon,
+  NotificationIcon,
+  XCricleIcon,
 };

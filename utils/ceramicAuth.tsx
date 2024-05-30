@@ -84,12 +84,13 @@ const authenticateEthPKH = async (
   }
 
   if (!session || (session.hasSession && session.isExpired)) {
-    if (window.ethereum === null || window.ethereum === undefined) {
+    const ethereum = (typeof window === 'undefined') ? undefined : window.ethereum;
+    if (ethereum === null || ethereum === undefined) {
       throw new Error('No injected Ethereum provider found.');
     }
 
     // We enable the ethereum provider to get the user's addresses.
-    const ethProvider = window.ethereum;
+    const ethProvider = (typeof window !== 'undefined') && window.ethereum;
     console.log('found provider', ethProvider);
     // request ethereum accounts.
     const addresses = await ethProvider.enable({

@@ -10,7 +10,6 @@ import { authenticateCeramic } from '../utils/ceramicAuth';
  */
 const ceramicUrl =
   process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
-console.log("ceramic url", ceramicUrl)
 
 const ceramic = new CeramicClient(ceramicUrl);
 const composeClient = new ComposeClient({
