@@ -1,118 +1,115 @@
+'use client';
 import * as React from 'react';
-import {
-  Card,
-  CardMedia,
-  Typography,
-  Button,
-  CardContent,
-  CardActions,
-  Box,
-} from '@mui/material';
+import Link from 'next/link';
+import { Typography, Button, Box, Stack } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
 
 export type SpaceCardProps = {
-  bgImage: string;
-  logoImage: string;
+  id: string,
+  bgImage?: string;
+  logoImage?: string;
   title: string;
-  description: string;
-  joined: boolean;
+  description?: string;
+  joined?: boolean;
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
-  bgImage,
-  logoImage,
+  id,
+  bgImage = '/5.webp',
+  logoImage = '/1.webp',
   title,
-  description,
-  joined,
+  description = 'Welcome Zucity',
+  joined = false,
 }) => {
   return (
-    <Card
-      sx={{
-        borderRadius: '10px',
-        scrollSnapAlign: 'start',
-        flexShrink: 0,
-        width: '290px',
-      }}
+    <Link
+      href={`/spaces/${id}`}
+      style={{ textDecoration: 'none' }}
     >
-      <CardMedia sx={{ height: 106 }} image={bgImage} title="green iguana" />
-      <CardContent
+      <Stack
+        width={290}
+        borderRadius='10px'
+        bgcolor='#292929'
         sx={{
-          backgroundColor: '#2d2d2d',
-          paddingY: '5px',
-          position: 'relative',
+          ':hover': {
+            bgcolor: '#2d2d2d',
+          },
         }}
+        border='1px solid rgba(255, 255, 255, 0.1)'
+        position='relative'
       >
         <Box
-          component="img"
-          src={logoImage}
-          width="60px"
-          height="60px"
-          borderRadius="30px"
-          position="absolute"
-          top="-30px"
-        ></Box>
-        <Typography
-          gutterBottom
-          variant="subtitleS"
-          component="div"
-          color="white"
-          marginTop="30px"
-        >
-          {title}
-        </Typography>
-        <Typography variant="bodyM" color="white">
-          {description}
-        </Typography>
-        <Box display="flex" marginY="10px" sx={{ opacity: 0.5 }}>
-          <Typography color="white" variant="caption">
-            AI
-          </Typography>
-          <Typography color="white" variant="caption" marginX="10px">
-            COMMUNITY TOOLS
-          </Typography>
-          <Typography color="white" variant="caption">
-            +3
-          </Typography>
-        </Box>
-      </CardContent>
-      <CardActions
-        sx={{
-          backgroundColor: '#2d2d2d',
-          paddingX: '20px',
-          paddingTop: '0px',
-          gap: '10px',
-        }}
-      >
-        <Box display="flex" alignItems="center">
-          <UsersIcon />
-          <Typography
-            color="white"
-            variant="bodyS"
-            sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
-          >
-            1.4k
-          </Typography>
-        </Box>
-        <Button
-          size="small"
-          startIcon={
-            joined ? <CheckCircleIcon color="#D7FFC4" /> : <PlusCircleIcon />
-          }
           sx={{
-            backgroundColor: joined ? '#606C5A' : '#383838',
-            color: joined ? '#D7FFC4' : 'white',
-            flexGrow: 1,
-            padding: '6px 10px',
-            borderRadius: '10px',
-            fontSize: '14px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
+            backgroundImage: `url(${bgImage})`,
+            backgroundPosition: 'center center',
+            backgroundSize: 'cover',
           }}
-        >
-          {joined ? 'Joined' : 'Join'}
-        </Button>
-      </CardActions>
-    </Card>
+          height={106}
+          borderRadius={'10px 10px 0 0'}
+        />
+        <Box
+          component='img'
+          src={logoImage}
+          height={60}
+          width={60}
+          position='absolute'
+          top={70}
+          left={13}
+          borderRadius={30}
+        />
+        <Stack padding='10px' spacing='10px' marginTop='20px'>
+          <Typography color='white' gutterBottom variant="subtitleS">
+            {title}
+          </Typography>
+          <Typography variant="bodyM" color="white">
+            {description}
+          </Typography>
+          <Stack direction='row'>
+            <Typography color="white" variant="caption">
+              AI
+            </Typography>
+            <Typography color="white" variant="caption" marginX="10px">
+              COMMUNITY TOOLS
+            </Typography>
+            <Typography color="white" variant="caption">
+              +3
+            </Typography>
+          </Stack>
+          <Stack direction='row' alignItems='center' spacing='10px'>
+            <UsersIcon size={4} />
+            <Typography
+              color="white"
+              variant="bodyS"
+              sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
+            >
+              1.4k
+            </Typography>
+            <Button
+              size="small"
+              startIcon={
+                joined ? (
+                  <CheckCircleIcon size={5} color="#D7FFC4" />
+                ) : (
+                  <PlusCircleIcon size={5} />
+                )
+              }
+              sx={{
+                backgroundColor: joined ? '#606C5A' : '#383838',
+                color: joined ? '#D7FFC4' : 'white',
+                flexGrow: 1,
+                padding: '6px 10px',
+                borderRadius: '10px',
+                fontSize: '14px',
+                fontWeight: 500,
+                fontFamily: 'Inter',
+              }}
+            >
+              {joined ? 'Joined' : 'Join'}
+            </Button>
+          </Stack>
+        </Stack>
+      </Stack>
+    </Link>
   );
 };
 

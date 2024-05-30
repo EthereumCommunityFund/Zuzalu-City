@@ -3,15 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import SpaceCard from './cards/SpaceCard';
 import { useTheme, useMediaQuery } from '@mui/material';
+import { Space } from '@/types';
 
 export interface CarouselProps {
-  items: {
-    bgImage: string;
-    logoImage: string;
-    title: string;
-    description: string;
-    joined: boolean;
-  }[];
+  items: Space[];
 }
 
 const Carousel: React.FC<CarouselProps> = ({ items }) => {
@@ -50,14 +45,15 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
         '&::-webkit-scrollbar': { width: 0, backgroundColor: 'transparent' },
       }}
     >
-      {items.map((item, index) => (
+      {items.map((item) => (
         <SpaceCard
-          logoImage={item.logoImage}
-          bgImage={item.bgImage}
-          title={item.title}
+          key={item.id}
+          id={item.id}
+          logoImage={item.avatar ? item.avatar : '/1.webp'}
+          bgImage={item.banner ? item.banner : '/5.webp'}
+          title={item.name}
           description={item.description}
-          joined={item.joined}
-          key={`SpaceCard-${index}`}
+          joined={false}
         />
       ))}
     </Box>

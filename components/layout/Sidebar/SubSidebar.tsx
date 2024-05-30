@@ -1,16 +1,22 @@
 'use client';
-
+import React from 'react';
 import { HomeIcon, SearchIcon, StreamIcon } from 'components/icons';
 import SidebarButton from './SidebarButton';
 import { ChatsIcon } from 'components/icons/Chats';
 import { AnnouncementsIcon } from 'components/icons/Announcements';
-import Image from 'next/image';
 import { ManageEventsIcon } from 'components/icons/ManageEvents';
-import { Stack, Typography } from '@mui/material';
+import { ArrowDownIcon } from 'components/icons';
+import { Stack, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useRouter } from 'next/navigation';
 
-export default function SubSidebar() {
+interface SubSidebarProps {
+  spaceId: string;
+}
+
+const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
   const theme = useTheme();
+  const router = useRouter();
 
   const buttonList = [
     {
@@ -62,59 +68,30 @@ export default function SubSidebar() {
         }}
       >
         <Stack
-          sx={{
-            width: '100%',
-            borderRadius: '10px',
-            border: '1px solid #ffffff1a',
-            padding: '10px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '10px',
-            overflow: 'hidden',
-            position: 'relative',
-            boxSizing: 'border-box',
-          }}
+          bgcolor="#404440"
+          borderRadius="10px"
+          border="1px solid #383838"
+          padding="10px"
+          direction="row"
+          spacing="10px"
+          alignItems="center"
+          sx={{ cursor: 'pointer' }}
         >
-          <Image
-            loader={() =>
-              'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512'
-            }
-            src={
-              'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512'
-            }
-            alt=""
-            width={260}
-            height={64}
-            style={{
-              filter: 'blur(50px)',
-              position: 'absolute',
-              opacity: 0.25,
-            }}
-          ></Image>
-          <Image
-            loader={() =>
-              'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
-            }
-            src={
-              'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
-            }
-            width={35}
-            height={35}
-            className="max-w-[35px] max-h-[35px]"
-            alt="Zuzalu City"
+          <Box
+            component="img"
+            width={40}
+            height={40}
+            borderRadius={20}
+            src="/1.webp"
           />
           <Typography
-            sx={{
-              whiteSpace: 'pre-wrap',
-              overflowWrap: 'break-word',
-              fontSize: '18px',
-              fontWeight: '700',
-              lineHeight: '20px',
-            }}
+            variant="subtitleS"
+            color="white"
+            sx={{ textWrap: 'wrap' }}
           >
             Zuzalu City Contributors
           </Typography>
+          <ArrowDownIcon />
         </Stack>
         <SidebarButton
           content="Exit Space"
@@ -204,6 +181,8 @@ export default function SubSidebar() {
             admins
           </p>
           <SidebarButton
+            // onClick={() => router.push(`/spaces/${spaceId}/events/456/edit`)}
+            onClick={() => router.push(`/spaces/${spaceId}/events`)}
             content="Manage Events"
             icon={<ManageEventsIcon />}
           ></SidebarButton>
@@ -212,3 +191,5 @@ export default function SubSidebar() {
     </Stack>
   );
 }
+
+export default SubSidebar;

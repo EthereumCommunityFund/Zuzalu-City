@@ -11,11 +11,15 @@ import {
   SpacePlusIcon,
 } from 'components/icons';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  selected: string;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const router = useRouter();
 
   return (
-    <Box sx={{ width: '260px', height: '100vh' }}>
+    <Box sx={{ width: '260px', height: '100vh', position: 'sticky', top: '0px' }}>
       <Box
         display="flex"
         flexDirection="column"
@@ -28,10 +32,12 @@ const Sidebar: React.FC = () => {
           padding="10px"
           alignItems="center"
           sx={{ cursor: 'pointer' }}
-          bgcolor="#383838"
+          bgcolor={selected === 'Home' ? '#383838' : 'transparent'}
           gap="10px"
           borderRadius="10px"
-          onClick={() => router.push('/')}
+          onClick={() => {
+            router.push('/');
+          }}
         >
           <HomeIcon />
           <Typography color="white" variant="bodyMB">
@@ -55,10 +61,13 @@ const Sidebar: React.FC = () => {
           display="flex"
           padding="10px"
           alignItems="center"
+          bgcolor={selected === 'Spaces' ? '#383838' : 'transparent'}
           sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
           gap="10px"
           borderRadius="10px"
-          onClick={() => router.push('/spaces')}
+          onClick={() => {
+            router.push('/spaces');
+          }}
         >
           <SpaceIcon />
           <Typography color="white" variant="bodyMB">
@@ -107,13 +116,25 @@ const Sidebar: React.FC = () => {
         >
           YOUR SPACES
         </Typography>
-        <Box display="flex" alignItems="center" gap="10px">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="10px"
+          onClick={() => router.push('/spaces/123')}
+          sx={{ cursor: 'pointer' }}
+        >
           <Box component="img" src="/0.webp" height="40px" />
           <Typography color="white" variant="bodyMB">
             Zuzalu City Contributors
           </Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap="10px">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="10px"
+          onClick={() => router.push('/spaces/123')}
+          sx={{ cursor: 'pointer' }}
+        >
           <Box
             component="img"
             src="/0.webp"
@@ -125,7 +146,13 @@ const Sidebar: React.FC = () => {
             FendiWeb3
           </Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap="10px">
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="10px"
+          onClick={() => router.push('/spaces/123')}
+          sx={{ cursor: 'pointer' }}
+        >
           <Box
             component="img"
             src="/0.webp"

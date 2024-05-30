@@ -16,7 +16,7 @@ import {
   RightArrowCircleIcon,
   PlusCircleIcon,
 } from 'components/icons';
-import { TextEditor } from 'components/editor/editor';
+import TextEditor from 'components/editor/editor';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -33,7 +33,7 @@ const Sessions = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const list = (anchor: Anchor) => (
+  const List = (anchor: Anchor) => (
     <Box
       sx={{
         width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
@@ -235,7 +235,7 @@ const Sessions = () => {
         onClose={() => toggleDrawer('right', false)}
         onOpen={() => toggleDrawer('right', true)}
       >
-        {list('right')}
+        {List('right')}
       </SwipeableDrawer>
     </Stack>
   );

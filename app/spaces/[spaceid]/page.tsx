@@ -1,8 +1,8 @@
 'use client';
-
+import { useParams } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-import { EventCard } from 'components';
+import { EventCard } from '@/components/cards';
 import AnnouncementCard from 'components/AnnouncementCart';
 import {
   EventIcon,
@@ -17,8 +17,11 @@ import { MOCK_DATA } from 'mock';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
+// import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
+  const params = useParams();
+  console.log("router", params)
   const [aboutContent, setAboutContent] = useState<
     { title: string; content: string }[]
   >([]);
@@ -42,7 +45,7 @@ export default function SpaceDetailPage() {
         width: '100%',
       }}
     >
-      <SubSidebar />
+      <SubSidebar spaceId={params.spaceid.toString()} />
       <Box
         sx={{
           width: 'calc(100% - 280px)',

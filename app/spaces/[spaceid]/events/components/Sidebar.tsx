@@ -19,9 +19,13 @@ import {
   TableIcon,
   QuestionIcon,
 } from 'components/icons';
-import { ZuButton, ZuSelect } from 'components/core';
+import { ZuButton } from 'components/core';
 
-const Sidebar = () => {
+interface SidebarProps {
+  spaceId: string | string[]
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ spaceId }) => {
   const router = useRouter();
 
   return (
@@ -99,7 +103,7 @@ const Sidebar = () => {
         <ZuButton
           startIcon={<TableIcon />}
           sx={{ paddingLeft: 2 }}
-          onClick={() => router.push('/spaces/123/events/456/edit')}
+          onClick={() => router.push(`/spaces/${spaceId}/events/456/edit`)}
         >
           Manage Events
         </ZuButton>

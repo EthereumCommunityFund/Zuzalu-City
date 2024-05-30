@@ -8,7 +8,7 @@ export const CheckCircleIcon: React.FC<IconProps> = ({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox={`0 0 ${Number(size) * 4} ${Number(size) * 4}`}
+      viewBox="0 0 24 24"
       width={`${size * 4}px`}
       height={`${size * 4}px`}
       fill={color}
