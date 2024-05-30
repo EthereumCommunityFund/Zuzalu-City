@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useCeramicContext } from "@/context";
-import { authenticateCeramic, disconnect } from "@/utils";
+import { useState, useEffect, useCallback } from 'react';
+import { useCeramicContext } from '@/context';
+import { authenticateCeramic, disconnect } from '@/utils';
 
 type Props = {
   logged: boolean;
@@ -14,6 +14,7 @@ export function Header({ logged }: Props) {
   const { ceramic, composeClient } = clients;
 
   const handleLogin = useCallback(async () => {
+    debugger;
     const accounts = await authenticateCeramic(ceramic, composeClient);
     if (accounts) {
       setLoggedIn(true);
@@ -22,7 +23,7 @@ export function Header({ logged }: Props) {
   }, [ceramic, composeClient]);
 
   useEffect(() => {
-    if (localStorage.getItem("did")) {
+    if (localStorage.getItem('did')) {
       handleLogin();
     }
   }, [handleLogin]);
@@ -33,7 +34,7 @@ export function Header({ logged }: Props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("did")) {
+    if (localStorage.getItem('did')) {
       handleLogin();
     }
   }, [handleLogin]);
@@ -57,9 +58,9 @@ export function Header({ logged }: Props) {
             </a>
             <button
               className="text-white font-bold text-xl"
-              onClick={() => (window.location.href = "/")}
+              onClick={() => (window.location.href = '/')}
             >
-              {" "}
+              {' '}
               Ceramic Developer Application
             </button>
           </p>
@@ -68,7 +69,7 @@ export function Header({ logged }: Props) {
               <button
                 onClick={async () => {
                   await handleDisconnect();
-                  window.location.href = "/";
+                  window.location.href = '/';
                 }}
                 className="bg-white/5 rounded h-12 px-6 font-medium text-white border border-transparent"
               >
@@ -92,11 +93,11 @@ export function Header({ logged }: Props) {
               <button
                 onClick={async () => {
                   await handleLogin();
-                  window.location.href = "/";
+                  window.location.href = '/';
                 }}
                 className="bg-white/5 rounded h-12 px-6 font-medium text-white text-lg border border-transparent inline-flex items-center"
               >
-                Sign in with MetaMask
+                Sign in with MetaMask11
               </button>
             </div>
           )}
