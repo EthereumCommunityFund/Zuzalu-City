@@ -6,13 +6,13 @@ import { PlusIcon, PlusCircleIcon } from 'components/icons';
 const TicketAdd = () => {
   return (
     <Stack direction="column" spacing={2}>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between">
         <Typography variant="h6" color="white">
           Event Tickets
         </Typography>
         <ZuButton startIcon={<PlusIcon />}>New Ticket</ZuButton>
       </Stack>
-      <Typography variant="body2" color="white">
+      <Typography mt={0} variant="body2" color="white">
         These are tickets for this event
       </Typography>
       <Stack

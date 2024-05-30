@@ -3,26 +3,25 @@ import {
   Stack,
   Box,
   SwipeableDrawer,
-  Button,
-  Typography,
-  Input,
-  Select,
-  TextField,
+  Typography
 } from '@mui/material';
 import {
   TicketHeader,
   TicketList,
   TicketAdd,
   TicketAccess,
+  InitialSetup,
+  TicketSetup,
+  CreateTicket,
+  TicketCreationSummary,
+  ProcessingTicket,
+  TicketVault,
 } from './components';
-import { XMarkIcon, RightArrowCircleIcon } from 'components/icons';
-import { ZuSwitch, ZuButton } from 'components/core';
+import { ZuButton } from 'components/core';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Ticket = () => {
-  const [isChecked, setIsChecked] = React.useState(true);
-
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -34,10 +33,16 @@ const Ticket = () => {
     setState({ ...state, [anchor]: open });
   };
 
+  const [isConfirm, setIsConfirm] = React.useState(false);
+  const [isNext, setIsNext] = React.useState(false);
+  const [goToSummary, setGoToSummary] = React.useState(false);
+  const [purchasingTicket, setPurchasingTicket] = React.useState(false);
+  const [toggleAction, setToggleAction] = React.useState("CreateTicket");
+
   const list = (anchor: Anchor) => (
     <Box
       sx={{
-        width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+        maxWidth: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
         backgroundColor: '#222222',
       }}
       role="presentation"
@@ -47,299 +52,64 @@ const Ticket = () => {
       <Box
         display="flex"
         alignItems="center"
-        justifyContent="space-between"
         height="50px"
         borderBottom="1px solid #383838"
         paddingX={3}
       >
         <ZuButton
-          startIcon={<XMarkIcon />}
           onClick={() => toggleDrawer('right', false)}
         >
           Close
         </ZuButton>
-        <ZuButton>Open Session</ZuButton>
-      </Box>
-      <Box display="flex" flexDirection="column" gap="20px" padding={3}>
-        <Typography fontSize="18px" fontWeight="bold">
-          Ticket Basics
+        <Typography marginLeft={"14px"} fontSize="18px" fontWeight="bold">
+          Create Ticket
         </Typography>
-        <Box>
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Ticket Name
-          </Typography>
-          <Input
-            sx={{
-              color: 'white',
-              backgroundColor: '#2d2d2d',
-              padding: '12px 10px',
-              borderRadius: '8px',
-              width: '100%',
-              fontSize: '15px',
-              fontFamily: 'Inter',
-              '&::after': {
-                borderBottom: 'none',
-              },
-              '&::before': {
-                borderBottom: 'none',
-              },
-              '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                borderBottom: 'none',
-              },
-            }}
-            placeholder="Enter a name for your event"
-          />
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Ticket Price
-          </Typography>
-          <Input
-            sx={{
-              color: 'white',
-              backgroundColor: '#2d2d2d',
-              padding: '12px 10px',
-              borderRadius: '8px',
-              width: '100%',
-              fontSize: '15px',
-              fontFamily: 'Inter',
-              '&::after': {
-                borderBottom: 'none',
-              },
-              '&::before': {
-                borderBottom: 'none',
-              },
-              '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                borderBottom: 'none',
-              },
-            }}
-            placeholder="00.00"
-          />
-          <Typography
-            color="white"
-            fontSize="10px"
-            fontWeight={500}
-            fontFamily="Inter"
-          >
-            Input am amount
-          </Typography>
-        </Box>
-        <Box>
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Ticket Quantity
-          </Typography>
-          <Input
-            sx={{
-              color: 'white',
-              backgroundColor: '#2d2d2d',
-              padding: '12px 10px',
-              borderRadius: '8px',
-              width: '100%',
-              fontSize: '15px',
-              fontFamily: 'Inter',
-              '&::after': {
-                borderBottom: 'none',
-              },
-              '&::before': {
-                borderBottom: 'none',
-              },
-              '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                borderBottom: 'none',
-              },
-            }}
-            placeholder="Enter a name for your event"
-          />
-        </Box>
-        <Box>
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Description
-          </Typography>
-          <TextField
-            multiline
-            rows={6}
-            sx={{
-              backgroundColor: '#2d2d2d',
-              borderRadius: '8px',
-              height: '200px',
-              width: '100%',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-              '& .MuiInputBase-inputMultiline': {
-                fontFamily: 'Inter',
-                color: 'white',
-              },
-            }}
-            placeholder="Provide a captivating description of your event"
-          />
-        </Box>
-        <Box>
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Status
-          </Typography>
-          <Select
-            sx={{
-              width: '100%',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-              backgroundColor: '#2d2d2d',
-            }}
-          ></Select>
-        </Box>
-        <Box>
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Min per order
-          </Typography>
-          <Select
-            sx={{
-              width: '100%',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-              backgroundColor: '#2d2d2d',
-            }}
-          ></Select>
-        </Box>
-        <Box>
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Max per order
-          </Typography>
-          <Select
-            sx={{
-              width: '100%',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-              backgroundColor: '#2d2d2d',
-            }}
-          ></Select>
-        </Box>
-        <Box display="flex" flexDirection="column" gap="10px" padding="10px">
-          <Box display="flex">
-            <ZuSwitch
-              checked={isChecked}
-              onChange={() => setIsChecked((prev) => !prev)}
-            />
-            <Typography
-              color="white"
-              fontSize="16px"
-              fontWeight={500}
-              fontFamily="Inter"
-              marginLeft="10px"
-            >
-              Hide until a set date and time
-            </Typography>
-          </Box>
-          <Box display="flex">
-            <ZuSwitch
-              checked={isChecked}
-              onChange={() => setIsChecked((prev) => !prev)}
-            />
-            <Typography
-              color="white"
-              fontSize="16px"
-              fontWeight={500}
-              fontFamily="Inter"
-              marginLeft="10px"
-            >
-              Hide after a set date and time
-            </Typography>
-          </Box>
-          <Box display="flex">
-            <ZuSwitch
-              checked={isChecked}
-              onChange={() => setIsChecked((prev) => !prev)}
-            />
-            <Typography
-              color="white"
-              fontSize="16px"
-              fontWeight={500}
-              fontFamily="Inter"
-              marginLeft="10px"
-            >
-              Hide when sold out
-            </Typography>
-          </Box>
-          <Box display="flex">
-            <ZuSwitch
-              checked={isChecked}
-              onChange={() => setIsChecked((prev) => !prev)}
-            />
-            <Typography
-              color="white"
-              fontSize="16px"
-              fontWeight={500}
-              fontFamily="Inter"
-              marginLeft="10px"
-            >
-              Show quantity remaining on event screen
-            </Typography>
-          </Box>
-        </Box>
-
-        <Button
-          sx={{
-            backgroundColor: '#2f474e',
-            color: '#67DAFF',
-            width: '100%',
-            borderRadius: '10px',
-            fontSize: '18px',
-            fontWeight: 600,
-            fontFamily: 'Inter',
-          }}
-          startIcon={<RightArrowCircleIcon color="#67DAFF" />}
-        >
-          Save Ticket
-        </Button>
       </Box>
+
+      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && <InitialSetup setIsNext={setIsNext} />}
+      {!goToSummary && !isConfirm && !purchasingTicket && isNext && <TicketSetup setIsNext={setIsNext} setIsConfirm={setIsConfirm} />}
+      {isConfirm && !purchasingTicket && !goToSummary && !isNext && <CreateTicket
+        setIsConfirm={setIsConfirm}
+        setGoToSummary={setGoToSummary}
+      />}
+      {!purchasingTicket && !isConfirm && goToSummary && !isNext && <TicketCreationSummary setIsConfirm={setIsConfirm} setPurchasingTicket={setPurchasingTicket} setGoToSummary={setGoToSummary} />}
+      {purchasingTicket && !goToSummary && !isConfirm && !isNext && <ProcessingTicket setPurchasingTicket={setPurchasingTicket} toggleDrawer={toggleDrawer} />}
+    </Box >
+  );
+  const vault = (anchor: Anchor) => (
+    <Box
+      sx={{
+        maxWidth: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+        backgroundColor: '#222222',
+      }}
+      role="presentation"
+      zIndex="100"
+      borderLeft="1px solid #383838"
+    >
+      <Box
+        display="flex"
+        alignItems="center"
+        height="50px"
+        borderBottom="1px solid #383838"
+        paddingX={3}
+      >
+        <ZuButton
+          onClick={() => toggleDrawer('right', false)}
+        >
+          Close
+        </ZuButton>
+        <Typography marginLeft={"14px"} fontSize="18px" fontWeight="bold">
+          Create Ticket
+        </Typography>
+      </Box>
+      <TicketVault />
     </Box>
   );
 
   return (
     <Stack spacing={2}>
       <TicketHeader />
-      <TicketList onToggle={toggleDrawer} />
+      <TicketList setToggleAction={setToggleAction} onToggle={toggleDrawer} />
       <TicketAdd />
       <TicketAccess />
       <SwipeableDrawer
@@ -356,7 +126,7 @@ const Ticket = () => {
         onClose={() => toggleDrawer('right', false)}
         onOpen={() => toggleDrawer('right', true)}
       >
-        {list('right')}
+        {toggleAction === "CreateTicket" ? list('right') : toggleAction === "ViewVault" ? vault('right') : null}
       </SwipeableDrawer>
     </Stack>
   );

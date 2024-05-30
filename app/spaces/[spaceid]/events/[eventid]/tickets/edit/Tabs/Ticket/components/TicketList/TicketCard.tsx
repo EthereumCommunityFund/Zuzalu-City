@@ -1,11 +1,14 @@
 import * as React from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, useMediaQuery } from '@mui/material';
 import ZuButton from 'components/core/Button';
 import {
   ThreeVerticalIcon,
   CheckCircleIcon,
   EyeSlashIcon,
 } from 'components/icons';
+import Image from 'next/image';
+
+type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export type TicketCardProps = {
   name: string;
@@ -13,6 +16,10 @@ export type TicketCardProps = {
   open: string;
   status: boolean;
   sold: number;
+  tokenSymbol?: string;
+  address: string;
+  setToggleAction?: React.Dispatch<React.SetStateAction<string>>;
+  onToggle?: (anchor: Anchor, open: boolean) => void;
 };
 
 const TicketCard: React.FC<TicketCardProps> = ({
@@ -21,54 +28,72 @@ const TicketCard: React.FC<TicketCardProps> = ({
   open,
   status,
   sold,
+  tokenSymbol,
+  address,
+  setToggleAction,
+  onToggle = (anchor: Anchor, open: boolean) => { }
 }) => {
+  const isMobile = useMediaQuery('(max-width:500px)')
   return (
     <Stack
-      direction="column"
-      spacing={1}
+      direction={{ xs: 'column', sm: 'row' }}
+      spacing={2.5}
       borderRadius={2}
       padding={1.5}
       bgcolor="#2d2d2d"
+      sx={{ cursor: "pointer" }}
+      onClick={() => {
+        setToggleAction && setToggleAction("ViewVault"),
+          onToggle('right', true)
+      }}
     >
-      <Stack direction="row" justifyContent="space-between">
-        <Stack direction="row" alignItems="center">
+      <Image alt={"24.webp"} src={"/24.webp"}
+        width={100}
+        height={100}
+        objectFit="cover"
+        style={{
+          width: isMobile ? '100%' : undefined,
+          height: isMobile ? '100%' : undefined,
+        }}
+      />
+
+      <Stack
+        direction="column"
+        spacing={1}
+      >
+        <Stack gap={1}
+          direction={{ xs: 'column', sm: 'row' }} alignItems="center">
           <Typography variant="h5" color="white">
             {name}
           </Typography>{' '}
-          &nbsp;&nbsp;&nbsp;
-          <Typography variant="body1" color="white">
-            {price}
+          <Typography classes="subtitle2" color="white">
+            {price}{" "}
+            {tokenSymbol}
           </Typography>
         </Stack>
-        <ZuButton
-          startIcon={<ThreeVerticalIcon />}
-          sx={{
-            padding: 0,
-            minWidth: 0,
-            '& .MuiButton-startIcon': { margin: 0 },
-          }}
-        />
-      </Stack>
-      <Typography color="white">{open}</Typography>
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Stack
-          direction="row"
-          alignItems="center"
-          padding="4px 10px"
-          spacing={1}
-          borderRadius={3}
-          sx={{ backgroundColor: '#384A44' }}
-        >
-          {status ? (
-            <CheckCircleIcon color="#65C0A0" />
-          ) : (
-            <EyeSlashIcon color="#C09965" />
-          )}
-          <Typography color={status ? '#65C0A0' : '#C09965'}>
-            {status ? 'Available' : 'Hidden'}
-          </Typography>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
+          <Stack
+            direction="row"
+            alignItems="center"
+            padding="4px 10px"
+            spacing={1}
+            borderRadius={3}
+            sx={{ backgroundColor: '#384A44' }}
+          >
+            {status ? (
+              <CheckCircleIcon color="#65C0A0" />
+            ) : (
+              <EyeSlashIcon color="#C09965" />
+            )}
+            <Typography color={status ? '#65C0A0' : '#C09965'}>
+              {status ? 'Available' : 'Hidden'}
+            </Typography>
+            <Typography style={{ marginLeft: "1px" }} color={status ? '#65C0A0' : '#C09965'}>:</Typography>
+            <Typography color={status ? '#65C0A0' : '#C09965'}>{open}</Typography>
+          </Stack>
+          <Typography>Sold: {sold}</Typography>
         </Stack>
-        <Typography color="white">Sold: {sold}</Typography>
+        <Typography variant='caption'>ADDRESS: {address}</Typography>
       </Stack>
     </Stack>
   );

@@ -40,6 +40,16 @@ import { QRCodeIcon } from './QRCode';
 import { CloseIcon } from './Close';
 import { ArrowPathIcon } from './ArrowPath';
 import { ScrollIcon } from "./Scroll";
+import { EthereumIcon } from "./Ethereum";
+import { USDCIcon } from "./USDC";
+import { USDTIcon } from "./USDT";
+import { UncheckCircleIcon } from "./UncheckCircle";
+import { CopyIcon } from "./Copy";
+import { GoToExplorerIcon } from "./GoToExplorer";
+import { SendIcon } from "./Send";
+import { SignCreateIcon } from "./SignCreate";
+import { CheckIcon } from "./Check";
+import { CircleCloseIcon } from "./CircleClose";
 
 export {
   HomeIcon,
@@ -83,5 +93,15 @@ export {
   QRCodeIcon,
   CloseIcon,
   ArrowPathIcon,
-  ScrollIcon
+  ScrollIcon,
+  EthereumIcon,
+  USDCIcon,
+  USDTIcon,
+  UncheckCircleIcon,
+  CopyIcon,
+  GoToExplorerIcon,
+  SendIcon,
+  SignCreateIcon,
+  CheckIcon,
+  CircleCloseIcon
 };

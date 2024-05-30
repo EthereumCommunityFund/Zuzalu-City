@@ -10,33 +10,35 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface TicketListProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
+  setToggleAction: React.Dispatch<React.SetStateAction<string>>
 }
 
 const TicketList: React.FC<TicketListProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => {},
+  onToggle = (anchor: Anchor, open: boolean) => { },
+  setToggleAction
 }) => {
   return (
     <Stack direction="column" spacing={3}>
       <Stack direction="column" spacing={2}>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, md: 4 }} justifyContent="space-between">
           <Typography variant="h6" color="white">
             Event Tickets
           </Typography>
           <ZuButton
             startIcon={<PlusIcon />}
-            onClick={() => onToggle('right', true)}
+            onClick={() => { onToggle('right', true), setToggleAction("CreateTicket") }}
           >
             New Ticket
           </ZuButton>
         </Stack>
         {MOCK_DATA.tickets.map((ticket: TicketCardProps, index: number) => (
-          <TicketCard key={`TicketListItem-${index}`} {...ticket} />
+          <TicketCard key={`TicketListItem-${index}`} {...ticket} onToggle={onToggle} setToggleAction={setToggleAction} />
         ))}
       </Stack>
       <Typography variant="body2" color="white" fontStyle="italic">
         Prototype Note: Below shows an empty state
       </Typography>
-    </Stack>
+    </Stack >
   );
 };
 
