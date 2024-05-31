@@ -134,6 +134,7 @@ const Sessions = () => {
   const List = (anchor: Anchor) => {
     const [person, setPerson] = useState(true);
     const [online, setOnline] = useState(false);
+    const [editor, setEditorInst] = useState<any>();
 
     const createSession = async () => {
       if (!isAuthenticated) {
@@ -400,6 +401,8 @@ const Sessions = () => {
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
                   }}
+                  editor={editor}
+                  setEditorInst={setEditorInst}
                 />
                 <Stack
                   sx={{
