@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
-import { ArrowDownIcon } from 'components/icons';
+import { ChevronDownIcon } from 'components/icons';
 
 const EventAbout = () => {
   return (
@@ -24,7 +24,7 @@ const EventAbout = () => {
           science, health, and social innovation.
         </Typography>
         <ZuButton
-          startIcon={<ArrowDownIcon />}
+          startIcon={<ChevronDownIcon />}
           sx={{ backgroundColor: '#313131', width: '100%' }}
         >
           Show More

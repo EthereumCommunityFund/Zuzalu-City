@@ -12,7 +12,7 @@ import {
   HomeIcon,
   MegaPhoneIcon,
   EventIcon,
-  ArrowDownIcon,
+  ChevronDownIcon,
 } from 'components/icons';
 
 const SubSidebar = () => {
@@ -50,7 +50,7 @@ const SubSidebar = () => {
           >
             Zuzalu City Contributors
           </Typography>
-          <ArrowDownIcon />
+          <ChevronDownIcon />
         </Stack>
       </Stack>
       <Stack

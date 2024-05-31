@@ -44,6 +44,7 @@
     "@mui/material": "^5.15.16",
     "@mui/material-nextjs": "^5.15.11",
     "@mui/x-date-pickers": "^7.2.0",
+    "@mui/x-date-pickers-pro": "^7.5.1",
     "@rainbow-me/rainbowkit": "^2.0.5",
     "@supabase/supabase-js": "^2.43.1",
     "@tanstack/react-query": "^5.32.0",
