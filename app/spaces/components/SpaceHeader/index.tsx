@@ -4,10 +4,26 @@ import { useRouter } from 'next/navigation';
 import { Stack, Typography, useTheme } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { SpacePlusIcon } from 'components/icons';
+import { useCeramicContext } from '@/context/CeramicContext';
+import AuthPrompt from '@/components/AuthPrompt';
+import WarningModal from '../Modal/WarningModal';
 
 const SpaceHeader = () => {
+  const [showModal, setShowModal] = React.useState(false);
   const theme = useTheme();
   const router = useRouter();
+  const {
+    isAuthenticated,
+  } = useCeramicContext()
+
+  const createButtonHandler = () => {
+    if(isAuthenticated) {
+      router.push('/spaces/create')
+      setShowModal(false)
+    } else {
+      setShowModal(true)
+    }
+  }
 
   return (
     <Stack
@@ -24,10 +40,11 @@ const SpaceHeader = () => {
       </Typography>
       <ZuButton
         startIcon={<SpacePlusIcon />}
-        onClick={() => router.push('/spaces/create')}
+        onClick={createButtonHandler}
       >
         Create a Space
       </ZuButton>
+      <WarningModal showModal={showModal} setShowModal={setShowModal} />
     </Stack>
   );
 };

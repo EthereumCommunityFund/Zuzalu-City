@@ -32,8 +32,10 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             bgcolor: '#2d2d2d',
           },
         }}
-        border="1px solid rgba(255, 255, 255, 0.1)"
-        position="relative"
+        border='1px solid rgba(255, 255, 255, 0.1)'
+        position='relative'
+        height={288}
+        maxHeight={288}
       >
         <Box
           sx={{
@@ -58,10 +60,17 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           <Typography color="white" gutterBottom variant="subtitleS">
             {title}
           </Typography>
-          <Typography variant="bodyM" color="white">
-            {description}
-          </Typography>
-          <Stack direction="row">
+          <Stack
+            sx={{
+              maxHeight: '44px',
+              overflow: 'auto'
+            }}
+          >
+            <Typography variant="bodyM" color="white" sx={{wordWrap: 'break-word'}}>
+              {description}
+            </Typography>
+          </Stack>
+          <Stack direction='row'>
             <Typography color="white" variant="caption">
               AI
             </Typography>
