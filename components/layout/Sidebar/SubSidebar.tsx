@@ -12,6 +12,8 @@ import {
   TableIcon,
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
+import { ChatsIcon } from 'components/icons/Chats';
+import { ChevronDownIcon } from 'components/icons';
 import { Stack, Typography, Box, Popover } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';

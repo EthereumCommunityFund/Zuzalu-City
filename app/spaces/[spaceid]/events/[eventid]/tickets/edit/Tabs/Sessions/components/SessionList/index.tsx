@@ -9,7 +9,15 @@ import {
 import { ZuButton } from 'components/core';
 import SessionCard from './SessionCard';
 
-const SessionList = () => {
+import { Session, SessionData } from '@/types';
+
+type SessionsListProps = {
+  sessions?: Session[]
+};
+
+const SessionList: React.FC<SessionsListProps> = ({
+  sessions = []
+}) => {
   return (
     <Stack direction={'column'} spacing={2}>
       <Stack direction={'row'} justifyContent={'space-between'}>
@@ -46,9 +54,18 @@ const SessionList = () => {
         Monday, October 2023
       </Typography>
       <Stack spacing={2} divider={<Divider sx={{ borderColor: '#383838' }} />}>
+        {/* <SessionCard />
         <SessionCard />
-        <SessionCard />
-        <SessionCard />
+        <SessionCard /> */}
+        {sessions.map((session, index) => (
+          <SessionCard
+            key={`SessionCard-${index}`}
+            title={session.title}
+            startTime={session.startTime}
+            endTime={session.endTime}
+            location={session.meeting_url}
+          />
+        ))}
       </Stack>
       <Typography variant="body2" color="white" fontStyle="italic">
         Prototype Note: Below shows an empty state

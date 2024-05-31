@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React from 'react';
+import dayjs from 'dayjs';
 import { Stack, Typography, Box } from '@mui/material';
 import { EditIcon, MapIcon } from 'components/icons';
 
@@ -16,7 +17,19 @@ const speakers = [
   },
 ];
 
-const SessionCard = () => {
+type SessionCardProps = {
+  title?: string;
+  startTime?: string;
+  endTime?: string;
+  location?: string;
+};
+
+const SessionCard: React.FC<SessionCardProps> = ({
+  title = "Opening Meetup (some game to get to know the coworking space + hotels)",
+  startTime = "00:00 AM",
+  endTime = "00:00 AM",
+  location = "GROUND FLOOR THEATER",
+}) => {
   return (
     <Stack
       direction={'column'}
@@ -34,11 +47,11 @@ const SessionCard = () => {
         alignItems={'center'}
         justifyContent={'space-between'}
       >
-        <Typography variant="bodyB">00:00 AM - 00:00 AM</Typography>
+        <Typography variant="bodyB">{dayjs(startTime).format('HH A')} - {dayjs(endTime).format('HH A')}</Typography>
         <EditIcon />
       </Stack>
       <Typography variant="subtitleSB">
-        Opening Meetup (some game to get to know the coworking space + hotels)
+        {title}
       </Typography>
       <Stack direction={'row'} spacing={1}>
         <Typography variant="bodyS">Speakers:</Typography>
@@ -64,7 +77,7 @@ const SessionCard = () => {
       </Stack>
       <Stack direction={'row'} alignItems={'center'} spacing={1}>
         <MapIcon size={4} />
-        <Typography variant="caption">GROUND FLOOR THEATER</Typography>
+        <Typography variant="caption">{location}</Typography>
       </Stack>
     </Stack>
   );

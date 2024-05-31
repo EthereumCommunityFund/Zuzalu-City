@@ -16,6 +16,7 @@ const EventRegister = () => {
         padding="10px 14px"
         borderBottom="1px solid #383838"
         bgcolor="#2d2d2d"
+        borderRadius="10px 10px 0 0"
       >
         <Typography color="white" variant="subtitleS">
           Event Registration

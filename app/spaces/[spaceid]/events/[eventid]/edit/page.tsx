@@ -391,7 +391,7 @@ const Home = () => {
                     connector={connector}
                     multiple={false}
                     crop={false} // must be false when accept is svg
-                    onChange={(files) => {
+                    onChange={(files: any) => {
                       setAvatar(files[0]);
                     }}
                     onUpload={(file: any) => {
