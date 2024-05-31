@@ -20,7 +20,7 @@ import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { SessionHeader, SessionAdd, SessionList } from './components';
-import { ZuButton, ZuSwitch } from 'components/core';
+import { ZuButton, ZuInput, ZuSwitch } from 'components/core';
 import {
   XMarkIcon,
   RightArrowCircleIcon,
@@ -278,26 +278,8 @@ const Sessions = () => {
               <Typography variant="subtitleMB">Session Details</Typography>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Name*</Typography>
-                <Input
+                <ZuInput
                   onChange={(e) => setSessionName(e.target.value)}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#2d2d2d',
-                    padding: '12px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
                   placeholder="Standard Pass"
                 />
               </Stack>
@@ -306,26 +288,8 @@ const Sessions = () => {
                 <Typography variant="bodyS">
                   Attach a relevant track this session relates to
                 </Typography>
-                <Input
+                <ZuInput
                   onChange={(e) => setSessionTrack(e.target.value)}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#2d2d2d',
-                    padding: '12px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
                   placeholder="Select"
                 />
               </Stack>
@@ -446,26 +410,8 @@ const Sessions = () => {
                 <Typography variant="bodyS">
                   Choose a type for your session to relay its nature to guests
                 </Typography>
-                <Input
+                <ZuInput
                   onChange={(e) => setSessionType(e.target.value)}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#2d2d2d',
-                    padding: '12px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
                   placeholder="Meetup, Activity, Party, etc.."
                 />
               </Stack>
@@ -474,26 +420,8 @@ const Sessions = () => {
                 <Typography variant="bodyS">
                   Select a level experience may be needed for this session
                 </Typography>
-                <Input
+                <ZuInput
                   onChange={(e) => setSessionExperienceLevel(e.target.value)}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#2d2d2d',
-                    padding: '12px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
                   placeholder="Beginner OR Intermediate OR Advanced"
                 />
               </Stack>
@@ -585,25 +513,7 @@ const Sessions = () => {
                   <Typography variant="bodyS">
                     Book a location to host this session
                   </Typography>
-                  <Input
-                    sx={{
-                      color: 'white',
-                      backgroundColor: '#2d2d2d',
-                      padding: '12px 10px',
-                      borderRadius: '8px',
-                      width: '100%',
-                      fontSize: '15px',
-                      fontFamily: 'Inter',
-                      '&::after': {
-                        borderBottom: 'none',
-                      },
-                      '&::before': {
-                        borderBottom: 'none',
-                      },
-                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                        borderBottom: 'none',
-                      },
-                    }}
+                  <ZuInput
                     placeholder="Room"
                   />
                   <Stack alignItems="center">
@@ -775,26 +685,8 @@ const Sessions = () => {
                   <Typography variant="bodyS">
                     Provide a URL where this session will be hosted
                   </Typography>
-                  <Input
+                  <ZuInput
                     onChange={(e) => setSessionVideoURL(e.target.value)}
-                    sx={{
-                      color: 'white',
-                      backgroundColor: '#2d2d2d',
-                      padding: '12px 10px',
-                      borderRadius: '8px',
-                      width: '100%',
-                      fontSize: '15px',
-                      fontFamily: 'Inter',
-                      '&::after': {
-                        borderBottom: 'none',
-                      },
-                      '&::before': {
-                        borderBottom: 'none',
-                      },
-                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                        borderBottom: 'none',
-                      },
-                    }}
                     placeholder="https://"
                   />
                 </Stack>
