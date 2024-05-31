@@ -1,0 +1,26 @@
+.spaceButton {
+  border-radius: 10px;
+  background: url(/5.webp) lightgray 50% / cover no-repeat;
+}
+
+.icon {
+  opacity: 0.5;
+}
+
+.menu {
+  cursor: pointer;
+}
+
+.menu:hover {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 700;
+
+  .text {
+    font-weight: 700;
+  }
+
+  .icon {
+    opacity: 1;
+  }
+}
