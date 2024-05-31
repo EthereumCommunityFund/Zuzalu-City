@@ -69,7 +69,6 @@
     "react-qr-scanner": "^1.0.0-alpha.11",
     "viem": "^2.9.26",
     "wagmi": "^2.5.20",
-    "react-qr-scanner": "^1.0.0-alpha.11",
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
