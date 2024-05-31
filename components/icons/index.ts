@@ -36,7 +36,15 @@ import { CalendarIcon } from './Calendar';
 import { SessionIcon } from './Session';
 import { ChevronDownIcon } from './ChevronDown';
 import { ArchiveBoxIcon } from './ArchiveBox';
-import { ArrowDownIcon } from './ArrowD';
+import { ArrowDownIcon } from './ArrowDown';
+import { SettingIcon } from './Setting';
+import { ChatsIcon } from './Chats';
+import { AnnouncementsIcon } from './Announcements';
+import { ManageEventsIcon } from './ManageEvents';
+import { UserPlusIcon } from './UserPlus';
+import { ShieldIcon } from './Shield';
+import { NotificationIcon } from './Notification';
+import { XCricleIcon } from './XCircle';
 
 export {
   HomeIcon,
@@ -78,4 +86,12 @@ export {
   ChevronDownIcon,
   ArchiveBoxIcon,
   ArrowDownIcon,
+  SettingIcon,
+  ChatsIcon,
+  AnnouncementsIcon,
+  ManageEventsIcon,
+  UserPlusIcon,
+  ShieldIcon,
+  NotificationIcon,
+  XCricleIcon,
 };

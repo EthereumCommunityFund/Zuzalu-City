@@ -391,7 +391,7 @@ const Home = () => {
                     connector={connector}
                     multiple={false}
                     crop={false} // must be false when accept is svg
-                    onChange={(files) => {
+                    onChange={(files: any) => {
                       setAvatar(files[0]);
                     }}
                     onUpload={(file: any) => {
@@ -419,7 +419,7 @@ const Home = () => {
                       height: '150px',
                       borderRadius: '75px',
                     }}
-                    file={avatar}
+                    file={avatarURL}
                   />
                 </Box>
                 <Box

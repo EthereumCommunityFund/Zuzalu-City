@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -20,17 +21,13 @@ import { EventCard } from '@/components/cards';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import { MOCK_DATA } from 'mock';
-import { WalletProvider } from '../context/WalletContext';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
 import { Event, EventData, Space, SpaceData } from '@/types';
-const queryClient = new QueryClient();
 
 const Home: React.FC = () => {
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [spaces, setSpaces] = useState<Space[]>([]);
@@ -214,7 +211,13 @@ const Home: React.FC = () => {
                     Explore Spaces
                   </Typography>
                 </Box>
-                <Box display="flex" alignItems="center" gap="10px">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap="10px"
+                  onClick={() => router.push('/spaces')}
+                  sx={{ cursor: 'pointer' }}
+                >
                   <Typography color="white" variant="bodyM">
                     View All Spaces
                   </Typography>

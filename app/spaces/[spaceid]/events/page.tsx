@@ -8,7 +8,8 @@ import { CalendarIcon, EventIcon, HomeIcon, ListIcon } from 'components/icons';
 import { EventCard } from '@/components/cards';
 import { MOCK_DATA } from 'mock';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Event, EventData, EventEdge } from '@/types';
+import { Event, EventData, Space, SpaceData } from '@/types';
+import SubSidebar from '@/components/layout/Sidebar/SubSidebar';
 
 const Home = () => {
   const router = useRouter();
@@ -16,6 +17,7 @@ const Home = () => {
   const spaceId = params.spaceid.toString();
   console.log('spaceID', spaceId);
 
+  const [space, setSpace] = useState<Space>();
   const [events, setEvents] = useState<Event[]>([]);
   const {
     ceramic,
@@ -31,6 +33,54 @@ const Home = () => {
     username,
     createProfile,
   } = useCeramicContext();
+
+  const getSpace = async () => {
+    console.log('Fetching spaces...');
+    try {
+      const response: any = await composeClient.executeQuery(`
+        query MyQuery {
+          spaceIndex(first: 20) {
+            edges {
+              node {
+                id
+                avatar
+                banner
+                description
+                name
+                profileId
+                tagline
+                website
+                twitter
+                telegram
+                nostr
+                lens
+                github
+                discord
+                ens
+              }
+            }
+          }
+        }
+      `);
+
+      if ('spaceIndex' in response.data) {
+        const spaceData: SpaceData = response.data as SpaceData;
+        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setSpace(
+          fetchedSpaces.filter(
+            (space) => space.id === params.spaceid.toString(),
+          )[0],
+        );
+        console.log('Spaces fetched:', fetchedSpaces);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch spaces:', error);
+    }
+  };
 
   const getEvents = async () => {
     console.log('Fetching events...');
@@ -85,8 +135,8 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getEvents();
-        console.log(data);
+        await getSpace();
+        await getEvents();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -97,7 +147,7 @@ const Home = () => {
   return (
     <Stack direction="row">
       <IconSidebar />
-      <Sidebar spaceId={spaceId} />
+      <SubSidebar title={space?.name} spaceId={params.spaceid.toString()} />
       <Stack flex={1}>
         <Header />
         <Stack direction="row" justifyContent="center">

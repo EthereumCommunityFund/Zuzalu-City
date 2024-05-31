@@ -9,7 +9,8 @@ import { Img3 } from '@lxdao/img3';
 import { Stack } from '@mui/material';
 
 export const PreviewFile = (props: {
-  file?: SelectedFile | UploadFile | UploadResult | CroppedFile;
+  // file?: SelectedFile | UploadFile | UploadResult | CroppedFile;
+  file?: string;
   sx?: {
     [key: string]: string;
   };
@@ -28,8 +29,8 @@ export const PreviewFile = (props: {
       {file && (
         <Img3
           style={{ maxHeight: '100%', maxWidth: '100%', ...sx }}
-          src={file ? file.previewUrl : tempSrc}
-          alt={file.name}
+          src={file ? file : tempSrc}
+          alt={file}
         />
       )}
     </Stack>
