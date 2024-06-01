@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
 import { Box, Snackbar, Typography, Alert } from '@mui/material';
 import { EventCard } from '@/components/cards';
-import AnnouncementCard from 'components/AnnouncementCart';
+// import AnnouncementCard from 'components/AnnouncementCart';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   EventIcon,
@@ -386,68 +386,68 @@ export default function SpaceDetailPage() {
               }}
             ></SidebarButton>
           </Box>
-          <Box
-            sx={{
-              padding: '20px',
-              display: 'flex',
-              gap: '20px',
-              flexDirection: 'column',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Box
-                sx={{
-                  fontSize: '18px',
-                  fontWeight: '700',
-                  color: '#919191',
-                }}
-              >
-                Latest Announcements
-              </Box>
-              <SidebarButton
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  padding: '4px 10px',
-                  gap: '10px',
-                  cursor: 'pointer',
-                  backgroundColor: 'transparent',
-                  '&:hover': {
-                    backgroundColor: '#e6e6e61a',
-                  },
-                  borderRadius: '10px',
-                  opacity: 0.7,
-                  alignItems: 'center',
-                }}
-                content="View All Posts"
-                rightIcon={<RightArrowCircleSmallIcon />}
-              ></SidebarButton>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-              }}
-            >
-              {MOCK_DATA.announcements.map((announcement, index) => {
-                return (
-                  <AnnouncementCard
-                    {...announcement}
-                    key={index}
-                  ></AnnouncementCard>
-                );
-              })}
-            </Box>
-          </Box>
+          {/*<Box*/}
+          {/*  sx={{*/}
+          {/*    padding: '20px',*/}
+          {/*    display: 'flex',*/}
+          {/*    gap: '20px',*/}
+          {/*    flexDirection: 'column',*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <Box*/}
+          {/*    sx={{*/}
+          {/*      display: 'flex',*/}
+          {/*      flexDirection: 'row',*/}
+          {/*      width: '100%',*/}
+          {/*      justifyContent: 'space-between',*/}
+          {/*      alignItems: 'center',*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    <Box*/}
+          {/*      sx={{*/}
+          {/*        fontSize: '18px',*/}
+          {/*        fontWeight: '700',*/}
+          {/*        color: '#919191',*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      Latest Announcements*/}
+          {/*    </Box>*/}
+          {/*    <SidebarButton*/}
+          {/*      sx={{*/}
+          {/*        display: 'flex',*/}
+          {/*        flexDirection: 'row',*/}
+          {/*        padding: '4px 10px',*/}
+          {/*        gap: '10px',*/}
+          {/*        cursor: 'pointer',*/}
+          {/*        backgroundColor: 'transparent',*/}
+          {/*        '&:hover': {*/}
+          {/*          backgroundColor: '#e6e6e61a',*/}
+          {/*        },*/}
+          {/*        borderRadius: '10px',*/}
+          {/*        opacity: 0.7,*/}
+          {/*        alignItems: 'center',*/}
+          {/*      }}*/}
+          {/*      content="View All Posts"*/}
+          {/*      rightIcon={<RightArrowCircleSmallIcon />}*/}
+          {/*    ></SidebarButton>*/}
+          {/*  </Box>*/}
+          {/*  <Box*/}
+          {/*    sx={{*/}
+          {/*      display: 'flex',*/}
+          {/*      flexDirection: 'column',*/}
+          {/*      gap: '20px',*/}
+          {/*    }}*/}
+          {/*  >*/}
+          {/*    {MOCK_DATA.announcements.map((announcement, index) => {*/}
+          {/*      return (*/}
+          {/*        <AnnouncementCard*/}
+          {/*          {...announcement}*/}
+          {/*          key={index}*/}
+          {/*        ></AnnouncementCard>*/}
+          {/*      );*/}
+          {/*    })}*/}
+          {/*  </Box>*/}
+          {/*</Box>*/}
           <Box
             sx={{
               padding: '20px',
