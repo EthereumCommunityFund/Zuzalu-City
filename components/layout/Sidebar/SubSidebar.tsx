@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import {
-  AnnouncementsIcon,
   ChevronDownIcon,
   HomeIcon,
   NotificationIcon,
@@ -12,7 +11,7 @@ import {
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
 import { Box, Popover, Stack, StackProps, Typography } from '@mui/material';
-import { useTheme, styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 
 import styles from './SubSidebar.module.css';
@@ -254,11 +253,11 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             );
           })} */}
           <SidebarButton icon={<HomeIcon />} content="Home" isActive={false} />
-          <SidebarButton
-            icon={<AnnouncementsIcon />}
-            content="Announcements"
-            isActive={false}
-          />
+          {/*<SidebarButton*/}
+          {/*  icon={<AnnouncementsIcon />}*/}
+          {/*  content="Announcements"*/}
+          {/*  isActive={false}*/}
+          {/*/>*/}
           <SidebarButton
             icon={<TableIcon />}
             content="Events"
