@@ -1,7 +1,7 @@
 'use client';
 import { useParams } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
-import { Box, Snackbar, Typography } from '@mui/material';
+import { Box, Snackbar, Typography, Alert } from '@mui/material';
 import { EventCard } from '@/components/cards';
 import AnnouncementCard from 'components/AnnouncementCart';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -246,8 +246,11 @@ export default function SpaceDetailPage() {
                     onClose={() => {
                       setShowCopyToast(false);
                     }}
-                    message={`Copy share link to clipboard`}
-                  />
+                  >
+                    <Alert severity="success" variant="filled">
+                      Copy share link to clipboard
+                    </Alert>
+                  </Snackbar>
                 </SidebarButton>
               </CopyToClipboard>
               {/*<SidebarButton*/}
