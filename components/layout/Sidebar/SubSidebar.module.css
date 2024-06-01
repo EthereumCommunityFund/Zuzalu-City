@@ -1,6 +1,22 @@
 .spaceButton {
-  border-radius: 10px;
+  position: relative;
+}
+
+.spaceButton:before{
+  display: block;
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   background: url(/5.webp) lightgray 50% / cover no-repeat;
+  border-radius: 10px;
+  opacity: 0.3;
+}
+
+.spaceButton:hover:before{
+  opacity: 0.4;
 }
 
 .icon {

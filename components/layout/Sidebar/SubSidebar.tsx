@@ -99,9 +99,8 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
                 cursor: 'pointer',
                 borderRadius: '10px',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
-                backgroundColor: 'rgba(34,34,34,0.75)',
+                backgroundColor: 'rgba(34,34,34,0.1)',
                 backdropFilter: 'blur(10px)',
-                '&:hover': { backgroundColor: 'rgba(34,34,34,0.65)' },
               }}
               onClick={handleClick}
             >

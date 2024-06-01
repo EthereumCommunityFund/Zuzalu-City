@@ -1,16 +1,16 @@
 'use client';
 import { useParams } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
-import { Box, Typography } from '@mui/material';
+import { Box, Snackbar, Typography } from '@mui/material';
 import { EventCard } from '@/components/cards';
 import AnnouncementCard from 'components/AnnouncementCart';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   EventIcon,
   HomeIcon,
   PlusCircleIcon,
   ShareIcon,
 } from 'components/icons';
-import { MoreIcon } from 'components/icons/More';
 import { RightArrowCircleSmallIcon } from 'components/icons/RightArrowCircleSmall';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { MOCK_DATA } from 'mock';
@@ -31,6 +31,13 @@ export default function SpaceDetailPage() {
   >([]);
   const [showMore, setShowMore] = useState(false);
   const [space, setSpace] = useState<Space>();
+  const [showCopyToast, setShowCopyToast] = useState(false);
+
+  const [currentHref, setCurrentHref] = useState('');
+
+  useEffect(() => {
+    setCurrentHref(window.location.href);
+  }, []);
 
   const getSpace = async () => {
     console.log('Fetching spaces...');
@@ -216,30 +223,45 @@ export default function SpaceDetailPage() {
                 }}
                 icon={<PlusCircleIcon />}
               ></SidebarButton>
-              <SidebarButton
-                sx={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  backgroundColor: '#ffffff0a',
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                  },
-                  cursor: 'pointer',
+              <CopyToClipboard
+                text={currentHref}
+                onCopy={() => {
+                  setShowCopyToast(true);
                 }}
-                icon={<ShareIcon />}
-              ></SidebarButton>
-              <SidebarButton
-                sx={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  backgroundColor: '#ffffff0a',
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                  },
-                  cursor: 'pointer',
-                }}
-                icon={<MoreIcon />}
-              ></SidebarButton>
+              >
+                <SidebarButton
+                  sx={{
+                    padding: '10px',
+                    borderRadius: '10px',
+                    backgroundColor: '#ffffff0a',
+                    '&:hover': { backgroundColor: '#ffffff1a' },
+                    cursor: 'pointer',
+                  }}
+                  icon={<ShareIcon />}
+                >
+                  <Snackbar
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    open={showCopyToast}
+                    autoHideDuration={800}
+                    onClose={() => {
+                      setShowCopyToast(false);
+                    }}
+                    message={`Copy share link to clipboard`}
+                  />
+                </SidebarButton>
+              </CopyToClipboard>
+              {/*<SidebarButton*/}
+              {/*  sx={{*/}
+              {/*    padding: '10px',*/}
+              {/*    borderRadius: '10px',*/}
+              {/*    backgroundColor: '#ffffff0a',*/}
+              {/*    '&:hover': {*/}
+              {/*      backgroundColor: '#ffffff1a',*/}
+              {/*    },*/}
+              {/*    cursor: 'pointer',*/}
+              {/*  }}*/}
+              {/*  icon={<MoreIcon />}*/}
+              {/*></SidebarButton>*/}
             </Box>
           </Box>
           <Box
