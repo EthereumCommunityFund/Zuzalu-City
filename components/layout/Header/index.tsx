@@ -145,7 +145,9 @@ const Header = () => {
             <MenuItem>{username}</MenuItem>
             <MenuItem>Wallet Connected</MenuItem>
             <MenuItem onClick={handleProfile}>Profile</MenuItem>
-            <MenuItem onClick={() => router.push("/passport")}>Passport</MenuItem>
+            <MenuItem onClick={() => router.push('/passport')}>
+              Passport
+            </MenuItem>
             <MenuItem onClick={handleSetting}>Setting</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
             <Divider />

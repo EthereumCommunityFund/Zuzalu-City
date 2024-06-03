@@ -39,8 +39,8 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
-  minutes: 30
-}
+  minutes: 30,
+};
 
 const Sessions = () => {
   const params = useParams();
@@ -54,16 +54,20 @@ const Sessions = () => {
     right: false,
   });
 
-  const [sessionName, setSessionName] = useState<string>("");
-  const [sessionTrack, setSessionTrack] = useState<string>("");
+  const [sessionName, setSessionName] = useState<string>('');
+  const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
-  const [sessionDescription, setSessionDescription] = useState<string>("Test Session");
-  const [sessionType, setSessionType] = useState<string>("");
-  const [sessionExperienceLevel, setSessionExperienceLevel] = useState<string>("");
+  const [sessionDescription, setSessionDescription] =
+    useState<string>('Test Session');
+  const [sessionType, setSessionType] = useState<string>('');
+  const [sessionExperienceLevel, setSessionExperienceLevel] =
+    useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
-  const [sessionVideoURL, setSessionVideoURL] = useState<string>("");
+  const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   // const [sessionCreatedAt, setSessionCreatedAt] = useState<Dayjs | null>(dayjs());
-  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(dayjs());
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
+    dayjs(),
+  );
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
@@ -138,7 +142,7 @@ const Sessions = () => {
 
     const createSession = async () => {
       if (!isAuthenticated) {
-        console.log("Not authenticated");
+        console.log('Not authenticated');
         return;
       }
       if (person) {
@@ -178,7 +182,6 @@ const Sessions = () => {
         console.log(update);
         toggleDrawer('right', false);
         await getSessions();
-
       } else {
         const update = await composeClient.executeQuery(`
         mutation MyMutation {
@@ -507,90 +510,206 @@ const Sessions = () => {
                   </Box>
                 </Box>
               </Stack>
-              {person && <Stack spacing="30px">
-                <Stack spacing="10px">
-                  <Typography variant="bodyBB">Select Location*</Typography>
-                  <Typography variant="bodyS">
-                    Book a location to host this session
-                  </Typography>
-                  <ZuInput
-                    placeholder="Room"
-                  />
-                  <Stack alignItems="center">
-                    <ArrowDownIcon />
-                  </Stack>
-                  <Stack
-                    borderRadius="10px"
-                    border="1px solid rgba(255, 255, 255, 0.10)"
-                    spacing="10px"
-                    padding="10px"
-                  >
-                    <Typography variant="caption">Your are booking at:</Typography>
+              {person && (
+                <Stack spacing="30px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Select Location*</Typography>
+                    <Typography variant="bodyS">
+                      Book a location to host this session
+                    </Typography>
+                    <ZuInput placeholder="Room" />
+                    <Stack alignItems="center">
+                      <ArrowDownIcon />
+                    </Stack>
                     <Stack
                       borderRadius="10px"
-                      padding="10px"
-                      bgcolor="#313131"
-                      direction="row"
+                      border="1px solid rgba(255, 255, 255, 0.10)"
                       spacing="10px"
+                      padding="10px"
                     >
-                      <Box
-                        component="img"
-                        width="60px"
-                        height="60px"
-                        borderRadius="8px"
-                        src="/20.png"
+                      <Typography variant="caption">
+                        Your are booking at:
+                      </Typography>
+                      <Stack
+                        borderRadius="10px"
+                        padding="10px"
+                        bgcolor="#313131"
+                        direction="row"
+                        spacing="10px"
+                      >
+                        <Box
+                          component="img"
+                          width="60px"
+                          height="60px"
+                          borderRadius="8px"
+                          src="/20.png"
+                        />
+                        <Stack spacing="4px">
+                          <Typography variant="bodyBB">Room One</Typography>
+                          <Typography variant="bodyS">
+                            Sessions booked: 22
+                          </Typography>
+                          <Typography variant="caption">
+                            Capacity: 15
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                  <Stack spacing="20px">
+                    <Stack spacing="10px">
+                      <Typography variant="bodyBB">Book a Date*</Typography>
+                      <Typography variant="bodyS">
+                        View and select the available dates and times for this
+                        location
+                      </Typography>
+                      <DatePicker
+                        onChange={(newValue) => setSessionStartTime(newValue)}
+                        sx={{
+                          '& .MuiSvgIcon-root': {
+                            color: 'white',
+                          },
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            border: 'none',
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              ...{
+                                '& .MuiPickersDay-root': { color: 'black' },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                  backgroundColor: '#D7FFC4',
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                  color: 'black',
+                                },
+                              },
+                            },
+                          },
+                        }}
                       />
-                      <Stack spacing="4px">
-                        <Typography variant="bodyBB">Room One</Typography>
-                        <Typography variant="bodyS">Sessions booked: 22</Typography>
-                        <Typography variant="caption">Capacity: 15</Typography>
+                    </Stack>
+                    <Stack direction="row" spacing="20px">
+                      <Stack spacing="10px" flex={1}>
+                        <Typography variant="bodyBB">Start Time</Typography>
+                        <DateTimePicker
+                          onChange={(newValue) => setSessionStartTime(newValue)}
+                          views={['hours', 'minutes']}
+                          timeSteps={Custom_Option}
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              color: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              border: 'none',
+                            },
+                          }}
+                          slotProps={{
+                            popper: {
+                              sx: {
+                                ...{
+                                  '& .MuiPickersDay-root': { color: 'black' },
+                                  '& .MuiPickersDay-root.Mui-selected': {
+                                    backgroundColor: '#D7FFC4',
+                                  },
+                                  '& .MuiPickersCalendarHeader-root': {
+                                    color: 'black',
+                                  },
+                                  '& .MuiMultiSectionDigitalClock-root': {
+                                    color: 'black',
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </Stack>
+                      <Stack spacing="10px" flex={1}>
+                        <Typography variant="bodyBB">End Time</Typography>
+                        <DateTimePicker
+                          onChange={(newValue) => setSessionEndTime(newValue)}
+                          views={['hours', 'minutes']}
+                          timeSteps={Custom_Option}
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              color: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              border: 'none',
+                            },
+                          }}
+                          slotProps={{
+                            popper: {
+                              sx: {
+                                ...{
+                                  '& .MuiPickersDay-root': { color: 'black' },
+                                  '& .MuiPickersDay-root.Mui-selected': {
+                                    backgroundColor: '#D7FFC4',
+                                  },
+                                  '& .MuiPickersCalendarHeader-root': {
+                                    color: 'black',
+                                  },
+                                  '& .MuiMultiSectionDigitalClock-root': {
+                                    color: 'black',
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+                    <Stack alignItems="center">
+                      <ArrowDownIcon />
+                    </Stack>
+                    <Stack
+                      spacing="10px"
+                      padding="10px"
+                      border="1px solid rgba(255, 255, 255, 0.10)"
+                      borderRadius="10px"
+                    >
+                      <Typography variant="caption">
+                        Date & times your are booking:
+                      </Typography>
+                      <Stack
+                        borderRadius="10px"
+                        padding="10px"
+                        bgcolor="#313131"
+                        spacing="10px"
+                      >
+                        <Typography variant="bodyBB">May 23, 2024</Typography>
+                        <Typography variant="bodyS">
+                          Start Time: 8:30AM
+                        </Typography>
+                        <Typography variant="bodyS">
+                          End Time: : 10:30AM
+                        </Typography>
                       </Stack>
                     </Stack>
                   </Stack>
                 </Stack>
-                <Stack spacing="20px">
+              )}
+              {online && (
+                <Stack spacing="30px">
                   <Stack spacing="10px">
-                    <Typography variant="bodyBB">Book a Date*</Typography>
+                    <Typography variant="bodyBB">Virtual Location</Typography>
                     <Typography variant="bodyS">
-                      View and select the available dates and times for this
-                      location
+                      Provide a URL where this session will be hosted
                     </Typography>
-                    <DatePicker
-                      onChange={(newValue) => setSessionStartTime(newValue)}
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
+                    <ZuInput
+                      onChange={(e) => setSessionVideoURL(e.target.value)}
+                      placeholder="https://"
                     />
                   </Stack>
-                  <Stack direction="row" spacing="20px">
-                    <Stack spacing="10px" flex={1}>
-                      <Typography variant="bodyBB">
-                        Start Time
+                  <Stack spacing="20px">
+                    <Stack spacing="10px">
+                      <Typography variant="bodyBB">Select a Date</Typography>
+                      <Typography variant="bodyS">
+                        Pick a date for this session
                       </Typography>
-                      <DateTimePicker
+                      <DatePicker
                         onChange={(newValue) => setSessionStartTime(newValue)}
-                        views={['hours', 'minutes']}
-                        timeSteps={Custom_Option}
                         sx={{
                           '& .MuiSvgIcon-root': {
                             color: 'white',
@@ -610,193 +729,85 @@ const Sessions = () => {
                                 '& .MuiPickersCalendarHeader-root': {
                                   color: 'black',
                                 },
-                                '& .MuiMultiSectionDigitalClock-root': {
-                                  color: 'black'
-                                }
                               },
                             },
-                          },
-                        }} />
-                    </Stack>
-                    <Stack spacing="10px" flex={1}>
-                      <Typography variant="bodyBB">
-                        End Time
-                      </Typography>
-                      <DateTimePicker
-                        onChange={(newValue) => setSessionEndTime(newValue)}
-                        views={['hours', 'minutes']}
-                        timeSteps={Custom_Option}
-                        sx={{
-                          '& .MuiSvgIcon-root': {
-                            color: 'white',
-                          },
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            border: 'none',
                           },
                         }}
-                        slotProps={{
-                          popper: {
-                            sx: {
-                              ...{
-                                '& .MuiPickersDay-root': { color: 'black' },
-                                '& .MuiPickersDay-root.Mui-selected': {
-                                  backgroundColor: '#D7FFC4',
+                      />
+                    </Stack>
+                    <Stack direction="row" spacing="20px">
+                      <Stack spacing="10px" flex={1}>
+                        <Typography variant="bodyBB">Start Time</Typography>
+                        <DateTimePicker
+                          onChange={(newValue) => setSessionStartTime(newValue)}
+                          views={['hours', 'minutes']}
+                          timeSteps={Custom_Option}
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              color: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              border: 'none',
+                            },
+                          }}
+                          slotProps={{
+                            popper: {
+                              sx: {
+                                ...{
+                                  '& .MuiPickersDay-root': { color: 'black' },
+                                  '& .MuiPickersDay-root.Mui-selected': {
+                                    backgroundColor: '#D7FFC4',
+                                  },
+                                  '& .MuiPickersCalendarHeader-root': {
+                                    color: 'black',
+                                  },
+                                  '& .MuiMultiSectionDigitalClock-root': {
+                                    color: 'black',
+                                  },
                                 },
-                                '& .MuiPickersCalendarHeader-root': {
-                                  color: 'black',
-                                },
-                                '& .MuiMultiSectionDigitalClock-root': {
-                                  color: 'black'
-                                }
                               },
                             },
-                          },
-                        }} />
-                    </Stack>
-                  </Stack>
-                  <Stack alignItems="center">
-                    <ArrowDownIcon />
-                  </Stack>
-                  <Stack
-                    spacing="10px"
-                    padding="10px"
-                    border="1px solid rgba(255, 255, 255, 0.10)"
-                    borderRadius="10px"
-                  >
-                    <Typography variant="caption">
-                      Date & times your are booking:
-                    </Typography>
-                    <Stack
-                      borderRadius="10px"
-                      padding="10px"
-                      bgcolor="#313131"
-                      spacing="10px"
-                    >
-                      <Typography variant="bodyBB">May 23, 2024</Typography>
-                      <Typography variant="bodyS">Start Time: 8:30AM</Typography>
-                      <Typography variant="bodyS">End Time: : 10:30AM</Typography>
+                          }}
+                        />
+                      </Stack>
+                      <Stack spacing="10px" flex={1}>
+                        <Typography variant="bodyBB">End Time</Typography>
+                        <DateTimePicker
+                          onChange={(newValue) => setSessionEndTime(newValue)}
+                          views={['hours', 'minutes']}
+                          timeSteps={Custom_Option}
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              color: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              border: 'none',
+                            },
+                          }}
+                          slotProps={{
+                            popper: {
+                              sx: {
+                                ...{
+                                  '& .MuiPickersDay-root': { color: 'black' },
+                                  '& .MuiPickersDay-root.Mui-selected': {
+                                    backgroundColor: '#D7FFC4',
+                                  },
+                                  '& .MuiPickersCalendarHeader-root': {
+                                    color: 'black',
+                                  },
+                                  '& .MuiMultiSectionDigitalClock-root': {
+                                    color: 'black',
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </Stack>
                     </Stack>
                   </Stack>
                 </Stack>
-              </Stack>}
-              {online && <Stack spacing="30px">
-                <Stack spacing="10px">
-                  <Typography variant="bodyBB">Virtual Location</Typography>
-                  <Typography variant="bodyS">
-                    Provide a URL where this session will be hosted
-                  </Typography>
-                  <ZuInput
-                    onChange={(e) => setSessionVideoURL(e.target.value)}
-                    placeholder="https://"
-                  />
-                </Stack>
-                <Stack spacing="20px">
-                  <Stack spacing="10px">
-                    <Typography variant="bodyBB">Select a Date</Typography>
-                    <Typography variant="bodyS">
-                      Pick a date for this session
-                    </Typography>
-                    <DatePicker
-                      onChange={(newValue) => setSessionStartTime(newValue)}
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  </Stack>
-                  <Stack direction="row" spacing="20px">
-                    <Stack spacing="10px" flex={1}>
-                      <Typography variant="bodyBB">
-                        Start Time
-                      </Typography>
-                      <DateTimePicker
-                        onChange={(newValue) => setSessionStartTime(newValue)}
-                        views={['hours', 'minutes']}
-                        timeSteps={Custom_Option}
-                        sx={{
-                          '& .MuiSvgIcon-root': {
-                            color: 'white',
-                          },
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            border: 'none',
-                          },
-                        }}
-                        slotProps={{
-                          popper: {
-                            sx: {
-                              ...{
-                                '& .MuiPickersDay-root': { color: 'black' },
-                                '& .MuiPickersDay-root.Mui-selected': {
-                                  backgroundColor: '#D7FFC4',
-                                },
-                                '& .MuiPickersCalendarHeader-root': {
-                                  color: 'black',
-                                },
-                                '& .MuiMultiSectionDigitalClock-root': {
-                                  color: 'black'
-                                }
-                              },
-                            },
-                          },
-                        }} />
-                    </Stack>
-                    <Stack spacing="10px" flex={1}>
-                      <Typography variant="bodyBB">
-                        End Time
-                      </Typography>
-                      <DateTimePicker
-                        onChange={(newValue) => setSessionEndTime(newValue)}
-                        views={['hours', 'minutes']}
-                        timeSteps={Custom_Option}
-                        sx={{
-                          '& .MuiSvgIcon-root': {
-                            color: 'white',
-                          },
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            border: 'none',
-                          },
-                        }}
-                        slotProps={{
-                          popper: {
-                            sx: {
-                              ...{
-                                '& .MuiPickersDay-root': { color: 'black' },
-                                '& .MuiPickersDay-root.Mui-selected': {
-                                  backgroundColor: '#D7FFC4',
-                                },
-                                '& .MuiPickersCalendarHeader-root': {
-                                  color: 'black',
-                                },
-                                '& .MuiMultiSectionDigitalClock-root': {
-                                  color: 'black'
-                                }
-                              },
-                            },
-                          },
-                        }} />
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Stack>}
+              )}
             </Stack>
             <Stack
               direction={'column'}
@@ -809,7 +820,9 @@ const Sessions = () => {
               <Stack spacing="20px">
                 <Stack spacing="10px">
                   <Typography variant="bodyBB">Organizers*</Typography>
-                  <Typography variant="bodyS">Type or search a person</Typography>
+                  <Typography variant="bodyS">
+                    Type or search a person
+                  </Typography>
                 </Stack>
                 <FormControl focused sx={{ border: 'none' }}>
                   <OutlinedInput
@@ -877,7 +890,10 @@ const Sessions = () => {
                 </Stack>
               </Stack>
               <Stack spacing="20px">
-                <Stack pt="20px" borderTop="1px solid rgba(255, 255, 255, 0.10)">
+                <Stack
+                  pt="20px"
+                  borderTop="1px solid rgba(255, 255, 255, 0.10)"
+                >
                   <ZuButton
                     sx={{
                       fontSize: '13px',
@@ -904,7 +920,9 @@ const Sessions = () => {
               <Stack spacing="20px">
                 <Stack spacing="10px">
                   <Typography variant="bodyBB">Speakers</Typography>
-                  <Typography variant="bodyS">Type or search a person</Typography>
+                  <Typography variant="bodyS">
+                    Type or search a person
+                  </Typography>
                 </Stack>
                 <FormControl focused sx={{ border: 'none' }}>
                   <OutlinedInput

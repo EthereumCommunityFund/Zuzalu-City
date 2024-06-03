@@ -5,15 +5,19 @@ import { PlusIcon } from 'components/icons';
 
 const TicketAccess = () => {
   return (
-    <Stack direction="column" spacing={1} paddingBottom={"50px"}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between">
+    <Stack direction="column" spacing={1} paddingBottom={'50px'}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+      >
         <Typography variant="h6" color="white">
           Access Management Staff
         </Typography>
         <ZuButton startIcon={<PlusIcon />}>Invite</ZuButton>
       </Stack>
       <Typography variant="body1" color="white">
-        Door Staff - Invite users to only manage access of attendees and scan tickets
+        Door Staff - Invite users to only manage access of attendees and scan
+        tickets
       </Typography>
       <Stack
         padding={1}

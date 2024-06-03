@@ -4,7 +4,12 @@ import { useRouter, useParams } from 'next/navigation';
 import { Box, Stack, Typography, Button } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
 import { ZuButton } from 'components/core';
-import { Cog6Icon, EventIcon, ListIcon, PlusCircleIcon } from 'components/icons';
+import {
+  Cog6Icon,
+  EventIcon,
+  ListIcon,
+  PlusCircleIcon,
+} from 'components/icons';
 import { EventCard } from '@/components/cards';
 import { MOCK_DATA } from 'mock';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -157,13 +162,11 @@ const Home = () => {
           borderBottom="1px solid #383838"
           alignItems="center"
         >
-          <Typography variant="bodyMB">
-            Admin:
-          </Typography>
+          <Typography variant="bodyMB">Admin:</Typography>
           <ZuButton
             startIcon={<PlusCircleIcon size={5} />}
             sx={{
-              fontSize: "14px"
+              fontSize: '14px',
             }}
           >
             Create Event
@@ -171,7 +174,7 @@ const Home = () => {
           <ZuButton
             startIcon={<Cog6Icon size={5} />}
             sx={{
-              fontSize: "14px"
+              fontSize: '14px',
             }}
             onClick={() => router.push('/spaces/123/events/456/edit')}
           >
@@ -179,9 +182,7 @@ const Home = () => {
           </ZuButton>
         </Stack>
         <Stack padding="20px" spacing={3}>
-          <Typography variant="subtitleSB">
-            Upcoming Events(00)
-          </Typography>
+          <Typography variant="subtitleSB">Upcoming Events(00)</Typography>
           <Typography
             color="white"
             border="2px solid #383838"

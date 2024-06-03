@@ -3,7 +3,7 @@ import React, { useEffect, useRef, Fragment, FC } from 'react';
 import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
-import EditorJS from "@editorjs/editorjs";
+import EditorJS from '@editorjs/editorjs';
 // import dynamic from 'next/dynamic';
 // const EditorJS = dynamic(() => import('@editorjs/editorjs'), { ssr: false })
 
@@ -18,7 +18,7 @@ interface TextEditorPropTypes extends BoxProps {
 const TextEditor: FC<TextEditorPropTypes> = ({
   value,
   editor,
-  setEditorInst = (editor: any) => { },
+  setEditorInst = (editor: any) => {},
   holder = 'editorjs',
   children,
   ...props

@@ -7,7 +7,7 @@ import {
   ShieldIcon,
   NotificationIcon,
   TableIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
 import { Stack, Typography, Box, Popover } from '@mui/material';
