@@ -152,7 +152,6 @@ const Home: React.FC = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
-        <Header />
         <AuthPrompt />
         <Box display="grid" gridTemplateColumns={'auto 1fr'}>
           {!isTablet && <Sidebar selected="Home" />}

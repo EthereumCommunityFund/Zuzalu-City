@@ -11,7 +11,6 @@ import {
   PlusCircleIcon,
 } from 'components/icons';
 import { EventCard } from '@/components/cards';
-import { MOCK_DATA } from 'mock';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import SubSidebar from '@/components/layout/Sidebar/SubSidebar';
@@ -21,6 +20,7 @@ const Home = () => {
   const params = useParams();
   const spaceId = params.spaceid.toString();
   console.log('spaceID', spaceId);
+  const date = new Date();
 
   const [space, setSpace] = useState<Space>();
   const [events, setEvents] = useState<Event[]>([]);
@@ -176,7 +176,7 @@ const Home = () => {
             sx={{
               fontSize: '14px',
             }}
-            onClick={() => router.push('/spaces/123/events/456/edit')}
+            onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
           >
             Manage Event
           </ZuButton>
@@ -191,10 +191,10 @@ const Home = () => {
             borderRadius="40px"
             variant="subtitleS"
           >
-            October 2023
+            {`${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`}
           </Typography>
         </Stack>
-        <Stack paddingX={20}>
+        <Stack paddingX="20px">
           {events.map((event, index) => (
             <EventCard
               key={`EventCard-${index}`}
@@ -202,6 +202,20 @@ const Home = () => {
               description={event.description}
             />
           ))}
+        </Stack>
+        <Stack padding="20px" spacing={3}>
+          <Typography variant="subtitleSB">Past Events(00)</Typography>
+          <Stack paddingX="20px">
+            {
+              events.filter(event => date.getDate() > Date.parse(event.endTime)).map((event, index) => (
+                <EventCard
+                  key={`Past EventCard-${index}`}
+                  name={event.title}
+                  description={event.description}
+                />
+              ))
+            }
+          </Stack>
         </Stack>
       </Stack>
     </Stack>

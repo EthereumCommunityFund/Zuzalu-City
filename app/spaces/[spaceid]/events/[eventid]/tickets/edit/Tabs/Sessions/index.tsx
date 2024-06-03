@@ -145,6 +145,7 @@ const Sessions = () => {
         console.log('Not authenticated');
         return;
       }
+      console.log("date", sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'), sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'))
       if (person) {
         const update = await composeClient.executeQuery(`
         mutation {
@@ -184,18 +185,11 @@ const Sessions = () => {
         await getSessions();
       } else {
         const update = await composeClient.executeQuery(`
-        mutation MyMutation {
+        mutation {
           createSession(
             input: {
               content: {
                 title: "${sessionName}",
-                description: "${sessionDescription}",
-                track: "${sessionTrack}",
-                tags: "${sessionTags.join().toString()},
-                type: "${sessionType}",
-                experience_level: "${sessionExperienceLevel},
-                format: "online",
-                video_url: "${sessionVideoURL}",
                 createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
@@ -207,8 +201,6 @@ const Sessions = () => {
             document {
               id
               title
-              description
-              format
               createdAt
               startTime
               endTime
