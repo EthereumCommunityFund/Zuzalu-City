@@ -25,10 +25,10 @@ type SessionCardProps = {
 };
 
 const SessionCard: React.FC<SessionCardProps> = ({
-  title = "Opening Meetup (some game to get to know the coworking space + hotels)",
-  startTime = "00:00 AM",
-  endTime = "00:00 AM",
-  location = "GROUND FLOOR THEATER",
+  title = 'Opening Meetup (some game to get to know the coworking space + hotels)',
+  startTime = '00:00 AM',
+  endTime = '00:00 AM',
+  location = 'GROUND FLOOR THEATER',
 }) => {
   return (
     <Stack
@@ -47,12 +47,12 @@ const SessionCard: React.FC<SessionCardProps> = ({
         alignItems={'center'}
         justifyContent={'space-between'}
       >
-        <Typography variant="bodyB">{dayjs(startTime).format('HH A')} - {dayjs(endTime).format('HH A')}</Typography>
+        <Typography variant="bodyB">
+          {dayjs(startTime).format('HH A')} - {dayjs(endTime).format('HH A')}
+        </Typography>
         <EditIcon />
       </Stack>
-      <Typography variant="subtitleSB">
-        {title}
-      </Typography>
+      <Typography variant="subtitleSB">{title}</Typography>
       <Stack direction={'row'} spacing={1}>
         <Typography variant="bodyS">Speakers:</Typography>
         {speakers.map((speaker, index) => (

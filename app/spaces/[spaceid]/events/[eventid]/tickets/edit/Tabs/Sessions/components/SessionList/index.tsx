@@ -12,12 +12,10 @@ import SessionCard from './SessionCard';
 import { Session, SessionData } from '@/types';
 
 type SessionsListProps = {
-  sessions?: Session[]
+  sessions?: Session[];
 };
 
-const SessionList: React.FC<SessionsListProps> = ({
-  sessions = []
-}) => {
+const SessionList: React.FC<SessionsListProps> = ({ sessions = [] }) => {
   return (
     <Stack direction={'column'} spacing={2}>
       <Stack direction={'row'} justifyContent={'space-between'}>

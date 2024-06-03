@@ -64,8 +64,7 @@ const Create = async () => {
   });
 
   const connector = createConnector('NFT.storage', {
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+    token: process.env.CONNECTOR_TOKEN ?? '',
   });
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {

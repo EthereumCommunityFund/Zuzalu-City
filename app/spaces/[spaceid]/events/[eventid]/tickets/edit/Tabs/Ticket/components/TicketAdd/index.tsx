@@ -6,7 +6,10 @@ import { PlusIcon, PlusCircleIcon } from 'components/icons';
 const TicketAdd = () => {
   return (
     <Stack direction="column" spacing={2}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between">
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+      >
         <Typography variant="h6" color="white">
           Event Tickets
         </Typography>

@@ -3,17 +3,13 @@ import React, { useState } from 'react';
 import {
   HomeIcon,
   SettingIcon,
-  ArrowDownIcon,
-  AnnouncementsIcon,
-  ManageEventsIcon,
   UserPlusIcon,
   ShieldIcon,
   NotificationIcon,
   TableIcon,
+  ChevronDownIcon,
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
-import { ChatsIcon } from 'components/icons/Chats';
-import { ChevronDownIcon } from 'components/icons';
 import { Stack, Typography, Box, Popover } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
@@ -26,8 +22,7 @@ interface SubSidebarProps {
 const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
   const theme = useTheme();
   const router = useRouter();
-  const [isMenu, setIsMenu] = useState<boolean>(true);
-  const [anchorEl, setAnchorEl] = React.useState<HTMLDivElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
@@ -97,7 +92,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             >
               {title}
             </Typography>
-            <ArrowDownIcon size={5} />
+            <ChevronDownIcon size={5} />
           </Stack>
           <Popover
             sx={{ width: '100%' }}
@@ -192,23 +187,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
               </Stack>
             </Stack>
           </Popover>
-          {/* {isMenu && (
-          )} */}
         </Stack>
-        {/* <SidebarButton
-          content="Exit Space"
-          sx={{
-            backgroundColor: '#ffffff05',
-            '&:hover': {
-              backgroundColor: '#ffffff1a',
-              opacity: '1',
-            },
-            padding: '8px 10px',
-            borderRadius: '10px',
-            cursor: 'pointer',
-            opacity: '0.6',
-          }}
-        ></SidebarButton> */}
       </Stack>
       <Stack
         sx={{
@@ -228,47 +207,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             boxSizing: 'border-box',
           }}
         >
-          {/* {buttonList.map((item, index) => {
-            if (item.content === 'Search') {
-              return (
-                <SidebarButton
-                  icon={item.icon}
-                  content={item.content}
-                  key={index}
-                  isActive={false}
-                  sx={{
-                    backgroundColor: 'transparent',
-                    boxSizing: 'border-box',
-                    padding: '8px 10px',
-                    cursor: 'pointer',
-                    opacity: '0.6',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                    '&:hover': {
-                      backgroundColor: '#ffffff1a',
-                      opacity: '0.8',
-                    },
-                    borderRadius: '10px',
-                  }}
-                ></SidebarButton>
-              );
-            }
-            return (
-              <SidebarButton
-                icon={item.icon}
-                content={item.content}
-                key={index}
-                isActive={false}
-              ></SidebarButton>
-            );
-          })} */}
           <SidebarButton icon={<HomeIcon />} content="Home" isActive={false} />
-          <SidebarButton
-            icon={<AnnouncementsIcon />}
-            content="Announcements"
-            isActive={false}
-          />
           <SidebarButton
             icon={<TableIcon />}
             content="Events"
@@ -276,31 +215,6 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             onClick={() => router.push(`/spaces/${spaceId}/events`)}
           />
         </Stack>
-        {/* <Stack
-          sx={{
-            width: '100%',
-            padding: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-            borderTop: '1px solid #ffffff1a',
-          }}
-        >
-          <p
-            style={{
-              textTransform: 'uppercase',
-              fontSize: '10px',
-            }}
-          >
-            admins
-          </p>
-          <SidebarButton
-            // onClick={() => router.push(`/spaces/${spaceId}/events/456/edit`)}
-            onClick={() => router.push(`/spaces/${spaceId}/events`)}
-            content="Manage Events"
-            icon={<ManageEventsIcon />}
-          ></SidebarButton>
-        </Stack> */}
       </Stack>
     </Stack>
   );

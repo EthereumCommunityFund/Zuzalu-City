@@ -31,9 +31,9 @@ const TicketCard: React.FC<TicketCardProps> = ({
   tokenSymbol,
   address,
   setToggleAction,
-  onToggle = (anchor: Anchor, open: boolean) => { }
+  onToggle = (anchor: Anchor, open: boolean) => {},
 }) => {
-  const isMobile = useMediaQuery('(max-width:500px)')
+  const isMobile = useMediaQuery('(max-width:500px)');
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
@@ -41,13 +41,15 @@ const TicketCard: React.FC<TicketCardProps> = ({
       borderRadius={2}
       padding={1.5}
       bgcolor="#2d2d2d"
-      sx={{ cursor: "pointer" }}
+      sx={{ cursor: 'pointer' }}
       onClick={() => {
-        setToggleAction && setToggleAction("ViewVault"),
-          onToggle('right', true)
+        setToggleAction && setToggleAction('ViewVault'),
+          onToggle('right', true);
       }}
     >
-      <Image alt={"24.webp"} src={"/24.webp"}
+      <Image
+        alt={'24.webp'}
+        src={'/24.webp'}
         width={100}
         height={100}
         objectFit="cover"
@@ -57,21 +59,24 @@ const TicketCard: React.FC<TicketCardProps> = ({
         }}
       />
 
-      <Stack
-        direction="column"
-        spacing={1}
-      >
-        <Stack gap={1}
-          direction={{ xs: 'column', sm: 'row' }} alignItems="center">
+      <Stack direction="column" spacing={1}>
+        <Stack
+          gap={1}
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems="center"
+        >
           <Typography variant="h5" color="white">
             {name}
           </Typography>{' '}
           <Typography classes="subtitle2" color="white">
-            {price}{" "}
-            {tokenSymbol}
+            {price} {tokenSymbol}
           </Typography>
         </Stack>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1}
+          alignItems="center"
+        >
           <Stack
             direction="row"
             alignItems="center"
@@ -88,12 +93,19 @@ const TicketCard: React.FC<TicketCardProps> = ({
             <Typography color={status ? '#65C0A0' : '#C09965'}>
               {status ? 'Available' : 'Hidden'}
             </Typography>
-            <Typography style={{ marginLeft: "1px" }} color={status ? '#65C0A0' : '#C09965'}>:</Typography>
-            <Typography color={status ? '#65C0A0' : '#C09965'}>{open}</Typography>
+            <Typography
+              style={{ marginLeft: '1px' }}
+              color={status ? '#65C0A0' : '#C09965'}
+            >
+              :
+            </Typography>
+            <Typography color={status ? '#65C0A0' : '#C09965'}>
+              {open}
+            </Typography>
           </Stack>
           <Typography>Sold: {sold}</Typography>
         </Stack>
-        <Typography variant='caption'>ADDRESS: {address}</Typography>
+        <Typography variant="caption">ADDRESS: {address}</Typography>
       </Stack>
     </Stack>
   );
