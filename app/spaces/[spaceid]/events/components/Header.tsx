@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { Stack, Typography } from '@mui/material';
-import { ShareIcon, ThreeHorizonIcon } from 'components/icons';
+import { ThreeHorizonIcon } from 'components/icons';
 
 const Header = () => {
   return (
@@ -16,15 +16,6 @@ const Header = () => {
         Events
       </Typography>
       <Stack direction="row" gap={1}>
-        <Stack
-          direction="row"
-          padding={1}
-          alignItems="center"
-          bgcolor="#333333"
-          borderRadius={2}
-        >
-          <ShareIcon />
-        </Stack>
         <Stack
           direction="row"
           padding={1}

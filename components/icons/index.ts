@@ -60,6 +60,7 @@ import { UserPlusIcon } from './UserPlus';
 import { ShieldIcon } from './Shield';
 import { NotificationIcon } from './Notification';
 import { XCricleIcon } from './XCircle';
+import { Cog6Icon } from './Cog6';
 
 export {
   HomeIcon,
@@ -124,4 +125,5 @@ export {
   ShieldIcon,
   NotificationIcon,
   XCricleIcon,
+  Cog6Icon
 };

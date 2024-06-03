@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Box, Stack, Typography, Button } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
 import { ZuButton } from 'components/core';
-import { CalendarIcon, EventIcon, HomeIcon, ListIcon } from 'components/icons';
+import { Cog6Icon, EventIcon, ListIcon, PlusCircleIcon } from 'components/icons';
 import { EventCard } from '@/components/cards';
 import { MOCK_DATA } from 'mock';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -150,49 +150,38 @@ const Home = () => {
       <SubSidebar title={space?.name} spaceId={params.spaceid.toString()} />
       <Stack flex={1}>
         <Header />
-        <Stack direction="row" justifyContent="center">
-          <Stack
-            width="80%"
-            direction="row"
-            spacing={2}
-            bgcolor="#2d2d2d"
-            padding={1}
+        <Stack
+          direction="row"
+          spacing={2}
+          padding={1}
+          borderBottom="1px solid #383838"
+          alignItems="center"
+        >
+          <Typography variant="bodyMB">
+            Admin:
+          </Typography>
+          <ZuButton
+            startIcon={<PlusCircleIcon size={5} />}
+            sx={{
+              fontSize: "14px"
+            }}
           >
-            <ZuButton variant="contained">Create Event</ZuButton>
-            <ZuButton
-              variant="contained"
-              onClick={() => router.push('/spaces/123/events/456/edit')}
-            >
-              Manage Event
-            </ZuButton>
-          </Stack>
+            Create Event
+          </ZuButton>
+          <ZuButton
+            startIcon={<Cog6Icon size={5} />}
+            sx={{
+              fontSize: "14px"
+            }}
+            onClick={() => router.push('/spaces/123/events/456/edit')}
+          >
+            Manage Event
+          </ZuButton>
         </Stack>
-        <Stack paddingX={20} paddingY={1} spacing={3}>
-          <Stack direction="row" justifyContent="end">
-            <Stack
-              width="content-fit"
-              direction="row"
-              padding="2px"
-              borderRadius="10px"
-              bgcolor="#2d2d2d"
-            >
-              <ZuButton
-                startIcon={<ListIcon />}
-                sx={{
-                  backgroundColor: '#424242',
-                  '& .MuiButton-startIcon': {
-                    margin: 0,
-                  },
-                }}
-              />
-              <ZuButton
-                startIcon={<EventIcon />}
-                sx={{
-                  backgroundColor: '#2d2d2d',
-                }}
-              />
-            </Stack>
-          </Stack>
+        <Stack padding="20px" spacing={3}>
+          <Typography variant="subtitleSB">
+            Upcoming Events(00)
+          </Typography>
           <Typography
             color="white"
             border="2px solid #383838"
@@ -212,17 +201,6 @@ const Home = () => {
               description={event.description}
             />
           ))}
-          {/* <EventCard {...MOCK_DATA.events[0]} />
-          <ZuButton startIcon={<CalendarIcon />}>Eth Imrpov</ZuButton>
-          <EventCard {...MOCK_DATA.events[1]} />
-          <Stack direction="row" spacing={1}>
-            <ZuButton startIcon={<HomeIcon />}>
-              12 side events around HackZuzalu ChiangMai
-            </ZuButton>
-            <ZuButton startIcon={<CalendarIcon />}>HackZuzalu</ZuButton>
-          </Stack>
-          <EventCard {...MOCK_DATA.events[2]} />
-          <ZuButton startIcon={<CalendarIcon />}>ZuCity Meetings</ZuButton> */}
         </Stack>
       </Stack>
     </Stack>
