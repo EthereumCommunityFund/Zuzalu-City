@@ -161,7 +161,8 @@ const Home = () => {
             <ZuButton variant="contained">Create Event</ZuButton>
             <ZuButton
               variant="contained"
-              onClick={() => router.push('/spaces/123/events/456/edit')}
+              // onClick={() => router.push(`/spaces/${spaceId}/events/456/edit`)}
+              onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
             >
               Manage Event
             </ZuButton>
