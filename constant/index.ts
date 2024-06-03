@@ -43,3 +43,25 @@ export const SPACE_CATEGORIES: {
     label: 'Decentralized Social'
   }
 ]
+
+export const SOCIAL_TYPES: {
+  key: string
+  value: string
+}[] = [
+  {
+    key: 'github',
+    value: 'Github'
+  },
+  {
+    key: 'discord',
+    value: 'Discord'
+  },
+  {
+    key: 'twitter',
+    value: 'Twitter'
+  },
+  {
+    key: 'telegram',
+    value: 'Telegram'
+  }
+]

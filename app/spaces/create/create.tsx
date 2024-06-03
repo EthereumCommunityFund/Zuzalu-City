@@ -13,6 +13,10 @@ import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { OutputData } from '@editorjs/editorjs';
+import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
+import CloseIcon from '@mui/icons-material/Close';
+import CancelIcon from '@mui/icons-material/Cancel';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 interface Space {
   id: string;
@@ -477,6 +481,20 @@ const Create = () => {
                       },
                     }}
                   >
+                    {
+                      SOCIAL_TYPES.map((social, index) => {
+                        return (
+                          <MenuItem
+                            value={social.key}
+                            key={index}
+                          >
+                            {
+                              social.value
+                            }
+                          </MenuItem>
+                        )
+                      })
+                    }
                   </Select>
                 </Box>
                 <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
