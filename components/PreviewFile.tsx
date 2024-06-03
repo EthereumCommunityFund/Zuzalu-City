@@ -30,7 +30,7 @@ export const PreviewFile = (props: {
       {file && (
         <Img3
           style={{ maxHeight: '100%', maxWidth: '100%', ...sx, position: 'absolute', objectFit: 'cover' }}
-          src={tempSrc}
+          src={file ? file : tempSrc}
           alt={file}
         />
       )}
