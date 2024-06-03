@@ -68,6 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           display="flex"
           padding="10px"
           alignItems="center"
+          bgcolor={selected === 'Events' ? '#383838' : 'transparent'}
           sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
           gap="10px"
           borderRadius="10px"
