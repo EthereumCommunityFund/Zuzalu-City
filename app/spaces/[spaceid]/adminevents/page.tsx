@@ -20,7 +20,7 @@ import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
-import BpCheckbox from '../components/Checkbox';
+import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';

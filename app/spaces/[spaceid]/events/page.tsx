@@ -206,15 +206,15 @@ const Home = () => {
         <Stack padding="20px" spacing={3}>
           <Typography variant="subtitleSB">Past Events(00)</Typography>
           <Stack paddingX="20px">
-            {
-              events.filter(event => date.getDate() > Date.parse(event.endTime)).map((event, index) => (
+            {events
+              .filter((event) => date.getDate() > Date.parse(event.endTime))
+              .map((event, index) => (
                 <EventCard
                   key={`Past EventCard-${index}`}
                   name={event.title}
                   description={event.description}
                 />
-              ))
-            }
+              ))}
           </Stack>
         </Stack>
       </Stack>
