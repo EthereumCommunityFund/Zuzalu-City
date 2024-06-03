@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Stack, Box, Typography, Button } from '@mui/material';
+import React, { useState, ChangeEvent } from 'react';
+import { Stack, Box, Typography, Button, Input, Select, MenuItem, OutlinedInput, Chip, IconButton, TextField } from '@mui/material';
 import TextEditor from '@/components/editor/editor';
 import { ZuInput } from '@/components/core';
 import { Header } from './components';
@@ -11,6 +13,29 @@ import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { OutputData } from '@editorjs/editorjs';
+
+interface Space {
+  id: string;
+  avatar?: string;
+  banner?: string;
+  description?: string;
+  name: string;
+  profileId?: string;
+  tagline?: string;
+  website?: string;
+  twitter?: string;
+  telegram?: string;
+  nostr?: string;
+  lens?: string;
+  github?: string;
+  discord?: string;
+  ens?: string;
+}
+
+interface Inputs {
+  name: string;
+  tagline: string;
+}
 
 const Create = () => {
   const router = useRouter();
@@ -22,7 +47,10 @@ const Create = () => {
   const [bannerURL, setBannerURL] = useState<string>();
   // const [description, setDescription] = useState<string>('');
   const [description, setDescription] = useState<OutputData>();
+  const [error, setError] = useState(false);
   const [editor, setEditorInst] = useState<any>();
+  const [categories, setCategories] = useState<string[]>([]);
+
   const {
     ceramic,
     composeClient,
@@ -44,19 +72,17 @@ const Create = () => {
 
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
-  console.log('admin', adminId);
-  // const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = event.target;
-
-  //   setSpaceDescription(value);
-  // }
 
   const createSpace = async () => {
-    if (!isAuthenticated) return;
+    // if (!isAuthenticated) return;
     const output = await editor.save();
-    let strDesc = JSON.stringify(output);
-    console.log('admin', adminId);
+    let strDesc: any = JSON.stringify(output);
+    if (!strDesc.blocks || strDesc.blocks.length == 0) {
+      setError(true);
+      return;
+    }
     strDesc = strDesc.replaceAll('"', '\\"');
+    console.log('strDesc: ', strDesc);
     try {
       const update = await composeClient.executeQuery(`
       mutation {
@@ -87,13 +113,19 @@ const Create = () => {
         }
       }
       `);
-      console.log(update);
       typeof window !== 'undefined' && window.alert('Success!');
       router.push('/spaces');
     } catch (err) {
       console.log(err);
     }
   };
+
+  const handleChange = (e: any) => {
+    console.log(e.target.value)
+    setCategories(
+      typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
+    );
+  }
 
   return (
     <Stack>
@@ -209,10 +241,81 @@ const Create = () => {
                     </Typography>
                   </Stack>
                   <Typography variant="caption" color="white">
-                    000 Characters Left
+                    1000 Characters Left
                   </Typography>
                 </Stack>
               </Stack>
+              <Box
+                display={'flex'}
+                flexDirection={'column'}
+                gap={'20px'}
+              >
+                <Box>
+                  <Typography
+                    color="white"
+                    fontSize="18px"
+                    fontWeight={700}
+                    fontFamily="Inter"
+                  >
+                    Community Categories
+                  </Typography>
+                  <Typography color="white" variant="caption" sx={{ opacity: '0.6' }}>
+                    Search or create categories related to your space
+                  </Typography>
+                </Box>
+                <Box>
+                  <Select
+                    multiple
+                    value={categories}
+                    style={{ width: '100%' }}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222'
+                        }
+                      }
+                    }}
+                  >
+                    {
+                      SPACE_CATEGORIES.map((category, index) => {
+                        return (
+                          <MenuItem
+                            value={category.value}
+                            key={index}
+                          >
+                            {
+                              category.label
+                            }
+                          </MenuItem>
+                        )
+                      })
+                    }
+                  </Select>
+                </Box>
+                <Box display={'flex'} flexDirection={'row'} gap={'10px'} flexWrap={'wrap'}>
+                  {
+                    categories.map((category, index) => {
+                      return (
+                        <Chip
+                          label={SPACE_CATEGORIES.find((item) => item.value === category)?.label}
+                          sx={{
+                            borderRadius: '10px'
+                          }}
+                          onDelete={
+                            () => {
+                              const newArray = categories.filter((item) => item !== category);
+                              setCategories(newArray)
+                            }
+                          }
+                          key={index}
+                        />
+                      )
+                    })
+                  }
+                </Box>
+              </Box>
             </Box>
           </Box>
           <Box bgcolor="#2d2d2d" borderRadius="10px">
@@ -340,6 +443,119 @@ const Create = () => {
               </Box>
             </Stack>
           </Box>
+          <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box padding="20px" display="flex" justifyContent="space-between">
+              <Typography
+                color="white"
+                fontSize="18px"
+                fontWeight={700}
+                fontFamily="Inter"
+              >
+                Links
+              </Typography>
+            </Box>
+            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'}>
+              <Typography fontSize={'18px'} fontWeight={700} lineHeight={'120%'} color={'white'}>
+                Social Links
+              </Typography>
+              <Box display={'flex'} flexDirection={'row'} gap={'20px'}>
+                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Select Social</Typography>
+                  <Select
+                    placeholder='Select'
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222'
+                        }
+                      }
+                    }}
+                    sx={{
+                      '& > div': {
+                        padding: '8.5px 12px',
+                        borderRadius: '10px'
+                      },
+                    }}
+                  >
+                  </Select>
+                </Box>
+                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
+                  <TextField variant="outlined" placeholder='https://' sx={{
+                    opacity: '0.6',
+                    '& > div > input': {
+                      padding: '8.5px 12px'
+                    }
+                  }} />
+                </Box>
+                <Box display={'flex'} flexDirection={'column'} justifyContent={'flex-end'}>
+                  <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                    <CancelIcon />
+                  </Box>
+                </Box>
+              </Box>
+              <Button
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '10px',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  textTransform: 'unset',
+                  color: 'white'
+                }}
+              >
+                <AddCircleIcon />
+                <Typography color='white'>Add Social Link</Typography>
+              </Button>
+            </Box>
+            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'} borderTop={'1px solid rgba(255, 255, 255, 0.10)'}>
+              <Typography fontSize={'18px'} fontWeight={700} lineHeight={'120%'} color={'white'}>
+                Custom Links
+              </Typography>
+              <Box display={'flex'} flexDirection={'row'} gap={'20px'}>
+                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Link Title</Typography>
+                  <TextField variant="outlined" placeholder='Type a name' sx={{
+                    '& > div > input': {
+                      padding: '8.5px 12px'
+                    },
+                    opacity: '0.6'
+                  }} />
+                </Box>
+                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
+                  <TextField variant="outlined" placeholder='https://' sx={{
+                    '& > div > input': {
+                      padding: '8.5px 12px'
+                    },
+                    opacity: '0.6'
+                  }} />
+                </Box>
+                <Box display={'flex'} flexDirection={'column'} justifyContent={'flex-end'}>
+                  <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                    <CancelIcon />
+                  </Box>
+                </Box>
+              </Box>
+              <Button
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '10px',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  color: 'white',
+                  textTransform: 'unset'
+                }}
+              >
+                <AddCircleIcon />
+                <Typography color='white'>Add Custom Link</Typography>
+              </Button>
+            </Box>
+          </Box>
           <Box display="flex" gap="20px">
             <Button
               sx={{
@@ -364,13 +580,22 @@ const Create = () => {
                 padding: '6px 16px',
                 flex: 1,
                 border: '1px solid rgba(103, 219, 255, 0.20)',
+                opacity: '1',
+                '&:disabled': {
+                  opacity: '0.6',
+                  color: '#67DBFF'
+                }
               }}
               startIcon={<SpacePlusIcon color="#67DBFF" />}
+              disabled={!name}
               onClick={createSpace}
             >
               Create Space
             </Button>
           </Box>
+          {
+            error && <Typography color={'red'} textAlign={'end'}>Please check Description.</Typography>
+          }
         </Box>
       </Stack>
     </Stack>

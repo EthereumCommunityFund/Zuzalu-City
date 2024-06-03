@@ -18,18 +18,19 @@ export const PreviewFile = (props: {
   const { file, sx } = props;
 
   const tempSrc =
-    'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w';
+    'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512';
   return (
     <Stack
       sx={{
         ...sx,
         backgroundColor: '#313131',
+        position: 'relative'
       }}
     >
       {file && (
         <Img3
-          style={{ maxHeight: '100%', maxWidth: '100%', ...sx }}
-          src={file ? file : tempSrc}
+          style={{ maxHeight: '100%', maxWidth: '100%', ...sx, position: 'absolute', objectFit: 'cover' }}
+          src={tempSrc}
           alt={file}
         />
       )}
