@@ -32,6 +32,15 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
     }
   };
 
+  function isValidJSON(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   return (
     <Box
       ref={carouselRef}
@@ -47,13 +56,28 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
     >
       {items.map((item) => (
         <SpaceCard
-          key={item.id}
           id={item.id}
-          logoImage={item.avatar ? item.avatar : '/1.webp'}
-          bgImage={item.banner ? item.banner : '/5.webp'}
+          logoImage={
+            item.avatar !== 'undefined' &&
+              item.avatar &&
+              !item.avatar.includes('blob')
+              ? item.avatar
+              : '/1.webp'
+          }
+          bgImage={
+            item.banner !== 'undefined' &&
+              item.banner &&
+              !item.banner.includes('blob')
+              ? item.banner
+              : '/5.webp'
+          }
           title={item.name}
-          description={item.description}
-          joined={false}
+          description={
+            isValidJSON(item.description)
+              ? JSON.parse(item.description.replaceAll('\\"', '"'))
+                .blocks[0].data.text
+              : item.description
+          }
         />
       ))}
     </Box>

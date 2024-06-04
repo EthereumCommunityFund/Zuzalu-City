@@ -269,17 +269,6 @@ const Home: React.FC = () => {
                     October 2023
                   </Typography>
                   <Box>
-                    {/* <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard /> */}
                     {events.map((event, index) => (
                       <EventCard
                         key={`EventCard-${index}`}
