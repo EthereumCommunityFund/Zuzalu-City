@@ -62,6 +62,14 @@ const Home = () => {
           (edge) => edge.node,
         );
         setSpaces(fetchedSpaces);
+        fetchedSpaces.forEach(item => {
+          console.log('bool', item.description)
+          console.log('bool', isValidJSON(item.description))
+          console.log("des", isValidJSON(item.description)
+            ? JSON.parse(item.description.replaceAll('\\"', '"'))
+              .blocks[0].data.text
+            : item.description)
+        })
         console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -91,6 +99,8 @@ const Home = () => {
       return false;
     }
   }
+
+
 
   return (
     <Stack direction="row" sx={{ backgroundColor: '#222222' }} height="100vh">
@@ -194,12 +204,7 @@ const Home = () => {
                     : '/5.webp'
                 }
                 title={item.name}
-                description={
-                  isValidJSON(item.description)
-                    ? JSON.parse(item.description.replaceAll('\\"', '"'))
-                      .blocks[0].data.text
-                    : item.description
-                }
+                description={isValidJSON(item.description.replaceAll('\\"', '"')) ? JSON.parse(item.description.replaceAll('\\"', '"')).blocks[0].data.text : item.description}
               />
             </Grid>
           ))}

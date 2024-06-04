@@ -44,22 +44,17 @@ const Create = () => {
 
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
-  console.log('admin', adminId);
-  // const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = event.target;
-
-  //   setSpaceDescription(value);
-  // }
 
   const createSpace = async () => {
     if (!isAuthenticated) return;
+    console.log(ceramic);
+    console.log(profile);
     const output = await editor.save();
     let strDesc = JSON.stringify(output);
-    console.log('admin', adminId);
     strDesc = strDesc.replaceAll('"', '\\"');
     try {
       const update = await composeClient.executeQuery(`
-      mutation {
+      mutation MyMutation {
         createSpace(
           input: {
             content: {

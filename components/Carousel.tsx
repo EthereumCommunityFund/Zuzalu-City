@@ -73,12 +73,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
               : '/5.webp'
           }
           title={item.name}
-          description={
-            isValidJSON(item.description)
-              ? JSON.parse(item.description.replaceAll('\\"', '"'))
-                .blocks[0].data.text
-              : item.description
-          }
+          description={isValidJSON(item.description.replaceAll('\\"', '"')) ? JSON.parse(item.description.replaceAll('\\"', '"')).blocks[0].data.text : item.description}
         />
       ))}
     </Box>
