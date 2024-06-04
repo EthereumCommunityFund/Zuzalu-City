@@ -44,7 +44,7 @@ interface EventMCardProps extends BoxProps {
   applicants?: number;
   isSideEventActive?: boolean;
   name: string;
-};
+}
 
 const EventMCard: React.FC<EventMCardProps> = ({
   id,
