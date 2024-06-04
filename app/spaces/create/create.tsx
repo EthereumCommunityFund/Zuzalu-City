@@ -148,7 +148,8 @@ const Create = () => {
             admin: adminId,
             profileId: profileId,
             avatar: avatarURL,
-            banner: bannerURL
+            banner: bannerURL,
+            category: categories.join(", ")
           }
         }
       });
