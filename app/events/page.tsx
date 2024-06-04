@@ -11,7 +11,7 @@ import {
 import {ZuCalendar, ZuSelect} from '@/components/core';
 import {Sidebar} from 'components/layout';
 import SidebarLeft from './components/Sidebar';
-import {EventCard, SpaceCard} from '@/components/cards';
+import {EventCard, LotteryCard} from '@/components/cards';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -233,6 +233,17 @@ const EventsPage: React.FC = () => {
                                     />
                                 </Grid>
                             ))}
+                            <Grid
+                                item
+                                key={`EventHeader-Card-lottery`}
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                xl={3}
+                                sx={{ display: 'flex', justifyContent: 'center' }}
+                            >
+                                <LotteryCard />
+                            </Grid>
                         </Box>
                     </Stack>
                 </Stack>
