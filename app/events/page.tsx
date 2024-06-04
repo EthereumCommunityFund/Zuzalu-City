@@ -1,6 +1,5 @@
 'use client';
 import React, {useState, useEffect} from 'react';
-import {useRouter} from 'next/navigation';
 import {
     Box,
     Typography,
@@ -12,17 +11,19 @@ import {ZuCalendar, ZuSelect} from '@/components/core';
 import {Sidebar} from 'components/layout';
 import SidebarLeft from './components/Sidebar';
 import {EventCard, LotteryCard} from '@/components/cards';
+import SelectButton from '@/components/buttons/SelectButton';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import {useCeramicContext} from '../../context/CeramicContext';
 import {Event, EventData} from '@/types';
-import {SearchIcon} from "@/components/icons";
+import {SearchIcon, EventIcon, CalendarIcon} from "@/components/icons";
 import EventHeader from './components/EventHeader';
 
 const EventsPage: React.FC = () => {
     const theme = useTheme();
     const [selected, setSelected] = useState('Events');
+    const [showDate, setShowDate] = useState<boolean>(false);
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
     const [events, setEvents] = useState<Event[]>([]);
@@ -105,6 +106,52 @@ const EventsPage: React.FC = () => {
                 {!isTablet && <Sidebar selected={selected}/>}
                 <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
                     <EventHeader/>
+                    <Box display="flex" padding={"0 20px"} margin={"20px 0 0 0"} justifyContent="space-between">
+                        <Box display="flex" alignItems="center" gap="10px">
+                            <EventIcon />
+                            <Typography color="white" variant="subtitleLB">
+                                Events
+                            </Typography>
+                        </Box>
+                        {/*<Box display={"flex"} position={"relative"} justifyContent={"end"}>*/}
+                        {/*    <SelectButton Icon={CalendarIcon} title={'Dates'} onOpened={() => setShowDate(true)} onClosed={() => setShowDate(false)} />*/}
+                        {/*    {showDate && <Box backgroundColor={"#222"} position={"absolute"} top={"40px"} padding={"10px"} borderRadius={"10px"} zIndex={"1000"} right={"0"}>*/}
+                        {/*        <Box*/}
+                        {/*            display="flex"*/}
+                        {/*            gap="4px"*/}
+                        {/*            padding="2px"*/}
+                        {/*            borderRadius="10px"*/}
+                        {/*            bgcolor="#2d2d2d"*/}
+                        {/*        >*/}
+                        {/*            <Button*/}
+                        {/*                sx={{*/}
+                        {/*                    flex: 1,*/}
+                        {/*                    backgroundColor: '#424242',*/}
+                        {/*                    borderRadius: '8px',*/}
+                        {/*                    color: 'white',*/}
+                        {/*                    fontFamily: 'Inter',*/}
+                        {/*                }}*/}
+                        {/*            >*/}
+                        {/*                Upcoming*/}
+                        {/*            </Button>*/}
+                        {/*            <Button*/}
+                        {/*                sx={{*/}
+                        {/*                    flex: 1,*/}
+                        {/*                    backgroundColor: '#2d2d2d',*/}
+                        {/*                    borderRadius: '8px',*/}
+                        {/*                    color: 'white',*/}
+                        {/*                    fontFamily: 'Inter',*/}
+                        {/*                }}*/}
+                        {/*            >*/}
+                        {/*                Past*/}
+                        {/*            </Button>*/}
+                        {/*        </Box>*/}
+                        {/*        <Box>*/}
+                        {/*            <ZuCalendar defaultValue={dayjs('2022-04-17')}/>*/}
+                        {/*        </Box>*/}
+                        {/*    </Box>}*/}
+                        {/*</Box>*/}
+                    </Box>
                     <Stack
                         sx={{
                             display: 'none',
@@ -151,7 +198,7 @@ const EventsPage: React.FC = () => {
                                 borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
                             }}
                         >
-                            <Typography fontSize={'18px'} fontWeight={'700'} lineHeight={'120%'} color={'white'}>
+                            <Typography fontSize={'18px'} zIndex={99} fontWeight={'700'} lineHeight={'120%'} color={'white'}>
                                 Sort & Filter Events
                             </Typography>
                         </Stack>
@@ -234,15 +281,14 @@ const EventsPage: React.FC = () => {
                                 </Grid>
                             ))}
                             <Grid
-                                item
-                                key={`EventHeader-Card-lottery`}
+                                key={`Lottery-Card`}
                                 xs={12}
                                 sm={6}
                                 md={4}
                                 xl={3}
                                 sx={{ display: 'flex', justifyContent: 'center' }}
                             >
-                                <LotteryCard />
+                                <LotteryCard/>
                             </Grid>
                         </Box>
                     </Stack>

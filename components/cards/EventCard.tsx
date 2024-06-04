@@ -27,9 +27,9 @@ const EventCard: React.FC<EventCardProps> = ({
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
-    const isMobileEnv = util.isMobile();
+    const isMobileEnv: boolean = util.isMobile();
     setIsMobile(isMobileEnv);
-  }, [])
+  }, []);
 
   return (
     <Box
