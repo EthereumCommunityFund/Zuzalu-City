@@ -24,6 +24,7 @@ import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';
+import { Sidebar } from 'components/layout';
 
 interface Inputs {
   name: string;
@@ -709,28 +710,31 @@ const Home = () => {
     );
   };
   return (
-    <Box width="100%" borderLeft="1px solid #383838">
-      <EventHeader />
-      <CurrentEvents events={events} onToggle={toggleDrawer} />
-      {/* <PastEvents /> */}
-      <Invite />
-      <SwipeableDrawer
-        hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '111px',
-            height: 'calc(100% - 111px)',
-            boxShadow: 'none',
-          },
-        }}
-        anchor="right"
-        open={state['right']}
-        onClose={() => toggleDrawer('right', false)}
-        onOpen={() => toggleDrawer('right', true)}
-      >
-        {List('right')}
-      </SwipeableDrawer>
-    </Box>
+    <Stack>
+      <Sidebar selected="Home" />
+      <Box width="100%" borderLeft="1px solid #383838">
+        <EventHeader />
+        <CurrentEvents events={events} onToggle={toggleDrawer} />
+        {/* <PastEvents /> */}
+        <Invite />
+        <SwipeableDrawer
+          hideBackdrop={true}
+          sx={{
+            '& .MuiDrawer-paper': {
+              marginTop: '111px',
+              height: 'calc(100% - 111px)',
+              boxShadow: 'none',
+            },
+          }}
+          anchor="right"
+          open={state['right']}
+          onClose={() => toggleDrawer('right', false)}
+          onOpen={() => toggleDrawer('right', true)}
+        >
+          {List('right')}
+        </SwipeableDrawer>
+      </Box>
+    </Stack>
   );
 };
 

@@ -93,7 +93,7 @@ const Home = () => {
   }
 
   return (
-    <Stack direction="row" sx={{ backgroundColor: '#222222' }}>
+    <Stack direction="row" sx={{ backgroundColor: '#222222' }} height="100vh">
       {!isTablet && <Sidebar selected={selected} />}
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
