@@ -1,41 +1,21 @@
 'use client';
-import React, { useState, ChangeEvent } from 'react';
-import { Stack, Box, Typography, Button, Input } from '@mui/material';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Stack, Box, Typography, Button } from '@mui/material';
 import TextEditor from '@/components/editor/editor';
+import { ZuInput } from '@/components/core';
 import { Header } from './components';
 import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
-import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { OutputData } from '@editorjs/editorjs';
 
-interface Space {
-  id: string;
-  avatar?: string;
-  banner?: string;
-  description?: string;
-  name: string;
-  profileId?: string;
-  tagline?: string;
-  website?: string;
-  twitter?: string;
-  telegram?: string;
-  nostr?: string;
-  lens?: string;
-  github?: string;
-  discord?: string;
-  ens?: string;
-}
-
-interface Inputs {
-  name: string;
-  tagline: string;
-}
-
-const Create = async () => {
+const Create = () => {
   const router = useRouter();
+  const [name, setName] = useState<string>('');
+  const [tagline, setTagline] = useState<string>('');
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
   const [banner, setBanner] = useState<SelectedFile>();
@@ -58,24 +38,10 @@ const Create = async () => {
     createProfile,
   } = useCeramicContext();
 
-  const [inputs, setInputs] = useState<Inputs>({
-    name: '',
-    tagline: '',
-  });
-
   const connector = createConnector('NFT.storage', {
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+    token: process.env.CONNECTOR_TOKEN ?? ''
   });
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      [name]: value,
-    }));
-  };
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
   console.log('admin', adminId);
@@ -97,9 +63,9 @@ const Create = async () => {
         createSpace(
           input: {
             content: {
-              name: "${inputs.name}",
+              name: "${name}",
               description: "${strDesc}",
-              tagline: "${inputs.tagline}",
+              tagline: "${tagline}",
               admin: "${adminId}",
               profileId: "${profileId}",
               avatar: "${avatarURL}",
@@ -143,10 +109,8 @@ const Create = async () => {
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Profile
               </Typography>
@@ -157,78 +121,34 @@ const Create = async () => {
               flexDirection="column"
               gap="20px"
             >
-              <Box>
+              <Stack spacing="10px">
                 <Typography
+                  variant="subtitleSB"
                   color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
                 >
                   Space Name
                 </Typography>
-                <Input
-                  name="name"
-                  onChange={handleInputChange}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#373737',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
+                <ZuInput
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Type an awesome name"
                 />
-              </Box>
-              <Box>
+              </Stack>
+              <Stack spacing="10px">
                 <Typography
+                  variant="subtitleSB"
                   color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
                 >
                   Space Tagline
                 </Typography>
-                <Input
-                  name="tagline"
-                  onChange={handleInputChange}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#373737',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
+                <ZuInput
+                  onChange={(e) => setTagline(e.target.value)}
                   placeholder="Write a short, one-sentence tagline for your event"
                 />
-              </Box>
+              </Stack>
               <Stack spacing="10px">
                 <Typography
+                  variant="subtitleSB"
                   color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
                 >
                   Space Description
                 </Typography>
@@ -298,28 +218,22 @@ const Create = async () => {
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Avatar & Banner
               </Typography>
             </Box>
             <Stack spacing="10px" padding="20px">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Avatar
               </Typography>
               <Typography
+                variant="bodyS"
                 color="white"
-                fontSize="13px"
-                fontWeight={500}
-                fontFamily="Inter"
               >
                 Recommend min of 200x200px (1:1 Ratio)
               </Typography>
@@ -331,7 +245,7 @@ const Create = async () => {
                 }}
               >
                 <Uploader3
-                  accept={['.gif', '.jpeg', '.gif']}
+                  accept={['.gif', '.jpeg', '.jpg']}
                   // api={'/api/upload/file'}
                   connector={connector}
                   multiple={false}
@@ -372,18 +286,14 @@ const Create = async () => {
             </Stack>
             <Stack spacing="10px" padding="20px">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Banner
               </Typography>
               <Typography
+                variant="bodyS"
                 color="white"
-                fontSize="13px"
-                fontWeight={500}
-                fontFamily="Inter"
               >
                 Recommend min of 730x220 (1:1 Ratio)
               </Typography>
@@ -395,7 +305,7 @@ const Create = async () => {
                 }}
               >
                 <Uploader3
-                  accept={['.gif', '.jpeg', '.gif']}
+                  accept={['.gif', '.jpeg', '.jpg']}
                   // api={'/api/upload/file'}
                   connector={connector}
                   multiple={false}
@@ -407,6 +317,7 @@ const Create = async () => {
                     setBanner(file);
                   }}
                   onComplete={(result: any) => {
+                    console.log('banner', result)
                     setBannerURL(result?.url);
                   }}
                 >

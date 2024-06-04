@@ -2,11 +2,11 @@
 import * as React from 'react';
 import { Box, Stack, useMediaQuery } from '@mui/material';
 
-import { Ticket, Overview, Sessions } from './Tabs';
+import { Ticket, Overview, Sessions, Venue } from './Tabs';
 import { Tabbar } from 'components/layout';
 
 const Home: React.FC = () => {
-  const [tabName, setTabName] = React.useState<string>('Tickets');
+  const [tabName, setTabName] = React.useState<string>('Overview');
 
   const isMobile = useMediaQuery('(max-width:500px)');
   const renderPage = () => {
@@ -17,6 +17,8 @@ const Home: React.FC = () => {
         return <Ticket />;
       case 'Event Sessions':
         return <Sessions />;
+      case 'Venue':
+        return <Venue />;
       default:
         return <Overview />;
     }

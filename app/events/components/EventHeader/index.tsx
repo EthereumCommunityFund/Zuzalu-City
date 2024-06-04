@@ -32,9 +32,9 @@ const EventHeader = () => {
       <Typography color={theme.palette.text.primary} variant="bodyBB">
         Welcome to the new Zuzalu City
       </Typography>
-      <ZuButton startIcon={<PlusIcon />} onClick={createButtonHandler}>
-        Create a Event
-      </ZuButton>
+      {/*<ZuButton startIcon={<PlusIcon />} onClick={createButtonHandler}>*/}
+      {/*  Create a Event*/}
+      {/*</ZuButton>*/}
     </Stack>
   );
 };

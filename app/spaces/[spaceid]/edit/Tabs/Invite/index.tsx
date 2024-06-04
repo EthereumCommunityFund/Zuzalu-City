@@ -210,7 +210,7 @@ const Invite = () => {
         </Stack>
         <Stack spacing="10px">
           <Typography variant="bodySB">Members</Typography>
-          {members.length > 0 &&
+          {members !== null &&
             members.map((member: IMember, index: number) => (
               <Stack
                 direction="row"

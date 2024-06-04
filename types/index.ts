@@ -92,3 +92,8 @@ export interface SessionData {
     edges: SessionEdge[];
   };
 }
+
+export interface Venue {
+  id: string;
+  title: string;
+}

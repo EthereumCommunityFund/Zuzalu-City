@@ -8,6 +8,8 @@ import { MapIcon, LockIcon } from '../icons';
 import * as util from '../../utils/index';
 
 type EventCardProps = {
+  id?: string;
+  spaceId?: string;
   by?: string;
   name?: string;
   description?: string;
@@ -16,6 +18,8 @@ type EventCardProps = {
 };
 
 const EventCard: React.FC<EventCardProps> = ({
+  id,
+  spaceId,
   by = 'Zuzalu Contributor',
   name = 'HackZuzalu ChiangMai',
   description = 'A Popup Village of Innovation in the Heart of Istanbul',
@@ -38,7 +42,7 @@ const EventCard: React.FC<EventCardProps> = ({
       gap={isMobile ? '10px' : '14px'}
       sx={{ cursor: 'pointer' }}
       position={'relative'}
-      onClick={() => router.push('/spaces/123/events/456')}
+      onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
     >
       <Box
         component="img"

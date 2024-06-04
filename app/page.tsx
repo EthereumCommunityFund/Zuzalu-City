@@ -152,7 +152,6 @@ const Home: React.FC = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
-        <Header />
         <AuthPrompt />
         <Box display="grid" gridTemplateColumns={'auto 1fr'}>
           {!isTablet && <Sidebar selected="Home" />}
@@ -270,19 +269,10 @@ const Home: React.FC = () => {
                     October 2023
                   </Typography>
                   <Box>
-                    {/* <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard /> */}
                     {events.map((event, index) => (
                       <EventCard
+                        id={event.id}
+                        spaceId={event.spaceId}
                         key={`EventCard-${index}`}
                         name={event.title}
                         description={event.description}

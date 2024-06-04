@@ -20,10 +20,11 @@ import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
-import BpCheckbox from '../components/Checkbox';
+import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';
+import { Sidebar } from 'components/layout';
 
 interface Inputs {
   name: string;
@@ -38,8 +39,7 @@ const Home = () => {
   console.log('spaceID', spaceId);
 
   const connector = createConnector('NFT.storage', {
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+    token: process.env.CONNECTOR_TOKEN ?? '',
   });
 
   const [state, setState] = useState({
@@ -710,28 +710,31 @@ const Home = () => {
     );
   };
   return (
-    <Box width="100%" borderLeft="1px solid #383838">
-      <EventHeader />
-      <CurrentEvents events={events} onToggle={toggleDrawer} />
-      {/* <PastEvents /> */}
-      <Invite />
-      <SwipeableDrawer
-        hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '111px',
-            height: 'calc(100% - 111px)',
-            boxShadow: 'none',
-          },
-        }}
-        anchor="right"
-        open={state['right']}
-        onClose={() => toggleDrawer('right', false)}
-        onOpen={() => toggleDrawer('right', true)}
-      >
-        {List('right')}
-      </SwipeableDrawer>
-    </Box>
+    <Stack direction="row">
+      <Sidebar selected="Home" />
+      <Box width="100%" borderLeft="1px solid #383838">
+        <EventHeader />
+        <CurrentEvents events={events} onToggle={toggleDrawer} />
+        {/* <PastEvents /> */}
+        <Invite />
+        <SwipeableDrawer
+          hideBackdrop={true}
+          sx={{
+            '& .MuiDrawer-paper': {
+              marginTop: '111px',
+              height: 'calc(100% - 111px)',
+              boxShadow: 'none',
+            },
+          }}
+          anchor="right"
+          open={state['right']}
+          onClose={() => toggleDrawer('right', false)}
+          onOpen={() => toggleDrawer('right', true)}
+        >
+          {List('right')}
+        </SwipeableDrawer>
+      </Box>
+    </Stack>
   );
 };
 

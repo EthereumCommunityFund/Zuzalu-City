@@ -286,4 +286,14 @@ export const MOCK_DATA = {
       desc: 'You have 1 ticket',
     },
   ],
+  venues: [
+    {
+      id: '1',
+      title: 'Room1',
+    },
+    {
+      id: '2',
+      title: 'Room2',
+    },
+  ],
 };
