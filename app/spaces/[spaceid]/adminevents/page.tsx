@@ -710,7 +710,7 @@ const Home = () => {
     );
   };
   return (
-    <Stack>
+    <Stack direction="row">
       <Sidebar selected="Home" />
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
