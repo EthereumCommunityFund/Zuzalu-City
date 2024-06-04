@@ -180,8 +180,8 @@ export const MOCK_DATA = {
       open: 'To All',
       status: true,
       sold: 0,
-      tokenSymbol: "USDT",
-      address: "0x00...0000"
+      tokenSymbol: 'USDT',
+      address: '0x00...0000',
     },
     {
       name: 'VIP',
@@ -189,8 +189,8 @@ export const MOCK_DATA = {
       open: 'To All',
       status: true,
       sold: 0,
-      tokenSymbol: "USDC",
-      address: "0x00...0000"
+      tokenSymbol: 'USDC',
+      address: '0x00...0000',
     },
     {
       name: 'Sponsored',
@@ -198,8 +198,8 @@ export const MOCK_DATA = {
       open: 'Invite Only',
       status: true,
       sold: 10,
-      tokenSymbol: "USDT",
-      address: "0x00...0000"
+      tokenSymbol: 'USDT',
+      address: '0x00...0000',
     },
     {
       name: 'Organizer',
@@ -207,7 +207,7 @@ export const MOCK_DATA = {
       open: 'Invite Only',
       status: false,
       sold: 10,
-      address: "0x00...0000"
+      address: '0x00...0000',
     },
   ],
   events: [
@@ -271,19 +271,19 @@ export const MOCK_DATA = {
   ],
   eventCredential: [
     {
-      image: "/20.webp",
-      name: "ZuVillage Georgia",
-      desc: "You have 1 ticket"
+      image: '/20.webp',
+      name: 'ZuVillage Georgia',
+      desc: 'You have 1 ticket',
     },
     {
-      image: "/21.webp",
-      name: "HazkZuzalu",
-      desc: "You have 1 ticket"
+      image: '/21.webp',
+      name: 'HazkZuzalu',
+      desc: 'You have 1 ticket',
     },
     {
-      image: "/22.webp",
-      name: "Zu-zah-luh",
-      desc: "You have 1 ticket"
+      image: '/22.webp',
+      name: 'Zu-zah-luh',
+      desc: 'You have 1 ticket',
     },
-  ]
+  ],
 };

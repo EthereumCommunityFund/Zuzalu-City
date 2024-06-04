@@ -90,5 +90,5 @@ export interface SessionEdge {
 export interface SessionData {
   sessionIndex: {
     edges: SessionEdge[];
-  }
+  };
 }

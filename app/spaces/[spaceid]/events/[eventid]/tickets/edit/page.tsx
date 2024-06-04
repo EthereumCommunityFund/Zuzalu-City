@@ -8,7 +8,7 @@ import { Tabbar } from 'components/layout';
 const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Tickets');
 
-  const isMobile = useMediaQuery('(max-width:500px)')
+  const isMobile = useMediaQuery('(max-width:500px)');
   const renderPage = () => {
     switch (tabName) {
       case 'Overview':
@@ -26,7 +26,7 @@ const Home: React.FC = () => {
     <Stack width="100%">
       <Tabbar tabName={tabName} setTabName={setTabName} />
       <Stack direction="row" justifyContent="center">
-        <Box width={isMobile ? "90%" : "60%"} marginTop={3}>
+        <Box width={isMobile ? '90%' : '60%'} marginTop={3}>
           {renderPage()}
         </Box>
       </Stack>

@@ -117,15 +117,19 @@ const EventCard: React.FC<EventCardProps> = ({
           borderRadius="10px"
           bgcolor="#292929"
         >
-          <LockIcon size={4} color={"rgba(255, 255, 255, 0.8)"} />
+          <LockIcon size={4} color={'rgba(255, 255, 255, 0.8)'} />
           {!isMobile && (
-            <Typography marginTop={"2px"} color="rgba(255, 255, 255, 0.8)" variant="bodyS" fontWeight={300}>
+            <Typography
+              marginTop={'2px'}
+              color="rgba(255, 255, 255, 0.8)"
+              variant="bodyS"
+              fontWeight={300}
+            >
               Gated
             </Typography>
           )}
         </Box>
       </Box>
-
     </Box>
   );
 };

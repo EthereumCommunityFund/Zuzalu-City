@@ -12,18 +12,16 @@ const SpaceHeader = () => {
   const [showModal, setShowModal] = React.useState(false);
   const theme = useTheme();
   const router = useRouter();
-  const {
-    isAuthenticated,
-  } = useCeramicContext()
+  const { isAuthenticated } = useCeramicContext();
 
   const createButtonHandler = () => {
-    if(isAuthenticated) {
-      router.push('/spaces/create')
-      setShowModal(false)
+    if (isAuthenticated) {
+      router.push('/spaces/create');
+      setShowModal(false);
     } else {
-      setShowModal(true)
+      setShowModal(true);
     }
-  }
+  };
 
   return (
     <Stack
@@ -38,10 +36,7 @@ const SpaceHeader = () => {
       <Typography color={theme.palette.text.primary} variant="bodyBB">
         Welcome to the new Zuzalu City
       </Typography>
-      <ZuButton
-        startIcon={<SpacePlusIcon />}
-        onClick={createButtonHandler}
-      >
+      <ZuButton startIcon={<SpacePlusIcon />} onClick={createButtonHandler}>
         Create a Space
       </ZuButton>
       <WarningModal showModal={showModal} setShowModal={setShowModal} />

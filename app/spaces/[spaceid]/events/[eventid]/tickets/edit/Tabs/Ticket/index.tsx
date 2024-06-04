@@ -1,10 +1,5 @@
 import * as React from 'react';
-import {
-  Stack,
-  Box,
-  SwipeableDrawer,
-  Typography
-} from '@mui/material';
+import { Stack, Box, SwipeableDrawer, Typography } from '@mui/material';
 import {
   TicketHeader,
   TicketList,
@@ -37,7 +32,7 @@ const Ticket = () => {
   const [isNext, setIsNext] = React.useState(false);
   const [goToSummary, setGoToSummary] = React.useState(false);
   const [purchasingTicket, setPurchasingTicket] = React.useState(false);
-  const [toggleAction, setToggleAction] = React.useState("CreateTicket");
+  const [toggleAction, setToggleAction] = React.useState('CreateTicket');
 
   const list = (anchor: Anchor) => (
     <Box
@@ -56,25 +51,38 @@ const Ticket = () => {
         borderBottom="1px solid #383838"
         paddingX={3}
       >
-        <ZuButton
-          onClick={() => toggleDrawer('right', false)}
-        >
-          Close
-        </ZuButton>
-        <Typography marginLeft={"14px"} fontSize="18px" fontWeight="bold">
+        <ZuButton onClick={() => toggleDrawer('right', false)}>Close</ZuButton>
+        <Typography marginLeft={'14px'} fontSize="18px" fontWeight="bold">
           Create Ticket
         </Typography>
       </Box>
 
-      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && <InitialSetup setIsNext={setIsNext} />}
-      {!goToSummary && !isConfirm && !purchasingTicket && isNext && <TicketSetup setIsNext={setIsNext} setIsConfirm={setIsConfirm} />}
-      {isConfirm && !purchasingTicket && !goToSummary && !isNext && <CreateTicket
-        setIsConfirm={setIsConfirm}
-        setGoToSummary={setGoToSummary}
-      />}
-      {!purchasingTicket && !isConfirm && goToSummary && !isNext && <TicketCreationSummary setIsConfirm={setIsConfirm} setPurchasingTicket={setPurchasingTicket} setGoToSummary={setGoToSummary} />}
-      {purchasingTicket && !goToSummary && !isConfirm && !isNext && <ProcessingTicket setPurchasingTicket={setPurchasingTicket} toggleDrawer={toggleDrawer} />}
-    </Box >
+      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && (
+        <InitialSetup setIsNext={setIsNext} />
+      )}
+      {!goToSummary && !isConfirm && !purchasingTicket && isNext && (
+        <TicketSetup setIsNext={setIsNext} setIsConfirm={setIsConfirm} />
+      )}
+      {isConfirm && !purchasingTicket && !goToSummary && !isNext && (
+        <CreateTicket
+          setIsConfirm={setIsConfirm}
+          setGoToSummary={setGoToSummary}
+        />
+      )}
+      {!purchasingTicket && !isConfirm && goToSummary && !isNext && (
+        <TicketCreationSummary
+          setIsConfirm={setIsConfirm}
+          setPurchasingTicket={setPurchasingTicket}
+          setGoToSummary={setGoToSummary}
+        />
+      )}
+      {purchasingTicket && !goToSummary && !isConfirm && !isNext && (
+        <ProcessingTicket
+          setPurchasingTicket={setPurchasingTicket}
+          toggleDrawer={toggleDrawer}
+        />
+      )}
+    </Box>
   );
   const vault = (anchor: Anchor) => (
     <Box
@@ -93,12 +101,8 @@ const Ticket = () => {
         borderBottom="1px solid #383838"
         paddingX={3}
       >
-        <ZuButton
-          onClick={() => toggleDrawer('right', false)}
-        >
-          Close
-        </ZuButton>
-        <Typography marginLeft={"14px"} fontSize="18px" fontWeight="bold">
+        <ZuButton onClick={() => toggleDrawer('right', false)}>Close</ZuButton>
+        <Typography marginLeft={'14px'} fontSize="18px" fontWeight="bold">
           Create Ticket
         </Typography>
       </Box>
@@ -126,7 +130,11 @@ const Ticket = () => {
         onClose={() => toggleDrawer('right', false)}
         onOpen={() => toggleDrawer('right', true)}
       >
-        {toggleAction === "CreateTicket" ? list('right') : toggleAction === "ViewVault" ? vault('right') : null}
+        {toggleAction === 'CreateTicket'
+          ? list('right')
+          : toggleAction === 'ViewVault'
+            ? vault('right')
+            : null}
       </SwipeableDrawer>
     </Stack>
   );
