@@ -57,6 +57,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
       {items.map((item) => (
         <SpaceCard
           id={item.id}
+          key={`SpaceCard-${item.id}`}
           logoImage={
             item.avatar !== 'undefined' &&
               item.avatar &&
