@@ -63,5 +63,13 @@ export const SOCIAL_TYPES: {
   {
     key: 'telegram',
     value: 'Telegram'
+  },
+  {
+    key: 'lens',
+    value: 'Lens'
+  },
+  {
+    key: 'nostr',
+    value: 'Nostr'
   }
 ]

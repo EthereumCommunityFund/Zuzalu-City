@@ -1,8 +1,5 @@
 'use client';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Stack, Box, Typography, Button } from '@mui/material';
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useRef } from 'react';
 import { Stack, Box, Typography, Button, Input, Select, MenuItem, OutlinedInput, Chip, IconButton, TextField } from '@mui/material';
 import TextEditor from '@/components/editor/editor';
 import { ZuInput } from '@/components/core';
@@ -17,6 +14,7 @@ import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import CloseIcon from '@mui/icons-material/Close';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { useRouter } from 'next/navigation';
 
 interface Space {
   id: string;
@@ -54,6 +52,8 @@ const Create = () => {
   const [error, setError] = useState(false);
   const [editor, setEditorInst] = useState<any>();
   const [categories, setCategories] = useState<string[]>([]);
+  const [socialLinks, setSocialLinks] = useState<number[]>([0]);
+  const [customLinks, setCustomLinks] = useState<number[]>([0]);
 
   const {
     ceramic,
@@ -77,11 +77,42 @@ const Create = () => {
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
 
+  const socialLinksRef = useRef<HTMLDivElement>(null);
+  const customLinksRef = useRef<HTMLDivElement>(null);
+
   const createSpace = async () => {
-    // if (!isAuthenticated) return;
+    let socialLinks = {};
+    let customLinks = [];
+    if(socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
+      for(let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
+        const key = socialLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
+        const value = socialLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
+        if(key) {
+          socialLinks = {...socialLinks, [key]: value};
+        }
+      }
+    }
+
+    if(customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
+      for(let i = 0; i < customLinksRef.current.children.length - 2; i++) {
+        const key = customLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
+        const value = customLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
+        if(key) {
+          customLinks.push({
+            links: value,
+            title: key
+          });
+        }
+      }
+    }
+    console.log(socialLinks);
+    console.log(customLinks);
+    console.log('isAuthenticated: ', isAuthenticated);
+    if (!isAuthenticated) return;
     const output = await editor.save();
     let strDesc: any = JSON.stringify(output);
-    if (!strDesc.blocks || strDesc.blocks.length == 0) {
+    console.log(output.blocks)
+    if (!output.blocks || output.blocks.length == 0) {
       setError(true);
       return;
     }
@@ -89,19 +120,9 @@ const Create = () => {
     console.log('strDesc: ', strDesc);
     try {
       const update = await composeClient.executeQuery(`
-      mutation {
+      mutation CreateSpaceMutation($input: CreateSpaceInput!) {
         createSpace(
-          input: {
-            content: {
-              name: "${name}",
-              description: "${strDesc}",
-              tagline: "${tagline}",
-              admin: "${adminId}",
-              profileId: "${profileId}",
-              avatar: "${avatarURL}",
-              banner: "${bannerURL}"
-            }
-          }
+          input: $input
         ) {
           document {
             id
@@ -116,7 +137,22 @@ const Create = () => {
           }
         }
       }
-      `);
+      `, {
+        input: {
+          content: {
+            customLinks,
+            ...socialLinks,
+            name: name,
+            description: strDesc,
+            tagline: tagline,
+            admin: adminId,
+            profileId: profileId,
+            avatar: avatarURL,
+            banner: bannerURL
+          }
+        }
+      });
+      console.log('update: ', update);
       typeof window !== 'undefined' && window.alert('Success!');
       router.push('/spaces');
     } catch (err) {
@@ -129,6 +165,36 @@ const Create = () => {
     setCategories(
       typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
     );
+  }
+
+  const handleAddSocialLink = () => {
+    if (socialLinks.length === 0) {
+      setSocialLinks([0]);
+      return;
+    }
+    const nextItem = Math.max(...socialLinks);
+    const temp = [...socialLinks, nextItem + 1]
+    setSocialLinks(temp);
+  };
+
+  const handleRemoveSociaLink = (index: number) => {
+    const temp = socialLinks.filter((item) => item !== index);
+    setSocialLinks(temp);
+  }
+
+  const handleAddCustomLink = () => {
+    if (customLinks.length === 0) {
+      setCustomLinks([0]);
+      return;
+    }
+    const nextItem = Math.max(...customLinks);
+    const temp = [...customLinks, nextItem + 1]
+    setCustomLinks(temp);
+  }
+
+  const handleRemoveCustomLink = (index: number) => {
+    const temp = customLinks.filter((item) => item !== index);
+    setCustomLinks(temp);
   }
 
   return (
@@ -157,7 +223,7 @@ const Create = () => {
               flexDirection="column"
               gap="20px"
             >
-              <Stack spacing="10px">
+              <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
                 <Typography
                   variant="subtitleSB"
                   color="white"
@@ -168,8 +234,8 @@ const Create = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Type an awesome name"
                 />
-              </Stack>
-              <Stack spacing="10px">
+              </Box>
+              <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
                 <Typography
                   variant="subtitleSB"
                   color="white"
@@ -180,7 +246,7 @@ const Create = () => {
                   onChange={(e) => setTagline(e.target.value)}
                   placeholder="Write a short, one-sentence tagline for your event"
                 />
-              </Stack>
+              </Box>
               <Stack spacing="10px">
                 <Typography
                   variant="subtitleSB"
@@ -203,6 +269,12 @@ const Create = () => {
                     color: 'white',
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
+                    height: '163px',
+                    maxHeight: '163px',
+                    overflow: 'auto',
+                    '& > div > div': {
+                      paddingBottom: '0px !important'
+                    }
                   }}
                 />
                 <Stack direction="row" justifyContent="space-between">
@@ -458,60 +530,73 @@ const Create = () => {
                 Links
               </Typography>
             </Box>
-            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'}>
+
+            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'} ref={socialLinksRef}>
               <Typography fontSize={'18px'} fontWeight={700} lineHeight={'120%'} color={'white'}>
                 Social Links
               </Typography>
-              <Box display={'flex'} flexDirection={'row'} gap={'20px'}>
-                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
-                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Select Social</Typography>
-                  <Select
-                    placeholder='Select'
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222'
-                        }
-                      }
-                    }}
-                    sx={{
-                      '& > div': {
-                        padding: '8.5px 12px',
-                        borderRadius: '10px'
-                      },
-                    }}
-                  >
-                    {
-                      SOCIAL_TYPES.map((social, index) => {
-                        return (
-                          <MenuItem
-                            value={social.key}
-                            key={index}
-                          >
-                            {
-                              social.value
+              {
+                socialLinks.map((item, index) => {
+                  return (
+                    <Box display={'flex'} flexDirection={'row'} gap={'20px'} key={index}>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Select Social</Typography>
+                        <Select
+                          placeholder='Select'
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                backgroundColor: '#222222'
+                              }
                             }
-                          </MenuItem>
-                        )
-                      })
-                    }
-                  </Select>
-                </Box>
-                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
-                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
-                  <TextField variant="outlined" placeholder='https://' sx={{
-                    opacity: '0.6',
-                    '& > div > input': {
-                      padding: '8.5px 12px'
-                    }
-                  }} />
-                </Box>
-                <Box display={'flex'} flexDirection={'column'} justifyContent={'flex-end'}>
-                  <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                    <CancelIcon />
-                  </Box>
-                </Box>
-              </Box>
+                          }}
+                          sx={{
+                            '& > div': {
+                              padding: '8.5px 12px',
+                              borderRadius: '10px'
+                            },
+                          }}
+                        >
+                          {
+                            SOCIAL_TYPES.map((social, index) => {
+                              return (
+                                <MenuItem
+                                  value={social.key}
+                                  key={index}
+                                >
+                                  {
+                                    social.value
+                                  }
+                                </MenuItem>
+                              )
+                            })
+                          }
+                        </Select>
+                      </Box>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
+                        <TextField variant="outlined" placeholder='https://' sx={{
+                          opacity: '0.6',
+                          '& > div > input': {
+                            padding: '8.5px 12px'
+                          }
+                        }} />
+                      </Box>
+                      <Box
+                        display={'flex'}
+                        flexDirection={'column'}
+                        justifyContent={'flex-end'}
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => handleRemoveSociaLink(item)}
+                      >
+                        <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                          <CancelIcon />
+                        </Box>
+                      </Box>
+                    </Box>
+                  )
+                })
+              }
               <Button
                 sx={{
                   display: 'flex',
@@ -523,40 +608,54 @@ const Create = () => {
                   textTransform: 'unset',
                   color: 'white'
                 }}
+                onClick={handleAddSocialLink}
               >
                 <AddCircleIcon />
                 <Typography color='white'>Add Social Link</Typography>
               </Button>
             </Box>
-            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'} borderTop={'1px solid rgba(255, 255, 255, 0.10)'}>
+            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'} borderTop={'1px solid rgba(255, 255, 255, 0.10)'} ref={customLinksRef}>
               <Typography fontSize={'18px'} fontWeight={700} lineHeight={'120%'} color={'white'}>
                 Custom Links
               </Typography>
-              <Box display={'flex'} flexDirection={'row'} gap={'20px'}>
-                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
-                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Link Title</Typography>
-                  <TextField variant="outlined" placeholder='Type a name' sx={{
-                    '& > div > input': {
-                      padding: '8.5px 12px'
-                    },
-                    opacity: '0.6'
-                  }} />
-                </Box>
-                <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
-                  <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
-                  <TextField variant="outlined" placeholder='https://' sx={{
-                    '& > div > input': {
-                      padding: '8.5px 12px'
-                    },
-                    opacity: '0.6'
-                  }} />
-                </Box>
-                <Box display={'flex'} flexDirection={'column'} justifyContent={'flex-end'}>
-                  <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                    <CancelIcon />
-                  </Box>
-                </Box>
-              </Box>
+              {
+                customLinks.map((item, index) => {
+                  return (
+                    <Box display={'flex'} flexDirection={'row'} gap={'20px'} key={index}>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Link Title</Typography>
+                        <TextField variant="outlined" placeholder='Type a name' sx={{
+                          '& > div > input': {
+                            padding: '8.5px 12px'
+                          },
+                          opacity: '0.6'
+                        }} />
+                      </Box>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
+                        <TextField variant="outlined" placeholder='https://' sx={{
+                          '& > div > input': {
+                            padding: '8.5px 12px'
+                          },
+                          opacity: '0.6'
+                        }} />
+                      </Box>
+                      <Box 
+                        display={'flex'} 
+                        flexDirection={'column'} 
+                        justifyContent={'flex-end'} 
+                        sx={{ cursor: 'pointer' }} 
+                        onClick={() => handleRemoveCustomLink(item)}
+                      >
+                        <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                          <CancelIcon />
+                        </Box>
+                      </Box>
+                    </Box>
+                  )
+                })
+              }
+
               <Button
                 sx={{
                   display: 'flex',
@@ -568,6 +667,7 @@ const Create = () => {
                   color: 'white',
                   textTransform: 'unset'
                 }}
+                onClick={handleAddCustomLink}
               >
                 <AddCircleIcon />
                 <Typography color='white'>Add Custom Link</Typography>
