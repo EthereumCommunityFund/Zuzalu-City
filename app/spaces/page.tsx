@@ -17,34 +17,7 @@ import SidebarLeft from './components/Sidebar';
 import { SearchIcon } from '@/components/icons';
 import { ZuSelect } from '@/components/core';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-
-interface Space {
-  id: string;
-  avatar?: string;
-  banner?: string;
-  description?: string;
-  name: string;
-  profileId?: string;
-  tagline?: string;
-  website?: string;
-  twitter?: string;
-  telegram?: string;
-  nostr?: string;
-  lens?: string;
-  github?: string;
-  discord?: string;
-  ens?: string;
-}
-
-interface SpaceEdge {
-  node: Space;
-}
-
-interface SpaceData {
-  spaceIndex: {
-    edges: SpaceEdge[];
-  };
-}
+import { Space, SpaceData } from '@/types';
 
 const Home = () => {
   const theme = useTheme();
@@ -120,7 +93,7 @@ const Home = () => {
   }
 
   return (
-    <Stack direction="row" sx={{ backgroundColor: '#222222' }}>
+    <Stack direction="row" sx={{ backgroundColor: '#222222' }} height="100vh">
       {!isTablet && <Sidebar selected={selected} />}
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
@@ -206,10 +179,27 @@ const Home = () => {
             >
               <SpaceCard
                 id={item.id}
-                logoImage={item.avatar ? item.avatar : '/1.webp'}
-                bgImage={item.banner ? item.banner : '/5.webp'}
+                logoImage={
+                  item.avatar !== 'undefined' &&
+                    item.avatar &&
+                    !item.avatar.includes('blob')
+                    ? item.avatar
+                    : '/1.webp'
+                }
+                bgImage={
+                  item.banner !== 'undefined' &&
+                    item.banner &&
+                    !item.banner.includes('blob')
+                    ? item.banner
+                    : '/5.webp'
+                }
                 title={item.name}
-                description={item.description}
+                description={
+                  isValidJSON(item.description)
+                    ? JSON.parse(item.description.replaceAll('\\"', '"'))
+                      .blocks[0].data.text
+                    : item.description
+                }
               />
             </Grid>
           ))}
