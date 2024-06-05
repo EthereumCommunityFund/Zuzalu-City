@@ -6,9 +6,12 @@ import {
   useTheme,
   useMediaQuery,
   Stack,
-  Grid, OutlinedInput, InputAdornment, Button,
+  Grid,
+  OutlinedInput,
+  InputAdornment,
+  Button,
 } from '@mui/material';
-import debounce from "lodash/debounce";
+import debounce from 'lodash/debounce';
 import { Sidebar } from 'components/layout';
 import SidebarLeft from './components/Sidebar';
 import { EventCard, LotteryCard } from '@/components/cards';
@@ -17,7 +20,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useCeramicContext } from '../../context/CeramicContext';
 import { Event, EventData } from '@/types';
-import {EventIcon, SearchIcon} from '@/components/icons';
+import { EventIcon, SearchIcon } from '@/components/icons';
 import EventHeader from './components/EventHeader';
 
 const EventsPage: React.FC = () => {
@@ -100,7 +103,7 @@ const EventsPage: React.FC = () => {
     if (searchVal) {
       debounceGetEventsCity();
     }
-  }, [searchVal])
+  }, [searchVal]);
 
   const debounceGetEventsCity = debounce(getEvents, 500);
 
@@ -162,44 +165,45 @@ const EventsPage: React.FC = () => {
             {/*</Box>*/}
           </Box>
           <Stack
-              sx={{
-                display: 'none',
-                flexDirection: 'column',
-                gap: '10px',
-                [theme.breakpoints.down('md')]: {
-                  display: "flex"
-                },
-                padding: '0 20px'
-              }}
+            sx={{
+              display: 'none',
+              flexDirection: 'column',
+              gap: '10px',
+              [theme.breakpoints.down('md')]: {
+                display: 'flex',
+              },
+              padding: '0 20px',
+            }}
           >
             <OutlinedInput
-                placeholder="Search Events"
-                onKeyDown={(event) => {
-                  if (event.keyCode === 13) {
-                    onSearch();
-                  }
-                }}
-                sx={{
-                  backgroundColor:
-                      'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                  paddingX: '15px',
-                  paddingY: '13px',
-                  borderRadius: '10px',
-                  height: '35px',
-                  border: '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                  fontFamily: 'Inter',
-                  opacity: 0.7,
-                  color: 'white',
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
-                  },
-                }}
-                onChange={(e) => setSearchVal(e.target.value)}
-                startAdornment={
-                  <InputAdornment position="start" sx={{opacity: 0.6}}>
-                    <SearchIcon/>
-                  </InputAdornment>
+              placeholder="Search Events"
+              onKeyDown={(event) => {
+                if (event.keyCode === 13) {
+                  onSearch();
                 }
+              }}
+              sx={{
+                backgroundColor:
+                  'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
+                paddingX: '15px',
+                paddingY: '13px',
+                borderRadius: '10px',
+                height: '35px',
+                border:
+                  '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
+                fontFamily: 'Inter',
+                opacity: 0.7,
+                color: 'white',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+              }}
+              onChange={(e) => setSearchVal(e.target.value)}
+              startAdornment={
+                <InputAdornment position="start" sx={{ opacity: 0.6 }}>
+                  <SearchIcon />
+                </InputAdornment>
+              }
             />
           </Stack>
           <Stack

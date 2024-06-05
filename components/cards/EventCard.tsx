@@ -41,6 +41,8 @@ const EventCard: React.FC<EventCardProps> = ({
       display="flex"
       gap={isMobile ? '10px' : '14px'}
       sx={{ cursor: 'pointer' }}
+      width={'100%'}
+      boxSizing={'border-box'}
       position={'relative'}
       onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
     >

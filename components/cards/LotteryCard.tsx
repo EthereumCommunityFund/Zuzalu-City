@@ -18,6 +18,8 @@ const LotteryCard: React.FC = () => {
       display="flex"
       gap="10px"
       bgcolor="#2D2D2D"
+      width={'100%'}
+      boxSizing={'border-box'}
       borderRadius="20px"
       marginY="30px"
     >

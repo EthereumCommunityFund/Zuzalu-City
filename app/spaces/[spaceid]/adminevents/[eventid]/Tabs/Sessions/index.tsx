@@ -142,7 +142,11 @@ const Sessions = () => {
         console.log('Not authenticated');
         return;
       }
-      console.log("date", sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'), sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'))
+      console.log(
+        'date',
+        sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+        sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      );
       if (person) {
         const update = await composeClient.executeQuery(`
         mutation {
