@@ -93,11 +93,7 @@ const Home = () => {
   }
 
   return (
-<<<<<<< HEAD
-    <Stack direction="row" sx={{ backgroundColor: '#222222' }}>
-=======
     <Stack direction="row" sx={{ backgroundColor: '#222222' }} height="100vh">
->>>>>>> dev
       {!isTablet && <Sidebar selected={selected} />}
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
@@ -198,16 +194,12 @@ const Home = () => {
                     : '/5.webp'
                 }
                 title={item.name}
-<<<<<<< HEAD
-                description={item.description}
-=======
                 description={
                   isValidJSON(item.description)
                     ? JSON.parse(item.description.replaceAll('\\"', '"'))
                       .blocks[0].data.text
                     : item.description
                 }
->>>>>>> dev
               />
             </Grid>
           ))}
