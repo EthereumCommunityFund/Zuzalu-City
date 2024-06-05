@@ -195,7 +195,7 @@ const Home = () => {
                 }
                 title={item.name}
                 description={
-                  isValidJSON(item.description)
+                  isValidJSON(item.description.replaceAll('\\"', '"'))
                     ? JSON.parse(item.description.replaceAll('\\"', '"'))
                         .blocks[0].data.text
                     : item.description
