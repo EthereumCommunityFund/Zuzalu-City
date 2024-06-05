@@ -41,17 +41,17 @@ import { ArrowForwardIcon } from './ArrowForward';
 import { QRCodeIcon } from './QRCode';
 import { CloseIcon } from './Close';
 import { ArrowPathIcon } from './ArrowPath';
-import { ScrollIcon } from "./Scroll";
-import { EthereumIcon } from "./Ethereum";
-import { USDCIcon } from "./USDC";
-import { USDTIcon } from "./USDT";
-import { UncheckCircleIcon } from "./UncheckCircle";
-import { CopyIcon } from "./Copy";
-import { GoToExplorerIcon } from "./GoToExplorer";
-import { SendIcon } from "./Send";
-import { SignCreateIcon } from "./SignCreate";
-import { CheckIcon } from "./Check";
-import { CircleCloseIcon } from "./CircleClose";
+import { ScrollIcon } from './Scroll';
+import { EthereumIcon } from './Ethereum';
+import { USDCIcon } from './USDC';
+import { USDTIcon } from './USDT';
+import { UncheckCircleIcon } from './UncheckCircle';
+import { CopyIcon } from './Copy';
+import { GoToExplorerIcon } from './GoToExplorer';
+import { SendIcon } from './Send';
+import { SignCreateIcon } from './SignCreate';
+import { CheckIcon } from './Check';
+import { CircleCloseIcon } from './CircleClose';
 import { SettingIcon } from './Setting';
 import { ChatsIcon } from './Chats';
 import { AnnouncementsIcon } from './Announcements';
@@ -60,6 +60,9 @@ import { UserPlusIcon } from './UserPlus';
 import { ShieldIcon } from './Shield';
 import { NotificationIcon } from './Notification';
 import { XCricleIcon } from './XCircle';
+import { Cog6Icon } from './Cog6';
+import { NewspaperIcon } from './Newspaper';
+import { MinusIcon } from './Minus';
 
 export {
   HomeIcon,
@@ -124,4 +127,7 @@ export {
   ShieldIcon,
   NotificationIcon,
   XCricleIcon,
+  Cog6Icon,
+  NewspaperIcon,
+  MinusIcon,
 };

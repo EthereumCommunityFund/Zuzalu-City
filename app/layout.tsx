@@ -7,6 +7,8 @@ import theme from 'theme/theme';
 import { WalletProvider } from '../context/WalletContext';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { CeramicProvider } from '../context/CeramicContext';
+import { Header } from '@/components/layout';
+import AuthPrompt from '@/components/AuthPrompt';
 const queryClient = new QueryClient();
 
 // export const metadata: Metadata = {
@@ -26,7 +28,11 @@ function RootLayout({
           <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
               <CeramicProvider>
-                <WalletProvider>{children}</WalletProvider>
+                <WalletProvider>
+                  <Header />
+                  <AuthPrompt />
+                  {children}
+                </WalletProvider>
               </CeramicProvider>
             </QueryClientProvider>
           </ThemeProvider>

@@ -1,15 +1,20 @@
 'use client';
-import React, { useState, ChangeEvent } from 'react';
-import { Stack, Box, Typography, Button, Input } from '@mui/material';
+import React, { useState, ChangeEvent, useRef } from 'react';
+import { Stack, Box, Typography, Button, Input, Select, MenuItem, OutlinedInput, Chip, IconButton, TextField } from '@mui/material';
 import TextEditor from '@/components/editor/editor';
+import { ZuInput } from '@/components/core';
 import { Header } from './components';
 import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
-import { useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { OutputData } from '@editorjs/editorjs';
+import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
+import CloseIcon from '@mui/icons-material/Close';
+import CancelIcon from '@mui/icons-material/Cancel';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { useRouter } from 'next/navigation';
 
 interface Space {
   id: string;
@@ -34,15 +39,22 @@ interface Inputs {
   tagline: string;
 }
 
-const Create = async () => {
+const Create = () => {
   const router = useRouter();
+  const [name, setName] = useState<string>('');
+  const [tagline, setTagline] = useState<string>('');
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
   const [banner, setBanner] = useState<SelectedFile>();
   const [bannerURL, setBannerURL] = useState<string>();
   // const [description, setDescription] = useState<string>('');
   const [description, setDescription] = useState<OutputData>();
+  const [error, setError] = useState(false);
   const [editor, setEditorInst] = useState<any>();
+  const [categories, setCategories] = useState<string[]>([]);
+  const [socialLinks, setSocialLinks] = useState<number[]>([0]);
+  const [customLinks, setCustomLinks] = useState<number[]>([0]);
+
   const {
     ceramic,
     composeClient,
@@ -58,54 +70,59 @@ const Create = async () => {
     createProfile,
   } = useCeramicContext();
 
-  const [inputs, setInputs] = useState<Inputs>({
-    name: '',
-    tagline: '',
-  });
-
   const connector = createConnector('NFT.storage', {
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFjYjgxZDFjNjY1NjEzMkJhQWY1NDc2QjMzZmFCRkM0MUZjREQwRTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcxNjI4ODg3NTY1MywibmFtZSI6Inp1Y2l0eSJ9.4AoO7_trgvDSPVA6mifr0tiFYvzPIWE75UP52VA8R5w',
+    token: process.env.CONNECTOR_TOKEN ?? ''
   });
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      [name]: value,
-    }));
-  };
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
-  console.log('admin', adminId);
-  // const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = event.target;
 
-  //   setSpaceDescription(value);
-  // }
+  const socialLinksRef = useRef<HTMLDivElement>(null);
+  const customLinksRef = useRef<HTMLDivElement>(null);
 
   const createSpace = async () => {
+    let socialLinks = {};
+    let customLinks = [];
+    if(socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
+      for(let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
+        const key = socialLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
+        const value = socialLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
+        if(key) {
+          socialLinks = {...socialLinks, [key]: value};
+        }
+      }
+    }
+
+    if(customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
+      for(let i = 0; i < customLinksRef.current.children.length - 2; i++) {
+        const key = customLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
+        const value = customLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
+        if(key) {
+          customLinks.push({
+            links: value,
+            title: key
+          });
+        }
+      }
+    }
+    console.log(socialLinks);
+    console.log(customLinks);
+    console.log('isAuthenticated: ', isAuthenticated);
     if (!isAuthenticated) return;
     const output = await editor.save();
-    let strDesc = JSON.stringify(output);
-    console.log('admin', adminId);
+    let strDesc: any = JSON.stringify(output);
+    console.log(output.blocks)
+    if (!output.blocks || output.blocks.length == 0) {
+      setError(true);
+      return;
+    }
     strDesc = strDesc.replaceAll('"', '\\"');
+    console.log('strDesc: ', strDesc);
     try {
       const update = await composeClient.executeQuery(`
-      mutation {
+      mutation CreateSpaceMutation($input: CreateSpaceInput!) {
         createSpace(
-          input: {
-            content: {
-              name: "${inputs.name}",
-              description: "${strDesc}",
-              tagline: "${inputs.tagline}",
-              admin: "${adminId}",
-              profileId: "${profileId}",
-              avatar: "${avatarURL}",
-              banner: "${bannerURL}"
-            }
-          }
+          input: $input
         ) {
           document {
             id
@@ -120,14 +137,66 @@ const Create = async () => {
           }
         }
       }
-      `);
-      console.log(update);
+      `, {
+        input: {
+          content: {
+            customLinks,
+            ...socialLinks,
+            name: name,
+            description: strDesc,
+            tagline: tagline,
+            admin: adminId,
+            profileId: profileId,
+            avatar: avatarURL,
+            banner: bannerURL,
+            category: categories.join(", ")
+          }
+        }
+      });
+      console.log('update: ', update);
       typeof window !== 'undefined' && window.alert('Success!');
       router.push('/spaces');
     } catch (err) {
       console.log(err);
     }
   };
+
+  const handleChange = (e: any) => {
+    console.log(e.target.value)
+    setCategories(
+      typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
+    );
+  }
+
+  const handleAddSocialLink = () => {
+    if (socialLinks.length === 0) {
+      setSocialLinks([0]);
+      return;
+    }
+    const nextItem = Math.max(...socialLinks);
+    const temp = [...socialLinks, nextItem + 1]
+    setSocialLinks(temp);
+  };
+
+  const handleRemoveSociaLink = (index: number) => {
+    const temp = socialLinks.filter((item) => item !== index);
+    setSocialLinks(temp);
+  }
+
+  const handleAddCustomLink = () => {
+    if (customLinks.length === 0) {
+      setCustomLinks([0]);
+      return;
+    }
+    const nextItem = Math.max(...customLinks);
+    const temp = [...customLinks, nextItem + 1]
+    setCustomLinks(temp);
+  }
+
+  const handleRemoveCustomLink = (index: number) => {
+    const temp = customLinks.filter((item) => item !== index);
+    setCustomLinks(temp);
+  }
 
   return (
     <Stack>
@@ -143,10 +212,8 @@ const Create = async () => {
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Profile
               </Typography>
@@ -157,78 +224,34 @@ const Create = async () => {
               flexDirection="column"
               gap="20px"
             >
-              <Box>
+              <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
                 <Typography
+                  variant="subtitleSB"
                   color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
                 >
                   Space Name
                 </Typography>
-                <Input
-                  name="name"
-                  onChange={handleInputChange}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#373737',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
+                <ZuInput
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Type an awesome name"
                 />
               </Box>
-              <Box>
+              <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
                 <Typography
+                  variant="subtitleSB"
                   color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
                 >
                   Space Tagline
                 </Typography>
-                <Input
-                  name="tagline"
-                  onChange={handleInputChange}
-                  sx={{
-                    color: 'white',
-                    backgroundColor: '#373737',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    width: '100%',
-                    fontSize: '15px',
-                    fontFamily: 'Inter',
-                    '&::after': {
-                      borderBottom: 'none',
-                    },
-                    '&::before': {
-                      borderBottom: 'none',
-                    },
-                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none',
-                    },
-                  }}
+                <ZuInput
+                  onChange={(e) => setTagline(e.target.value)}
                   placeholder="Write a short, one-sentence tagline for your event"
                 />
               </Box>
               <Stack spacing="10px">
                 <Typography
+                  variant="subtitleSB"
                   color="white"
-                  fontSize="18px"
-                  fontWeight={700}
-                  fontFamily="Inter"
                 >
                   Space Description
                 </Typography>
@@ -247,6 +270,12 @@ const Create = async () => {
                     color: 'white',
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
+                    height: '163px',
+                    maxHeight: '163px',
+                    overflow: 'auto',
+                    '& > div > div': {
+                      paddingBottom: '0px !important'
+                    }
                   }}
                 />
                 <Stack direction="row" justifyContent="space-between">
@@ -289,37 +318,102 @@ const Create = async () => {
                     </Typography>
                   </Stack>
                   <Typography variant="caption" color="white">
-                    000 Characters Left
+                    1000 Characters Left
                   </Typography>
                 </Stack>
               </Stack>
+              <Box
+                display={'flex'}
+                flexDirection={'column'}
+                gap={'20px'}
+              >
+                <Box>
+                  <Typography
+                    color="white"
+                    fontSize="18px"
+                    fontWeight={700}
+                    fontFamily="Inter"
+                  >
+                    Community Categories
+                  </Typography>
+                  <Typography color="white" variant="caption" sx={{ opacity: '0.6' }}>
+                    Search or create categories related to your space
+                  </Typography>
+                </Box>
+                <Box>
+                  <Select
+                    multiple
+                    value={categories}
+                    style={{ width: '100%' }}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222'
+                        }
+                      }
+                    }}
+                  >
+                    {
+                      SPACE_CATEGORIES.map((category, index) => {
+                        return (
+                          <MenuItem
+                            value={category.value}
+                            key={index}
+                          >
+                            {
+                              category.label
+                            }
+                          </MenuItem>
+                        )
+                      })
+                    }
+                  </Select>
+                </Box>
+                <Box display={'flex'} flexDirection={'row'} gap={'10px'} flexWrap={'wrap'}>
+                  {
+                    categories.map((category, index) => {
+                      return (
+                        <Chip
+                          label={SPACE_CATEGORIES.find((item) => item.value === category)?.label}
+                          sx={{
+                            borderRadius: '10px'
+                          }}
+                          onDelete={
+                            () => {
+                              const newArray = categories.filter((item) => item !== category);
+                              setCategories(newArray)
+                            }
+                          }
+                          key={index}
+                        />
+                      )
+                    })
+                  }
+                </Box>
+              </Box>
             </Box>
           </Box>
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Avatar & Banner
               </Typography>
             </Box>
             <Stack spacing="10px" padding="20px">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Avatar
               </Typography>
               <Typography
+                variant="bodyS"
                 color="white"
-                fontSize="13px"
-                fontWeight={500}
-                fontFamily="Inter"
               >
                 Recommend min of 200x200px (1:1 Ratio)
               </Typography>
@@ -331,7 +425,7 @@ const Create = async () => {
                 }}
               >
                 <Uploader3
-                  accept={['.gif', '.jpeg', '.gif']}
+                  accept={['.gif', '.jpeg', '.jpg']}
                   // api={'/api/upload/file'}
                   connector={connector}
                   multiple={false}
@@ -372,18 +466,14 @@ const Create = async () => {
             </Stack>
             <Stack spacing="10px" padding="20px">
               <Typography
+                variant="subtitleSB"
                 color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
               >
                 Space Banner
               </Typography>
               <Typography
+                variant="bodyS"
                 color="white"
-                fontSize="13px"
-                fontWeight={500}
-                fontFamily="Inter"
               >
                 Recommend min of 730x220 (1:1 Ratio)
               </Typography>
@@ -395,7 +485,7 @@ const Create = async () => {
                 }}
               >
                 <Uploader3
-                  accept={['.gif', '.jpeg', '.gif']}
+                  accept={['.gif', '.jpeg', '.jpg']}
                   // api={'/api/upload/file'}
                   connector={connector}
                   multiple={false}
@@ -407,6 +497,7 @@ const Create = async () => {
                     setBanner(file);
                   }}
                   onComplete={(result: any) => {
+                    console.log('banner', result)
                     setBannerURL(result?.url);
                   }}
                 >
@@ -428,6 +519,161 @@ const Create = async () => {
                 />
               </Box>
             </Stack>
+          </Box>
+          <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box padding="20px" display="flex" justifyContent="space-between">
+              <Typography
+                color="white"
+                fontSize="18px"
+                fontWeight={700}
+                fontFamily="Inter"
+              >
+                Links
+              </Typography>
+            </Box>
+
+            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'} ref={socialLinksRef}>
+              <Typography fontSize={'18px'} fontWeight={700} lineHeight={'120%'} color={'white'}>
+                Social Links
+              </Typography>
+              {
+                socialLinks.map((item, index) => {
+                  return (
+                    <Box display={'flex'} flexDirection={'row'} gap={'20px'} key={index}>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Select Social</Typography>
+                        <Select
+                          placeholder='Select'
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                backgroundColor: '#222222'
+                              }
+                            }
+                          }}
+                          sx={{
+                            '& > div': {
+                              padding: '8.5px 12px',
+                              borderRadius: '10px'
+                            },
+                          }}
+                        >
+                          {
+                            SOCIAL_TYPES.map((social, index) => {
+                              return (
+                                <MenuItem
+                                  value={social.key}
+                                  key={index}
+                                >
+                                  {
+                                    social.value
+                                  }
+                                </MenuItem>
+                              )
+                            })
+                          }
+                        </Select>
+                      </Box>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
+                        <TextField variant="outlined" placeholder='https://' sx={{
+                          opacity: '0.6',
+                          '& > div > input': {
+                            padding: '8.5px 12px'
+                          }
+                        }} />
+                      </Box>
+                      <Box
+                        display={'flex'}
+                        flexDirection={'column'}
+                        justifyContent={'flex-end'}
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => handleRemoveSociaLink(item)}
+                      >
+                        <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                          <CancelIcon />
+                        </Box>
+                      </Box>
+                    </Box>
+                  )
+                })
+              }
+              <Button
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '10px',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  textTransform: 'unset',
+                  color: 'white'
+                }}
+                onClick={handleAddSocialLink}
+              >
+                <AddCircleIcon />
+                <Typography color='white'>Add Social Link</Typography>
+              </Button>
+            </Box>
+            <Box padding={'20px'} display={'flex'} flexDirection={'column'} gap={'30px'} borderTop={'1px solid rgba(255, 255, 255, 0.10)'} ref={customLinksRef}>
+              <Typography fontSize={'18px'} fontWeight={700} lineHeight={'120%'} color={'white'}>
+                Custom Links
+              </Typography>
+              {
+                customLinks.map((item, index) => {
+                  return (
+                    <Box display={'flex'} flexDirection={'row'} gap={'20px'} key={index}>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>Link Title</Typography>
+                        <TextField variant="outlined" placeholder='Type a name' sx={{
+                          '& > div > input': {
+                            padding: '8.5px 12px'
+                          },
+                          opacity: '0.6'
+                        }} />
+                      </Box>
+                      <Box display={'flex'} flexDirection={'column'} gap={'10px'} flex={1}>
+                        <Typography fontSize={'16px'} fontWeight={700} color={'white'}>URL</Typography>
+                        <TextField variant="outlined" placeholder='https://' sx={{
+                          '& > div > input': {
+                            padding: '8.5px 12px'
+                          },
+                          opacity: '0.6'
+                        }} />
+                      </Box>
+                      <Box 
+                        display={'flex'} 
+                        flexDirection={'column'} 
+                        justifyContent={'flex-end'} 
+                        sx={{ cursor: 'pointer' }} 
+                        onClick={() => handleRemoveCustomLink(item)}
+                      >
+                        <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                          <CancelIcon />
+                        </Box>
+                      </Box>
+                    </Box>
+                  )
+                })
+              }
+
+              <Button
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '10px',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  color: 'white',
+                  textTransform: 'unset'
+                }}
+                onClick={handleAddCustomLink}
+              >
+                <AddCircleIcon />
+                <Typography color='white'>Add Custom Link</Typography>
+              </Button>
+            </Box>
           </Box>
           <Box display="flex" gap="20px">
             <Button
@@ -453,13 +699,22 @@ const Create = async () => {
                 padding: '6px 16px',
                 flex: 1,
                 border: '1px solid rgba(103, 219, 255, 0.20)',
+                opacity: '1',
+                '&:disabled': {
+                  opacity: '0.6',
+                  color: '#67DBFF'
+                }
               }}
               startIcon={<SpacePlusIcon color="#67DBFF" />}
+              disabled={!name}
               onClick={createSpace}
             >
               Create Space
             </Button>
           </Box>
+          {
+            error && <Typography color={'red'} textAlign={'end'}>Please check Description.</Typography>
+          }
         </Box>
       </Stack>
     </Stack>

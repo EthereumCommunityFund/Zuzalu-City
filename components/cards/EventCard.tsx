@@ -6,6 +6,8 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 
 type EventCardProps = {
+  id?: string;
+  spaceId?: string;
   by?: string;
   name?: string;
   description?: string;
@@ -14,6 +16,8 @@ type EventCardProps = {
 };
 
 const EventCard: React.FC<EventCardProps> = ({
+  id,
+  spaceId,
   by = 'Zuzalu Contributor',
   name = 'HackZuzalu ChiangMai',
   description = 'A Popup Village of Innovation in the Heart of Istanbul',
@@ -30,7 +34,7 @@ const EventCard: React.FC<EventCardProps> = ({
       display="flex"
       gap={isMobile ? '10px' : '14px'}
       sx={{ cursor: 'pointer' }}
-      onClick={() => router.push('/spaces/123/events/456')}
+      onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
     >
       <Box
         component="img"
@@ -99,7 +103,7 @@ const EventCard: React.FC<EventCardProps> = ({
           </Typography>
         </Box>
       </Box>
-      {/* <Box>
+      <Box>
         <Box
           padding={isMobile ? '4px 4px' : '4px 10px'}
           flex="display"
@@ -116,7 +120,7 @@ const EventCard: React.FC<EventCardProps> = ({
             </Typography>
           )}
         </Box>
-      </Box> */}
+      </Box>
     </Box>
   );
 };

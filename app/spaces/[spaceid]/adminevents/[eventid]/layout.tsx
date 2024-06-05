@@ -3,14 +3,14 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from 'theme/theme';
 
-import { Sidebar } from 'components/layout';
+import { Header, Navbar } from 'components/layout';
 
 export const metadata: Metadata = {
   title: 'Zuzalu City',
   description: 'Zuzalu City Powered By Ethereum Community Fund',
 };
 
-function EventLayout({
+function TicketLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -18,24 +18,10 @@ function EventLayout({
   return (
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
-        <div style={{ display: 'flex' }}>
-          <Sidebar selected="Home" />
-          {/* <Navbar /> */}
-          {/* <Menubar /> */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'relative',
-              flex: 1,
-            }}
-          >
-            {children}
-          </div>
-        </div>
+        <div>{children}</div>
       </ThemeProvider>
     </AppRouterCacheProvider>
   );
 }
 
-export default EventLayout;
+export default TicketLayout;

@@ -1,6 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Stack, Grid, useTheme, useMediaQuery, OutlinedInput, InputAdornment, Typography } from '@mui/material';
+import {
+  Stack,
+  Grid,
+  useTheme,
+  useMediaQuery,
+  OutlinedInput,
+  InputAdornment,
+  Typography,
+} from '@mui/material';
 import { Sidebar } from 'components/layout';
 import { SpaceHeader } from './components';
 import { SpaceCard } from '@/components/cards';
@@ -9,34 +17,7 @@ import SidebarLeft from './components/Sidebar';
 import { SearchIcon } from '@/components/icons';
 import { ZuSelect } from '@/components/core';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-
-interface Space {
-  id: string;
-  avatar?: string;
-  banner?: string;
-  description?: string;
-  name: string;
-  profileId?: string;
-  tagline?: string;
-  website?: string;
-  twitter?: string;
-  telegram?: string;
-  nostr?: string;
-  lens?: string;
-  github?: string;
-  discord?: string;
-  ens?: string;
-}
-
-interface SpaceEdge {
-  node: Space;
-}
-
-interface SpaceData {
-  spaceIndex: {
-    edges: SpaceEdge[];
-  };
-}
+import { Space, SpaceData } from '@/types';
 
 const Home = () => {
   const theme = useTheme();
@@ -112,7 +93,7 @@ const Home = () => {
   }
 
   return (
-    <Stack direction="row" sx={{backgroundColor: '#222222'}}>
+    <Stack direction="row" sx={{ backgroundColor: '#222222' }} height="100vh">
       {!isTablet && <Sidebar selected={selected} />}
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
@@ -122,9 +103,9 @@ const Home = () => {
             flexDirection: 'column',
             gap: '10px',
             [theme.breakpoints.down('md')]: {
-              display: "flex"
+              display: 'flex',
             },
-            padding: '20px'
+            padding: '20px',
           }}
         >
           <OutlinedInput
@@ -157,11 +138,23 @@ const Home = () => {
               borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
             }}
           >
-            <Typography fontSize={'18px'} fontWeight={'700'} lineHeight={'120%'} color={'white'}>
+            <Typography
+              fontSize={'18px'}
+              fontWeight={'700'}
+              lineHeight={'120%'}
+              color={'white'}
+            >
               Sort & Filter Spaces
             </Typography>
           </Stack>
-          <ZuSelect sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', opacity: '0.6' }} icon={<LocalOfferIcon />} options={[{ value: 'category', label: 'By Category' }]} />
+          <ZuSelect
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              opacity: '0.6',
+            }}
+            icon={<LocalOfferIcon />}
+            options={[{ value: 'category', label: 'By Category' }]}
+          />
         </Stack>
         <Stack
           sx={{
@@ -171,10 +164,9 @@ const Home = () => {
             rowGap: '30px',
             columnGap: '40px',
             padding: '20px',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
-
           {spaces.map((item, index) => (
             <Grid
               item
@@ -187,10 +179,28 @@ const Home = () => {
             >
               <SpaceCard
                 id={item.id}
-                logoImage={item.avatar ? item.avatar : '/1.webp'}
-                bgImage={item.banner ? item.banner : '/5.webp'}
+                logoImage={
+                  item.avatar !== 'undefined' &&
+                    item.avatar &&
+                    !item.avatar.includes('blob')
+                    ? item.avatar
+                    : '/1.webp'
+                }
+                bgImage={
+                  item.banner !== 'undefined' &&
+                    item.banner &&
+                    !item.banner.includes('blob')
+                    ? item.banner
+                    : '/5.webp'
+                }
                 title={item.name}
-                description={item.description} />
+                description={
+                  isValidJSON(item.description.replaceAll('\\"', '"'))
+                    ? JSON.parse(item.description.replaceAll('\\"', '"'))
+                      .blocks[0].data.text
+                    : item.description
+                }
+              />
             </Grid>
           ))}
         </Stack>

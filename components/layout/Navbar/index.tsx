@@ -1,11 +1,12 @@
 'use client';
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Box, Button, Typography } from '@mui/material';
 import { LeftArrowIcon } from 'components/icons';
 
 const Navbar = () => {
   const router = useRouter();
+  const params = useParams();
 
   return (
     <Box
@@ -17,7 +18,7 @@ const Navbar = () => {
       borderBottom="1px solid #383838"
     >
       <Button
-        onClick={() => router.push('/spaces/123/events/456/edit')}
+        onClick={() => router.push(`/spaces/${params.spaceid.toString()}/adminevents`)}
         startIcon={<LeftArrowIcon />}
         sx={{
           fontFamily: 'Inter',

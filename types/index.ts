@@ -90,5 +90,10 @@ export interface SessionEdge {
 export interface SessionData {
   sessionIndex: {
     edges: SessionEdge[];
-  }
+  };
+}
+
+export interface Venue {
+  id: string;
+  title: string;
 }
