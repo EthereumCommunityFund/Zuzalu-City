@@ -18,7 +18,9 @@ const Navbar = () => {
       borderBottom="1px solid #383838"
     >
       <Button
-        onClick={() => router.push(`/spaces/${params.spaceid.toString()}/adminevents`)}
+        onClick={() =>
+          router.push(`/spaces/${params.spaceid.toString()}/adminevents`)
+        }
         startIcon={<LeftArrowIcon />}
         sx={{
           fontFamily: 'Inter',

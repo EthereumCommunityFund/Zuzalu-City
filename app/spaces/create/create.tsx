@@ -71,7 +71,7 @@ const Create = () => {
   } = useCeramicContext();
 
   const connector = createConnector('NFT.storage', {
-    token: process.env.CONNECTOR_TOKEN ?? ''
+    token: process.env.CONNECTOR_TOKEN ?? '',
   });
 
   const profileId = profile?.id || '';
@@ -211,10 +211,7 @@ const Create = () => {
         >
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Profile
               </Typography>
             </Box>
@@ -249,10 +246,7 @@ const Create = () => {
                 />
               </Box>
               <Stack spacing="10px">
-                <Typography
-                  variant="subtitleSB"
-                  color="white"
-                >
+                <Typography variant="subtitleSB" color="white">
                   Space Description
                 </Typography>
                 <Typography color="white" variant="caption">
@@ -397,24 +391,15 @@ const Create = () => {
           </Box>
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Avatar & Banner
               </Typography>
             </Box>
             <Stack spacing="10px" padding="20px">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Avatar
               </Typography>
-              <Typography
-                variant="bodyS"
-                color="white"
-              >
+              <Typography variant="bodyS" color="white">
                 Recommend min of 200x200px (1:1 Ratio)
               </Typography>
               <Box
@@ -465,16 +450,10 @@ const Create = () => {
               </Box>
             </Stack>
             <Stack spacing="10px" padding="20px">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Banner
               </Typography>
-              <Typography
-                variant="bodyS"
-                color="white"
-              >
+              <Typography variant="bodyS" color="white">
                 Recommend min of 730x220 (1:1 Ratio)
               </Typography>
               <Box
@@ -497,7 +476,7 @@ const Create = () => {
                     setBanner(file);
                   }}
                   onComplete={(result: any) => {
-                    console.log('banner', result)
+                    console.log('banner', result);
                     setBannerURL(result?.url);
                   }}
                 >
@@ -641,11 +620,11 @@ const Create = () => {
                           opacity: '0.6'
                         }} />
                       </Box>
-                      <Box 
-                        display={'flex'} 
-                        flexDirection={'column'} 
-                        justifyContent={'flex-end'} 
-                        sx={{ cursor: 'pointer' }} 
+                      <Box
+                        display={'flex'}
+                        flexDirection={'column'}
+                        justifyContent={'flex-end'}
+                        sx={{ cursor: 'pointer' }}
                         onClick={() => handleRemoveCustomLink(item)}
                       >
                         <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
