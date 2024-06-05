@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -16,7 +16,12 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 
-const Header = () => {
+interface PropTypes {
+  setExpand?: Dispatch<SetStateAction<boolean>>;
+  expand?: boolean
+}
+
+const Header = ({setExpand = () => {}, expand = false}: PropTypes) => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -65,7 +70,16 @@ const Header = () => {
         gap="10px"
         sx={{ cursor: 'pointer' }}
       >
-        {isTablet && <MenuIcon />}
+        <Button
+          sx={{
+            padding: '10px',
+            width: '40px',
+            minWidth: 'unset'
+          }}
+          onClick={() => setExpand(!expand)}
+        >
+          <MenuIcon />
+        </Button>
         <Box
           component="img"
           src={isMobile ? '/ZuCityLogo-IconOnly.svg' : '/ZuCityLogo.svg'}
