@@ -84,6 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
                 gap="10px"
                 borderRadius="10px"
                 onClick={item.function}
+                key={index}
               >
                 {
                   item.icon
@@ -128,6 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
                   gap="10px"
                   onClick={space.function}
                   sx={{ cursor: 'pointer' }}
+                  key={index}
                 >
                   <Box component="img" src={space.src} height="40px" width="40px" borderRadius="20px" />
                   {
