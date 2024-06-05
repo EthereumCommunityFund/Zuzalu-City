@@ -21,6 +21,7 @@ export interface Event {
   min_participant: number;
   max_participant: number;
   createdAt: string;
+  gated?: string;
 }
 
 export interface EventEdge {
@@ -60,4 +61,3 @@ export interface SpaceData {
     edges: SpaceEdge[];
   };
 }
-

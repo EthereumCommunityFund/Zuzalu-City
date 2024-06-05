@@ -1,6 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
 import { ZuCalendar } from '@/components/core';
 import Carousel from 'components/Carousel';
 import { Header, Sidebar } from 'components/layout';
@@ -21,11 +27,11 @@ import { CeramicProvider } from '../context/CeramicContext';
 import { useCeramicContext } from '../context/CeramicContext';
 import AuthPrompt from '@/components/AuthPrompt';
 import { Event, EventData, Space, SpaceData } from '@/types';
-import LotteryCard from '@/components/cards/LotteryCard'
+import LotteryCard from '@/components/cards/LotteryCard';
 import Link from 'next/link';
 const queryClient = new QueryClient();
 
-const doclink = process.env.NEXT_LEARN_DOC_V2_URL || "";
+const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
 
 const Home: React.FC = () => {
   const theme = useTheme();
@@ -34,7 +40,15 @@ const Home: React.FC = () => {
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs((new Date()).toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' })));
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
+    dayjs(
+      new Date().toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
+    ),
+  );
 
   const {
     ceramic,
@@ -97,40 +111,38 @@ const Home: React.FC = () => {
     }
   };
 
-  const getEvents = async (forPast?: boolean) => {
+  const getEvents = async () => {
     try {
       const response: any = await composeClient.executeQuery(`
-      query ($first: Int, $last: Int, $after: String, $before: String) {
-        eventIndex(first: $first, last: $last, after: $after, before: $before) {
+      query {
+        eventIndex(first: 20) {
           edges {
             node {
-              id
-              title
+              createdAt
               description
-              startTime
               endTime
-              timezone
-              status
-              tagline
-              image_url
               external_url
+              gated
+              id
+              image_url
+              max_participant
               meeting_url
+              min_participant
+              participant_count
               profileId
               spaceId
-              participant_count
-              min_participant
-              max_participant
-              createdAt
+              startTime
+              status
+              tagline
+              timezone
+              title
             }
           }
         }
       }
-    `, {
-        "before": selectedDate?.toISOString(),
-        "first": 10,
-      });
+    `);
 
-      if ('eventIndex' in response.data) {
+      if (response && response.data && 'eventIndex' in response.data) {
         const eventData: EventData = response.data as EventData;
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
@@ -149,32 +161,28 @@ const Home: React.FC = () => {
     const fetchData = async () => {
       try {
         await getSpaces();
-        await getEvents(isPast);
+        await getEvents();
       } catch (error) {
         console.error('An error occurred:', error);
       }
     };
     fetchData();
-
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getEvents(isPast);
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
-  }, [selectedDate, isPast]);
+    console.log('date', selectedDate);
+  }, [selectedDate]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box width={'100vw'}>
         <Header />
         <AuthPrompt />
-        <Box display="grid" gridTemplateColumns={'auto 1fr'} sx={{ backgroundColor: '#222222' }}>
+        <Box
+          display="grid"
+          gridTemplateColumns={'auto 1fr'}
+          sx={{ backgroundColor: '#222222' }}
+        >
           {!isTablet && <Sidebar selected="Home" />}
           <Box
             borderLeft="1px solid #383838"
@@ -200,16 +208,10 @@ const Home: React.FC = () => {
               >
                 Zuzalu City
               </Typography>
-              <Typography
-                color="white"
-                variant="bodyB"
-                marginBottom="20px"
-              >
+              <Typography color="white" variant="bodyB" marginBottom="20px">
                 Welcome to the new Zuzalu City
               </Typography>
-              <Link
-                href={doclink}
-              >
+              <Link href={doclink}>
                 <Button
                   variant="contained"
                   sx={{
@@ -242,7 +244,7 @@ const Home: React.FC = () => {
                 <Link
                   href={'/spaces'}
                   style={{
-                    textDecoration: 'blink'
+                    textDecoration: 'blink',
                   }}
                 >
                   <Box display="flex" alignItems="center" gap="10px">
@@ -263,13 +265,13 @@ const Home: React.FC = () => {
               <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
-                  position='relative'
+                  position="relative"
                   flexGrow={1}
                   display="flex"
                   flexDirection="column"
                   gap="20px"
                   sx={{
-                    inset: '0'
+                    inset: '0',
                   }}
                 >
                   <Box
@@ -277,7 +279,7 @@ const Home: React.FC = () => {
                       position: 'sticky',
                       top: 60,
                       display: 'flex',
-                      flexDirection: 'column'
+                      flexDirection: 'column',
                     }}
                   >
                     <Box display="flex" justifyContent="space-between">
@@ -288,11 +290,11 @@ const Home: React.FC = () => {
                         </Typography>
                       </Box>
                       <Link
-                        href={"/events"}
+                        href={'/events'}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          textDecoration: 'blink'
+                          textDecoration: 'blink',
                         }}
                       >
                         <Box display="flex" alignItems="center" gap="10px">
@@ -311,7 +313,7 @@ const Home: React.FC = () => {
                       paddingY="8px"
                       borderRadius="40px"
                       variant="subtitleS"
-                      bgcolor='rgba(34, 34, 34, 0.8)'
+                      bgcolor="rgba(34, 34, 34, 0.8)"
                     >
                       October 2023
                     </Typography>
@@ -328,11 +330,13 @@ const Home: React.FC = () => {
                     <EventCard />
                     <EventCard />
                     <EventCard /> */}
-                    {
-                      events.map((event, index) => (
-                        <EventCard key={`EventCard-${index}`} name={event.title} description={event.description} />
-                      ))
-                    }
+                    {events.map((event, index) => (
+                      <EventCard
+                        key={`EventCard-${index}`}
+                        name={event.title}
+                        description={event.description}
+                      />
+                    ))}
                   </Box>
                 </Box>
                 <Box>
@@ -388,7 +392,6 @@ const Home: React.FC = () => {
                         </Button>
                       </Box>
                       <Box>
-
                         <ZuCalendar
                           value={selectedDate}
                           onChange={(val) => setSelectedDate(val)}
