@@ -277,12 +277,9 @@ export default function SpaceDetailPage() {
             }}
           >
             <Typography fontWeight={700} fontSize={'25px'} lineHeight={'120%'}>
-              Zuzalu City Contributors
+              {space?.name}
             </Typography>
-            <Typography color={'#bebebe'}>
-              First-of-its-kind pop-up city to create, live longer and healthier
-              lives, and build self-sustaining communities.
-            </Typography>
+            <Typography color={'#bebebe'}>{space?.tagline}</Typography>
             <Box
               sx={{
                 color: '#7b7b7b',
@@ -321,7 +318,7 @@ export default function SpaceDetailPage() {
                 color: '#919191',
               }}
             >
-              About Zuzalu City Contributors
+              About {space?.name}
             </Box>
             <Box
               sx={{
