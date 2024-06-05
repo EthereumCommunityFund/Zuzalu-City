@@ -3,15 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import SpaceCard from './cards/SpaceCard';
 import { useTheme, useMediaQuery } from '@mui/material';
+import { Space } from '@/types';
 
 export interface CarouselProps {
-  items: {
-    bgImage: string;
-    logoImage: string;
-    title: string;
-    description: string;
-    joined: boolean;
-  }[];
+  items: Space[];
 }
 
 const Carousel: React.FC<CarouselProps> = ({ items }) => {
@@ -37,6 +32,15 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
     }
   };
 
+  function isValidJSON(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   return (
     <Box
       ref={carouselRef}
@@ -44,21 +48,37 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
       onMouseMove={handleTouchMove}
       sx={{
         display: 'flex',
+        overflowX: 'scroll',
         scrollSnapType: 'x mandatory',
         gap: '10px',
-        position: 'absolute',
-        boxSizing: 'border-box',
         '&::-webkit-scrollbar': { width: 0, backgroundColor: 'transparent' },
       }}
     >
-      {items.map((item, index) => (
+      {items.map((item) => (
         <SpaceCard
-          logoImage={item.logoImage}
-          bgImage={item.bgImage}
-          title={item.title}
-          description={item.description}
-          joined={item.joined}
-          key={`SpaceCard-${index}`}
+          id={item.id}
+          key={`SpaceCard-${item.id}`}
+          logoImage={
+            item.avatar !== 'undefined' &&
+            item.avatar &&
+            !item.avatar.includes('blob')
+              ? item.avatar
+              : '/1.webp'
+          }
+          bgImage={
+            item.banner !== 'undefined' &&
+            item.banner &&
+            !item.banner.includes('blob')
+              ? item.banner
+              : '/5.webp'
+          }
+          title={item.name}
+          description={
+            isValidJSON(item.description.replaceAll('\\"', '"'))
+              ? JSON.parse(item.description.replaceAll('\\"', '"'))
+                .blocks[0].data.text
+              : item.description
+          }
         />
       ))}
     </Box>

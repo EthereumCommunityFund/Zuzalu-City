@@ -2,7 +2,7 @@ import { ClickAwayListener, Stack, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { ZuButton } from 'components/core';
-import { TextEditor } from 'components/editor/editor';
+import TextEditor from 'components/editor/editor';
 
 interface ModalProps {
   showModal: boolean;
@@ -14,6 +14,7 @@ export const PostAnnouncementModal = ({
   setShowModal,
 }: ModalProps) => {
   const [selectedTab, setSelectedTab] = useState('post');
+  const [editor, setEditorInst] = useState<any>();
 
   const tabList = [
     {
@@ -121,6 +122,8 @@ export const PostAnnouncementModal = ({
                 height: '155px',
                 overflow: 'auto',
               }}
+              editor={editor}
+              setEditorInst={setEditorInst}
             />
           </Stack>
           <Stack

@@ -1,10 +1,17 @@
-export const ThreeVerticalIcon = () => {
+import React from 'react';
+import { IconProps } from 'types';
+
+export const ThreeVerticalIcon: React.FC<IconProps> = ({
+  color = 'white',
+  size = 6,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="white"
-      className="w-6 h-6"
+      fill={color}
+      width={`${size * 4}px`}
+      height={`${size * 4}px`}
     >
       <path
         fillRule="evenodd"

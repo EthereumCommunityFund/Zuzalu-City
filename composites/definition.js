@@ -4,7 +4,7 @@ export const definition = {
     Event: {
       interface: false,
       implements: [],
-      id: 'kjzl6hvfrbw6c818g252t3mod7dv56gi4kguf4t9shasid0ew44nqy930ejbxsv',
+      id: 'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
       accountRelation: { type: 'list' },
     },
     MVPProfile: {
@@ -13,10 +13,16 @@ export const definition = {
       id: 'kjzl6hvfrbw6c9957frdp3kb202l590wba573vvo460408bfv6blvnga34sz3ef',
       accountRelation: { type: 'single' },
     },
+    Session: {
+      interface: false,
+      implements: [],
+      id: 'kjzl6hvfrbw6c9395dp44jcr4iajmca0575ruzhks99vv7or940oi1t5b0t0cu6',
+      accountRelation: { type: 'list' },
+    },
     Space: {
       interface: false,
       implements: [],
-      id: 'kjzl6hvfrbw6c9ou40okh3aywbwbnqjd8dld6qicwlk62d1jpblavqnqrfjmbwu',
+      id: 'kjzl6hvfrbw6c7mrh0e96x978mlixqvo7ekh36zmyaa3505s3qkjoijl8q6hvoz',
       accountRelation: { type: 'list' },
     },
   },
@@ -44,7 +50,7 @@ export const definition = {
         relation: {
           source: 'document',
           model:
-            'kjzl6hvfrbw6c9ou40okh3aywbwbnqjd8dld6qicwlk62d1jpblavqnqrfjmbwu',
+            'kjzl6hvfrbw6c7mrh0e96x978mlixqvo7ekh36zmyaa3505s3qkjoijl8q6hvoz',
           property: 'spaceId',
         },
       },
@@ -59,6 +65,16 @@ export const definition = {
           property: 'profileId',
         },
       },
+      sessions: {
+        type: 'view',
+        viewType: 'relation',
+        relation: {
+          source: 'queryConnection',
+          model:
+            'kjzl6hvfrbw6c9395dp44jcr4iajmca0575ruzhks99vv7or940oi1t5b0t0cu6',
+          property: 'eventId',
+        },
+      },
     },
     MVPProfile: {
       username: { type: 'string', required: true, immutable: false },
@@ -69,7 +85,7 @@ export const definition = {
         relation: {
           source: 'queryConnection',
           model:
-            'kjzl6hvfrbw6c818g252t3mod7dv56gi4kguf4t9shasid0ew44nqy930ejbxsv',
+            'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
           property: 'profileId',
         },
       },
@@ -79,7 +95,59 @@ export const definition = {
         relation: {
           source: 'queryConnection',
           model:
-            'kjzl6hvfrbw6c9ou40okh3aywbwbnqjd8dld6qicwlk62d1jpblavqnqrfjmbwu',
+            'kjzl6hvfrbw6c7mrh0e96x978mlixqvo7ekh36zmyaa3505s3qkjoijl8q6hvoz',
+          property: 'profileId',
+        },
+      },
+    },
+    Session: {
+      tags: { type: 'string', required: false, immutable: false },
+      type: { type: 'string', required: false, immutable: false },
+      title: { type: 'string', required: true, immutable: false },
+      track: { type: 'string', required: false, immutable: false },
+      format: { type: 'string', required: false, immutable: false },
+      status: { type: 'string', required: false, immutable: false },
+      endTime: { type: 'datetime', required: true, immutable: false },
+      eventId: { type: 'streamid', required: true, immutable: false },
+      tagline: { type: 'string', required: false, immutable: false },
+      speakers: {
+        type: 'list',
+        required: false,
+        immutable: false,
+        item: { type: 'did', required: false, immutable: false },
+      },
+      timezone: { type: 'string', required: false, immutable: false },
+      createdAt: { type: 'datetime', required: true, immutable: false },
+      profileId: { type: 'streamid', required: true, immutable: false },
+      startTime: { type: 'datetime', required: true, immutable: false },
+      video_url: { type: 'string', required: false, immutable: false },
+      organizers: {
+        type: 'list',
+        required: false,
+        immutable: false,
+        item: { type: 'did', required: false, immutable: false },
+      },
+      description: { type: 'string', required: false, immutable: false },
+      meeting_url: { type: 'string', required: false, immutable: false },
+      experience_level: { type: 'string', required: false, immutable: false },
+      event: {
+        type: 'view',
+        viewType: 'relation',
+        relation: {
+          source: 'document',
+          model:
+            'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
+          property: 'eventId',
+        },
+      },
+      author: { type: 'view', viewType: 'documentAccount' },
+      profile: {
+        type: 'view',
+        viewType: 'relation',
+        relation: {
+          source: 'document',
+          model:
+            'kjzl6hvfrbw6c9957frdp3kb202l590wba573vvo460408bfv6blvnga34sz3ef',
           property: 'profileId',
         },
       },
@@ -94,6 +162,7 @@ export const definition = {
         immutable: false,
         item: { type: 'did', required: true, immutable: false },
       },
+      gated: { type: 'string', required: false, immutable: false },
       nostr: { type: 'string', required: false, immutable: false },
       avatar: { type: 'string', required: false, immutable: false },
       banner: { type: 'string', required: false, immutable: false },
@@ -108,8 +177,21 @@ export const definition = {
       tagline: { type: 'string', required: false, immutable: false },
       twitter: { type: 'string', required: false, immutable: false },
       website: { type: 'string', required: false, immutable: false },
+      category: { type: 'string', required: false, immutable: false },
       telegram: { type: 'string', required: false, immutable: false },
       profileId: { type: 'streamid', required: true, immutable: false },
+      customLinks: {
+        type: 'list',
+        required: false,
+        immutable: false,
+        item: {
+          type: 'reference',
+          refType: 'object',
+          refName: 'SpaceLink',
+          required: false,
+          immutable: false,
+        },
+      },
       description: { type: 'string', required: true, immutable: false },
       author: { type: 'view', viewType: 'documentAccount' },
       profile: {
@@ -128,16 +210,21 @@ export const definition = {
         relation: {
           source: 'queryConnection',
           model:
-            'kjzl6hvfrbw6c818g252t3mod7dv56gi4kguf4t9shasid0ew44nqy930ejbxsv',
+            'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
           property: 'spaceId',
         },
       },
+    },
+    SpaceLink: {
+      links: { type: 'string', required: true, immutable: false },
+      title: { type: 'string', required: true, immutable: false },
     },
   },
   enums: {},
   accountData: {
     eventList: { type: 'connection', name: 'Event' },
     mvpProfile: { type: 'node', name: 'MVPProfile' },
+    sessionList: { type: 'connection', name: 'Session' },
     spaceList: { type: 'connection', name: 'Space' },
   },
 };

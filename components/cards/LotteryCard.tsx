@@ -1,21 +1,32 @@
 import * as React from 'react';
 import { Box, Button } from '@mui/material';
 import { LotteryIcon, RightArrowIcon } from '../icons';
+import { useEffect, useState } from 'react';
+import * as util from '@/utils';
 
 const LotteryCard: React.FC = () => {
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const isMobileEnv: boolean = util.isMobile();
+    setIsMobile(isMobileEnv);
+  }, []);
+
   return (
     <Box
       padding="20px"
       display="flex"
       gap="10px"
       bgcolor="#2D2D2D"
+      width={'100%'}
+      boxSizing={'border-box'}
       borderRadius="20px"
       marginY="30px"
     >
-      <Box>
+      <Box display={isMobile ? 'none' : 'block'}>
         <LotteryIcon />
       </Box>
-      <Box flexGrow={1} display="flex" flexDirection="column" gap="14px">
+      <Box flex={8} display="flex" flexDirection="column" gap="14px">
         <Box display="flex" flexDirection="column">
           <Box
             component="span"

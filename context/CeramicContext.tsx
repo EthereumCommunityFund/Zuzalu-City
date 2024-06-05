@@ -10,6 +10,7 @@ import { authenticateCeramic } from '../utils/ceramicAuth';
  */
 const ceramicUrl =
   process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
+console.log('ceramic url', ceramicUrl);
 
 const ceramic = new CeramicClient(ceramicUrl);
 const composeClient = new ComposeClient({
@@ -91,7 +92,6 @@ export const CeramicProvider = ({ children }: any) => {
           }
         }
       `);
-      console.log(profile, 'profile');
       const basicProfile: { id: string; username: string } | undefined =
         profile?.data?.viewer?.mvpProfile;
       console.log('Basic Profile:', basicProfile);

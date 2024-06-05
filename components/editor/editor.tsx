@@ -1,23 +1,26 @@
-import EditorJS, { OutputData } from '@editorjs/editorjs';
+'use client';
+import React, { useEffect, useRef, Fragment, FC } from 'react';
+import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
-import { useEffect, useRef, Fragment, FC } from 'react';
 import { Box, BoxProps } from '@mui/material';
+import EditorJS from '@editorjs/editorjs';
+// import dynamic from 'next/dynamic';
+// const EditorJS = dynamic(() => import('@editorjs/editorjs'), { ssr: false })
 
 interface TextEditorPropTypes extends BoxProps {
   value?: OutputData;
   placeholder?: string;
-  setData?: (value: OutputData) => void;
+  editor: any;
+  setEditorInst?: (editor: any) => void;
   holder: string;
 }
 
-export const TextEditor: FC<TextEditorPropTypes> = ({
-  value = { blocks: [] },
-  setData = (value: OutputData) => {
-    console.log(value);
-  },
+const TextEditor: FC<TextEditorPropTypes> = ({
+  value,
+  editor,
+  setEditorInst = (editor: any) => {},
   holder = 'editorjs',
   children,
-  placeholder = 'Write your amazing Blog!',
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -27,15 +30,11 @@ export const TextEditor: FC<TextEditorPropTypes> = ({
       const editor = new EditorJS({
         holder: holder,
         tools,
-        placeholder,
         data: value,
-        async onChange(api, event) {
-          const data = await api.saver.save();
-          setData(data);
-        },
       });
 
       ref.current = editor;
+      setEditorInst(editor);
     }
 
     return () => {
@@ -45,9 +44,15 @@ export const TextEditor: FC<TextEditorPropTypes> = ({
     };
   }, []);
 
+  useEffect(() => {
+    editor?.render(value);
+  }, [value]);
+
   return (
     <Fragment>
       {children ? children : <Box id={holder} {...props}></Box>}
     </Fragment>
   );
 };
+
+export default TextEditor;

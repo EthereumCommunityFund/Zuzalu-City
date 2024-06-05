@@ -1,9 +1,8 @@
-import { DateCalendar } from "@mui/x-date-pickers/DateCalendar"
-import { styled } from "@mui/material"
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { styled } from '@mui/material';
 
 const ZuCalendar = styled(DateCalendar)({
-  '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin':
-  {
+  '& .MuiButtonBase-root.MuiPickersDay-root.MuiPickersDay-dayWithMargin': {
     fontFamily: 'Inter',
     color: 'white',
     fontSize: '16px',
@@ -23,19 +22,17 @@ const ZuCalendar = styled(DateCalendar)({
   '& .MuiSvgIcon-root': {
     color: 'white',
   },
-  '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel':
-  {
+  '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel': {
     color: 'white',
     fontSize: '18px',
     fontWeight: 500,
     fontFamily: 'Inter',
   },
   '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected.MuiPickersDay-dayWithMargin':
-  {
-    backgroundColor:
-      'rgba(215, 255, 196, 0.20)',
-    color: '#D7FFC4',
-  },
-})
+    {
+      backgroundColor: 'rgba(215, 255, 196, 0.20)',
+      color: '#D7FFC4',
+    },
+});
 
 export default ZuCalendar;

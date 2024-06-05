@@ -9,7 +9,7 @@ export const MOCK_DATA = {
       joined: false,
     },
     {
-      bgImage: '/7.PNG',
+      bgImage: '/7.png',
       logoImage: '/8.webp',
       title: '4Seas',
       description:
@@ -41,7 +41,7 @@ export const MOCK_DATA = {
       joined: false,
     },
     {
-      bgImage: '/7.PNG',
+      bgImage: '/7.png',
       logoImage: '/8.webp',
       title: '4Seas',
       description:
@@ -175,25 +175,39 @@ export const MOCK_DATA = {
   ],
   tickets: [
     {
-      name: 'Resident',
-      price: '$690.00',
-      open: 'Open to All',
+      name: 'Standard Pass',
+      price: '120',
+      open: 'To All',
       status: true,
-      sold: 14,
+      sold: 0,
+      tokenSymbol: 'USDT',
+      address: '0x00...0000',
     },
     {
       name: 'VIP',
-      price: '4.20 ETH',
-      open: 'Open to All',
-      status: false,
+      price: '240',
+      open: 'To All',
+      status: true,
       sold: 0,
+      tokenSymbol: 'USDC',
+      address: '0x00...0000',
     },
     {
-      name: 'Sponsored Pass',
-      price: 'FREE',
-      open: 'Open to All',
+      name: 'Sponsored',
+      price: '240',
+      open: 'Invite Only',
       status: true,
       sold: 10,
+      tokenSymbol: 'USDT',
+      address: '0x00...0000',
+    },
+    {
+      name: 'Organizer',
+      price: 'n/a',
+      open: 'Invite Only',
+      status: false,
+      sold: 10,
+      address: '0x00...0000',
     },
   ],
   events: [
@@ -257,19 +271,29 @@ export const MOCK_DATA = {
   ],
   eventCredential: [
     {
-      image: "/20.webp",
-      name: "ZuVillage Georgia",
-      desc: "You have 1 ticket"
+      image: '/20.webp',
+      name: 'ZuVillage Georgia',
+      desc: 'You have 1 ticket',
     },
     {
-      image: "/21.webp",
-      name: "HazkZuzalu",
-      desc: "You have 1 ticket"
+      image: '/21.webp',
+      name: 'HazkZuzalu',
+      desc: 'You have 1 ticket',
     },
     {
-      image: "/22.webp",
-      name: "Zu-zah-luh",
-      desc: "You have 1 ticket"
+      image: '/22.webp',
+      name: 'Zu-zah-luh',
+      desc: 'You have 1 ticket',
     },
-  ]
+  ],
+  venues: [
+    {
+      id: '1',
+      title: 'Room1',
+    },
+    {
+      id: '2',
+      title: 'Room2',
+    },
+  ],
 };

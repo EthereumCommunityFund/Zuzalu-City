@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Box, Typography } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 
 interface TabbarProps {
   tabName: string;
@@ -8,15 +7,16 @@ interface TabbarProps {
 }
 
 const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
+  const isSmallScreen = useMediaQuery('(max-width: 550px)');
   return (
     <Box
       bgcolor="#2b2b2bcc"
       height="45px"
       display="flex"
       gap="10px"
-      alignItems="center"
       padding="0px 10px"
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+      overflow={isSmallScreen ? 'scroll' : 'hidden'}
     >
       <Typography
         onClick={() => setTabName('Overview')}
@@ -47,7 +47,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         Event Sessions
       </Typography>
       <Typography
-        onClick={() => setTabName('Values')}
+        onClick={() => setTabName('Venue')}
         color="white"
         fontFamily="Inter"
         fontSize="15px"

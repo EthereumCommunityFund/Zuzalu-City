@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { useRouter, usePathname } from 'next/navigation';
+import { Box, Typography, Button, BoxProps } from '@mui/material';
 import {
   EyeIcon,
   EventIcon,
@@ -37,17 +38,25 @@ const EVENT_TYPE = [
   },
 ];
 
-type EventMCardProps = {
+interface EventMCardProps extends BoxProps {
+  id: string;
   type?: number;
   applicants?: number;
   isSideEventActive?: boolean;
-};
+  name: string;
+}
 
 const EventMCard: React.FC<EventMCardProps> = ({
+  id,
   type = 0,
   applicants = 0,
   isSideEventActive = false,
+  name,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  console.log('path', pathname, id);
+
   return (
     <Box
       display="flex"
@@ -57,6 +66,8 @@ const EventMCard: React.FC<EventMCardProps> = ({
       borderRadius="10px"
       border="1px solid #383838"
       bgcolor="#2D2D2D"
+      sx={{ cursor: 'pointer' }}
+      onClick={() => router.push(`${pathname}/${id}`)}
     >
       <Box display="flex" justifyContent="space-between">
         <Box display="flex" alignItems="center" gap="10px">
@@ -66,7 +77,7 @@ const EventMCard: React.FC<EventMCardProps> = ({
             color="white"
             fontWeight={700}
           >
-            ZuVillage Georgia
+            {name}
           </Typography>
           <Typography
             fontFamily="Inter"
