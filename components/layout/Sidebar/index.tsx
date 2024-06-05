@@ -4,12 +4,12 @@ import { useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import {
   EventIcon,
-  StreamIcon,
   SpaceIcon,
   BoltIcon,
   HomeIcon,
   SpacePlusIcon,
 } from 'components/icons';
+import { useCeramicContext } from '@/context/CeramicContext';
 
 interface SidebarProps {
   selected: string;
@@ -17,9 +17,12 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const router = useRouter();
+  const { isAuthenticated } = useCeramicContext();
 
   return (
-    <Box sx={{ width: '260px', height: '100vh', position: 'sticky', top: '0px' }}>
+    <Box
+      sx={{ width: '260px', height: '100vh', position: 'sticky', top: '0px' }}
+    >
       <Box
         display="flex"
         flexDirection="column"
@@ -48,19 +51,6 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           display="flex"
           padding="10px"
           alignItems="center"
-          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
-          gap="10px"
-          borderRadius="10px"
-        >
-          <StreamIcon />
-          <Typography color="white" variant="bodyMB">
-            Stream
-          </Typography>
-        </Box>
-        <Box
-          display="flex"
-          padding="10px"
-          alignItems="center"
           bgcolor={selected === 'Spaces' ? '#383838' : 'transparent'}
           sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
           gap="10px"
@@ -78,9 +68,13 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           display="flex"
           padding="10px"
           alignItems="center"
+          bgcolor={selected === 'Events' ? '#383838' : 'transparent'}
           sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
           gap="10px"
           borderRadius="10px"
+          onClick={() => {
+            router.push('/events');
+          }}
         >
           <EventIcon />
           <Typography color="white" variant="bodyMB">
@@ -101,76 +95,78 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           </Typography>
         </Box>
       </Box>
-      <Box
-        display="flex"
-        flexDirection="column"
-        gap="15px"
-        sx={{ borderTop: '1px solid #383838', marginX: '10px' }}
-      >
-        <Typography
-          color="white"
-          variant="bodyS"
-          marginTop="15px"
-          marginBottom="10px"
-          marginLeft="10px"
-        >
-          YOUR SPACES
-        </Typography>
+      {isAuthenticated && (
         <Box
           display="flex"
-          alignItems="center"
-          gap="10px"
-          onClick={() => router.push('/spaces/123')}
-          sx={{ cursor: 'pointer' }}
+          flexDirection="column"
+          gap="15px"
+          sx={{ borderTop: '1px solid #383838', marginX: '10px' }}
         >
-          <Box component="img" src="/0.webp" height="40px" />
-          <Typography color="white" variant="bodyMB">
-            Zuzalu City Contributors
+          <Typography
+            color="white"
+            variant="bodyS"
+            marginTop="15px"
+            marginBottom="10px"
+            marginLeft="10px"
+          >
+            YOUR SPACES
           </Typography>
-        </Box>
-        <Box
-          display="flex"
-          alignItems="center"
-          gap="10px"
-          onClick={() => router.push('/spaces/123')}
-          sx={{ cursor: 'pointer' }}
-        >
           <Box
-            component="img"
-            src="/0.webp"
-            height="40px"
-            width="40px"
-            borderRadius="20px"
-          />
-          <Typography color="white" variant="bodyMB">
-            FendiWeb3
-          </Typography>
-        </Box>
-        <Box
-          display="flex"
-          alignItems="center"
-          gap="10px"
-          onClick={() => router.push('/spaces/123')}
-          sx={{ cursor: 'pointer' }}
-        >
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            onClick={() => router.push('/spaces/123')}
+            sx={{ cursor: 'pointer' }}
+          >
+            <Box component="img" src="/0.webp" height="40px" />
+            <Typography color="white" variant="bodyMB">
+              Zuzalu City Contributors
+            </Typography>
+          </Box>
           <Box
-            component="img"
-            src="/0.webp"
-            height="40px"
-            borderRadius="20px"
-            width="40px"
-          />
-          <Typography color="white" variant="bodyMB">
-            Green Odin
-          </Typography>
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            onClick={() => router.push('/spaces/123')}
+            sx={{ cursor: 'pointer' }}
+          >
+            <Box
+              component="img"
+              src="/0.webp"
+              height="40px"
+              width="40px"
+              borderRadius="20px"
+            />
+            <Typography color="white" variant="bodyMB">
+              FendiWeb3
+            </Typography>
+          </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            onClick={() => router.push('/spaces/123')}
+            sx={{ cursor: 'pointer' }}
+          >
+            <Box
+              component="img"
+              src="/0.webp"
+              height="40px"
+              borderRadius="20px"
+              width="40px"
+            />
+            <Typography color="white" variant="bodyMB">
+              Green Odin
+            </Typography>
+          </Box>
+          <Box display="flex" alignItems="center" gap="10px" paddingLeft="5px">
+            <SpacePlusIcon />
+            <Typography color="white" variant="bodyMB">
+              Create a Space
+            </Typography>
+          </Box>
         </Box>
-        <Box display="flex" alignItems="center" gap="10px" paddingLeft="5px">
-          <SpacePlusIcon />
-          <Typography color="white" variant="bodyMB">
-            Create a Space
-          </Typography>
-        </Box>
-      </Box>
+      )}
     </Box>
   );
 };

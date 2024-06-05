@@ -20,8 +20,10 @@ const Header = () => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const { isAuthenticated, showAuthPrompt, logout, username } =
     useCeramicContext();
+  console.log('AUth', isAuthenticated, username);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -63,7 +65,7 @@ const Header = () => {
         gap="10px"
         sx={{ cursor: 'pointer' }}
       >
-        <MenuIcon />
+        {isTablet && <MenuIcon />}
         <Box
           component="img"
           src={isMobile ? '/ZuCityLogo-IconOnly.svg' : '/ZuCityLogo.svg'}
@@ -81,33 +83,6 @@ const Header = () => {
           beta
         </Typography>
       </Box>
-      {!isMobile && (
-        <FormControl focused sx={{ width: '30%', border: 'none' }}>
-          <OutlinedInput
-            placeholder="Search"
-            sx={{
-              backgroundColor:
-                'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-              paddingX: '15px',
-              paddingY: '13px',
-              borderRadius: '10px',
-              height: '35px',
-              border: '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-              fontFamily: 'Inter',
-              opacity: 0.7,
-              color: 'white',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-            }}
-            startAdornment={
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-      )}
       {isAuthenticated ? (
         <>
           <Button
@@ -144,6 +119,9 @@ const Header = () => {
             <MenuItem>{username}</MenuItem>
             <MenuItem>Wallet Connected</MenuItem>
             <MenuItem onClick={handleProfile}>Profile</MenuItem>
+            <MenuItem onClick={() => router.push('/passport')}>
+              Passport
+            </MenuItem>
             <MenuItem onClick={handleSetting}>Setting</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
             <Divider />

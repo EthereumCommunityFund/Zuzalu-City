@@ -11,7 +11,7 @@ import {
   HomeIcon,
   MegaPhoneIcon,
   EventIcon,
-  ArrowDownIcon,
+  ChevronDownIcon,
 } from 'components/icons';
 
 const Sidebar = () => {
@@ -49,7 +49,7 @@ const Sidebar = () => {
           >
             Zuzalu City Contributors
           </Typography>
-          <ArrowDownIcon />
+          <ChevronDownIcon />
         </Stack>
       </Stack>
       <Stack

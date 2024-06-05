@@ -1,17 +1,19 @@
-export const ArrowDownIcon = () => {
+import React from 'react';
+import { IconProps } from 'types';
+
+export const ArrowDownIcon: React.FC<IconProps> = ({ size = 6 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill="none"
       viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="white"
-      className="w-6 h-6"
+      fill="currentColor"
+      width={`${size * 4}px`}
+      height={`${size * 4}px`}
     >
       <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="m19.5 8.25-7.5 7.5-7.5-7.5"
+        fillRule="evenodd"
+        d="M12 2.25a.75.75 0 0 1 .75.75v16.19l6.22-6.22a.75.75 0 1 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 1 1 1.06-1.06l6.22 6.22V3a.75.75 0 0 1 .75-.75Z"
+        clipRule="evenodd"
       />
     </svg>
   );

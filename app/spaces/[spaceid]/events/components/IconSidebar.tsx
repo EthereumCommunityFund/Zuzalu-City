@@ -18,7 +18,6 @@ const IconSidebar = () => {
       direction="column"
       spacing={3}
       width="60px"
-      height="100vh"
       paddingTop={3}
     >
       <Stack direction="column" spacing={3} alignItems="center">

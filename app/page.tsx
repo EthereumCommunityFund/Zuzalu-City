@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -35,6 +36,7 @@ const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
 
 const Home: React.FC = () => {
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [spaces, setSpaces] = useState<Space[]>([]);
@@ -241,19 +243,18 @@ const Home: React.FC = () => {
                     Explore Spaces
                   </Typography>
                 </Box>
-                <Link
-                  href={'/spaces'}
-                  style={{
-                    textDecoration: 'blink',
-                  }}
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap="10px"
+                  onClick={() => router.push('/spaces')}
+                  sx={{ cursor: 'pointer' }}
                 >
-                  <Box display="flex" alignItems="center" gap="10px">
-                    <Typography color="white" variant="bodyM">
-                      View All Spaces
-                    </Typography>
-                    <RightArrowCircleIcon />
-                  </Box>
-                </Link>
+                  <Typography color="white" variant="bodyM">
+                    View All Spaces
+                  </Typography>
+                  <RightArrowCircleIcon />
+                </Box>
               </Box>
               <Box marginY="20px">
                 <Typography color="white" variant="bodyM">
@@ -265,6 +266,7 @@ const Home: React.FC = () => {
               <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
+                  position="relative"
                   position="relative"
                   flexGrow={1}
                   display="flex"
@@ -319,19 +321,10 @@ const Home: React.FC = () => {
                     </Typography>
                   </Box>
                   <Box>
-                    {/* <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard />
-                    <EventCard /> */}
                     {events.map((event, index) => (
                       <EventCard
+                        id={event.id}
+                        spaceId={event.spaceId}
                         key={`EventCard-${index}`}
                         name={event.title}
                         description={event.description}

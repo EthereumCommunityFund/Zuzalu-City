@@ -1,11 +1,15 @@
 'use client';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
+import * as util from '../../utils/index';
 
 type EventCardProps = {
+  id?: string;
+  spaceId?: string;
   by?: string;
   name?: string;
   description?: string;
@@ -14,6 +18,8 @@ type EventCardProps = {
 };
 
 const EventCard: React.FC<EventCardProps> = ({
+  id,
+  spaceId,
   by = 'Zuzalu Contributor',
   name = 'HackZuzalu ChiangMai',
   description = 'A Popup Village of Innovation in the Heart of Istanbul',
@@ -22,7 +28,12 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => {
   const theme = useTheme();
   const router = useRouter();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const isMobileEnv: boolean = util.isMobile();
+    setIsMobile(isMobileEnv);
+  }, []);
 
   return (
     <Box
@@ -30,7 +41,10 @@ const EventCard: React.FC<EventCardProps> = ({
       display="flex"
       gap={isMobile ? '10px' : '14px'}
       sx={{ cursor: 'pointer' }}
-      onClick={() => router.push('/spaces/123/events/456')}
+      width={'100%'}
+      boxSizing={'border-box'}
+      position={'relative'}
+      onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
     >
       <Box
         component="img"
@@ -57,11 +71,22 @@ const EventCard: React.FC<EventCardProps> = ({
               src="/0.webp"
               borderRadius="40px"
             />
-            <Typography color="white" variant="bodyS" fontWeight={300} fontSize={'13px'} letterSpacing={'0.01em'}>
+            <Typography
+              color="white"
+              variant="bodyS"
+              fontWeight={300}
+              fontSize={'13px'}
+              letterSpacing={'0.01em'}
+            >
               {by}
             </Typography>
           </Box>
-          <Typography color="rgba(225, 225, 225, 0.6)" variant="bodyS" fontWeight={300} fontSize={'16px'}>
+          <Typography
+            color="rgba(225, 225, 225, 0.6)"
+            variant="bodyS"
+            fontWeight={300}
+            fontSize={'16px'}
+          >
             October 8 - October 20
           </Typography>
         </Box>
@@ -76,14 +101,19 @@ const EventCard: React.FC<EventCardProps> = ({
             {description}
           </Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap="6px" sx={{opacity: '0.7'}}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap="6px"
+          sx={{ opacity: '0.7' }}
+        >
           <MapIcon size={4} />
           <Typography color="white" variant="caption">
             {location}
           </Typography>
         </Box>
       </Box>
-      {/* <Box>
+      <Box>
         <Box
           padding={isMobile ? '4px 4px' : '4px 10px'}
           flex="display"
@@ -93,14 +123,19 @@ const EventCard: React.FC<EventCardProps> = ({
           borderRadius="10px"
           bgcolor="#292929"
         >
-          <LockIcon />
+          <LockIcon size={4} color={'rgba(255, 255, 255, 0.8)'} />
           {!isMobile && (
-            <Typography color="white" variant="bodyS" fontWeight={300}>
+            <Typography
+              marginTop={'2px'}
+              color="rgba(255, 255, 255, 0.8)"
+              variant="bodyS"
+              fontWeight={300}
+            >
               Gated
             </Typography>
           )}
         </Box>
-      </Box> */}
+      </Box>
     </Box>
   );
 };

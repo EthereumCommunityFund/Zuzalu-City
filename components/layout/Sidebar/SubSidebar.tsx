@@ -1,45 +1,39 @@
 'use client';
-import React from 'react';
-import { HomeIcon, SearchIcon, StreamIcon } from 'components/icons';
+import React, { useState } from 'react';
+import {
+  HomeIcon,
+  SettingIcon,
+  UserPlusIcon,
+  ShieldIcon,
+  NotificationIcon,
+  TableIcon,
+  ChevronDownIcon,
+} from 'components/icons';
 import SidebarButton from './SidebarButton';
-import { ChatsIcon } from 'components/icons/Chats';
-import { AnnouncementsIcon } from 'components/icons/Announcements';
-import { ManageEventsIcon } from 'components/icons/ManageEvents';
-import { ArrowDownIcon } from 'components/icons';
-import { Stack, Typography, Box } from '@mui/material';
+import { Stack, Typography, Box, Popover } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 
 interface SubSidebarProps {
   spaceId: string;
+  title?: string;
 }
 
-const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
+const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
   const theme = useTheme();
   const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
-  const buttonList = [
-    {
-      content: 'Search',
-      icon: <SearchIcon />,
-    },
-    {
-      content: 'Home',
-      icon: <HomeIcon />,
-    },
-    {
-      content: 'Space Stream',
-      icon: <StreamIcon />,
-    },
-    {
-      content: 'Announcements',
-      icon: <AnnouncementsIcon />,
-    },
-    {
-      content: 'Chats',
-      icon: <ChatsIcon />,
-    },
-  ];
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <Stack
@@ -67,46 +61,133 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
           boxSizing: 'border-box',
         }}
       >
-        <Stack
-          bgcolor="#404440"
-          borderRadius="10px"
-          border="1px solid #383838"
-          padding="10px"
-          direction="row"
-          spacing="10px"
-          alignItems="center"
-          sx={{ cursor: 'pointer' }}
-        >
-          <Box
-            component="img"
-            width={40}
-            height={40}
-            borderRadius={20}
-            src="/1.webp"
-          />
-          <Typography
-            variant="subtitleS"
-            color="white"
-            sx={{ textWrap: 'wrap' }}
+        <Stack spacing="10px" onMouseLeave={handleClose}>
+          <Stack
+            bgcolor="#525554"
+            borderRadius="10px"
+            border="1px solid #383838"
+            padding="10px"
+            direction="row"
+            spacing="10px"
+            alignItems="center"
+            sx={{
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              '&:hover': { backgroundColor: '#6f7672' },
+            }}
+            onClick={handleClick}
           >
-            Zuzalu City Contributors
-          </Typography>
-          <ArrowDownIcon />
+            <Box
+              component="img"
+              width={40}
+              height={40}
+              borderRadius={20}
+              src="/1.webp"
+            />
+            <Typography
+              flex={1}
+              variant="subtitleS"
+              color="white"
+              sx={{ textWrap: 'wrap' }}
+            >
+              {title}
+            </Typography>
+            <ChevronDownIcon size={5} />
+          </Stack>
+          <Popover
+            sx={{ width: '100%' }}
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <Stack
+              spacing="10px"
+              padding="5px"
+              border="1px solid #383838"
+              borderRadius="5px"
+              bgcolor="black"
+              color="white"
+            >
+              <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit/invite`)}
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Invite People</Typography>
+                <UserPlusIcon size={5} />
+              </Stack>
+              <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit`)}
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Space Settings</Typography>
+                <SettingIcon size={5} />
+              </Stack>
+              <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit`)}
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Privacy Settings</Typography>
+                <ShieldIcon size={5} />
+              </Stack>
+              <Stack
+                onClick={() => router.push(`/spaces/${spaceId}/edit`)}
+                direction="row"
+                justifyContent="space-between"
+                padding="6px 10px"
+                alignItems="center"
+                borderRadius="8px"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                    opacity: '0.8',
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Typography variant="bodySB">Notification Settings</Typography>
+                <NotificationIcon size={5} />
+              </Stack>
+            </Stack>
+          </Popover>
         </Stack>
-        <SidebarButton
-          content="Exit Space"
-          sx={{
-            backgroundColor: '#ffffff05',
-            '&:hover': {
-              backgroundColor: '#ffffff1a',
-              opacity: '1',
-            },
-            padding: '8px 10px',
-            borderRadius: '10px',
-            cursor: 'pointer',
-            opacity: '0.6',
-          }}
-        ></SidebarButton>
       </Stack>
       <Stack
         sx={{
@@ -126,70 +207,17 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId }) => {
             boxSizing: 'border-box',
           }}
         >
-          {buttonList.map((item, index) => {
-            if (item.content === 'Search') {
-              return (
-                <SidebarButton
-                  icon={item.icon}
-                  content={item.content}
-                  key={index}
-                  isActive={false}
-                  sx={{
-                    backgroundColor: 'transparent',
-                    boxSizing: 'border-box',
-                    padding: '8px 10px',
-                    cursor: 'pointer',
-                    opacity: '0.6',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                    '&:hover': {
-                      backgroundColor: '#ffffff1a',
-                      opacity: '0.8',
-                    },
-                    borderRadius: '10px',
-                  }}
-                ></SidebarButton>
-              );
-            }
-            return (
-              <SidebarButton
-                icon={item.icon}
-                content={item.content}
-                key={index}
-                isActive={false}
-              ></SidebarButton>
-            );
-          })}
-        </Stack>
-        <Stack
-          sx={{
-            width: '100%',
-            padding: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-            borderTop: '1px solid #ffffff1a',
-          }}
-        >
-          <p
-            style={{
-              textTransform: 'uppercase',
-              fontSize: '10px',
-            }}
-          >
-            admins
-          </p>
+          <SidebarButton icon={<HomeIcon />} content="Home" isActive={false} />
           <SidebarButton
-            // onClick={() => router.push(`/spaces/${spaceId}/events/456/edit`)}
-            onClick={() => router.push(`/spaces/${spaceId}/events`)}
-            content="Manage Events"
-            icon={<ManageEventsIcon />}
-          ></SidebarButton>
+            icon={<TableIcon />}
+            content="Events"
+            isActive={false}
+            onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
+          />
         </Stack>
       </Stack>
     </Stack>
   );
-}
+};
 
 export default SubSidebar;

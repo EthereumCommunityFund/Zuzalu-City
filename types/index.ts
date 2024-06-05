@@ -1,6 +1,7 @@
 export type IconProps = {
   size?: number;
   color?: string;
+  cursor?: string;
 };
 
 export interface Event {
@@ -38,10 +39,10 @@ export interface Space {
   id: string;
   avatar?: string;
   banner?: string;
-  description?: string;
+  description: string;
   name: string;
   profileId?: string;
-  tagline?: string;
+  tagline: string;
   website?: string;
   twitter?: string;
   telegram?: string;
@@ -60,4 +61,40 @@ export interface SpaceData {
   spaceIndex: {
     edges: SpaceEdge[];
   };
+}
+
+export interface Session {
+  id: string;
+  title: string;
+  createdAt: string;
+  profileId: string;
+  startTime: string;
+  endTime: string;
+  eventId: string;
+  tags?: string;
+  type?: string;
+  track?: string;
+  format?: string;
+  status?: string;
+  tagline?: string;
+  timezone?: string;
+  video_url?: string;
+  description?: string;
+  meeting_url?: string;
+  experience_level?: string;
+}
+
+export interface SessionEdge {
+  node: Session;
+}
+
+export interface SessionData {
+  sessionIndex: {
+    edges: SessionEdge[];
+  };
+}
+
+export interface Venue {
+  id: string;
+  title: string;
 }

@@ -22,7 +22,7 @@ import {
 import { ZuButton } from 'components/core';
 
 interface SidebarProps {
-  spaceId: string | string[]
+  spaceId: string | string[];
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ spaceId }) => {
