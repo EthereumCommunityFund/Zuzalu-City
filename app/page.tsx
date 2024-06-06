@@ -159,6 +159,62 @@ const Home: React.FC = () => {
     }
   };
 
+  const getEventsByDate = async () => {
+    try {
+      const response: any = await composeClient.executeQuery(
+        `
+      query {
+        eventIndex(filters:$input, first:20) {
+          edges {
+            node {
+              createdAt
+              description
+              endTime
+              external_url
+              gated
+              id
+              image_url
+              max_participant
+              meeting_url
+              min_participant
+              participant_count
+              profileId
+              spaceId
+              startTime
+              status
+              tagline
+              timezone
+              title
+            }
+          }
+        }
+      }
+    `,
+        {
+          input: {
+            where: {
+              startTime: {
+                greaterThan: selectedDate?.date,
+              },
+            },
+          },
+        },
+      );
+      console.log(response);
+      if (response && response.data && 'eventIndex' in response.data) {
+        const eventData: EventData = response.data as EventData;
+        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setEvents(fetchedEvents);
+        console.log('Events fetched:', fetchedEvents);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -172,13 +228,20 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log('date', selectedDate);
+    console.log('date', selectedDate?.format('YYYY-MM-DD'));
+    const fetchData = async () => {
+      try {
+        await getEventsByDate();
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
   }, [selectedDate]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box width={'100vw'}>
-        <Header />
         <AuthPrompt />
         <Box
           display="grid"
@@ -266,7 +329,6 @@ const Home: React.FC = () => {
               <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
-                  position="relative"
                   position="relative"
                   flexGrow={1}
                   display="flex"
