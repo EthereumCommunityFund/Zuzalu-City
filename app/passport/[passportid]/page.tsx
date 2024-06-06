@@ -53,7 +53,7 @@ const Home = () => {
               <Grid container spacing="20px">
                 {
                   tickets.map((ticket, index) => (
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={6} key={`Ticket-Item-${index}`}>
                       <Stack padding="20px" spacing="20px" borderRadius="10px"
                         border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
                         sx={{ background: 'rgba(45, 45, 45, 0.80)', backdropFilter: 'blur(20px)' }}>
