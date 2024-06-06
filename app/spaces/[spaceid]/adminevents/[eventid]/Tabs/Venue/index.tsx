@@ -62,10 +62,7 @@ const Venue: React.FC = () => {
   const [tags, setTags] = useState<string>('');
   const [availableStart, setAvailableStart] = useState<Array<string>>([]);
   const [availableEnd, setAvailableEnd] = useState<Array<string>>([]);
-  const [monday, setMonday] = useState<AvailableType[]>([{
-    startTime: '',
-    endTime: ''
-  }]);
+
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
   const connector = createConnector('NFT.storage', {
@@ -73,18 +70,38 @@ const Venue: React.FC = () => {
   });
 
   const List = (anchor: Anchor) => {
+    const [monday, setMonday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [tuesday, setTuesday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [wednesday, setWednesday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [thursday, setThursday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [friday, setFriday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
 
-    const createSpace = async () => {
+    // const createSpace = async () => {
 
-      const res = await createVenue({
-        name,
-        tags,
+    //   const res = await createVenue({
+    //     name,
+    //     tags,
 
-      });
-      console.log('res', res);
-    }
+    //   });
+    //   console.log('res', res);
+    // }
 
-    console.log("time", availableStart)
+    console.log("time", monday)
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -279,10 +296,10 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">MON</Typography>
                   </Stack>
-                  <Stack spacing="10px">
+                  <Stack spacing="10px" flex="4">
                     {
                       monday.map((item, index) => (
-                        <TimeRange key={`Monday-Item-${index}`} id={index} setAvailableStart={setAvailableStart} setAvailableEnd={setAvailableEnd} />
+                        <TimeRange key={`Monday-Item-${index}`} values={monday} setValues={setMonday} id={index} />
                       ))
                     }
                   </Stack>
@@ -292,24 +309,29 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => setMonday(prev => {
-                      prev.push({
-                        startTime: '',
-                        endTime: ''
-                      });
-                      return prev;
-                    })}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setMonday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => setMonday(prev => {
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...monday];
                       prev.pop();
-                      return prev;
-                    })}>
+                      setMonday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
                 </Stack>
-                {/* <Stack direction="row" spacing="20px">
+                <Stack direction="row" spacing="20px">
                   <Stack
                     direction="row"
                     spacing="20px"
@@ -319,17 +341,37 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">TUE</Typography>
                   </Stack>
-                  <TimeRange setAvailableStart={setAvailableStart} setAvailableEnd={setAvailableEnd} />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      tuesday.map((item, index) => (
+                        <TimeRange key={`Tuesday-Item-${index}`} values={tuesday} setValues={setTuesday} id={index} />
+                      ))
+                    }
+                  </Stack>
                   <Stack
                     direction="row"
                     spacing="20px"
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setTuesday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...tuesday];
+                      prev.pop();
+                      setTuesday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -344,17 +386,37 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">WED</Typography>
                   </Stack>
-                  <TimeRange setAvailableStart={setAvailableStart} setAvailableEnd={setAvailableEnd} />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      wednesday.map((item, index) => (
+                        <TimeRange key={`Wednesday-Item-${index}`} values={wednesday} setValues={setWednesday} id={index} />
+                      ))
+                    }
+                  </Stack>
                   <Stack
                     direction="row"
                     spacing="20px"
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setWednesday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...wednesday];
+                      prev.pop();
+                      setWednesday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -369,17 +431,37 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">THU</Typography>
                   </Stack>
-                  <TimeRange setAvailableStart={setAvailableStart} setAvailableEnd={setAvailableEnd} />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      thursday.map((item, index) => (
+                        <TimeRange key={`Thursday-Item-${index}`} values={thursday} setValues={setThursday} id={index} />
+                      ))
+                    }
+                  </Stack>
                   <Stack
                     direction="row"
                     spacing="20px"
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setThursday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...thursday];
+                      prev.pop();
+                      setThursday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -394,21 +476,41 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">FRI</Typography>
                   </Stack>
-                  <TimeRange setAvailableStart={setAvailableStart} setAvailableEnd={setAvailableEnd} />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      friday.map((item, index) => (
+                        <TimeRange key={`Friday-Item-${index}`} values={friday} setValues={setFriday} id={index} />
+                      ))
+                    }
+                  </Stack>
                   <Stack
                     direction="row"
                     spacing="20px"
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setThursday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...friday];
+                      prev.pop();
+                      setFriday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
-                </Stack> */}
+                </Stack>
                 <Stack direction="row" spacing="20px">
                   <Stack
                     direction="row"
@@ -471,6 +573,7 @@ const Venue: React.FC = () => {
                   flex: 1,
                 }}
                 startIcon={<XMarkIcon />}
+                onClick={() => toggleDrawer('right', false)}
               >
                 Discard
               </ZuButton>
@@ -481,7 +584,7 @@ const Venue: React.FC = () => {
                   flex: 1,
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
-                onClick={createSpace}
+              // onClick={createSpace}
               >
                 Add Space
               </ZuButton>

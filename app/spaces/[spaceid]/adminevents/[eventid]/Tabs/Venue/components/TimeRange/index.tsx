@@ -1,19 +1,31 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Stack } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
-interface ITimeRange {
-  id: number;
-  setAvailableStart: (value: string[] | ((prevVar: string[]) => string[])) => void;
-  setAvailableEnd: (value: string[] | ((prevVar: string[]) => string[])) => void;
+type AvailableType = {
+  startTime: string,
+  endTime: string
 }
-const TimeRange: React.FC<ITimeRange> = ({ setAvailableStart, setAvailableEnd }) => {
+interface ITimeRange {
+  values: AvailableType[];
+  id: number;
+  setValues: Dispatch<SetStateAction<AvailableType[]>>;
+}
+const TimeRange: React.FC<ITimeRange> = ({ id, setValues, values }) => {
   return (
     <Stack direction="row" spacing="10px" flex="4">
       <TimePicker
-        onAccept={(value) => {
-          if (value)
-            setAvailableStart(prev => { prev.push(value.toString()); return prev })
+        onChange={(value) => {
+          if (value) {
+            const newValue = values.map((item, index) => {
+              if (index === id) {
+                item.startTime = value.toString();
+                return item;
+              }
+              return item;
+            })
+            setValues(newValue)
+          }
         }}
         sx={{
           '& .MuiSvgIcon-root': {
@@ -48,11 +60,16 @@ const TimeRange: React.FC<ITimeRange> = ({ setAvailableStart, setAvailableEnd })
       />
       <TimePicker
         onChange={(value) => {
-          if (value)
-            setAvailableEnd(prev => {
-              prev.push(value.toString());
-              return prev
+          if (value) {
+            const newValue = values.map((item, index) => {
+              if (index === id) {
+                item.endTime = value.toString();
+                return item;
+              }
+              return item;
             })
+            setValues(newValue)
+          }
         }}
         sx={{
           '& .MuiSvgIcon-root': {
