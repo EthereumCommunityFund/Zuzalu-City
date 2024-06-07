@@ -31,21 +31,24 @@ const Home = () => {
         query MyQuery($id: ID!) {
           node (id: $id) {
             ...on Event {
-              id
-              title
+              createdAt
               description
-              status
               endTime
+              external_url
+              gated
+              id
+              image_url
+              max_participant
+              meeting_url
+              min_participant
+              participant_count
+              profileId
               spaceId
+              startTime
+              status
               tagline
               timezone
-              createdAt
-              image_url
-              profileId
-              startTime
-              meeting_url
-              external_url
-              max_participant
+              title
               space {
                 name
                 gated
