@@ -95,7 +95,6 @@ const Invite = () => {
           }
         }
       `);
-      console.log('members', update);
     } catch (err) {
       console.log(err);
     }

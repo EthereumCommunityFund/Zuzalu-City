@@ -140,7 +140,7 @@ const Sessions = () => {
         console.log('Not authenticated');
         return;
       }
-      
+
       if (person) {
         const update = await composeClient.executeQuery(`
         mutation {

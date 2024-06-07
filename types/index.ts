@@ -23,9 +23,9 @@ export interface Event {
   max_participant: number;
   createdAt: string;
   space?: {
-    name?: string,
-    gated?: string,
-  } 
+    name?: string;
+    gated?: string;
+  };
 }
 
 export interface EventEdge {
@@ -42,7 +42,7 @@ export interface SpaceEventEdge {
 }
 
 export interface CeramicResponseType<T> {
-  data?: T
+  data?: T;
 }
 
 export interface SpaceEventData {

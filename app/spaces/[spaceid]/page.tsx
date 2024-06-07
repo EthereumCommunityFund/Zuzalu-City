@@ -89,7 +89,6 @@ export default function SpaceDetailPage() {
       const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
         id: spaceId,
       });
-      console.log(response);
       const spaceData: Space = response.data.node as Space;
       setSpace(spaceData);
       const eventData: SpaceEventData = response.data.node
@@ -463,6 +462,7 @@ export default function SpaceDetailPage() {
                     key={`EventCard-${index}`}
                     name={event.title}
                     description={event.description}
+                    logo={event.image_url}
                   />
                 ))}
               </Box>

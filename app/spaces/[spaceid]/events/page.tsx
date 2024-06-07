@@ -119,7 +119,7 @@ const Home = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        
+
         setEvents(fetchedEvents.filter((event) => event.spaceId === spaceId));
       } else {
         console.error('Invalid data structure:', response.data);
@@ -192,6 +192,7 @@ const Home = () => {
               key={`EventCard-${index}`}
               name={event.title}
               description={event.description}
+              logo={event.image_url}
             />
           ))}
         </Stack>
@@ -205,6 +206,7 @@ const Home = () => {
                   key={`Past EventCard-${index}`}
                   name={event.title}
                   description={event.description}
+                  logo={event.image_url}
                 />
               ))}
           </Stack>
