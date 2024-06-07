@@ -18,7 +18,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Space, SpaceData } from '@/types';
+import { Space, Event, SpaceEventData } from '@/types';
 import { Sidebar } from '@/components/layout';
 // import { SubSidebar } from '@/components/layout';
 
@@ -28,71 +28,86 @@ export default function SpaceDetailPage() {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   console.log('router', params);
   const { composeClient } = useCeramicContext();
-  const [aboutContent, setAboutContent] = useState<
-    { title: string; content: string }[]
-  >([]);
+  const [aboutContent, setAboutContent] = useState<string>('');
   const [showMore, setShowMore] = useState(false);
   const [space, setSpace] = useState<Space>();
   const [showCopyToast, setShowCopyToast] = useState(false);
-
+  const [events, setEvents] = useState<Event[]>([]);
   const [currentHref, setCurrentHref] = useState('');
-
   useEffect(() => {
     setCurrentHref(window.location.href);
   }, []);
 
-  const getSpace = async () => {
+  const getSpaceByID = async () => {
     console.log('Fetching spaces...');
     try {
-      const response: any = await composeClient.executeQuery(`
-        query MyQuery {
-          spaceIndex(first: 20) {
-            edges {
-              node {
-                id
-                avatar
-                banner
-                description
-                name
-                profileId
-                tagline
-                website
-                twitter
-                telegram
-                nostr
-                lens
-                github
-                discord
-                ens
+      const GET_SPACE_QUERY = `
+      query GetSpace($id: ID!) {
+        node(id: $id) {
+          ...on Space {
+            avatar
+            banner
+            description
+            name
+            profileId
+            tagline
+            website
+            twitter
+            telegram
+            nostr
+            lens
+            github
+            discord
+            ens
+            events(first: 10) {
+              edges {
+                node {
+                  createdAt
+                  description
+                  endTime
+                  external_url
+                  gated
+                  id
+                  image_url
+                  max_participant
+                  meeting_url
+                  min_participant
+                  participant_count
+                  profileId
+                  spaceId
+                  startTime
+                  status
+                  tagline
+                  timezone
+                  title
+                }
               }
             }
           }
         }
-      `);
-
-      if ('spaceIndex' in response.data) {
-        const spaceData: SpaceData = response.data as SpaceData;
-        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setSpace(
-          fetchedSpaces.filter(
-            (space) => space.id === params.spaceid.toString(),
-          )[0],
-        );
-        console.log('Spaces fetched:', fetchedSpaces);
-      } else {
-        console.error('Invalid data structure:', response.data);
       }
+      `;
+      const spaceId = params.spaceid.toString();
+
+      const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+        id: spaceId,
+      });
+      console.log(response);
+      const spaceData: Space = response.data.node as Space;
+      setSpace(spaceData);
+      const eventData: SpaceEventData = response.data.node
+        .events as SpaceEventData;
+      const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
+      setEvents(fetchedEvents);
     } catch (error) {
-      console.error('Failed to fetch spaces:', error);
+      console.error('Failed to fetch space:', error);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getSpace();
+        await getSpaceByID();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -102,9 +117,11 @@ export default function SpaceDetailPage() {
 
   useEffect(() => {
     if (showMore) {
-      setAboutContent(MOCK_DATA.zuzaContributorContent);
+      const description = space?.description ?? '';
+      const shortDescription = description.substring(0, 30);
+      setAboutContent(shortDescription);
     } else {
-      setAboutContent([MOCK_DATA.zuzaContributorContent[0]]);
+      setAboutContent(space?.description as string);
     }
   }, [showMore]);
 
@@ -255,18 +272,6 @@ export default function SpaceDetailPage() {
                   </Snackbar>
                 </SidebarButton>
               </CopyToClipboard>
-              {/*<SidebarButton*/}
-              {/*  sx={{*/}
-              {/*    padding: '10px',*/}
-              {/*    borderRadius: '10px',*/}
-              {/*    backgroundColor: '#ffffff0a',*/}
-              {/*    '&:hover': {*/}
-              {/*      backgroundColor: '#ffffff1a',*/}
-              {/*    },*/}
-              {/*    cursor: 'pointer',*/}
-              {/*  }}*/}
-              {/*  icon={<MoreIcon />}*/}
-              {/*></SidebarButton>*/}
             </Box>
           </Box>
           <Box
@@ -292,9 +297,7 @@ export default function SpaceDetailPage() {
                 textTransform: 'uppercase',
               }}
             >
-              <p>ai</p>
-              <p>community tools</p>
-              <p>+3</p>
+              <p>{space?.category}</p>
             </Box>
           </Box>
         </Box>
@@ -332,37 +335,31 @@ export default function SpaceDetailPage() {
                 boxSizing: 'border-box',
               }}
             >
-              {aboutContent.length > 0 &&
-                aboutContent.map((content, index) => {
-                  return (
-                    <Box key={index}>
-                      <Box
-                        sx={{
-                          fontWeight: '700',
-                          color: 'white',
-                          marginTop: index !== 0 ? '12px' : '',
-                          fontSize: '18px',
-                          lineHeight: '160%',
-                        }}
-                      >
-                        {content.title}
-                      </Box>
-                      <Box
-                        sx={{
-                          marginTop: '12px',
-                          color: 'white',
-                          opacity: '0.8',
-                          fontWeight: '400',
-                          fontSize: '14px',
-                          lineHeight: '160%',
-                        }}
-                      >
-                        {content.content}
-                      </Box>
-                    </Box>
-                  );
-                })}
+              <Box
+                sx={{
+                  fontWeight: '700',
+                  color: 'white',
+                  marginTop: '12px',
+                  fontSize: '18px',
+                  lineHeight: '160%',
+                }}
+              >
+                {space?.name}
+              </Box>
+              <Box
+                sx={{
+                  marginTop: '12px',
+                  color: 'white',
+                  opacity: '0.8',
+                  fontWeight: '400',
+                  fontSize: '14px',
+                  lineHeight: '160%',
+                }}
+              >
+                {aboutContent}
+              </Box>
             </Box>
+
             <SidebarButton
               sx={{
                 width: '100%',
@@ -385,68 +382,6 @@ export default function SpaceDetailPage() {
               }}
             ></SidebarButton>
           </Box>
-          {/*<Box*/}
-          {/*  sx={{*/}
-          {/*    padding: '20px',*/}
-          {/*    display: 'flex',*/}
-          {/*    gap: '20px',*/}
-          {/*    flexDirection: 'column',*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Box*/}
-          {/*    sx={{*/}
-          {/*      display: 'flex',*/}
-          {/*      flexDirection: 'row',*/}
-          {/*      width: '100%',*/}
-          {/*      justifyContent: 'space-between',*/}
-          {/*      alignItems: 'center',*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    <Box*/}
-          {/*      sx={{*/}
-          {/*        fontSize: '18px',*/}
-          {/*        fontWeight: '700',*/}
-          {/*        color: '#919191',*/}
-          {/*      }}*/}
-          {/*    >*/}
-          {/*      Latest Announcements*/}
-          {/*    </Box>*/}
-          {/*    <SidebarButton*/}
-          {/*      sx={{*/}
-          {/*        display: 'flex',*/}
-          {/*        flexDirection: 'row',*/}
-          {/*        padding: '4px 10px',*/}
-          {/*        gap: '10px',*/}
-          {/*        cursor: 'pointer',*/}
-          {/*        backgroundColor: 'transparent',*/}
-          {/*        '&:hover': {*/}
-          {/*          backgroundColor: '#e6e6e61a',*/}
-          {/*        },*/}
-          {/*        borderRadius: '10px',*/}
-          {/*        opacity: 0.7,*/}
-          {/*        alignItems: 'center',*/}
-          {/*      }}*/}
-          {/*      content="View All Posts"*/}
-          {/*      rightIcon={<RightArrowCircleSmallIcon />}*/}
-          {/*    ></SidebarButton>*/}
-          {/*  </Box>*/}
-          {/*  <Box*/}
-          {/*    sx={{*/}
-          {/*      display: 'flex',*/}
-          {/*      flexDirection: 'column',*/}
-          {/*      gap: '20px',*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    {MOCK_DATA.announcements.map((announcement, index) => {*/}
-          {/*      return (*/}
-          {/*        <AnnouncementCard*/}
-          {/*          {...announcement}*/}
-          {/*          key={index}*/}
-          {/*        ></AnnouncementCard>*/}
-          {/*      );*/}
-          {/*    })}*/}
-          {/*  </Box>*/}
-          {/*</Box>*/}
           <Box
             sx={{
               padding: '20px',
@@ -523,182 +458,61 @@ export default function SpaceDetailPage() {
               >
                 October 2023
               </Box>
-              {MOCK_DATA.upcomingEvents.map((event, index) => {
-                return (
-                  <Box
-                    key={index}
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        '&:hover': {
-                          backgroundColor: '#ffffff1a',
-                        },
-                        transition: 'all',
-                        transitionTimingFunction: 'ease-in',
-                        transitionDuration: '300',
-                        cursor: 'pointer',
-                        borderRadius: '10px',
-                      }}
-                    >
-                      <EventCard />
-                    </Box>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        gap: '20px',
-                      }}
-                    >
-                      {event.sideEvents > 0 && (
-                        <SidebarButton
-                          sx={{
-                            padding: '6px 10px',
-                            backgroundColor: '#ffffff05',
-                            '&:hover': {
-                              backgroundColor: '#e6e6e60f',
-                            },
-                            transition: 'all',
-                            transitionTimingFunction: 'ease-in',
-                            transitionDuration: '300',
-                            borderRadius: '100px',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: '10px',
-                            width: 'fit-content',
-                            cursor: 'pointer',
-                          }}
-                          icon={
-                            <Box
-                              sx={{
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '100%',
-                                backgroundColor: '#ffffff14',
-                                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  transform: 'scale(0.75)',
-                                }}
-                              >
-                                <HomeIcon />
-                              </Box>
-                            </Box>
-                          }
-                        >
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'row',
-                            }}
-                          >
-                            <span>{event.sideEvents}&nbsp;</span>
-                            <span
-                              style={{
-                                color: '#ffffff80',
-                                fontSize: '16px',
-                                fontWeight: '500',
-                              }}
-                            >
-                              side events around&nbsp;
-                            </span>
-                            <span>{event.topic}</span>
-                          </Box>
-                        </SidebarButton>
-                      )}
-                      <SidebarButton
-                        icon={<EventIcon />}
-                        sx={{
-                          padding: '6px 10px',
-                          '&:hover': {
-                            backgroundColor: '#ffffff1a',
-                          },
-                          backgroundColor: 'transparent',
-                          borderRadius: '10px',
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: '10px',
-                          width: 'fit-content',
-                          cursor: 'pointer',
-                        }}
-                        content={event.topic}
-                      ></SidebarButton>
-                    </Box>
-                  </Box>
-                );
-              })}
+              <Box>
+                {events.map((event, index) => (
+                  <EventCard
+                    id={event.id}
+                    spaceId={event.spaceId}
+                    key={`EventCard-${index}`}
+                    name={event.title}
+                    description={event.description}
+                  />
+                ))}
+              </Box>
             </Box>
-          </Box>
-          <Box
-            sx={{
-              padding: '20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
-            }}
-          >
             <Box
               sx={{
+                padding: '20px',
                 display: 'flex',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexDirection: 'row',
+                flexDirection: 'column',
+                gap: '20px',
               }}
             >
               <Box
                 sx={{
-                  fontSize: '18px',
-                  fontWeight: '700',
-                  color: '#919191',
+                  display: 'flex',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexDirection: 'row',
                 }}
               >
-                Past Events ({MOCK_DATA.pastEvents.length})
-              </Box>
-              <SidebarButton
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  padding: '4px 10px',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: '#e6e6e61a',
-                  },
-                  backgroundColor: 'transparent',
-                  borderRadius: '10px',
-                  opacity: 0.7,
-                }}
-                content="See All"
-              ></SidebarButton>
-            </Box>
-            {MOCK_DATA.pastEvents.map((event, index) => {
-              return (
-                <Box
+                {/*<Box
                   sx={{
-                    '&:hover': {
-                      backgroundColor: '#ffffff1a',
-                    },
-                    transition: 'all',
-                    transitionTimingFunction: 'ease-in',
-                    transitionDuration: '300',
-                    cursor: 'pointer',
-                    borderRadius: '10px',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    color: '#919191',
                   }}
-                  key={index}
                 >
-                  <EventCard />
+                  Past Events ({MOCK_DATA.pastEvents.length})
                 </Box>
-              );
-            })}
+                <SidebarButton
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    padding: '4px 10px',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: '#e6e6e61a',
+                    },
+                    backgroundColor: 'transparent',
+                    borderRadius: '10px',
+                    opacity: 0.7,
+                  }}
+                  content="See All"
+                ></SidebarButton>*/}
+              </Box>
+            </Box>
           </Box>
         </Box>
       </Box>
