@@ -55,7 +55,6 @@ const EventMCard: React.FC<EventMCardProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  console.log('path', pathname, id);
 
   return (
     <Box

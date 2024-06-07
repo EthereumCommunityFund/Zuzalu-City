@@ -50,7 +50,6 @@ const Home: React.FC = () => {
   } = useCeramicContext();
 
   const getSpaces = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -84,7 +83,6 @@ const Home: React.FC = () => {
           (edge) => edge.node,
         );
         setSpaces(fetchedSpaces);
-        console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -94,7 +92,6 @@ const Home: React.FC = () => {
   };
 
   const getEvents = async () => {
-    console.log('Fetching events...');
     try {
       const response: any = await composeClient.executeQuery(`
       query {
@@ -130,7 +127,6 @@ const Home: React.FC = () => {
           (edge) => edge.node,
         );
         setEvents(fetchedEvents);
-        console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
       }

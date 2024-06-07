@@ -32,7 +32,6 @@ const EventsPage: React.FC = () => {
   const { composeClient } = useCeramicContext();
 
   const getEvents = async () => {
-    console.log('Fetching events...');
     try {
       const response: any = await composeClient.executeQuery(`
       query {
@@ -75,7 +74,6 @@ const EventsPage: React.FC = () => {
         } else {
           setEvents(fetchedEvents);
         }
-        console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
       }

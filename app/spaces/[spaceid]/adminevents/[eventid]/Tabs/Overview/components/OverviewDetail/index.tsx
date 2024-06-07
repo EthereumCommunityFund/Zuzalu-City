@@ -28,7 +28,6 @@ const OverviewDetail = () => {
   const [eventData, setEventData] = React.useState<Event>()
 
   const getEventDetailInfo = async () => {
-    console.log('Fetching event by id...');
     try {
       const response: CeramicResponseType<EventEdge> = await composeClient.executeQuery(`
         query MyQuery ($id: ID!) {
@@ -60,7 +59,6 @@ const OverviewDetail = () => {
       `, {
         id: eventId
       }) as CeramicResponseType<EventEdge>;
-      console.log('Event response: ', response);
       if (response.data) {
         if (response.data.node) {
           setEventData(response.data.node);

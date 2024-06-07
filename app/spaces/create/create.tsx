@@ -105,19 +105,17 @@ const Create = () => {
         }
       }
     }
-    console.log(socialLinks);
-    console.log(customLinks);
-    console.log('isAuthenticated: ', isAuthenticated);
+
     if (!isAuthenticated) return;
     const output = await editor.save();
     let strDesc: any = JSON.stringify(output);
-    console.log(output.blocks)
+
     if (!output.blocks || output.blocks.length == 0) {
       setError(true);
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
-    console.log('strDesc: ', strDesc);
+
     try {
       const update = await composeClient.executeQuery(`
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
@@ -153,7 +151,6 @@ const Create = () => {
           }
         }
       });
-      console.log('update: ', update);
       typeof window !== 'undefined' && window.alert('Success!');
       router.push('/spaces');
     } catch (err) {
@@ -162,7 +159,6 @@ const Create = () => {
   };
 
   const handleChange = (e: any) => {
-    console.log(e.target.value)
     setCategories(
       typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
     );
@@ -419,11 +415,9 @@ const Create = () => {
                     setAvatar(files[0]);
                   }}
                   onUpload={(result: any) => {
-                    console.log('upload', result);
                     setAvatar(result);
                   }}
                   onComplete={(result: any) => {
-                    console.log('complete', result);
                     setAvatarURL(result?.url);
                   }}
                 >
@@ -476,7 +470,6 @@ const Create = () => {
                     setBanner(file);
                   }}
                   onComplete={(result: any) => {
-                    console.log('banner', result);
                     setBannerURL(result?.url);
                   }}
                 >

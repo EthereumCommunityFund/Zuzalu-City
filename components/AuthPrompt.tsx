@@ -235,7 +235,6 @@ const AuthPrompt: React.FC<{}> = () => {
       if (isConnected) {
         try {
           await authenticate();
-          console.log('Wallet is connected with address:', address);
           if (newUser) {
             setAuthState('NEW_USER');
           } else {

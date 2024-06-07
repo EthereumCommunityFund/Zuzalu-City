@@ -20,7 +20,6 @@ const QRCode = () => {
   const getRandomErrorCorrectionLevel = () => {
     const levels = ['L', 'M', 'Q', 'H'];
     let clevel = levels[Math.floor(Math.random() * levels.length)];
-    console.log(clevel);
 
     setIsRotated(true);
     setErrorCorrectionLevel(clevel);
