@@ -1,169 +1,183 @@
 'use client';
-import * as React from 'react';
-import { Stack, Typography, Box } from '@mui/material';
-import { LeftArrowIcon, QRCodeIcon, ScrollIcon } from '@/components/icons';
-import Image from 'next/image';
-import { ZuButton } from '@/components/core';
+import React, { useState } from 'react';
+import { Stack, Typography, Box, Divider, Grid, Modal } from '@mui/material';
+import { useQRCode } from 'next-qrcode';
+import { ArrowPathIcon, CloseIcon, InformationIcon, LeftArrowIcon, QRCodeIcon, ScrollIcon } from '@/components/icons';
+import { ZuButton, ZuSwitch } from '@/components/core';
 import { useRouter } from 'next/navigation';
 import QRCode from '../components/QRCode';
+import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
 
 const Home = () => {
   const router = useRouter();
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  let ticketDetails = [1];
+  const { Canvas } = useQRCode();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [tickets, setTickets] = useState<Array<string>>(['1']);
+  const [isZk, setIsZk] = useState<boolean>(false);
+  const [errorCorrectionLevel, setErrorCorrectionLevel] =
+    useState<string>('M');
+
   return (
-    <Stack direction="row">
-      <Stack direction="column" flex={1}>
-        <Box
-          display="flex"
-          justifyContent={'center'}
-          flexDirection={'column'}
-          gap="15px"
-          padding={'30px'}
-          sx={{ margin: '0 auto' }}
-          maxWidth={'700px'}
-          width={'100%'}
-        >
-          <Stack direction="row" spacing={2} alignItems="center">
-            <ZuButton
-              sx={{ backgroundColor: '#333333', marginRight: '20px' }}
-              startIcon={<LeftArrowIcon />}
-              onClick={() => router.back()}
-            >
-              Back
-            </ZuButton>
-            <Box>
-              <Image alt={'23.webp'} src={'/23.webp'} width={30} height={30} />
-            </Box>
+    <Stack>
+      <Stack
+        justifyContent="center"
+        spacing="20px"
+        paddingY="30px"
+        sx={{ margin: '0 auto' }}
+        width="700px"
+      >
+        <Stack direction="row" spacing="20px" alignItems="center">
+          <ZuButton
+            startIcon={<LeftArrowIcon />}
+            onClick={() => router.back()}
+          >
+            Back
+          </ZuButton>
+          <Stack direction="row" spacing="10px" alignItems="center">
+            <Box component="img" alt={'23.webp'} src={'/23.webp'} width={30} height={30} borderRadius="4px" />
             <Typography
-              variant="h6"
+              variant="subtitleLB"
               color="white"
-              marginLeft={'10px'}
-              lineHeight="40px"
             >
               EventName
             </Typography>
           </Stack>
+        </Stack>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {ticketDetails.length > 1 ? (
-              ticketDetails.map((ticket, index) => (
-                <div
-                  key={index}
-                  className="col-span-1 rounded-[10px] h-auto bg-[rgba(255,255,255,0.05)] p-4 shadow-md"
-                >
-                  <Image
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                    }}
-                    alt={'/23.webp'}
-                    src={'/23.webp'}
-                    width={100}
-                    height={100}
-                  />
-
-                  <div className="text-white font-[700] ">
-                    <div className="my-2.5 text-[18px] leading-[120%]">
-                      TicketName
-                    </div>
-                    <div className="border-b border-white pb-5 flex text-[13px] opacity-50">
-                      <div className="mr-2.5">05/15/2024</div>
-                      <div className="">420 USDT</div>
-                    </div>
-
-                    <button
-                      onClick={() => setIsOpen(true)}
-                      className="flex items-center w-full mt-[14px] p-2.5 rounded-[10px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.05)]"
-                    >
-                      <div className="mr-[14px]">
-                        <QRCodeIcon />
-                      </div>
-                      <div className="leading-[120%]">
-                        <div className="font-[700] text-[18px] mb-1 flex items-start">
-                          Open QR Code
-                        </div>
-                        <div className="text-[10px] opacity-70">
-                          Generate a proof of your ticket
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="col-span-2 my-5 max-w-[640px] rounded-[10px] w-full bg-[url('/23.webp')] bg-cover bg-center bg-no-repeat">
-                  <div className="backdrop-blur-xl rounded-[10px] h-auto bg-[rgba(45,45,45,0.80)] border border-[rgba(255,255,255,0.10)] p-4 shadow-md">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="col-span-1">
-                        <Image
-                          style={{
-                            width: '100%',
-                            height: 'auto',
-                          }}
-                          alt={'/23.webp'}
-                          src={'/23.webp'}
-                          width={100}
-                          height={100}
-                        />
-                      </div>
-                      <div className=" col-span-1 text-white font-[700] ">
-                        <div className="mb-2.5 text-[25px] leading-[120%]">
-                          TicketName
-                        </div>
-                        <div className="border-b border-white pb-5 flex text-[13px] opacity-50">
-                          <div className="mr-2.5">05/15/2024</div>
-                          <div className="">420 USDT</div>
-                        </div>
-
-                        <button
-                          onClick={() => setIsOpen(true)}
-                          className="w-full mt-[14px] p-2.5 rounded-[10px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.05)]"
-                        >
-                          <div className="flex">
-                            <div className="mr-[14px]">
-                              <QRCodeIcon />
-                            </div>
-                            <div className="">
-                              <div className="font-[700] text-[18px] leading-[120%] mb-1">
+        {
+          tickets.length > 1 ? (
+            <Stack spacing="20px">
+              <Typography color="white" variant="subtitleMB">
+                Tickets:
+              </Typography>
+              <Grid container spacing="20px">
+                {
+                  tickets.map((ticket, index) => (
+                    <Grid item xs={12} md={6} key={`Ticket-Item-${index}`}>
+                      <Stack padding="20px" spacing="20px" borderRadius="10px"
+                        border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                        sx={{ background: 'rgba(45, 45, 45, 0.80)', backdropFilter: 'blur(20px)' }}>
+                        <Box component="img" width={300} height={300} borderRadius="10px" src="/23.webp" alt="23.webp" />
+                        <Stack spacing="14px" flex="1">
+                          <Stack justifyContent="center" spacing="10px" pb="20px" borderBottom="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))">
+                            <Typography
+                              variant="subtitleLB"
+                              color="white"
+                              textAlign="center"
+                            >
+                              Ticket One
+                            </Typography>
+                            <Stack direction="row" spacing="10px" justifyContent="center">
+                              <Typography color="white" variant="bodySB">
+                                05/15/2024
+                              </Typography>
+                              <Typography color="white" variant="bodySB">
+                                420 USDT
+                              </Typography>
+                            </Stack>
+                          </Stack>
+                          <Stack
+                            onClick={() => setIsOpen(true)}
+                            sx={{ background: "var(--Inactive-White, rgba(255, 255, 255, 0.05))" }}
+                            border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                            direction="row" spacing="14px" padding="10px" alignItems="center" borderRadius="10px">
+                            <QRCodeIcon />
+                            <Stack spacing="4px">
+                              <Typography variant="subtitleSB" color="white">
                                 Open QR Code
-                              </div>
-                              <div className="text-[10px] opacity-70 leading-[120%]">
+                              </Typography>
+                              <Typography variant="caption" color="white">
                                 Generate a proof of your ticket
-                              </div>
-                            </div>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-2 p-[20px] text-white rounded-[10px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.05)]">
-                  <div className="font-[700] text-[20px] opacity-[0.6]">
-                    Ticket Description
-                  </div>
-                  <p className="mt-5 opacity-[0.8]">
-                    Get ready to groove at the Summer Music Festival! Join us
-                    for a day filled with live music, food trucks, and good
-                    vibes. Experience an eclectic lineup of bands and solo
-                    artists across various genres, from indie rock to electronic
-                    beats. Whether you&apos;re dancing with friends or lounging
-                    on the grass, this event promises to be a highlight of your
-                    summer. Don&apos;t miss out on the ultimate music
-                    celebration under the sun!
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
+                              </Typography>
+                            </Stack>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    </Grid>
+                  ))
+                }
+              </Grid>
+            </Stack>
+          ) : (
+            <Stack spacing="20px">
+              <Stack direction="row" padding="20px" spacing="20px" borderRadius="10px"
+                border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                sx={{ background: 'rgba(45, 45, 45, 0.80)', backdropFilter: 'blur(20px)' }}>
+                <Box component="img" width={300} height={300} borderRadius="10px" src="/23.webp" alt="23.webp" />
+                <Stack spacing="14px" flex="1">
+                  <Stack spacing="10px" pb="20px" borderBottom="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))">
+                    <Typography
+                      variant="subtitleLB"
+                      color="white"
+                    >
+                      Ticket One
+                    </Typography>
+                    <Stack direction="row" spacing="10px">
+                      <Typography color="white" variant="bodySB">
+                        05/15/2024
+                      </Typography>
+                      <Typography color="white" variant="bodySB">
+                        420 USDT
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Stack
+                    onClick={() => setIsOpen(true)}
+                    sx={{ background: "var(--Inactive-White, rgba(255, 255, 255, 0.05))", cursor: "pointer" }}
+                    border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                    direction="row" spacing="14px" padding="10px" alignItems="center" borderRadius="10px">
+                    <QRCodeIcon />
+                    <Stack spacing="4px">
+                      <Typography variant="subtitleSB" color="white">
+                        Open QR Code
+                      </Typography>
+                      <Typography variant="caption" color="white">
+                        Generate a proof of your ticket
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
+              <Stack padding="20px" borderRadius="10px" spacing="20px"
+                border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                sx={{ background: "var(--Inactive-White, rgba(255, 255, 255, 0.05))" }}
+              >
+                <Typography
+                  variant="subtitleMB"
+                  color="white"
+                >
+                  Ticket Description
+                </Typography>
+                <Typography
+                  variant="bodyB"
+                  color="white"
+                >
+                  Get ready to groove at the Summer Music Festival! Join us for a day filled with live music, food trucks, and good vibes.
+                </Typography>
+                <Divider sx={{ borderColor: '#383838' }} />
+                <Stack spacing="5px">
+                  <Typography color="white" variant="bodyMB">
+                    Contract/Address (?)
+                  </Typography>
+                  <Stack direction="row" spacing="10px">
+                    <Typography color="white" variant="bodyM">
+                      0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E
+                    </Typography>
 
-          <div className="">
-            <ScrollIcon />
-          </div>
-        </Box>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
+          )
+        }
+        <ScrollIcon />
       </Stack>
-      <QRCode isOpen={isOpen} setIsOpen={setIsOpen} />
+      <Modal
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+      >
+        <QRCode />
+      </Modal>
     </Stack>
   );
 };

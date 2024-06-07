@@ -14,7 +14,7 @@ const Overview = () => {
   const theme = useTheme();
   const params = useParams();
   const connector = createConnector('NFT.storage', {
-    token: process.env.CONNECTOR_TOKEN ?? '',
+    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
   const { composeClient } = useCeramicContext();
 
@@ -31,7 +31,6 @@ const Overview = () => {
   const [editor, setEditorInst] = useState<any>();
 
   const getSpace = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -73,7 +72,6 @@ const Overview = () => {
           JSON.parse(editSpace.description.replaceAll('\\"', '"')),
         );
         setTagline(editSpace.tagline);
-        console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -268,7 +266,6 @@ const Overview = () => {
               multiple={false}
               crop={false} // must be false when accept is svg
               onComplete={(result: any) => {
-                console.log('complete', result);
                 setAvatarURL(result?.url);
               }}
             >
@@ -321,7 +318,6 @@ const Overview = () => {
               multiple={false}
               crop={false} // must be false when accept is svg
               onComplete={(result: any) => {
-                console.log('complete', result);
                 setBannerURL(result?.url);
               }}
             >

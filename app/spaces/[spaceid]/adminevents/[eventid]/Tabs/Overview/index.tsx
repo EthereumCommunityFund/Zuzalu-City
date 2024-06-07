@@ -13,7 +13,7 @@ const Overview = () => {
       <OverviewHeader />
       <OverviewDetail />
       <OverviewInvite />
-      <OverviewPosts />
+      {/* <OverviewPosts /> */}
     </Stack>
   );
 };

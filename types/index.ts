@@ -22,6 +22,10 @@ export interface Event {
   min_participant: number;
   max_participant: number;
   createdAt: string;
+  space?: {
+    name?: string;
+    gated?: string;
+  };
   gated?: string;
 }
 
@@ -51,6 +55,7 @@ export interface Space {
   github?: string;
   discord?: string;
   ens?: string;
+  category?: string;
 }
 
 export interface SpaceEdge {

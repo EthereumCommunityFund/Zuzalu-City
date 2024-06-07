@@ -71,7 +71,7 @@ const Create = () => {
   } = useCeramicContext();
 
   const connector = createConnector('NFT.storage', {
-    token: process.env.CONNECTOR_TOKEN ?? '',
+    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
 
   const profileId = profile?.id || '';
@@ -83,21 +83,21 @@ const Create = () => {
   const createSpace = async () => {
     let socialLinks = {};
     let customLinks = [];
-    if(socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
-      for(let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
+    if (socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
+      for (let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
         const key = socialLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
         const value = socialLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
-        if(key) {
-          socialLinks = {...socialLinks, [key]: value};
+        if (key) {
+          socialLinks = { ...socialLinks, [key]: value };
         }
       }
     }
 
-    if(customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
-      for(let i = 0; i < customLinksRef.current.children.length - 2; i++) {
+    if (customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
+      for (let i = 0; i < customLinksRef.current.children.length - 2; i++) {
         const key = customLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
         const value = customLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
-        if(key) {
+        if (key) {
           customLinks.push({
             links: value,
             title: key
@@ -105,19 +105,17 @@ const Create = () => {
         }
       }
     }
-    console.log(socialLinks);
-    console.log(customLinks);
-    console.log('isAuthenticated: ', isAuthenticated);
+
     if (!isAuthenticated) return;
     const output = await editor.save();
     let strDesc: any = JSON.stringify(output);
-    console.log(output.blocks)
+
     if (!output.blocks || output.blocks.length == 0) {
       setError(true);
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
-    console.log('strDesc: ', strDesc);
+
     try {
       const update = await composeClient.executeQuery(`
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
@@ -153,7 +151,6 @@ const Create = () => {
           }
         }
       });
-      console.log('update: ', update);
       typeof window !== 'undefined' && window.alert('Success!');
       router.push('/spaces');
     } catch (err) {
@@ -162,7 +159,6 @@ const Create = () => {
   };
 
   const handleChange = (e: any) => {
-    console.log(e.target.value)
     setCategories(
       typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
     );
@@ -419,11 +415,9 @@ const Create = () => {
                     setAvatar(files[0]);
                   }}
                   onUpload={(result: any) => {
-                    console.log('upload', result);
                     setAvatar(result);
                   }}
                   onComplete={(result: any) => {
-                    console.log('complete', result);
                     setAvatarURL(result?.url);
                   }}
                 >
@@ -476,7 +470,6 @@ const Create = () => {
                     setBanner(file);
                   }}
                   onComplete={(result: any) => {
-                    console.log('banner', result);
                     setBannerURL(result?.url);
                   }}
                 >

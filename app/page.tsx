@@ -52,6 +52,8 @@ const Home: React.FC = () => {
     ),
   );
 
+  const [expand, setExpand] = useState<boolean>(false);
+
   const {
     ceramic,
     composeClient,
@@ -68,7 +70,6 @@ const Home: React.FC = () => {
   } = useCeramicContext();
 
   const getSpaces = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -104,7 +105,6 @@ const Home: React.FC = () => {
           (edge) => edge.node,
         );
         setSpaces(fetchedSpaces);
-        console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -150,7 +150,6 @@ const Home: React.FC = () => {
           (edge) => edge.node,
         );
         setEvents(fetchedEvents);
-        console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -251,7 +250,7 @@ const Home: React.FC = () => {
           {!isTablet && <Sidebar selected="Home" />}
           <Box
             borderLeft="1px solid #383838"
-            flexGrow={1}
+            flex={1}
             padding={isMobile ? '10px' : '30px'}
             width={'calc(100vw - 260px)'}
           >
