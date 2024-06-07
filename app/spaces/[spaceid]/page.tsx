@@ -462,6 +462,7 @@ export default function SpaceDetailPage() {
                     key={`EventCard-${index}`}
                     name={event.title}
                     description={event.description}
+                    logo={event.image_url}
                   />
                 ))}
               </Box>

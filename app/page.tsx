@@ -384,6 +384,7 @@ const Home: React.FC = () => {
                         key={`EventCard-${index}`}
                         name={event.title}
                         description={event.description}
+                        logo={event.image_url}
                       />
                     ))}
                   </Box>
