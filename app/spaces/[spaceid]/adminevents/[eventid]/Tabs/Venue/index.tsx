@@ -1,20 +1,19 @@
 'use client';
 import React, { useState } from 'react';
+import { useParams } from 'next/navigation';
 import {
   Stack,
   SwipeableDrawer,
   Box,
   Typography,
-  FormControl,
   OutlinedInput,
-  InputAdornment,
   Button,
+  Select,
+  MenuItem,
+  Chip
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
@@ -31,8 +30,9 @@ import {
 import BpCheckbox from '@/components/event/Checkbox';
 import { MOCK_DATA } from '@/mock';
 import { ZuButton, ZuInput } from '@/components/core';
-import { createVenue } from '@/services/admin/venue';
 import { TimeRange } from './components';
+import { supabase } from '@/utils/supabase/client';
+import { VENUE_TAGS } from '@/constant';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -47,6 +47,9 @@ type AvailableType = {
 }
 
 const Venue: React.FC = () => {
+  const params = useParams();
+  const eventid = params.eventid.toString();
+
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -59,9 +62,14 @@ const Venue: React.FC = () => {
   };
 
   const [name, setName] = useState<string>('');
-  const [tags, setTags] = useState<string>('');
-  const [availableStart, setAvailableStart] = useState<Array<string>>([]);
-  const [availableEnd, setAvailableEnd] = useState<Array<string>>([]);
+  const [tags, setTags] = useState<string[]>([]);
+
+  const handleChange = (e: any) => {
+    console.log(e.target.value)
+    setTags(
+      typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
+    );
+  }
 
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
@@ -91,17 +99,27 @@ const Venue: React.FC = () => {
       endTime: ''
     }]);
 
-    // const createSpace = async () => {
-
-    //   const res = await createVenue({
-    //     name,
-    //     tags,
-
-    //   });
-    //   console.log('res', res);
-    // }
-
-    console.log("time", monday)
+    const createVenue = async () => {
+      try {
+        const bookings = {
+          monday,
+          tuesday,
+          wednesday,
+          thursday,
+          friday
+        }
+        const { data } = await supabase.from("venue").insert({
+          name,
+          tags: tags.join(','),
+          eventid,
+          avatar: avatarURL,
+          bookings: JSON.stringify(bookings)
+        })
+        console.log("data", data)
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -169,34 +187,59 @@ const Venue: React.FC = () => {
                     Search or create categories related to your space
                   </Typography>
                 </Stack>
-                <FormControl focused sx={{ border: 'none' }}>
-                  <OutlinedInput
-                    placeholder="Search or add a tag"
-                    onChange={(e) => setTags(e.target.value)}
-                    sx={{
-                      backgroundColor:
-                        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
-                      },
+                <Box>
+                  <Select
+                    multiple
+                    value={tags}
+                    style={{ width: '100%' }}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222'
+                        }
+                      }
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
+                  >
+                    {
+                      VENUE_TAGS.map((tag, index) => {
+                        return (
+                          <MenuItem
+                            value={tag.value}
+                            key={index}
+                          >
+                            {
+                              tag.label
+                            }
+                          </MenuItem>
+                        )
+                      })
                     }
-                  />
-                </FormControl>
-                <Stack direction="row" spacing="10px">
+                  </Select>
+                </Box>
+                <Box display={'flex'} flexDirection={'row'} gap={'10px'} flexWrap={'wrap'}>
+                  {
+                    tags.map((tag, index) => {
+                      return (
+                        <Chip
+                          label={VENUE_TAGS.find((item) => item.value === tag)?.label}
+                          sx={{
+                            borderRadius: '10px'
+                          }}
+                          onDelete={
+                            () => {
+                              const newArray = tags.filter((item) => item !== tag);
+                              setTags(newArray)
+                            }
+                          }
+                          key={index}
+                        />
+                      )
+                    })
+                  }
+                </Box>
+                {/* <Stack direction="row" spacing="10px">
                   <Stack
                     direction="row"
                     spacing="10px"
@@ -221,7 +264,7 @@ const Venue: React.FC = () => {
                     <Typography variant="bodyMB">External Venue</Typography>
                     <XMarkIcon size={4} />
                   </Stack>
-                </Stack>
+                </Stack> */}
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Space Image</Typography>
@@ -584,7 +627,7 @@ const Venue: React.FC = () => {
                   flex: 1,
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
-              // onClick={createSpace}
+                onClick={createVenue}
               >
                 Add Space
               </ZuButton>
