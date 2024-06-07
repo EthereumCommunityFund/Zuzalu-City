@@ -25,10 +25,8 @@ const Invite = () => {
   //   members: ['']
   // });
   const [members, setMembers] = useState<IMember[]>([]);
-  console.log('ex', extra);
 
   const getSpace = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query {
@@ -53,8 +51,6 @@ const Invite = () => {
           (item: any) => item.id === params.spaceid.toString(),
         );
         // setSpace(editSpace);
-        console.log('Spaces fetched:', editSpace);
-        console.log('Spaces fetched:', editSpace[0].members);
         setMembers(editSpace[0].members);
       } else {
         console.error('Invalid data structure:', response.data);

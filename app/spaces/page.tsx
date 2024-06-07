@@ -28,7 +28,6 @@ const Home = () => {
 
   const { composeClient } = useCeramicContext();
   const getSpaces = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -62,7 +61,6 @@ const Home = () => {
           (edge) => edge.node,
         );
         setSpaces(fetchedSpaces);
-        console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -75,7 +73,6 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const data = await getSpaces();
-        console.log(data);
       } catch (error) {
         console.error('An error occurred:', error);
       }

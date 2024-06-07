@@ -27,8 +27,6 @@ const Header = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const { isAuthenticated, showAuthPrompt, logout, username } =
     useCeramicContext();
-
-  console.log('AUth', isAuthenticated, username);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {

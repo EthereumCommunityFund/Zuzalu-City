@@ -25,8 +25,6 @@ import { Sidebar } from '@/components/layout';
 export default function SpaceDetailPage() {
   const params = useParams();
   const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  console.log('router', params);
   const { composeClient } = useCeramicContext();
   const [aboutContent, setAboutContent] = useState<string>('');
   const [showMore, setShowMore] = useState(false);
@@ -39,7 +37,6 @@ export default function SpaceDetailPage() {
   }, []);
 
   const getSpaceByID = async () => {
-    console.log('Fetching spaces...');
     try {
       const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {

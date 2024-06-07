@@ -9,3 +9,16 @@ export const isMobile = (): boolean => {
   }
   return false;
 };
+
+export const convertDateStringFormat = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  // Get the month name and day of the month
+  const monthName = date.toLocaleString('default', { month: 'long' });
+  const dayOfMonth = date.getDate();
+  
+  // Construct the desired output string
+  const formattedDate = `${monthName} ${dayOfMonth}`;
+  
+  return formattedDate;
+}

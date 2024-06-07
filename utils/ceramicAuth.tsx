@@ -23,7 +23,6 @@ export const authenticateCeramic = async (
 ) => {
   let logged_in = localStorage.getItem('logged_in');
   const popup = document.querySelector('.popup');
-  console.log('logged_in in localStorage: ', logged_in);
   // if (logged_in == "true") {
   //   if (popup) {
   //     popup.style.display = "none";
@@ -47,7 +46,6 @@ const authenticateKeyDID = async (
   let seed_array: Uint8Array;
   if (localStorage.getItem(DID_SEED_KEY) === null) {
     // for production you will want a better place than localStorage for your sessions.
-    console.log('Generating seed...');
     let seed = crypto.getRandomValues(new Uint8Array(32));
     let seed_json = JSON.stringify(seed, (key, value) => {
       if (value instanceof Uint8Array) {
@@ -57,12 +55,10 @@ const authenticateKeyDID = async (
     });
     localStorage.setItem(DID_SEED_KEY, seed_json);
     seed_array = seed;
-    console.log('Generated new seed: ' + seed);
   } else {
     let seed_json_value = localStorage.getItem(DID_SEED_KEY);
     let seed_object = JSON.parse(seed_json_value as string);
     seed_array = new Uint8Array(seed_object);
-    console.log('Found seed: ' + seed_array);
   }
   const provider = new Ed25519Provider(seed_array);
   const did = new DID({ provider, resolver: getResolver() });
@@ -78,7 +74,6 @@ const authenticateEthPKH = async (
 ) => {
   const sessionStr = localStorage.getItem('ceramic:eth_did');
   let session;
-  console.log('existing session', sessionStr);
   if (sessionStr) {
     session = await DIDSession.fromSession(sessionStr);
   }
@@ -92,13 +87,11 @@ const authenticateEthPKH = async (
 
     // We enable the ethereum provider to get the user's addresses.
     const ethProvider = typeof window !== 'undefined' && window.ethereum;
-    console.log('found provider', ethProvider);
     // request ethereum accounts.
     const addresses = await ethProvider.enable({
       method: 'eth_requestAccounts',
     });
     const accountId = await getAccountId(ethProvider, addresses[0]);
-    console.log(accountId, 'account');
     const authMethod = await EthereumWebAuth.getAuthMethod(
       ethProvider,
       accountId,
@@ -108,7 +101,6 @@ const authenticateEthPKH = async (
      * @NOTE: The specific resources (ComposeDB data models) are provided through
      * "compose.resources" below.
      */
-    console.log('authenticating');
     session = await DIDSession.authorize(authMethod, {
       resources: compose.resources,
     });
@@ -120,7 +112,5 @@ const authenticateEthPKH = async (
   compose.setDID(session.did);
   ceramic.did = session.did;
   localStorage.setItem('display did', session.did.toString());
-  console.log(session.did, 'session did');
-  console.log(compose.did, 'user did');
   return;
 };
