@@ -25,11 +25,13 @@ const OverviewDetail = () => {
   const params = useParams();
   const eventId = params.eventid.toString();
 
-  const [eventData, setEventData] = React.useState<Event>()
+  const [eventData, setEventData] = React.useState<Event>();
 
   const getEventDetailInfo = async () => {
     try {
-      const response: CeramicResponseType<EventEdge> = await composeClient.executeQuery(`
+      const response: CeramicResponseType<EventEdge> =
+        (await composeClient.executeQuery(
+          `
         query MyQuery ($id: ID!) {
           node (id: $id) {
             ...on Event {
@@ -56,28 +58,28 @@ const OverviewDetail = () => {
             }
           }
         }
-      `, {
-        id: eventId
-      }) as CeramicResponseType<EventEdge>;
-      console.log('event: ', response)
+      `,
+          {
+            id: eventId,
+          },
+        )) as CeramicResponseType<EventEdge>;
+
       if (response.data) {
         if (response.data.node) {
           setEventData(response.data.node);
         }
       }
-
     } catch (err) {
       console.log('Failed to fetch event: ', err);
     }
-
   };
 
   React.useEffect(() => {
-    getEventDetailInfo()
-  }, [])
+    getEventDetailInfo();
+  }, []);
 
-  return (
-    eventData ? <Stack
+  return eventData ? (
+    <Stack
       marginY={4}
       padding={2}
       direction="row"
@@ -87,7 +89,7 @@ const OverviewDetail = () => {
     >
       <Box
         component="img"
-        src={eventData.image_url ? eventData.image_url : "/12.webp"}
+        src={eventData.image_url ? eventData.image_url : '/12.webp'}
         borderRadius={3}
         height={450}
         width={450}
@@ -110,58 +112,50 @@ const OverviewDetail = () => {
           </Typography>
           <Box component="img" src="/1.webp" height={20} width={20} />
           <Typography variant="body2" color="white">
-            {
-              eventData.space && eventData.space.name
-            }
+            {eventData.space && eventData.space.name}
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={1}>
           <EventIcon />
           <Typography variant="body1" color="white">
-            {convertDateStringFormat(eventData.startTime)} - {convertDateStringFormat(eventData.endTime)}
+            {convertDateStringFormat(eventData.startTime)} -{' '}
+            {convertDateStringFormat(eventData.endTime)}
           </Typography>
         </Stack>
         <Typography variant="h5" color="white">
-          {
-            eventData.title
-          }
+          {eventData.title}
         </Typography>
         <Typography variant="body1" color="white">
-          {
-            eventData.description
-          }
+          {eventData.description}
         </Typography>
-        {
-          eventData.timezone && <Stack direction="row" alignItems="center" spacing={1}>
+        {eventData.timezone && (
+          <Stack direction="row" alignItems="center" spacing={1}>
             <MapIcon size={4} />
             <Typography variant="caption" color="white">
-              {
-                eventData.timezone
-              }
+              {eventData.timezone}
             </Typography>
           </Stack>
-        }
-        {
-          eventData.status && <Stack direction="row" alignItems="center" spacing={1}>
+        )}
+        {eventData.status && (
+          <Stack direction="row" alignItems="center" spacing={1}>
             <MapIcon size={4} />
             <Typography variant="caption" color="white">
-              {
-                eventData.status
-              }
+              {eventData.status}
             </Typography>
           </Stack>
-        }
-        {
-          eventData.space && eventData.space.gated && <ZuButton
+        )}
+        {eventData.space && eventData.space.gated && (
+          <ZuButton
             startIcon={<LockIcon size={4} />}
             sx={{ backgroundColor: '#2F4541', maxWidth: '20%' }}
           >
             GATED
           </ZuButton>
-        }
+        )}
       </Stack>
     </Stack>
-      : <></>
+  ) : (
+    <></>
   );
 };
 

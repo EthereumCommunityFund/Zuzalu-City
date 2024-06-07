@@ -89,7 +89,6 @@ export default function SpaceDetailPage() {
       const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
         id: spaceId,
       });
-      console.log(response);
       const spaceData: Space = response.data.node as Space;
       setSpace(spaceData);
       const eventData: SpaceEventData = response.data.node

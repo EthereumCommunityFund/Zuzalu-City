@@ -97,8 +97,6 @@ const Home: React.FC = () => {
         }
       `);
 
-      console.log('response: ', response);
-
       if ('spaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
         const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
@@ -199,14 +197,12 @@ const Home: React.FC = () => {
           },
         },
       );
-      console.log(response);
       if (response && response.data && 'eventIndex' in response.data) {
         const eventData: EventData = response.data as EventData;
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
         setEvents(fetchedEvents);
-        console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -226,8 +222,7 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log('date', selectedDate?.format('YYYY-MM-DD'));
+  /* useEffect(() => {
     const fetchData = async () => {
       try {
         await getEventsByDate();
@@ -236,7 +231,7 @@ const Home: React.FC = () => {
       }
     };
     fetchData();
-  }, [selectedDate]);
+  }, [selectedDate]);*/
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -420,7 +415,7 @@ const Home: React.FC = () => {
                         borderRadius="10px"
                         bgcolor="#2d2d2d"
                       >
-                        <Button
+                        {/*<Button
                           sx={{
                             flex: 1,
                             backgroundColor: isPast ? '#2d2d2d' : '#424242',
@@ -443,7 +438,7 @@ const Home: React.FC = () => {
                           onClick={() => setIsPast(true)}
                         >
                           Past
-                        </Button>
+                        </Button>*/}
                       </Box>
                       <Box>
                         <ZuCalendar
