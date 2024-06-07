@@ -31,4 +31,4 @@ export async function POST(request: Request) {
   // } catch (err) {
   //   res.status(403).json({ error: 'Not authorized as an admin' });
   // }
-};
+}
