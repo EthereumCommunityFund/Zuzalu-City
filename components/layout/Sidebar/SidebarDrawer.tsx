@@ -51,8 +51,6 @@ export default function SidebarDrawer({ open, onClose, selected }: PropTypes) {
         }
     ]
 
-    console.log('pathname check: ', pathname.split('/')[1])
-
     const spaces = [
         {
             src: "/0.webp",
