@@ -1,9 +1,8 @@
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { CeramicClient } from '@ceramicnetwork/http-client';
 import { ComposeClient } from '@composedb/client';
 import { RuntimeCompositeDefinition } from '@composedb/types';
 import { definition } from '../composites/definition.js';
-import React from 'react';
 import { authenticateCeramic } from '../utils/ceramicAuth';
 /**
  * Configure ceramic Client & create context.
@@ -40,15 +39,15 @@ const CeramicContext = createContext<CeramicContextType>({
   ceramic,
   composeClient,
   isAuthenticated: false,
-  authenticate: async () => {},
+  authenticate: async () => { },
   username: undefined,
   profile: undefined,
   newUser: false,
-  logout: () => {},
+  logout: () => { },
   isAuthPromptVisible: false,
-  showAuthPrompt: () => {},
-  hideAuthPrompt: () => {},
-  createProfile: async (newName: string) => {},
+  showAuthPrompt: () => { },
+  hideAuthPrompt: () => { },
+  createProfile: async (newName: string) => { },
 });
 
 export const CeramicProvider = ({ children }: any) => {

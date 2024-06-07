@@ -71,7 +71,7 @@ const Create = () => {
   } = useCeramicContext();
 
   const connector = createConnector('NFT.storage', {
-    token: process.env.CONNECTOR_TOKEN ?? ''
+    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
 
   const profileId = profile?.id || '';
@@ -83,21 +83,21 @@ const Create = () => {
   const createSpace = async () => {
     let socialLinks = {};
     let customLinks = [];
-    if(socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
-      for(let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
+    if (socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
+      for (let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
         const key = socialLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
         const value = socialLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
-        if(key) {
-          socialLinks = {...socialLinks, [key]: value};
+        if (key) {
+          socialLinks = { ...socialLinks, [key]: value };
         }
       }
     }
 
-    if(customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
-      for(let i = 0; i < customLinksRef.current.children.length - 2; i++) {
+    if (customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
+      for (let i = 0; i < customLinksRef.current.children.length - 2; i++) {
         const key = customLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
         const value = customLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
-        if(key) {
+        if (key) {
           customLinks.push({
             links: value,
             title: key
@@ -438,8 +438,10 @@ const Create = () => {
                     setAvatar(result);
                   }}
                   onComplete={(result: any) => {
-                    console.log('complete', result);
-                    setAvatarURL(result?.url);
+                    if (result && result.url) {
+                      console.log('hey', result);
+                      setAvatarURL(result.url);
+                    }
                   }}
                 >
                   <Button
@@ -641,11 +643,11 @@ const Create = () => {
                           opacity: '0.6'
                         }} />
                       </Box>
-                      <Box 
-                        display={'flex'} 
-                        flexDirection={'column'} 
-                        justifyContent={'flex-end'} 
-                        sx={{ cursor: 'pointer' }} 
+                      <Box
+                        display={'flex'}
+                        flexDirection={'column'}
+                        justifyContent={'flex-end'}
+                        sx={{ cursor: 'pointer' }}
                         onClick={() => handleRemoveCustomLink(item)}
                       >
                         <Box sx={{ borderRadius: '10px', width: '40px', height: '40px', padding: '10px 14px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
