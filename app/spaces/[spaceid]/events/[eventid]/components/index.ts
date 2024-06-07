@@ -6,6 +6,7 @@ import EventName from './EventName';
 import EventAbout from './EventAbout';
 import EventRegister from './EventRegister';
 import EventDetail from './EventDetail';
+import { Initial, Disclaimer, Email, Payment, Completion, Rush } from './Register';
 
 export {
   IconSidebar,
@@ -16,4 +17,10 @@ export {
   EventAbout,
   EventRegister,
   EventDetail,
+  Initial,
+  Disclaimer,
+  Email,
+  Payment,
+  Completion,
+  Rush
 };

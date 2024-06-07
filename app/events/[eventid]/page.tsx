@@ -2,20 +2,20 @@
 import React from 'react';
 import { Stack } from '@mui/material';
 import { Thumbnail, Subbar } from './components';
-import { About, Sessions } from './tabs';
+import { Overview, Sessions } from './tabs';
 
 const Home = () => {
   const renderPage = () => {
     switch (tabName) {
       case 'About':
-        return <About />;
+        return <Overview />;
       case 'Sessions':
         return <Sessions />;
       default:
-        return <About />;
+        return <Overview />;
     }
   };
-  const [tabName, setTabName] = React.useState('About');
+  const [tabName, setTabName] = React.useState('Overview');
   return (
     <Stack>
       <Thumbnail />

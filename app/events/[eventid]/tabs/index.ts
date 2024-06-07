@@ -1,4 +1,4 @@
-import About from './About';
+import Overview from './Overview';
 import Sessions from './Session';
 
-export { About, Sessions };
+export { Overview, Sessions };

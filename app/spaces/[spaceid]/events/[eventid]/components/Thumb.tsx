@@ -23,12 +23,12 @@ const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
           direction="row"
           spacing={1}
           alignItems="center"
-          borderBottom={tabName === 'About' ? '1px solid white' : 'none'}
+          borderBottom={tabName === 'Overview' ? '1px solid white' : 'none'}
           sx={{ cursor: 'pointer' }}
         >
           <CalendarIcon />
           <Typography
-            onClick={() => setTabName('About')}
+            onClick={() => setTabName('Overview')}
             color="white"
             variant="bodyMB"
           >
@@ -53,7 +53,7 @@ const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
           </Typography>
         </Stack>
       </Stack>
-      <Stack
+      {/* <Stack
         direction="row"
         height="100%"
         paddingLeft={3}
@@ -71,7 +71,7 @@ const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         >
           Host Announcements
         </Typography>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 };

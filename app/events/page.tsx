@@ -244,7 +244,9 @@ const EventsPage: React.FC = () => {
                   sx={{ display: 'flex', justifyContent: 'center' }}
                 >
                   <EventCard
-                    key={`EventCard-${index}`}
+                    key={`EventPageCard-${index}`}
+                    id={event.id}
+                    spaceId={event.spaceId}
                     name={event.title}
                     description={event.description}
                   />

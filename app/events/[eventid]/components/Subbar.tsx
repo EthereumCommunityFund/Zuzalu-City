@@ -25,16 +25,16 @@ const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
           direction="row"
           spacing={1}
           alignItems="center"
-          borderBottom={tabName === 'About' ? '1px solid white' : 'none'}
+          borderBottom={tabName === 'Overview' ? '1px solid white' : 'none'}
           sx={{ cursor: 'pointer' }}
         >
           <CalendarIcon />
           <Typography
-            onClick={() => setTabName('About')}
+            onClick={() => setTabName('Overview')}
             color="white"
             variant="bodyMB"
           >
-            About
+            Overview
           </Typography>
         </Stack>
         <Stack

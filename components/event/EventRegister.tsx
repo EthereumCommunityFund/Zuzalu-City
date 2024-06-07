@@ -1,10 +1,17 @@
 import * as React from 'react';
-import { Stack, Typography, Box } from '@mui/material';
+import { Stack, Typography, Box, Divider } from '@mui/material';
 import { ZuButton } from 'components/core';
-import { CheckCircleIcon, RightArrowCircleIcon } from 'components/icons';
+import { ArrowDownIcon, CheckCircleIcon, ChevronDownIcon, RightArrowCircleIcon } from 'components/icons';
 import Ticket from './Ticket';
+import BpCheckbox from './Checkbox';
 
-const EventRegister = () => {
+type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
+interface EventRegisterProps {
+  onToggle: (anchor: Anchor, open: boolean) => void;
+}
+
+const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
   return (
     <Stack
       borderRadius="10px"
@@ -25,17 +32,135 @@ const EventRegister = () => {
       <Stack spacing="20px" padding="10px 20px">
         <Stack spacing="4px">
           <Typography color="white" variant="bodyMB">
-            Purchase Ticket
+            Purchase Ticket: (single)
           </Typography>
-          <Typography color="white" variant="bodyS">
-            All applications will require review
+          <Typography color="#FF9C66" variant="bodyS">
+            All tickets require an invite code to mint
           </Typography>
         </Stack>
         <Stack spacing="10px">
-          <Ticket />
-          <Ticket />
-          <Ticket />
+          <Stack padding="10px" direction="row" spacing="10px">
+            <Stack>
+              <ChevronDownIcon size={5} />
+            </Stack>
+            <Stack spacing="5px">
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="bodyMB">
+                  Pass One
+                </Typography>
+                <Stack spacing="5px" direction="row" alignItems="end">
+                  <Typography variant="bodyMB">
+                    1000
+                  </Typography>
+                  <Typography variant="caption">
+                    USDT
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Typography variant="bodyS">
+                Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
+                food trucks, and good vibes.
+              </Typography>
+            </Stack>
+          </Stack>
+          <Stack padding="10px" direction="row" spacing="10px">
+            <Stack>
+              <ChevronDownIcon size={5} />
+            </Stack>
+            <Stack spacing="5px">
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="bodyMB">
+                  Pass Two
+                </Typography>
+                <Stack spacing="5px" direction="row" alignItems="end">
+                  <Typography variant="bodyMB">
+                    1000
+                  </Typography>
+                  <Typography variant="caption">
+                    USDT
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Typography variant="bodyS">
+                Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
+                food trucks, and good vibes.
+              </Typography>
+            </Stack>
+          </Stack>
+          <Stack divider={<Divider sx={{ borderColor: '#383838' }} />}>
+            <Stack direction="row" spacing="10px" padding="10px">
+              <BpCheckbox />
+              <Stack spacing="5px">
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography variant="bodyMB">
+                    Upsale One
+                  </Typography>
+                  <Stack spacing="5px" direction="row" alignItems="end">
+                    <Typography variant="bodyMB">
+                      +100
+                    </Typography>
+                    <Typography variant="caption">
+                      USDT
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Typography variant="bodyS">
+                  Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
+                  food trucks, and good vibes.
+                </Typography>
+              </Stack>
+            </Stack>
+            <Stack direction="row" spacing="10px" padding="10px">
+              <BpCheckbox />
+              <Stack spacing="5px">
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography variant="bodyMB">
+                    Upsale One
+                  </Typography>
+                  <Stack spacing="5px" direction="row" alignItems="end">
+                    <Typography variant="bodyMB">
+                      +100
+                    </Typography>
+                    <Typography variant="caption">
+                      USDT
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Typography variant="bodyS">
+                  Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
+                  food trucks, and good vibes.
+                </Typography>
+              </Stack>
+            </Stack>
+            <Stack direction="row" spacing="10px" padding="10px">
+              <BpCheckbox />
+              <Stack spacing="5px">
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography variant="bodyMB">
+                    Upsale One
+                  </Typography>
+                  <Stack spacing="5px" direction="row" alignItems="end">
+                    <Typography variant="bodyMB">
+                      +100
+                    </Typography>
+                    <Typography variant="caption">
+                      USDT
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Typography variant="bodyS">
+                  Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
+                  food trucks, and good vibes.
+                </Typography>
+              </Stack>
+            </Stack>
+          </Stack>
         </Stack>
+        {/* <Stack spacing="10px">
+          <Ticket />
+          <Ticket />
+          <Ticket />
+        </Stack> */}
         <ZuButton
           sx={{
             backgroundColor: '#373b36',
@@ -43,10 +168,11 @@ const EventRegister = () => {
             width: '100%',
           }}
           startIcon={<RightArrowCircleIcon color="#D7FFC4" />}
+          onClick={() => onToggle('right', true)}
         >
-          Apply to Event
+          Register For Event
         </ZuButton>
-        <Stack direction="row" spacing={1} alignItems="center">
+        {/* <Stack direction="row" spacing={1} alignItems="center">
           <Stack direction="row" spacing={-1} alignItems="center">
             <Box
               component="img"
@@ -78,9 +204,9 @@ const EventRegister = () => {
             />
           </Stack>
           <Typography color="white">+28 Applied</Typography>
-        </Stack>
+        </Stack> */}
       </Stack>
-      <Stack padding="14px" borderTop="1px solid #383838" spacing="5px">
+      {/* <Stack padding="14px" borderTop="1px solid #383838" spacing="5px">
         <Typography color="white" variant="bodyBB">
           Gated For:
         </Typography>
@@ -99,7 +225,7 @@ const EventRegister = () => {
         <ZuButton sx={{ backgroundColor: '#313131' }}>
           DevConnect Attendee
         </ZuButton>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 };

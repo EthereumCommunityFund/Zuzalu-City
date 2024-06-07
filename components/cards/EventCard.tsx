@@ -26,6 +26,7 @@ const EventCard: React.FC<EventCardProps> = ({
   location = 'ISTANBUL, TURKEY',
   logo = '/4.webp',
 }) => {
+  console.log("id", id, spaceId)
   const theme = useTheme();
   const router = useRouter();
   const [isMobile, setIsMobile] = useState<boolean>(false);

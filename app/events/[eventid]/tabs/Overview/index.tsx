@@ -8,7 +8,7 @@ import {
   EventAbout,
 } from 'components/event';
 
-const About = () => {
+const Overview = () => {
   return (
     <Stack padding="40px" direction="row" justifyContent="center">
       <Stack width={'900px'}>
@@ -31,4 +31,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default Overview;
