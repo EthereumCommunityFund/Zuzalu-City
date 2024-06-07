@@ -36,7 +36,7 @@ export default function SpaceDetailPage() {
     setCurrentHref(window.location.href);
   }, []);
 
-  const getSpace = async () => {
+  const getSpaceByID = async () => {
     try {
       const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {
