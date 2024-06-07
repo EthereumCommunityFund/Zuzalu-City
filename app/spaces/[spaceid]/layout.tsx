@@ -13,12 +13,10 @@ export default function SpacePageLayout({
   children,
 }: SpacePageLayoutPropTypes) {
   const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  
 
   return <Box sx={{ color: 'white', display: 'flex', flexDirection: 'row' }}>
-    {
-      !isTablet && <Sidebar selected='Space Details' />
-    }
+    
     {children}
   </Box>;
 }
