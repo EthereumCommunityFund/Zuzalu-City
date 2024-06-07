@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import {
   EventIcon,
@@ -13,11 +13,11 @@ import { useCeramicContext } from '@/context/CeramicContext';
 
 interface SidebarProps {
   selected: string;
-  isExpanded?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
+const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated } = useCeramicContext();
 
   const naviButtons = [
@@ -63,7 +63,16 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
 
   return (
     <Box
-      sx={{ width: isExpanded ? '260px' : 'auto', height: '100vh', position: 'sticky', top: '50px', transitionProperty: 'width', transitionDuration: '300', transitionTimingFunction: 'ease-in-out' }}
+      sx={{
+        width: selected !== "Space Details" ? '260px' : 'auto',
+        height: '100vh',
+        position: 'sticky',
+        top: '50px',
+        transitionProperty: 'width',
+        transitionDuration: '300',
+        transitionTimingFunction: 'ease-in-out',
+        backgroundColor: '#2d2d2d'
+      }}
     >
       <Box
         display="flex"
@@ -80,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
                 padding="10px"
                 alignItems="center"
                 sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
-                bgcolor={selected === item.content ? '#383838' : 'transparent'}
+                bgcolor={pathname.split("/")[1] === (item.content).toLowerCase() ? '#383838' : 'transparent'}
                 gap="10px"
                 borderRadius="10px"
                 onClick={item.function}
@@ -90,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
                   item.icon
                 }
                 {
-                  isExpanded && <Typography color="white" variant="bodyMB">
+                  selected !== "Space Details" && <Typography color="white" variant="bodyMB">
                     {
                       item.content
                     }
@@ -107,10 +116,10 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
           display="flex"
           flexDirection="column"
           gap="15px"
-          sx={{ borderTop: '1px solid #383838', marginX: '10px', paddingTop: isExpanded ? '0px' : '20px' }}
+          sx={{ borderTop: '1px solid #383838', marginX: '10px', paddingTop: selected !== "Space Details" ? '0px' : '20px' }}
         >
           {
-            isExpanded && <Typography
+            selected !== "Space Details" && <Typography
               color="white"
               variant="bodyS"
               marginTop="15px"
@@ -133,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
                 >
                   <Box component="img" src={space.src} height="40px" width="40px" borderRadius="20px" />
                   {
-                    isExpanded && <Typography color="white" variant="bodyMB">
+                    selected !== "Space Details" && <Typography color="white" variant="bodyMB">
                       {
                         space.content
                       }
@@ -146,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, isExpanded = false }) => {
           <Box display="flex" alignItems="center" gap="10px" paddingLeft="5px">
             <SpacePlusIcon />
             {
-              isExpanded && <Typography color="white" variant="bodyMB">
+              selected !== "Space Details" && <Typography color="white" variant="bodyMB">
                 Create a Space
               </Typography>
             }

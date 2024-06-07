@@ -1,6 +1,6 @@
 'use client';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -15,19 +15,19 @@ import {
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
+import SidebarDrawer from '../Sidebar/SidebarDrawer';
+import { useAppContext } from '@/context/AppContext';
 
-interface PropTypes {
-  setExpand?: Dispatch<SetStateAction<boolean>>;
-  expand?: boolean
-}
-
-const Header = ({setExpand = () => {}, expand = false}: PropTypes) => {
+const Header = () => {
   const theme = useTheme();
+  const {openSidebar, setOpenSidebar} = useAppContext();
   const router = useRouter();
+  const pathName = usePathname();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const { isAuthenticated, showAuthPrompt, logout, username } =
     useCeramicContext();
+
   console.log('AUth', isAuthenticated, username);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -70,16 +70,19 @@ const Header = ({setExpand = () => {}, expand = false}: PropTypes) => {
         gap="10px"
         sx={{ cursor: 'pointer' }}
       >
-        <Button
-          sx={{
-            padding: '10px',
-            width: '40px',
-            minWidth: 'unset'
-          }}
-          onClick={() => setExpand(!expand)}
-        >
-          <MenuIcon />
-        </Button>
+        {
+          (isTablet || pathName.split("/")[1] === "spaces" && pathName.split("/").length > 2) && <Button
+            sx={{
+              padding: '10px',
+              width: '40px',
+              minWidth: 'unset'
+            }}
+            onClick={() => setOpenSidebar(true)}
+          >
+            <MenuIcon />
+          </Button>
+        }
+
         <Box
           component="img"
           src={isMobile ? '/ZuCityLogo-IconOnly.svg' : '/ZuCityLogo.svg'}
@@ -175,6 +178,7 @@ const Header = ({setExpand = () => {}, expand = false}: PropTypes) => {
           Connect
         </Button>
       )}
+      <SidebarDrawer selected={'Home'} open={openSidebar} onClose={() => setOpenSidebar(false)} />
     </Box>
   );
 };

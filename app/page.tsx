@@ -154,10 +154,9 @@ const Home: React.FC = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
-        <Header expand={expand} setExpand={setExpand} />
         <AuthPrompt />
         <Box display="grid" gridTemplateColumns={'auto 1fr'}>
-          {!isTablet && <Sidebar selected="Home" isExpanded={expand} />}
+          {!isTablet && <Sidebar selected="Home" />}
           <Box
             borderLeft="1px solid #383838"
             flex={1}
