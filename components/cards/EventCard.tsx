@@ -1,9 +1,11 @@
 'use client';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
+import * as util from '../../utils/index';
 
 type EventCardProps = {
   id?: string;
@@ -26,7 +28,12 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => {
   const theme = useTheme();
   const router = useRouter();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const isMobileEnv: boolean = util.isMobile();
+    setIsMobile(isMobileEnv);
+  }, []);
 
   return (
     <Box
@@ -34,6 +41,9 @@ const EventCard: React.FC<EventCardProps> = ({
       display="flex"
       gap={isMobile ? '10px' : '14px'}
       sx={{ cursor: 'pointer' }}
+      width={'100%'}
+      boxSizing={'border-box'}
+      position={'relative'}
       onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
     >
       <Box
@@ -113,9 +123,14 @@ const EventCard: React.FC<EventCardProps> = ({
           borderRadius="10px"
           bgcolor="#292929"
         >
-          <LockIcon />
+          <LockIcon size={4} color={'rgba(255, 255, 255, 0.8)'} />
           {!isMobile && (
-            <Typography color="white" variant="bodyS" fontWeight={300}>
+            <Typography
+              marginTop={'2px'}
+              color="rgba(255, 255, 255, 0.8)"
+              variant="bodyS"
+              fontWeight={300}
+            >
               Gated
             </Typography>
           )}

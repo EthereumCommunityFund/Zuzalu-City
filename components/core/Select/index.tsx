@@ -13,9 +13,9 @@ import {
 interface ZuInputProps {
   startAdornment?: React.ReactNode; // Optional icon component
   options?: {
-    value: string,
-    label: string
-  }[]
+    value: string;
+    label: string;
+  }[];
 }
 
 const ZuInput = styled(Input)(({ theme }) => ({
@@ -30,13 +30,17 @@ const ZuInput = styled(Input)(({ theme }) => ({
   borderRadius: '10px',
 })) as React.FC<ZuInputProps>;
 
-const ZuSelect = ({ icon, options, sx }: {
-  icon?: React.ReactNode, 
+const ZuSelect = ({
+  icon,
+  options,
+  sx,
+}: {
+  icon?: React.ReactNode;
   options?: {
-    value: string,
-    label: string
-  }[],
-  sx?: SxProps
+    value: string;
+    label: string;
+  }[];
+  sx?: SxProps;
 }) => {
   const [value, setValue] = React.useState(options ? options[0].value : '');
 
@@ -46,31 +50,32 @@ const ZuSelect = ({ icon, options, sx }: {
 
   return (
     <Select
-      sx={{...sx}}
+      sx={{ ...sx }}
       value={value}
       onChange={handleChange}
       MenuProps={{
         PaperProps: {
           style: {
-            backgroundColor: '#222222'
-          }
-        }
+            backgroundColor: '#222222',
+          },
+        },
       }}
       input={icon ? <ZuInput startAdornment={icon} /> : <></>} // Replace YourIcon with your desired icon component
     >
-      {options && options.map((option) => (
-        <MenuItem
-          key={option.value}
-          value={option.value}
-          sx={{
-            '&:hover': {
-              backgroundColor: '#333333'
-            }
-          }}
-        >
-          {option.label}
-        </MenuItem>
-      ))}
+      {options &&
+        options.map((option) => (
+          <MenuItem
+            key={option.value}
+            value={option.value}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#333333',
+              },
+            }}
+          >
+            {option.label}
+          </MenuItem>
+        ))}
     </Select>
   );
 };

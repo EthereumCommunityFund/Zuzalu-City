@@ -1,15 +1,24 @@
-import { ZuSelect } from '@/components/core';
+import { ZuCalendar, ZuSelect } from '@/components/core';
 import { SearchIcon } from '@/components/icons';
 import {
+  Box,
+  Button,
   InputAdornment,
   OutlinedInput,
   Stack,
   Typography,
 } from '@mui/material';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useTheme } from '@mui/material/styles';
+import React from 'react';
+import dayjs from 'dayjs';
 
-export default function SidebarLeft() {
+interface SidebarLeftProps {
+  onSearch: () => void;
+  onTextChange: (text: string) => void;
+}
+
+export default function SidebarLeft(props: SidebarLeftProps) {
+  const { onSearch, onTextChange } = props;
   const { breakpoints } = useTheme();
 
   return (
@@ -40,7 +49,12 @@ export default function SidebarLeft() {
         }}
       >
         <OutlinedInput
-          placeholder="Search Spaces"
+          placeholder="Search Events"
+          onKeyDown={(event) => {
+            if (event.keyCode === 13) {
+              onSearch();
+            }
+          }}
           sx={{
             backgroundColor: 'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
             paddingX: '15px',
@@ -55,6 +69,7 @@ export default function SidebarLeft() {
               border: 'none',
             },
           }}
+          onChange={(e) => onTextChange(e.target.value)}
           startAdornment={
             <InputAdornment position="start" sx={{ opacity: 0.6 }}>
               <SearchIcon />
@@ -73,18 +88,42 @@ export default function SidebarLeft() {
             lineHeight={'120%'}
             color={'white'}
           >
-            Sort & Filter Spaces
+            Sort & Filter Events
           </Typography>
         </Stack>
-        <ZuSelect
-          sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', opacity: '0.6' }}
-          icon={<LocalOfferIcon />}
-          options={[
-            { value: 'category', label: 'By Category1' },
-            { value: 'category1', label: 'By Category2' },
-            { value: 'category2', label: 'By Category3' },
-          ]}
-        />
+        <Box
+          display="flex"
+          gap="4px"
+          padding="2px"
+          borderRadius="10px"
+          bgcolor="#2d2d2d"
+        >
+          <Button
+            sx={{
+              flex: 1,
+              backgroundColor: '#424242',
+              borderRadius: '8px',
+              color: 'white',
+              fontFamily: 'Inter',
+            }}
+          >
+            Upcoming
+          </Button>
+          <Button
+            sx={{
+              flex: 1,
+              backgroundColor: '#2d2d2d',
+              borderRadius: '8px',
+              color: 'white',
+              fontFamily: 'Inter',
+            }}
+          >
+            Past
+          </Button>
+        </Box>
+        <Box>
+          <ZuCalendar defaultValue={dayjs('2022-04-17')} />
+        </Box>
       </Stack>
     </Stack>
   );

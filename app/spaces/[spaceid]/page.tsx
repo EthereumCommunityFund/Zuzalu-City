@@ -1,7 +1,7 @@
 'use client';
 import { useParams } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
-import { Box, Snackbar, Typography, Alert } from '@mui/material';
+import { Box, Snackbar, Typography, Alert, useMediaQuery } from '@mui/material';
 import { EventCard } from '@/components/cards';
 // import AnnouncementCard from 'components/AnnouncementCart';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -19,11 +19,13 @@ import { useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, SpaceData } from '@/types';
+import { Sidebar } from '@/components/layout';
 // import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
   const params = useParams();
   const theme = useTheme();
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   console.log('router', params);
   const { composeClient } = useCeramicContext();
   const [aboutContent, setAboutContent] = useState<

@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import {
   EventIcon,
@@ -17,11 +17,62 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated } = useCeramicContext();
+
+  const naviButtons = [
+    {
+      content: 'Home',
+      icon: <HomeIcon />,
+      function: () => router.push('/')
+    },
+    {
+      content: 'Spaces',
+      icon: <SpaceIcon />,
+      function: () => router.push('/spaces')
+    },
+    {
+      content: 'Events',
+      icon: <EventIcon />,
+      function: () => router.push('/events')
+    },
+    {
+      content: 'Zapps',
+      icon: <BoltIcon />,
+      function: () => { }
+    }
+  ]
+
+  const spaces = [
+    {
+      src: "/0.webp",
+      content: "Zuzalu City Contributors",
+      function: () => router.push('/spaces/123')
+    },
+    {
+      src: "/0.webp",
+      content: "FendiWeb3",
+      function: () => router.push('/spaces/123')
+    },
+    {
+      src: "/0.webp",
+      content: "Green Odin",
+      function: () => router.push('/spaces/123')
+    },
+  ]
 
   return (
     <Box
-      sx={{ width: '260px', height: '100vh', position: 'sticky', top: '0px' }}
+      sx={{
+        width: selected !== "Space Details" ? '260px' : 'auto',
+        height: '100vh',
+        position: 'sticky',
+        top: '50px',
+        transitionProperty: 'width',
+        transitionDuration: '300',
+        transitionTimingFunction: 'ease-in-out',
+        backgroundColor: '#2d2d2d'
+      }}
     >
       <Box
         display="flex"
@@ -30,139 +81,84 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
         paddingY="20px"
         gap="15px"
       >
-        <Box
-          display="flex"
-          padding="10px"
-          alignItems="center"
-          sx={{ cursor: 'pointer' }}
-          bgcolor={selected === 'Home' ? '#383838' : 'transparent'}
-          gap="10px"
-          borderRadius="10px"
-          onClick={() => {
-            router.push('/');
-          }}
-        >
-          <HomeIcon />
-          <Typography color="white" variant="bodyMB">
-            Home
-          </Typography>
-        </Box>
-        <Box
-          display="flex"
-          padding="10px"
-          alignItems="center"
-          bgcolor={selected === 'Spaces' ? '#383838' : 'transparent'}
-          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
-          gap="10px"
-          borderRadius="10px"
-          onClick={() => {
-            router.push('/spaces');
-          }}
-        >
-          <SpaceIcon />
-          <Typography color="white" variant="bodyMB">
-            Spaces
-          </Typography>
-        </Box>
-        <Box
-          display="flex"
-          padding="10px"
-          alignItems="center"
-          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
-          gap="10px"
-          borderRadius="10px"
-          onClick={() => {
-            router.push('/events');
-          }}
-        >
-          <EventIcon />
-          <Typography color="white" variant="bodyMB">
-            Events
-          </Typography>
-        </Box>
-        <Box
-          display="flex"
-          padding="10px"
-          alignItems="center"
-          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
-          gap="10px"
-          borderRadius="10px"
-        >
-          <BoltIcon />
-          <Typography color="white" variant="bodyMB">
-            Zapps
-          </Typography>
-        </Box>
+        {
+          naviButtons.map((item, index) => {
+            return (
+              <Box
+                display="flex"
+                padding="10px"
+                alignItems="center"
+                sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
+                bgcolor={pathname.split("/")[1] === (item.content).toLowerCase() ? '#383838' : 'transparent'}
+                gap="10px"
+                borderRadius="10px"
+                onClick={item.function}
+                key={index}
+              >
+                {
+                  item.icon
+                }
+                {
+                  selected !== "Space Details" && <Typography color="white" variant="bodyMB">
+                    {
+                      item.content
+                    }
+                  </Typography>
+                }
+              </Box>
+            )
+          })
+        }
+
       </Box>
       {isAuthenticated && (
         <Box
           display="flex"
           flexDirection="column"
           gap="15px"
-          sx={{ borderTop: '1px solid #383838', marginX: '10px' }}
+          sx={{ borderTop: '1px solid #383838', marginX: '10px', paddingTop: selected !== "Space Details" ? '0px' : '20px' }}
         >
-          <Typography
-            color="white"
-            variant="bodyS"
-            marginTop="15px"
-            marginBottom="10px"
-            marginLeft="10px"
-          >
-            YOUR SPACES
-          </Typography>
-          <Box
-            display="flex"
-            alignItems="center"
-            gap="10px"
-            onClick={() => router.push('/spaces/123')}
-            sx={{ cursor: 'pointer' }}
-          >
-            <Box component="img" src="/0.webp" height="40px" />
-            <Typography color="white" variant="bodyMB">
-              Zuzalu City Contributors
+          {
+            selected !== "Space Details" && <Typography
+              color="white"
+              variant="bodyS"
+              marginTop="15px"
+              marginBottom="10px"
+              marginLeft="10px"
+            >
+              YOUR SPACES
             </Typography>
-          </Box>
-          <Box
-            display="flex"
-            alignItems="center"
-            gap="10px"
-            onClick={() => router.push('/spaces/123')}
-            sx={{ cursor: 'pointer' }}
-          >
-            <Box
-              component="img"
-              src="/0.webp"
-              height="40px"
-              width="40px"
-              borderRadius="20px"
-            />
-            <Typography color="white" variant="bodyMB">
-              FendiWeb3
-            </Typography>
-          </Box>
-          <Box
-            display="flex"
-            alignItems="center"
-            gap="10px"
-            onClick={() => router.push('/spaces/123')}
-            sx={{ cursor: 'pointer' }}
-          >
-            <Box
-              component="img"
-              src="/0.webp"
-              height="40px"
-              borderRadius="20px"
-              width="40px"
-            />
-            <Typography color="white" variant="bodyMB">
-              Green Odin
-            </Typography>
-          </Box>
+          }
+          {
+            spaces.map((space, index) => {
+              return (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap="10px"
+                  onClick={space.function}
+                  sx={{ cursor: 'pointer' }}
+                  key={index}
+                >
+                  <Box component="img" src={space.src} height="40px" width="40px" borderRadius="20px" />
+                  {
+                    selected !== "Space Details" && <Typography color="white" variant="bodyMB">
+                      {
+                        space.content
+                      }
+                    </Typography>
+                  }
+                </Box>
+              )
+            })
+          }
           <Box display="flex" alignItems="center" gap="10px" paddingLeft="5px">
             <SpacePlusIcon />
-            <Typography color="white" variant="bodyMB">
-              Create a Space
-            </Typography>
+            {
+              selected !== "Space Details" && <Typography color="white" variant="bodyMB">
+                Create a Space
+              </Typography>
+            }
           </Box>
         </Box>
       )}

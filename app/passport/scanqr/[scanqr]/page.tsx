@@ -1,5 +1,5 @@
 'use client';
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Stack, Typography, Box } from '@mui/material';
 import { LeftArrowIcon } from '@/components/icons';
 import { ZuButton } from '@/components/core';
@@ -9,62 +9,48 @@ import { ScanQRModal } from '../../components/QRScanModal copy';
 const Home = () => {
   const router = useRouter();
 
-  const [isScanVerify, setIsScanVerify] = React.useState<boolean>(false);
+  const [isScanVerify, setIsScanVerify] = useState<boolean>(false);
 
   return (
-    <Stack direction="row">
-      <Stack direction="column" flex={1}>
-        <Box
-          display="flex"
-          justifyContent={'center'}
-          flexDirection={'column'}
-          gap="15px"
-          padding={'30px'}
-          sx={{ margin: '0 auto' }}
-          maxWidth={'700px'}
-          width={'100%'}
+    <Stack
+      justifyContent={'center'}
+      spacing="20px"
+      padding="30px"
+      sx={{ margin: '0 auto' }}
+      maxWidth="640px"
+    >
+      <Stack direction="row" spacing="20px" alignItems="center">
+        <ZuButton
+          startIcon={<LeftArrowIcon />}
+          onClick={() => router.back()}
         >
-          <Stack direction="row" spacing={2} alignItems="center">
-            <ZuButton
-              sx={{ backgroundColor: '#333333', marginRight: '20px' }}
-              startIcon={<LeftArrowIcon />}
-              onClick={() => router.back()}
-            >
-              Back
-            </ZuButton>
-            <Typography
-              variant="h6"
-              fontSize={'24px'}
-              fontWeight={'700'}
-              color="white"
-              marginLeft={'10px'}
-              lineHeight="40px"
-            >
-              Scan QR Code
-            </Typography>
-          </Stack>
+          Back
+        </ZuButton>
+        <Typography
+          variant="subtitleLB"
+          color="white"
+        >
+          Scan QR Code
+        </Typography>
+      </Stack>
 
-          <ScanQRModal
-            setShowModal={setIsScanVerify}
-            showModal={isScanVerify}
-          />
-
-          <div className="text-white my-5 text-[14px] font-[600] leading-[160%]">
-            Action (beta only has one action):
-          </div>
-
-          <div
-            onClick={() => setIsScanVerify(true)}
-            className="p-[10px] rounded-[10px] bg-[rgba(255,255,255,0.05)] cursor-pointer"
-          >
-            <div className="mb-[4px] text-white text-[18px] leading-[120%] font-[700]">
-              Verify
-            </div>
-            <div className="text-[10px] leading-[120%] text-[rgba(255,255,255,0.7)]">
-              Scan & verify a ticket
-            </div>
-          </div>
-        </Box>
+      <ScanQRModal
+        setShowModal={setIsScanVerify}
+        showModal={isScanVerify}
+      />
+      <Typography variant="bodyMB" color="white">
+        Action (beta only has one action):
+      </Typography>
+      <Stack
+        onClick={() => setIsScanVerify(true)}
+        sx={{ cursor: "pointer" }}
+        padding="10px" borderRadius="10px" bgcolor="#2d2d2d" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))">
+        <Typography variant="subtitleSB" color="white">
+          Verify
+        </Typography>
+        <Typography variant="caption" color="white">
+          Scan & verify a ticket
+        </Typography>
       </Stack>
     </Stack>
   );
