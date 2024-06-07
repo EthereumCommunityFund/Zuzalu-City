@@ -59,6 +59,7 @@ const OverviewDetail = () => {
       `, {
         id: eventId
       }) as CeramicResponseType<EventEdge>;
+      console.log('event: ', response)
       if (response.data) {
         if (response.data.node) {
           setEventData(response.data.node);

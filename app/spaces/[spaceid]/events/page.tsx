@@ -142,7 +142,7 @@ const Home = () => {
   }, []);
 
   return (
-    <Stack direction="row" height="100vh">
+    <Stack direction="row" height="100vh" width="100%">
       <IconSidebar />
       <SubSidebar title={space?.name} spaceId={params.spaceid.toString()} />
       <Stack flex={1}>

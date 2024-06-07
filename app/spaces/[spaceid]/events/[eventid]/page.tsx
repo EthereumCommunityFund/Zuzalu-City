@@ -28,7 +28,7 @@ const Home = () => {
   const getEventDetailInfo = async () => {
     try {
       const response: CeramicResponseType<EventEdge> = await composeClient.executeQuery(`
-        query MyQuery ($id: ID!) {
+        query MyQuery($id: ID!) {
           node (id: $id) {
             ...on Event {
               id
@@ -73,7 +73,7 @@ const Home = () => {
   }, [])
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" width="100%">
       {!isDesktop && <IconSidebar />}
       {!isDesktop && <Sidebar />}
       <Stack flex={1} borderLeft="1px solid #383838">
