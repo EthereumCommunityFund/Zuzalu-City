@@ -32,6 +32,8 @@ const Home: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [expand, setExpand] = useState<boolean>(false);
+
   const {
     ceramic,
     composeClient,
@@ -157,7 +159,7 @@ const Home: React.FC = () => {
           {!isTablet && <Sidebar selected="Home" />}
           <Box
             borderLeft="1px solid #383838"
-            flexGrow={1}
+            flex={1}
             padding={isMobile ? '10px' : '30px'}
             overflow="hidden"
           >
