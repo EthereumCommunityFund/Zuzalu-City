@@ -65,6 +65,7 @@
     "pino-pretty": "^11.0.0",
     "qr-scanner": "^1.4.2",
     "react": "^18",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18",
     "react-editor-js": "^2.1.0",
     "react-material-ui-carousel": "^3.4.2",
@@ -91,6 +92,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-copy-to-clipboard": "^5.0.7",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.19",
     "eslint": "^8",
@@ -102,5 +104,6 @@
     "storybook": "^8.0.8",
     "tailwindcss": "^3.4.3",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

@@ -33,7 +33,13 @@ export interface EventData {
     edges: EventEdge[];
   };
 }
+export interface SpaceEventEdge {
+  node: Event;
+}
 
+export interface SpaceEventData {
+  edges: SpaceEventEdge[];
+}
 export interface Space {
   id: string;
   avatar?: string;
@@ -50,6 +56,7 @@ export interface Space {
   github?: string;
   discord?: string;
   ens?: string;
+  category?: string;
 }
 
 export interface SpaceEdge {
