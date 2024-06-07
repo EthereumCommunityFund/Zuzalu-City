@@ -55,7 +55,7 @@ const Venue: React.FC = () => {
     const [avatar, setAvatar] = useState<SelectedFile>();
     const [avatarURL, setAvatarURL] = useState<string>();
     const connector = createConnector('NFT.storage', {
-      token: process.env.CONNECTOR_TOKEN ?? '',
+      token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
     });
 
     return (

@@ -71,7 +71,7 @@ const Create = () => {
   } = useCeramicContext();
 
   const connector = createConnector('NFT.storage', {
-    token: process.env.CONNECTOR_TOKEN ?? '',
+    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
 
   const profileId = profile?.id || '';
@@ -83,21 +83,21 @@ const Create = () => {
   const createSpace = async () => {
     let socialLinks = {};
     let customLinks = [];
-    if(socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
-      for(let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
+    if (socialLinksRef.current && socialLinksRef && socialLinksRef.current.children.length > 2) {
+      for (let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
         const key = socialLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
         const value = socialLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
-        if(key) {
-          socialLinks = {...socialLinks, [key]: value};
+        if (key) {
+          socialLinks = { ...socialLinks, [key]: value };
         }
       }
     }
 
-    if(customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
-      for(let i = 0; i < customLinksRef.current.children.length - 2; i++) {
+    if (customLinksRef.current && customLinksRef && customLinksRef.current.children.length > 2) {
+      for (let i = 0; i < customLinksRef.current.children.length - 2; i++) {
         const key = customLinksRef.current.children[i + 1].children[0].querySelector('input')?.value;
         const value = customLinksRef.current.children[i + 1].children[1].querySelector('input')?.value;
-        if(key) {
+        if (key) {
           customLinks.push({
             links: value,
             title: key
