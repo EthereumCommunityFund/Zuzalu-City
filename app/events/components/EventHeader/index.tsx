@@ -3,24 +3,20 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Stack, Typography, useTheme } from '@mui/material';
 import { ZuButton } from 'components/core';
-import { SpacePlusIcon } from 'components/icons';
+import { PlusIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
-import AuthPrompt from '@/components/AuthPrompt';
-import WarningModal from '../Modal/WarningModal';
 
-const SpaceHeader = () => {
-  const [showModal, setShowModal] = React.useState(false);
+const EventHeader = () => {
+  // const [showModal, setShowModal] = React.useState(false);
   const theme = useTheme();
-  const router = useRouter();
+  // const router = useRouter();
   const { isAuthenticated } = useCeramicContext();
 
   const createButtonHandler = () => {
-    if (isAuthenticated) {
-      router.push('/spaces/create');
-      setShowModal(false);
-    } else {
-      setShowModal(true);
-    }
+    // if(isAuthenticated) {
+    //   // router.push('/spaces/create')
+    // } else {
+    // }
   };
 
   return (
@@ -31,17 +27,16 @@ const SpaceHeader = () => {
       borderBottom="1px solid #383838"
     >
       <Typography color={theme.palette.text.primary} variant="h1">
-        Spaces
+        Events
       </Typography>
       <Typography color={theme.palette.text.primary} variant="bodyBB">
         Welcome to the new Zuzalu City
       </Typography>
-      <ZuButton startIcon={<SpacePlusIcon />} onClick={createButtonHandler}>
-        Create a Space
-      </ZuButton>
-      <WarningModal showModal={showModal} setShowModal={setShowModal} />
+      {/*<ZuButton startIcon={<PlusIcon />} onClick={createButtonHandler}>*/}
+      {/*  Create a Event*/}
+      {/*</ZuButton>*/}
     </Stack>
   );
 };
 
-export default SpaceHeader;
+export default EventHeader;

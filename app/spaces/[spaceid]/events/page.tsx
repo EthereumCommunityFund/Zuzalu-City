@@ -19,7 +19,6 @@ const Home = () => {
   const router = useRouter();
   const params = useParams();
   const spaceId = params.spaceid.toString();
-  console.log('spaceID', spaceId);
   const date = new Date();
 
   const [space, setSpace] = useState<Space>();
@@ -40,7 +39,6 @@ const Home = () => {
   } = useCeramicContext();
 
   const getSpace = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -78,7 +76,6 @@ const Home = () => {
             (space) => space.id === params.spaceid.toString(),
           )[0],
         );
-        console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -88,7 +85,6 @@ const Home = () => {
   };
 
   const getEvents = async () => {
-    console.log('Fetching events...');
     try {
       const response: any = await composeClient.executeQuery(`
       query {
@@ -123,12 +119,8 @@ const Home = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        console.log(
-          'filter',
-          fetchedEvents.filter((event) => event.spaceId === spaceId),
-        );
+
         setEvents(fetchedEvents.filter((event) => event.spaceId === spaceId));
-        console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -150,7 +142,7 @@ const Home = () => {
   }, []);
 
   return (
-    <Stack direction="row" height="100vh">
+    <Stack direction="row" height="100vh" width="100%">
       <IconSidebar />
       <SubSidebar title={space?.name} spaceId={params.spaceid.toString()} />
       <Stack flex={1}>
@@ -200,6 +192,7 @@ const Home = () => {
               key={`EventCard-${index}`}
               name={event.title}
               description={event.description}
+              logo={event.image_url}
             />
           ))}
         </Stack>
@@ -213,6 +206,7 @@ const Home = () => {
                   key={`Past EventCard-${index}`}
                   name={event.title}
                   description={event.description}
+                  logo={event.image_url}
                 />
               ))}
           </Stack>

@@ -71,7 +71,6 @@ const Sessions = () => {
   const profileId = profile?.id || '';
 
   const getSessions = async () => {
-    console.log('Fetching sessions...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -108,7 +107,6 @@ const Sessions = () => {
           (edge) => edge.node,
         );
         setSessions(fetchedSessions);
-        console.log('Sessions fetched:', fetchedSessions);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -142,7 +140,7 @@ const Sessions = () => {
         console.log('Not authenticated');
         return;
       }
-      console.log("date", sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'), sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'))
+
       if (person) {
         const update = await composeClient.executeQuery(`
         mutation {
@@ -170,7 +168,6 @@ const Sessions = () => {
           }
         }
         `);
-        console.log(update);
         toggleDrawer('right', false);
         await getSessions();
       } else {
@@ -200,7 +197,6 @@ const Sessions = () => {
           }
         }
         `);
-        console.log(update);
         toggleDrawer('right', false);
         await getSessions();
       }

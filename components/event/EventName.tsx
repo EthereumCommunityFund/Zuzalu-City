@@ -1,8 +1,25 @@
 import * as React from 'react';
 import { Box, Stack, Typography, useTheme, useMediaQuery } from '@mui/material';
 import { EventIcon, MapIcon } from 'components/icons';
+import { convertDateStringFormat } from '@/utils';
 
-const EventName = () => {
+interface PropTypes {
+  spaceName?: string,
+  eventName: string,
+  eventDescription: string,
+  startTime: string,
+  endTime: string,
+  location: string
+}
+
+const EventName = ({
+  spaceName,
+  eventName,
+  eventDescription,
+  endTime,
+  startTime,
+  location
+}: PropTypes) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
@@ -31,10 +48,14 @@ const EventName = () => {
         </Typography>
       </Stack>
       <Typography color="white" variant="subtitleLB">
-        Event Name
+        {
+          eventName
+        }
       </Typography>
       <Typography color="white" variant="bodyM">
-        Event Description
+        {
+          eventDescription
+        }
       </Typography>
       <Stack direction="row" spacing="5px" alignItems="center">
         <Typography color="white" variant="caption">
@@ -42,7 +63,9 @@ const EventName = () => {
         </Typography>
         <Box component="img" width={20} height={20} src="/0.webp" />
         <Typography color="white" variant="bodyS">
-          Space Name
+          {
+            spaceName
+          }
         </Typography>
       </Stack>
       <Stack direction="row" spacing={1} alignItems="center">
@@ -56,7 +79,7 @@ const EventName = () => {
           <EventIcon />
         </Stack>
         <Typography color="white" variant="bodyMB">
-          Month, Day - Month, Day
+          {convertDateStringFormat(startTime)} - {convertDateStringFormat(endTime)}
         </Typography>
       </Stack>
       <Stack direction="row" spacing={1} alignItems="center">
@@ -70,7 +93,9 @@ const EventName = () => {
           <MapIcon />
         </Stack>
         <Typography color="white" variant="bodyMB">
-          Location
+          {
+            location ? location : 'N/A'
+          }
         </Typography>
       </Stack>
     </Stack>

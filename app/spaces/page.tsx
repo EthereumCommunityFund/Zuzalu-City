@@ -28,7 +28,6 @@ const Home = () => {
 
   const { composeClient } = useCeramicContext();
   const getSpaces = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -62,7 +61,6 @@ const Home = () => {
           (edge) => edge.node,
         );
         setSpaces(fetchedSpaces);
-        console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -75,7 +73,6 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const data = await getSpaces();
-        console.log(data);
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -181,15 +178,15 @@ const Home = () => {
                 id={item.id}
                 logoImage={
                   item.avatar !== 'undefined' &&
-                    item.avatar &&
-                    !item.avatar.includes('blob')
+                  item.avatar &&
+                  !item.avatar.includes('blob')
                     ? item.avatar
                     : '/1.webp'
                 }
                 bgImage={
                   item.banner !== 'undefined' &&
-                    item.banner &&
-                    !item.banner.includes('blob')
+                  item.banner &&
+                  !item.banner.includes('blob')
                     ? item.banner
                     : '/5.webp'
                 }
@@ -197,7 +194,7 @@ const Home = () => {
                 description={
                   isValidJSON(item.description.replaceAll('\\"', '"'))
                     ? JSON.parse(item.description.replaceAll('\\"', '"'))
-                      .blocks[0].data.text
+                        .blocks[0].data.text
                     : item.description
                 }
               />

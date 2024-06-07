@@ -36,7 +36,6 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 const Home = () => {
   const params = useParams();
   const spaceId = params.spaceid.toString();
-  console.log('spaceID', spaceId);
 
   const connector = createConnector('NFT.storage', {
     token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
@@ -66,7 +65,6 @@ const Home = () => {
   } = useCeramicContext();
 
   const getEvents = async () => {
-    console.log('Fetching events...');
     try {
       const response: any = await composeClient.executeQuery(`
       query {
@@ -102,7 +100,6 @@ const Home = () => {
           (edge) => edge.node,
         );
         setEvents(fetchedEvents.filter((event) => event.spaceId === spaceId));
-        console.log('Events fetched:', fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -153,13 +150,6 @@ const Home = () => {
     };
 
     const createEvent = async () => {
-      console.log(
-        'proid',
-        profile?.id,
-        inputs.name,
-        startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-        endTime,
-      );
       const update = await composeClient.executeQuery(`
       mutation MyMutation {
         createEvent(
@@ -196,7 +186,6 @@ const Home = () => {
         }
       }
       `);
-      console.log(update);
       toggleDrawer('right', false);
       await getEvents();
     };
@@ -710,8 +699,7 @@ const Home = () => {
     );
   };
   return (
-    <Stack direction="row">
-      <Sidebar selected="Home" />
+    <Stack direction="row" width={'100%'}>
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
         <CurrentEvents events={events} onToggle={toggleDrawer} />

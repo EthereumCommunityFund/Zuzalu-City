@@ -105,19 +105,17 @@ const Create = () => {
         }
       }
     }
-    console.log(socialLinks);
-    console.log(customLinks);
-    console.log('isAuthenticated: ', isAuthenticated);
+
     if (!isAuthenticated) return;
     const output = await editor.save();
     let strDesc: any = JSON.stringify(output);
-    console.log(output.blocks)
+
     if (!output.blocks || output.blocks.length == 0) {
       setError(true);
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
-    console.log('strDesc: ', strDesc);
+
     try {
       const update = await composeClient.executeQuery(`
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
@@ -153,7 +151,6 @@ const Create = () => {
           }
         }
       });
-      console.log('update: ', update);
       typeof window !== 'undefined' && window.alert('Success!');
       router.push('/spaces');
     } catch (err) {
@@ -162,7 +159,6 @@ const Create = () => {
   };
 
   const handleChange = (e: any) => {
-    console.log(e.target.value)
     setCategories(
       typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
     );
@@ -211,10 +207,7 @@ const Create = () => {
         >
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Profile
               </Typography>
             </Box>
@@ -249,10 +242,7 @@ const Create = () => {
                 />
               </Box>
               <Stack spacing="10px">
-                <Typography
-                  variant="subtitleSB"
-                  color="white"
-                >
+                <Typography variant="subtitleSB" color="white">
                   Space Description
                 </Typography>
                 <Typography color="white" variant="caption">
@@ -397,24 +387,15 @@ const Create = () => {
           </Box>
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Avatar & Banner
               </Typography>
             </Box>
             <Stack spacing="10px" padding="20px">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Avatar
               </Typography>
-              <Typography
-                variant="bodyS"
-                color="white"
-              >
+              <Typography variant="bodyS" color="white">
                 Recommend min of 200x200px (1:1 Ratio)
               </Typography>
               <Box
@@ -434,7 +415,6 @@ const Create = () => {
                     setAvatar(files[0]);
                   }}
                   onUpload={(result: any) => {
-                    console.log('upload', result);
                     setAvatar(result);
                   }}
                   onComplete={(result: any) => {
@@ -467,16 +447,10 @@ const Create = () => {
               </Box>
             </Stack>
             <Stack spacing="10px" padding="20px">
-              <Typography
-                variant="subtitleSB"
-                color="white"
-              >
+              <Typography variant="subtitleSB" color="white">
                 Space Banner
               </Typography>
-              <Typography
-                variant="bodyS"
-                color="white"
-              >
+              <Typography variant="bodyS" color="white">
                 Recommend min of 730x220 (1:1 Ratio)
               </Typography>
               <Box
@@ -499,7 +473,6 @@ const Create = () => {
                     setBanner(file);
                   }}
                   onComplete={(result: any) => {
-                    console.log('banner', result)
                     setBannerURL(result?.url);
                   }}
                 >

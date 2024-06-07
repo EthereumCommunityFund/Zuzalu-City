@@ -17,9 +17,7 @@ function EventLayout({
 }>) {
   return (
     <AppRouterCacheProvider>
-      <ThemeProvider theme={theme}>
-        {children}
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </AppRouterCacheProvider>
   );
 }

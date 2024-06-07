@@ -55,7 +55,6 @@ const EventMCard: React.FC<EventMCardProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  console.log("path", pathname, id)
 
   return (
     <Box
@@ -66,7 +65,7 @@ const EventMCard: React.FC<EventMCardProps> = ({
       borderRadius="10px"
       border="1px solid #383838"
       bgcolor="#2D2D2D"
-      sx={{ cursor: "pointer" }}
+      sx={{ cursor: 'pointer' }}
       onClick={() => router.push(`${pathname}/${id}`)}
     >
       <Box display="flex" justifyContent="space-between">
