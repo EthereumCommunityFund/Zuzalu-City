@@ -438,28 +438,28 @@ export default function SpaceDetailPage() {
               >
                 Upcoming Events ({MOCK_DATA.upcomingEvents.length})
               </Box>
-              <SidebarButton
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: '4px 10px',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: '#e6e6e61a',
-                  },
-                  backgroundColor: 'transparent',
-                  borderRadius: '10px',
-                  opacity: 0.7,
-                }}
-              >
-                <Stack direction={'row'} alignItems={'center'} spacing={'10px'}>
-                  <span style={{ fontSize: 16, fontWeight: 400 }}>
-                    View All Events
-                  </span>
-                  <RightArrowCircleSmallIcon />
-                </Stack>
-              </SidebarButton>
+              {/*<SidebarButton*/}
+              {/*  sx={{*/}
+              {/*    display: 'flex',*/}
+              {/*    flexDirection: 'row',*/}
+              {/*    alignItems: 'center',*/}
+              {/*    padding: '4px 10px',*/}
+              {/*    cursor: 'pointer',*/}
+              {/*    '&:hover': {*/}
+              {/*      backgroundColor: '#e6e6e61a',*/}
+              {/*    },*/}
+              {/*    backgroundColor: 'transparent',*/}
+              {/*    borderRadius: '10px',*/}
+              {/*    opacity: 0.7,*/}
+              {/*  }}*/}
+              {/*>*/}
+              {/*  <Stack direction={'row'} alignItems={'center'} spacing={'10px'}>*/}
+              {/*    <span style={{ fontSize: 16, fontWeight: 400 }}>*/}
+              {/*      View All Events*/}
+              {/*    </span>*/}
+              {/*    <RightArrowCircleSmallIcon />*/}
+              {/*  </Stack>*/}
+              {/*</SidebarButton>*/}
             </Box>
             <Box
               sx={{
