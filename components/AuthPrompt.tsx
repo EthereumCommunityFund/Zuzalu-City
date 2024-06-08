@@ -8,6 +8,7 @@ import React, {
 import { useCeramicContext } from '../context/CeramicContext';
 import { useAccount, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -99,7 +100,7 @@ const AuthPrompt: React.FC<{}> = () => {
           title: 'Sign In to Zuzalu City',
           message: 'Sign in or register a new account',
           actions: [
-            <Fragment key="connectButton">
+            <div data-rk key="connectButton">
               <ConnectButton
                 key="connect"
                 showBalance={{
@@ -107,7 +108,7 @@ const AuthPrompt: React.FC<{}> = () => {
                   largeScreen: false,
                 }}
               />
-            </Fragment>,
+            </div>,
           ],
         };
       case 'NEW_USER':
