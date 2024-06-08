@@ -15,7 +15,7 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
     <Stack
       width="260px"
       height="100vh"
-      padding="20px 0 0 20px"
+      padding="20px 10px 0 20px"
       spacing="10px"
       sx={{
         borderRight: '1px solid rgba(255, 255, 255, 0.10)',
@@ -31,12 +31,16 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
           borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
         }}
       >
-        <Typography textTransform="uppercase" variant="caption">
+        <Typography
+          textTransform="uppercase"
+          sx={{ fontSize: '10px', fontWeight: 300 }}
+        >
           General
         </Typography>
         <Typography
           variant="bodySB"
           sx={{
+            fontSize: '13px',
             cursor: 'pointer',
             backgroundColor: tabName === 'Overview' ? '#2d2d2d' : 'black',
             padding: '6px 10px',
@@ -54,14 +58,18 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
           borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
         }}
       >
-        <Typography fontSize={'10px'} textTransform={'uppercase'}>
+        <Typography
+          textTransform="uppercase"
+          sx={{ fontSize: '10px', fontWeight: 300 }}
+        >
           Member Management
         </Typography>
         <Typography
           variant="bodySB"
           sx={{
+            fontSize: '13px',
             cursor: 'pointer',
-            backgroundColor: tabName === 'Invite' ? '#2d2d2d' : 'black',
+            backgroundColor: tabName === 'Overview' ? '#2d2d2d' : 'black',
             padding: '6px 10px',
             borderRadius: '8px',
           }}
@@ -81,8 +89,8 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
             backgroundColor: tabName === 'Apps' ? '#2d2d2d' : 'black',
             padding: '6px 10px',
             borderRadius: '8px',
+            opacity: 0.7,
           }}
-          onClick={() => setTabName('Invite')}
         >
           Coming Soon
         </Typography>
