@@ -105,20 +105,20 @@ export default function SpaceDetailPage() {
         .events as SpaceEventData;
       const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
       setEvents(fetchedEvents);
+      return spaceData;
     } catch (error) {
       console.error('Failed to fetch space:', error);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getSpaceByID();
-      } catch (error) {
+    getSpaceByID()
+      .then((space = {}) => {
+        document.title = space.name + ' - ' + 'Zuzalu City';
+      })
+      .catch((error) => {
         console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+      });
   }, []);
 
   const shortDescription = (description: string, showMore: boolean) => {

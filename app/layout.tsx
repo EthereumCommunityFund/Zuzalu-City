@@ -24,6 +24,14 @@ function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logo.webp" />
+      </head>
+      <title>Zuzalu City</title>
+      <meta
+        name="description"
+        content="Zuzalu City Powered By Ethereum Community Fund"
+      />
       <body>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
