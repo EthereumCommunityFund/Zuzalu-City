@@ -30,6 +30,10 @@ import AuthPrompt from '@/components/AuthPrompt';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import LotteryCard from '@/components/cards/LotteryCard';
 import Link from 'next/link';
+import {
+  formatDateToMonth,
+  groupEventsByMonth,
+} from '@/components/cards/EventCard';
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -333,14 +337,7 @@ const Home: React.FC = () => {
                     inset: '0',
                   }}
                 >
-                  <Box
-                    sx={{
-                      position: 'sticky',
-                      top: 60,
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
+                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box display="flex" justifyContent="space-between">
                       <Box display="flex" alignItems="center" gap="10px">
                         <EventIcon />
@@ -364,29 +361,40 @@ const Home: React.FC = () => {
                         </Box>
                       </Link>
                     </Box>
-                    <Typography
-                      width={'100%'}
-                      color="white"
-                      border="1px solid #383838"
-                      align="center"
-                      paddingY="8px"
-                      borderRadius="40px"
-                      variant="subtitleS"
-                      bgcolor="rgba(34, 34, 34, 0.8)"
-                    >
-                      October 2023
-                    </Typography>
                   </Box>
-                  <Box>
-                    {events.map((event, index) => (
-                      <EventCard
-                        id={event.id}
-                        spaceId={event.spaceId}
-                        key={`EventCard-${index}`}
-                        event={event}
-                      />
-                    ))}
-                  </Box>
+                  {Object.entries(groupEventsByMonth(events)).map(
+                    ([month, eventsList]) => {
+                      return (
+                        <div key={month}>
+                          <Box
+                            component={'div'}
+                            width={'100%'}
+                            color="white"
+                            border="1px solid #383838"
+                            justifyContent="center"
+                            alignContent={'center'}
+                            paddingY="8px"
+                            borderRadius="40px"
+                            bgcolor="rgba(34, 34, 34, 0.8)"
+                            fontWeight={700}
+                            display={'flex'}
+                          >
+                            {month}
+                          </Box>
+                          <Box>
+                            {eventsList.map((event, index) => (
+                              <EventCard
+                                id={event.id}
+                                spaceId={event.spaceId}
+                                key={`EventCard-${index}`}
+                                event={event}
+                              />
+                            ))}
+                          </Box>
+                        </div>
+                      );
+                    },
+                  )}
                 </Box>
                 <Box>
                   {!isTablet && (
