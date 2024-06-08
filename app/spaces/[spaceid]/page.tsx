@@ -1,5 +1,5 @@
 'use client';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -30,11 +30,13 @@ import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, Event, SpaceEventData } from '@/types';
 import { Sidebar } from '@/components/layout';
+import { groupEventsByMonth } from '@/components/cards/EventCard';
 // import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
   const params = useParams();
   const theme = useTheme();
+  const router = useRouter();
   const { composeClient } = useCeramicContext();
   const [showMore, setShowMore] = useState(false);
   const [space, setSpace] = useState<Space>();
@@ -412,99 +414,7 @@ export default function SpaceDetailPage() {
               </SidebarButton>
             )}
           </Box>
-          <Box
-            sx={{
-              padding: '20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexDirection: 'row',
-              }}
-            >
-              <Box
-                sx={{
-                  fontSize: '18px',
-                  fontWeight: '700',
-                  color: '#919191',
-                }}
-              >
-                Upcoming Events ({MOCK_DATA.upcomingEvents.length})
-              </Box>
-              {/*<SidebarButton*/}
-              {/*  sx={{*/}
-              {/*    display: 'flex',*/}
-              {/*    flexDirection: 'row',*/}
-              {/*    alignItems: 'center',*/}
-              {/*    padding: '4px 10px',*/}
-              {/*    cursor: 'pointer',*/}
-              {/*    '&:hover': {*/}
-              {/*      backgroundColor: '#e6e6e61a',*/}
-              {/*    },*/}
-              {/*    backgroundColor: 'transparent',*/}
-              {/*    borderRadius: '10px',*/}
-              {/*    opacity: 0.7,*/}
-              {/*  }}*/}
-              {/*>*/}
-              {/*  <Stack direction={'row'} alignItems={'center'} spacing={'10px'}>*/}
-              {/*    <span style={{ fontSize: 16, fontWeight: 400 }}>*/}
-              {/*      View All Events*/}
-              {/*    </span>*/}
-              {/*    <RightArrowCircleSmallIcon />*/}
-              {/*  </Stack>*/}
-              {/*</SidebarButton>*/}
-            </Box>
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-              }}
-            >
-              <Box
-                sx={{
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  paddingLeft: '14px',
-                  paddingRight: '14px',
-                  paddingTop: '8px',
-                  paddingBottom: '8px',
-                  border: '1px solid #ffffff1a',
-                  borderRadius: '50px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'sticky',
-                  backdropFilter: 'blur(40px)',
-                  top: '10px',
-                  backgroundColor: '#222222cc',
-                }}
-              >
-                October 2023
-              </Box>
-              <Box>
-                {events.map((event, index) => (
-                  <EventCard
-                    id={event.id}
-                    spaceId={event.spaceId}
-                    key={`EventCard-${index}`}
-                    name={event.title}
-                    description={event.description}
-                    logo={event.image_url}
-                  />
-                ))}
-              </Box>
-            </Box>
+          {events.length > 0 && (
             <Box
               sx={{
                 padding: '20px',
@@ -522,19 +432,23 @@ export default function SpaceDetailPage() {
                   flexDirection: 'row',
                 }}
               >
-                {/*<Box
+                <Box
                   sx={{
                     fontSize: '18px',
                     fontWeight: '700',
                     color: '#919191',
                   }}
                 >
-                  Past Events ({MOCK_DATA.pastEvents.length})
+                  Upcoming Events ({events.length})
                 </Box>
                 <SidebarButton
+                  onClick={() => {
+                    router.push(`/spaces/${params.spaceid}/events`);
+                  }}
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
+                    alignItems: 'center',
                     padding: '4px 10px',
                     cursor: 'pointer',
                     '&:hover': {
@@ -544,11 +458,117 @@ export default function SpaceDetailPage() {
                     borderRadius: '10px',
                     opacity: 0.7,
                   }}
-                  content="See All"
-                ></SidebarButton>*/}
+                >
+                  <Stack
+                    direction={'row'}
+                    alignItems={'center'}
+                    spacing={'10px'}
+                  >
+                    <span style={{ fontSize: 16, fontWeight: 400 }}>
+                      View All Events
+                    </span>
+                    <RightArrowCircleSmallIcon />
+                  </Stack>
+                </SidebarButton>
+              </Box>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                {Object.entries(groupEventsByMonth(events)).map(
+                  ([key, value], index) => {
+                    return (
+                      <div key={key + index}>
+                        <Box
+                          sx={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            paddingLeft: '14px',
+                            paddingRight: '14px',
+                            paddingTop: '8px',
+                            paddingBottom: '8px',
+                            border: '1px solid #ffffff1a',
+                            borderRadius: '50px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'sticky',
+                            backdropFilter: 'blur(40px)',
+                            top: '10px',
+                            backgroundColor: '#222222cc',
+                          }}
+                        >
+                          {key}
+                        </Box>
+                        <Box>
+                          {value.map((event, index) => {
+                            return (
+                              <EventCard
+                                id={event.id}
+                                key={`EventCard-${event.id}`}
+                                spaceId={event.spaceId}
+                                event={event}
+                                by={space?.name}
+                              />
+                            );
+                          })}
+                        </Box>
+                      </div>
+                    );
+                  },
+                )}
+              </Box>
+              <Box
+                sx={{
+                  padding: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '20px',
+                }}
+              >
+                {/*<Box*/}
+                {/*  sx={{*/}
+                {/*    display: 'flex',*/}
+                {/*    width: '100%',*/}
+                {/*    justifyContent: 'space-between',*/}
+                {/*    alignItems: 'center',*/}
+                {/*    flexDirection: 'row',*/}
+                {/*  }}*/}
+                {/*>*/}
+                {/*  <Box*/}
+                {/*    sx={{*/}
+                {/*      fontSize: '18px',*/}
+                {/*      fontWeight: '700',*/}
+                {/*      color: '#919191',*/}
+                {/*    }}*/}
+                {/*  >*/}
+                {/*    Past Events ({MOCK_DATA.pastEvents.length})*/}
+                {/*  </Box>*/}
+                {/*  <SidebarButton*/}
+                {/*    sx={{*/}
+                {/*      display: 'flex',*/}
+                {/*      flexDirection: 'row',*/}
+                {/*      padding: '4px 10px',*/}
+                {/*      cursor: 'pointer',*/}
+                {/*      '&:hover': {*/}
+                {/*        backgroundColor: '#e6e6e61a',*/}
+                {/*      },*/}
+                {/*      backgroundColor: 'transparent',*/}
+                {/*      borderRadius: '10px',*/}
+                {/*      opacity: 0.7,*/}
+                {/*    }}*/}
+                {/*    content="See All"*/}
+                {/*  ></SidebarButton>*/}
+                {/*</Box>*/}
               </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       </Box>
     </Box>

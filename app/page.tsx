@@ -382,9 +382,7 @@ const Home: React.FC = () => {
                         id={event.id}
                         spaceId={event.spaceId}
                         key={`EventCard-${index}`}
-                        name={event.title}
-                        description={event.description}
-                        logo={event.image_url}
+                        event={event}
                       />
                     ))}
                   </Box>
