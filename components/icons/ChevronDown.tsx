@@ -2,9 +2,7 @@ import React from 'react';
 import { IconProps } from 'types';
 
 export const ChevronDownIcon: React.FC<
-  IconProps & {
-    style: React.CSSProperties;
-  }
+  IconProps & { style?: React.CSSProperties }
 > = ({ size = 6, style }) => {
   return (
     <div style={{ width: size * 4, height: size * 4, ...style }}>
