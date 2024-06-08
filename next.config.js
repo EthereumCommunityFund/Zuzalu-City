@@ -5,7 +5,13 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'framerusercontent.com',
-        pathname: '/images/',
+        pathname: '/images/**',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'nftstorage.link',
+        pathname: '/**',
         port: '',
       },
     ],
