@@ -2,7 +2,7 @@
 
 import { Header, Sidebar } from 'components/layout';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 interface SpacePageLayoutPropTypes {
@@ -14,5 +14,12 @@ export default function SpacePageLayout({
 }: SpacePageLayoutPropTypes) {
   const theme = useTheme();
 
-  return <Box sx={{ color: 'white' }}>{children}</Box>;
+  return (
+    <Box
+      sx={{ color: 'white', display: 'flex', flexDirection: 'row' }}
+      minHeight={'100vh'}
+    >
+      {children}
+    </Box>
+  );
 }

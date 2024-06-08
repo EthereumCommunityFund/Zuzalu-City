@@ -26,7 +26,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ title }) => {
         width="40px"
         height="40px"
         borderRadius="6px"
-        src="/7.png"
+        src="/7.jpg"
       />
       <Stack spacing="10px" flex="1">
         <Typography variant="bodyBB">{title}</Typography>

@@ -5,27 +5,49 @@ import { useRouter } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
+import { Event } from '@/types';
 import * as util from '../../utils/index';
 
 type EventCardProps = {
   id?: string;
   spaceId?: string;
+  event: Event;
   by?: string;
-  name?: string;
-  description?: string;
-  location?: string;
-  logo?: string;
 };
 
-const EventCard: React.FC<EventCardProps> = ({
-  id,
-  spaceId,
-  by = 'Zuzalu Contributor',
-  name = 'HackZuzalu ChiangMai',
-  description = 'A Popup Village of Innovation in the Heart of Istanbul',
-  location = 'ISTANBUL, TURKEY',
-  logo = '/4.webp',
-}) => {
+const MonthKeys = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+export const formatDateToMonth = (t: string) => {
+  const date = new Date(t);
+  return MonthKeys[date.getMonth()] + ' ' + date.getFullYear();
+};
+
+export const groupEventsByMonth = (events: Event[]) => {
+  const groupedEvents: { [key: string]: Event[] } = {};
+  events.forEach((event) => {
+    const month = formatDateToMonth(event.startTime);
+    if (!groupedEvents[month]) {
+      groupedEvents[month] = [];
+    }
+    groupedEvents[month].push(event);
+  });
+  return groupedEvents;
+};
+
+const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
   const theme = useTheme();
   const router = useRouter();
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -50,7 +72,7 @@ const EventCard: React.FC<EventCardProps> = ({
         component="img"
         width={isMobile ? '80px' : '140px'}
         height={isMobile ? '80px' : '140px'}
-        src={logo}
+        src={event.image_url}
         borderRadius="10px"
       />
       <Box display="flex" flexDirection="column" gap="10px" flexGrow={1}>
@@ -87,7 +109,8 @@ const EventCard: React.FC<EventCardProps> = ({
             fontWeight={300}
             fontSize={'16px'}
           >
-            October 8 - October 20
+            {formatDateToMonth(event.startTime)} -{' '}
+            {formatDateToMonth(event.endTime)}
           </Typography>
         </Box>
         <Box display="flex" flexDirection="column">
@@ -95,10 +118,10 @@ const EventCard: React.FC<EventCardProps> = ({
             color="white"
             variant={isMobile ? 'subtitleSB' : 'subtitleLB'}
           >
-            {name}
+            {event.title}
           </Typography>
           <Typography color="white" variant="bodyM">
-            {description}
+            {event.description}
           </Typography>
         </Box>
         <Box
@@ -109,7 +132,7 @@ const EventCard: React.FC<EventCardProps> = ({
         >
           <MapIcon size={4} />
           <Typography color="white" variant="caption">
-            {location}
+            ISTANBUL, TURKEY
           </Typography>
         </Box>
       </Box>

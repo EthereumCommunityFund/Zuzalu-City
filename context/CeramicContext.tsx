@@ -1,16 +1,14 @@
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { CeramicClient } from '@ceramicnetwork/http-client';
 import { ComposeClient } from '@composedb/client';
 import { RuntimeCompositeDefinition } from '@composedb/types';
 import { definition } from '../composites/definition.js';
-import React from 'react';
 import { authenticateCeramic } from '../utils/ceramicAuth';
 /**
  * Configure ceramic Client & create context.
  */
 const ceramicUrl =
   process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
-console.log('ceramic url', ceramicUrl);
 
 const ceramic = new CeramicClient(ceramicUrl);
 const composeClient = new ComposeClient({
@@ -40,15 +38,15 @@ const CeramicContext = createContext<CeramicContextType>({
   ceramic,
   composeClient,
   isAuthenticated: false,
-  authenticate: async () => {},
+  authenticate: async () => { },
   username: undefined,
   profile: undefined,
   newUser: false,
-  logout: () => {},
+  logout: () => { },
   isAuthPromptVisible: false,
-  showAuthPrompt: () => {},
-  hideAuthPrompt: () => {},
-  createProfile: async (newName: string) => {},
+  showAuthPrompt: () => { },
+  hideAuthPrompt: () => { },
+  createProfile: async (newName: string) => { },
 });
 
 export const CeramicProvider = ({ children }: any) => {
@@ -59,11 +57,9 @@ export const CeramicProvider = ({ children }: any) => {
   const [profile, setProfile] = useState<Profile | undefined>();
 
   const authenticate = async () => {
-    console.log('authenticating', ceramicUrl, ceramic, composeClient);
     await authenticateCeramic(ceramic, composeClient);
     setIsAuthenticated(true);
     await getProfile();
-    console.log(newUser, profile, 'info');
     setIsAuthenticated(true);
   };
 
@@ -80,7 +76,6 @@ export const CeramicProvider = ({ children }: any) => {
     setIsAuthenticated(false);
   };
   const getProfile = async () => {
-    console.log('getting profile ceramic.did: ', ceramic.did);
     if (ceramic.did !== undefined) {
       const profile: any = await composeClient.executeQuery(`
         query {
@@ -94,14 +89,12 @@ export const CeramicProvider = ({ children }: any) => {
       `);
       const basicProfile: { id: string; username: string } | undefined =
         profile?.data?.viewer?.mvpProfile;
-      console.log('Basic Profile:', basicProfile);
       localStorage.setItem(
         'username',
         profile?.data?.viewer?.mvpProfile?.username,
       );
       setProfile(basicProfile);
       setUsername(basicProfile?.username);
-      console.log(basicProfile?.username);
       if (!basicProfile) {
         setProfile(undefined);
         setNewuser(true);
@@ -111,7 +104,6 @@ export const CeramicProvider = ({ children }: any) => {
 
   const createProfile = async (newName: string) => {
     if (ceramic.did !== undefined && newName) {
-      console.log(newName, 'username');
       const update = await composeClient.executeQuery(`
         mutation {
           createMVPProfile(input: {
@@ -139,7 +131,6 @@ export const CeramicProvider = ({ children }: any) => {
           }
         }
       `);
-        console.log(updatedProfile, 'updated profile');
         const newProfile: { id: string; username: string } | undefined =
           updatedProfile?.data?.viewer?.mvpProfile;
         setProfile(newProfile);

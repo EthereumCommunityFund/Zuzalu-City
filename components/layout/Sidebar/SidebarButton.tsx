@@ -1,4 +1,5 @@
 import { BoxProps, Box } from '@mui/material';
+import React from 'react';
 
 interface SidebarButtonPropTypes extends BoxProps {
   isActive?: boolean;
@@ -53,12 +54,14 @@ export default function SidebarButton({
         sx={{
           fontSize: '16px',
           fontWeight: '700',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
         {content}
         {children}
       </Box>
-      <div>{rightIcon && rightIcon}</div>
+      {rightIcon && <div>{rightIcon}</div>}
     </Box>
   );
 }

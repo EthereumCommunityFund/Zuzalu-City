@@ -71,7 +71,6 @@ const Sessions = () => {
   const profileId = profile?.id || '';
 
   const getSessions = async () => {
-    console.log('Fetching sessions...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -108,7 +107,6 @@ const Sessions = () => {
           (edge) => edge.node,
         );
         setSessions(fetchedSessions);
-        console.log('Sessions fetched:', fetchedSessions);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -142,11 +140,7 @@ const Sessions = () => {
         console.log('Not authenticated');
         return;
       }
-      console.log(
-        'date',
-        sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-        sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      );
+
       if (person) {
         const update = await composeClient.executeQuery(`
         mutation {
@@ -154,12 +148,6 @@ const Sessions = () => {
             input: {
               content: {
                 title: "${sessionName}",
-                description: "${sessionDescription}",
-                track: "${sessionTrack}",
-                tags: "${sessionTags.join().toString()},
-                type: "${sessionType}",
-                experience_level: "${sessionExperienceLevel},
-                format: "person",
                 createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
@@ -171,7 +159,6 @@ const Sessions = () => {
             document {
               id
               title
-              description
               createdAt
               startTime
               endTime
@@ -181,7 +168,6 @@ const Sessions = () => {
           }
         }
         `);
-        console.log(update);
         toggleDrawer('right', false);
         await getSessions();
       } else {
@@ -194,8 +180,8 @@ const Sessions = () => {
                 createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "k2t6wzhkhabz4a09lsxkr3jbej43j9ubk0dt841uy8uq3m5c5y2iauknqo87t2",
-                eventId: "kjzl6kcym7w8yb0t9l54s3c8c2vyqpec0oy9dvnrmw6muqbvldeowp6ooo85sqr",
+                profileId: "${profileId}",
+                eventId: "${params.eventid.toString()}",
               }
             }
           ) {
@@ -211,7 +197,6 @@ const Sessions = () => {
           }
         }
         `);
-        console.log(update);
         toggleDrawer('right', false);
         await getSessions();
       }

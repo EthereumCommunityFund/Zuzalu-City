@@ -4,7 +4,7 @@ export const definition = {
     Event: {
       interface: false,
       implements: [],
-      id: 'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
+      id: 'kjzl6hvfrbw6c7q43m9k4svnkscfkl9b45gvucwsdx3ggudzm7q2rnkdvo0xy4x',
       accountRelation: { type: 'list' },
     },
     MVPProfile: {
@@ -16,7 +16,7 @@ export const definition = {
     Session: {
       interface: false,
       implements: [],
-      id: 'kjzl6hvfrbw6c9395dp44jcr4iajmca0575ruzhks99vv7or940oi1t5b0t0cu6',
+      id: 'kjzl6hvfrbw6c96mp3fylhhotgj05px50h16gxkcif8zl5wgykk6c7fuhneu5k1',
       accountRelation: { type: 'list' },
     },
     Space: {
@@ -28,12 +28,25 @@ export const definition = {
   },
   objects: {
     Event: {
+      gated: { type: 'string', required: false, immutable: false },
       title: { type: 'string', required: true, immutable: false },
       status: { type: 'string', required: false, immutable: false },
       endTime: { type: 'datetime', required: true, immutable: false },
       spaceId: { type: 'streamid', required: true, immutable: false },
       tagline: { type: 'string', required: false, immutable: false },
       timezone: { type: 'string', required: false, immutable: false },
+      contracts: {
+        type: 'list',
+        required: false,
+        immutable: false,
+        item: {
+          type: 'reference',
+          refType: 'object',
+          refName: 'EventTicket',
+          required: false,
+          immutable: false,
+        },
+      },
       createdAt: { type: 'datetime', required: true, immutable: false },
       image_url: { type: 'string', required: false, immutable: false },
       profileId: { type: 'streamid', required: true, immutable: false },
@@ -71,10 +84,14 @@ export const definition = {
         relation: {
           source: 'queryConnection',
           model:
-            'kjzl6hvfrbw6c9395dp44jcr4iajmca0575ruzhks99vv7or940oi1t5b0t0cu6',
+            'kjzl6hvfrbw6c96mp3fylhhotgj05px50h16gxkcif8zl5wgykk6c7fuhneu5k1',
           property: 'eventId',
         },
       },
+    },
+    EventTicket: {
+      title: { type: 'string', required: true, immutable: false },
+      contractAddress: { type: 'string', required: true, immutable: false },
     },
     MVPProfile: {
       username: { type: 'string', required: true, immutable: false },
@@ -85,7 +102,7 @@ export const definition = {
         relation: {
           source: 'queryConnection',
           model:
-            'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
+            'kjzl6hvfrbw6c7q43m9k4svnkscfkl9b45gvucwsdx3ggudzm7q2rnkdvo0xy4x',
           property: 'profileId',
         },
       },
@@ -136,7 +153,7 @@ export const definition = {
         relation: {
           source: 'document',
           model:
-            'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
+            'kjzl6hvfrbw6c7q43m9k4svnkscfkl9b45gvucwsdx3ggudzm7q2rnkdvo0xy4x',
           property: 'eventId',
         },
       },
@@ -210,7 +227,7 @@ export const definition = {
         relation: {
           source: 'queryConnection',
           model:
-            'kjzl6hvfrbw6c9tkmwnh2qjv24sashfypr1wja608201288bj07eqflgs1eq0mv',
+            'kjzl6hvfrbw6c7q43m9k4svnkscfkl9b45gvucwsdx3ggudzm7q2rnkdvo0xy4x',
           property: 'spaceId',
         },
       },

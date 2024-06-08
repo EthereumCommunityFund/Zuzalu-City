@@ -1,25 +1,63 @@
 'use client';
 import React, { useState } from 'react';
 import {
-  HomeIcon,
-  SettingIcon,
-  UserPlusIcon,
-  ShieldIcon,
-  NotificationIcon,
-  TableIcon,
   ChevronDownIcon,
+  HomeIcon,
+  NotificationIcon,
+  SettingIcon,
+  ShieldIcon,
+  TableIcon,
+  UserPlusIcon,
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
-import { Stack, Typography, Box, Popover } from '@mui/material';
+import {
+  Box,
+  Popover,
+  Skeleton,
+  Stack,
+  StackProps,
+  Typography,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
+
+import styles from './SubSidebar.module.css';
 
 interface SubSidebarProps {
   spaceId: string;
   title?: string;
+  avatar?: string;
+  banner?: string;
 }
 
-const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
+const MenuItem: React.FC<
+  React.PropsWithChildren<StackProps & { text: string }>
+> = (props) => {
+  const { children, text, ...rest } = props;
+  return (
+    <Stack
+      className={styles.menu}
+      direction="row"
+      justifyContent="space-between"
+      padding="6px 10px"
+      alignItems="center"
+      borderRadius="8px"
+      {...rest}
+    >
+      <Typography className={styles.text} fontSize={'13px'}>
+        {text}
+      </Typography>
+      <span className={styles.icon}>{children}</span>
+    </Stack>
+  );
+};
+
+const SubSidebar: React.FC<SubSidebarProps> = ({
+  spaceId,
+  title,
+  avatar,
+  banner,
+}) => {
   const theme = useTheme();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
@@ -62,129 +100,107 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
         }}
       >
         <Stack spacing="10px" onMouseLeave={handleClose}>
-          <Stack
-            bgcolor="#525554"
-            borderRadius="10px"
-            border="1px solid #383838"
-            padding="10px"
-            direction="row"
-            spacing="10px"
-            alignItems="center"
-            sx={{
-              cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
-              '&:hover': { backgroundColor: '#6f7672' },
+          <div
+            style={{
+              backgroundImage: `url(${banner})`,
             }}
-            onClick={handleClick}
+            className={styles.spaceButton}
           >
-            <Box
-              component="img"
-              width={40}
-              height={40}
-              borderRadius={20}
-              src="/1.webp"
-            />
-            <Typography
-              flex={1}
-              variant="subtitleS"
-              color="white"
-              sx={{ textWrap: 'wrap' }}
+            <Stack
+              borderRadius="10px"
+              padding="10px 14px"
+              direction="row"
+              spacing="10px"
+              alignItems="center"
+              sx={{
+                cursor: 'pointer',
+                borderRadius: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backgroundColor: 'rgba(34,34,34,0.1)',
+                backdropFilter: 'blur(10px)',
+              }}
+              onClick={handleClick}
             >
-              {title}
-            </Typography>
-            <ChevronDownIcon size={5} />
-          </Stack>
+              <Box
+                component="img"
+                width={35}
+                height={35}
+                borderRadius={'100%'}
+                src={avatar || '/1.webp'}
+              />
+              <Typography
+                flex={1}
+                variant="subtitleS"
+                color="white"
+                fontSize={'18px'}
+                lineHeight={'22px'}
+                sx={{ textWrap: 'wrap' }}
+              >
+                {title ? (
+                  title
+                ) : (
+                  <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                )}
+              </Typography>
+              <ChevronDownIcon size={5} />
+            </Stack>
+          </div>
           <Popover
-            sx={{ width: '100%' }}
+            sx={{ width: '100%', marginTop: '14px' }}
             id={id}
             open={open}
             anchorEl={anchorEl}
             onClose={handleClose}
+            PaperProps={{
+              sx: {
+                backgroundColor: 'transparent',
+              },
+            }}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'left',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
             }}
           >
             <Stack
+              padding={'10px'}
               spacing="10px"
-              padding="5px"
-              border="1px solid #383838"
-              borderRadius="5px"
+              border="1px solid rgba(255, 255, 255, 0.2)"
+              borderRadius="10px"
               bgcolor="black"
               color="white"
+              sx={{
+                minWidth: '240px',
+                width: '240px',
+              }}
             >
-              <Stack
+              <MenuItem
+                text={'Invite People'}
                 onClick={() => router.push(`/spaces/${spaceId}/edit/invite`)}
-                direction="row"
-                justifyContent="space-between"
-                padding="6px 10px"
-                alignItems="center"
-                borderRadius="8px"
-                sx={{
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                    opacity: '0.8',
-                    cursor: 'pointer',
-                  },
-                }}
               >
-                <Typography variant="bodySB">Invite People</Typography>
                 <UserPlusIcon size={5} />
-              </Stack>
-              <Stack
+              </MenuItem>
+              <MenuItem
                 onClick={() => router.push(`/spaces/${spaceId}/edit`)}
-                direction="row"
-                justifyContent="space-between"
-                padding="6px 10px"
-                alignItems="center"
-                borderRadius="8px"
-                sx={{
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                    opacity: '0.8',
-                    cursor: 'pointer',
-                  },
-                }}
+                text={'Space Settings'}
               >
-                <Typography variant="bodySB">Space Settings</Typography>
                 <SettingIcon size={5} />
-              </Stack>
-              <Stack
+              </MenuItem>
+              <MenuItem
                 onClick={() => router.push(`/spaces/${spaceId}/edit`)}
-                direction="row"
-                justifyContent="space-between"
-                padding="6px 10px"
-                alignItems="center"
-                borderRadius="8px"
-                sx={{
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                    opacity: '0.8',
-                    cursor: 'pointer',
-                  },
-                }}
+                text={'Privacy Settings'}
               >
-                <Typography variant="bodySB">Privacy Settings</Typography>
                 <ShieldIcon size={5} />
-              </Stack>
-              <Stack
+              </MenuItem>
+              <MenuItem
                 onClick={() => router.push(`/spaces/${spaceId}/edit`)}
-                direction="row"
-                justifyContent="space-between"
-                padding="6px 10px"
-                alignItems="center"
-                borderRadius="8px"
-                sx={{
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                    opacity: '0.8',
-                    cursor: 'pointer',
-                  },
-                }}
+                text={'Notification Settings'}
               >
-                <Typography variant="bodySB">Notification Settings</Typography>
                 <NotificationIcon size={5} />
-              </Stack>
+              </MenuItem>
             </Stack>
           </Popover>
         </Stack>
@@ -208,6 +224,11 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
           }}
         >
           <SidebarButton icon={<HomeIcon />} content="Home" isActive={false} />
+          {/*<SidebarButton*/}
+          {/*  icon={<AnnouncementsIcon />}*/}
+          {/*  content="Announcements"*/}
+          {/*  isActive={false}*/}
+          {/*/>*/}
           <SidebarButton
             icon={<TableIcon />}
             content="Events"

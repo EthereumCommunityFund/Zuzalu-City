@@ -9,6 +9,8 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { CeramicProvider } from '../context/CeramicContext';
 import { Header } from '@/components/layout';
 import AuthPrompt from '@/components/AuthPrompt';
+import AppContextProvider from '@/context/AppContext';
+import React, { useEffect, useState } from 'react';
 const queryClient = new QueryClient();
 
 // export const metadata: Metadata = {
@@ -21,17 +23,32 @@ function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logo.webp" />
+      </head>
+      <title>Zuzalu City</title>
+      <meta
+        name="description"
+        content="Zuzalu City Powered By Ethereum Community Fund"
+      />
       <body>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
               <CeramicProvider>
                 <WalletProvider>
-                  <Header />
-                  <AuthPrompt />
-                  {children}
+                  <AppContextProvider>
+                    <Header />
+                    {isClient && <AuthPrompt />}
+                    {children}
+                  </AppContextProvider>
                 </WalletProvider>
               </CeramicProvider>
             </QueryClientProvider>

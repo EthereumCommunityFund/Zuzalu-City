@@ -11,65 +11,79 @@ export const CONTRACT_ADDRESS = '0xB05611bC75Fdd276b336eD8f2f3cE24d8A10a751';
 export const NEXT_PUBLIC_API_BASE_URL = 'http://localhost:3000';
 
 export const SPACE_CATEGORIES: {
-  value: string,
-  label: string
+  value: string;
+  label: string;
 }[] = [
   {
     value: 'network_states',
-    label: 'Network States'
+    label: 'Network States',
   },
   {
     value: 'charter_cities',
-    label: 'Charter Cities'
+    label: 'Charter Cities',
   },
   {
     value: 'coordinations',
-    label: 'Coordinations'
+    label: 'Coordinations',
   },
   {
     value: 'zk_tech',
-    label: 'ZK Tech'
+    label: 'ZK Tech',
   },
   {
     value: 'core_eth_development',
-    label: 'Core Ethereum Development'
+    label: 'Core Ethereum Development',
   },
   {
     value: 'l2_projects',
-    label: 'Layer2 Projects'
+    label: 'Layer2 Projects',
   },
   {
     value: 'decentralized_social',
-    label: 'Decentralized Social'
-  }
-]
+    label: 'Decentralized Social',
+  },
+];
+
+export const VENUE_TAGS: {
+  value: string;
+  label: string;
+}[] = [
+  {
+    value: 'live_stream_available',
+    label: 'Live-stream Available',
+  },
+  {
+    value: 'external_venue',
+    label: 'External Venue',
+  },
+];
 
 export const SOCIAL_TYPES: {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }[] = [
   {
     key: 'github',
-    value: 'Github'
+    value: 'Github',
   },
   {
     key: 'discord',
-    value: 'Discord'
+    value: 'Discord',
   },
   {
     key: 'twitter',
-    value: 'Twitter'
+    value: 'Twitter',
   },
   {
     key: 'telegram',
-    value: 'Telegram'
+    value: 'Telegram',
   },
   {
     key: 'lens',
-    value: 'Lens'
+    value: 'Lens',
   },
   {
     key: 'nostr',
-    value: 'Nostr'
-  }
-]
+    value: 'Nostr',
+  },
+];

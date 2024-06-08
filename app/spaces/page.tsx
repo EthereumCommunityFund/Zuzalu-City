@@ -28,7 +28,6 @@ const Home = () => {
 
   const { composeClient } = useCeramicContext();
   const getSpaces = async () => {
-    console.log('Fetching spaces...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -62,7 +61,6 @@ const Home = () => {
           (edge) => edge.node,
         );
         setSpaces(fetchedSpaces);
-        console.log('Spaces fetched:', fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -75,7 +73,6 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const data = await getSpaces();
-        console.log(data);
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -93,69 +90,73 @@ const Home = () => {
   }
 
   return (
-    <Stack direction="row" sx={{ backgroundColor: '#222222' }} height="100vh">
+    <Stack
+      direction="row"
+      sx={{ backgroundColor: '#222222' }}
+      minHeight="100vh"
+    >
       {!isTablet && <Sidebar selected={selected} />}
       <Stack direction="column" borderLeft="1px solid #383838" flex={1}>
         <SpaceHeader />
-        <Stack
-          sx={{
-            display: 'none',
-            flexDirection: 'column',
-            gap: '10px',
-            [theme.breakpoints.down('md')]: {
-              display: 'flex',
-            },
-            padding: '20px',
-          }}
-        >
-          <OutlinedInput
-            placeholder="Search Events"
-            sx={{
-              backgroundColor:
-                'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-              paddingX: '15px',
-              paddingY: '13px',
-              borderRadius: '10px',
-              height: '35px',
-              border: '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-              fontFamily: 'Inter',
-              opacity: 0.7,
-              color: 'white',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-            }}
-            onChange={(e) => setSearchVal(e.target.value)}
-            startAdornment={
-              <InputAdornment position="start" sx={{ opacity: 0.6 }}>
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-          <Stack
-            sx={{
-              padding: '10px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
-            }}
-          >
-            <Typography
-              fontSize={'18px'}
-              fontWeight={'700'}
-              lineHeight={'120%'}
-              color={'white'}
-            >
-              Sort & Filter Spaces
-            </Typography>
-          </Stack>
-          <ZuSelect
-            sx={{
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              opacity: '0.6',
-            }}
-            icon={<LocalOfferIcon />}
-            options={[{ value: 'category', label: 'By Category' }]}
-          />
-        </Stack>
+        {/*<Stack*/}
+        {/*  sx={{*/}
+        {/*    display: 'none',*/}
+        {/*    flexDirection: 'column',*/}
+        {/*    gap: '10px',*/}
+        {/*    [theme.breakpoints.down('md')]: {*/}
+        {/*      display: 'flex',*/}
+        {/*    },*/}
+        {/*    padding: '20px',*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <OutlinedInput*/}
+        {/*    placeholder="Search Events"*/}
+        {/*    sx={{*/}
+        {/*      backgroundColor:*/}
+        {/*        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',*/}
+        {/*      paddingX: '15px',*/}
+        {/*      paddingY: '13px',*/}
+        {/*      borderRadius: '10px',*/}
+        {/*      height: '35px',*/}
+        {/*      border: '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',*/}
+        {/*      fontFamily: 'Inter',*/}
+        {/*      opacity: 0.7,*/}
+        {/*      color: 'white',*/}
+        {/*      '& .MuiOutlinedInput-notchedOutline': {*/}
+        {/*        border: 'none',*/}
+        {/*      },*/}
+        {/*    }}*/}
+        {/*    onChange={(e) => setSearchVal(e.target.value)}*/}
+        {/*    startAdornment={*/}
+        {/*      <InputAdornment position="start" sx={{ opacity: 0.6 }}>*/}
+        {/*        <SearchIcon />*/}
+        {/*      </InputAdornment>*/}
+        {/*    }*/}
+        {/*  />*/}
+        {/*  <Stack*/}
+        {/*    sx={{*/}
+        {/*      padding: '10px',*/}
+        {/*      borderBottom: '1px solid rgba(255, 255, 255, 0.10)',*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <Typography*/}
+        {/*      fontSize={'18px'}*/}
+        {/*      fontWeight={'700'}*/}
+        {/*      lineHeight={'120%'}*/}
+        {/*      color={'white'}*/}
+        {/*    >*/}
+        {/*      Sort & Filter Spaces*/}
+        {/*    </Typography>*/}
+        {/*  </Stack>*/}
+        {/*  <ZuSelect*/}
+        {/*    sx={{*/}
+        {/*      backgroundColor: 'rgba(255, 255, 255, 0.05)',*/}
+        {/*      opacity: '0.6',*/}
+        {/*    }}*/}
+        {/*    icon={<LocalOfferIcon />}*/}
+        {/*    options={[{ value: 'category', label: 'By Category' }]}*/}
+        {/*  />*/}
+        {/*</Stack>*/}
         <Stack
           sx={{
             display: 'flex',
@@ -164,7 +165,7 @@ const Home = () => {
             rowGap: '30px',
             columnGap: '40px',
             padding: '20px',
-            justifyContent: 'center',
+            justifyContent: 'start',
           }}
         >
           {spaces.map((item, index) => (
@@ -205,7 +206,7 @@ const Home = () => {
           ))}
         </Stack>
       </Stack>
-      <SidebarLeft />
+      {/*<SidebarLeft />*/}
     </Stack>
   );
 };

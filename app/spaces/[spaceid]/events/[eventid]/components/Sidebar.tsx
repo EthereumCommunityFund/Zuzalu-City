@@ -13,8 +13,10 @@ import {
   EventIcon,
   ChevronDownIcon,
 } from 'components/icons';
+import { useRouter } from 'next/navigation';
 
 const Sidebar = () => {
+  const router = useRouter();
   return (
     <Stack
       padding={2}
@@ -91,6 +93,7 @@ const Sidebar = () => {
           padding={1}
           spacing={1}
           borderRadius="10px"
+          onClick={() => router.replace('/')}
           sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#383838' } }}
         >
           <HomeIcon />
@@ -98,25 +101,26 @@ const Sidebar = () => {
             Home
           </Typography>
         </Stack>
+        {/*<Stack*/}
+        {/*  direction="row"*/}
+        {/*  alignItems="center"*/}
+        {/*  padding={1}*/}
+        {/*  spacing={1}*/}
+        {/*  borderRadius="10px"*/}
+        {/*  sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#383838' } }}*/}
+        {/*>*/}
+        {/*  <MegaPhoneIcon />*/}
+        {/*  <Typography color="white" variant="bodyBB">*/}
+        {/*    Announcements*/}
+        {/*  </Typography>*/}
+        {/*</Stack>*/}
         <Stack
           direction="row"
           alignItems="center"
           padding={1}
           spacing={1}
           borderRadius="10px"
-          sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#383838' } }}
-        >
-          <MegaPhoneIcon />
-          <Typography color="white" variant="bodyBB">
-            Announcements
-          </Typography>
-        </Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          padding={1}
-          spacing={1}
-          borderRadius="10px"
+          onClick={() => router.push('/events')}
           sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#383838' } }}
         >
           <EventIcon />

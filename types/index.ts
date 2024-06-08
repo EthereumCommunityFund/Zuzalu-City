@@ -22,6 +22,10 @@ export interface Event {
   min_participant: number;
   max_participant: number;
   createdAt: string;
+  space?: {
+    name?: string;
+    gated?: string;
+  };
 }
 
 export interface EventEdge {
@@ -33,7 +37,17 @@ export interface EventData {
     edges: EventEdge[];
   };
 }
+export interface SpaceEventEdge {
+  node: Event;
+}
 
+export interface CeramicResponseType<T> {
+  data?: T;
+}
+
+export interface SpaceEventData {
+  edges: SpaceEventEdge[];
+}
 export interface Space {
   id: string;
   avatar?: string;
@@ -50,6 +64,7 @@ export interface Space {
   github?: string;
   discord?: string;
   ens?: string;
+  category?: string;
 }
 
 export interface SpaceEdge {
