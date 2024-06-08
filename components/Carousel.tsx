@@ -50,7 +50,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
         display: 'flex',
         overflowX: 'auto',
         gap: '10px',
-        scrollbarWidth: 'thin'
+        scrollbarWidth: 'thin',
       }}
     >
       {items.map((item) => (
@@ -74,8 +74,8 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
           title={item.name}
           description={
             isValidJSON(item.description.replaceAll('\\"', '"'))
-              ? JSON.parse(item.description.replaceAll('\\"', '"'))
-                .blocks[0].data.text
+              ? JSON.parse(item.description.replaceAll('\\"', '"')).blocks[0]
+                  .data.text
               : item.description
           }
         />

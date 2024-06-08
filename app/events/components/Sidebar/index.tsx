@@ -76,54 +76,54 @@ export default function SidebarLeft(props: SidebarLeftProps) {
             </InputAdornment>
           }
         />
-        <Stack
-          sx={{
-            padding: '20px 10px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
-          }}
-        >
-          <Typography
-            fontSize={'18px'}
-            fontWeight={'700'}
-            lineHeight={'120%'}
-            color={'white'}
-          >
-            Sort & Filter Events
-          </Typography>
-        </Stack>
-        <Box
-          display="flex"
-          gap="4px"
-          padding="2px"
-          borderRadius="10px"
-          bgcolor="#2d2d2d"
-        >
-          <Button
-            sx={{
-              flex: 1,
-              backgroundColor: '#424242',
-              borderRadius: '8px',
-              color: 'white',
-              fontFamily: 'Inter',
-            }}
-          >
-            Upcoming
-          </Button>
-          <Button
-            sx={{
-              flex: 1,
-              backgroundColor: '#2d2d2d',
-              borderRadius: '8px',
-              color: 'white',
-              fontFamily: 'Inter',
-            }}
-          >
-            Past
-          </Button>
-        </Box>
-        <Box>
-          <ZuCalendar defaultValue={dayjs('2022-04-17')} />
-        </Box>
+        {/*<Stack*/}
+        {/*  sx={{*/}
+        {/*    padding: '20px 10px',*/}
+        {/*    borderBottom: '1px solid rgba(255, 255, 255, 0.10)',*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <Typography*/}
+        {/*    fontSize={'18px'}*/}
+        {/*    fontWeight={'700'}*/}
+        {/*    lineHeight={'120%'}*/}
+        {/*    color={'white'}*/}
+        {/*  >*/}
+        {/*    Sort & Filter Events*/}
+        {/*  </Typography>*/}
+        {/*</Stack>*/}
+        {/*<Box*/}
+        {/*  display="flex"*/}
+        {/*  gap="4px"*/}
+        {/*  padding="2px"*/}
+        {/*  borderRadius="10px"*/}
+        {/*  bgcolor="#2d2d2d"*/}
+        {/*>*/}
+        {/*  <Button*/}
+        {/*    sx={{*/}
+        {/*      flex: 1,*/}
+        {/*      backgroundColor: '#424242',*/}
+        {/*      borderRadius: '8px',*/}
+        {/*      color: 'white',*/}
+        {/*      fontFamily: 'Inter',*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    Upcoming*/}
+        {/*  </Button>*/}
+        {/*  <Button*/}
+        {/*    sx={{*/}
+        {/*      flex: 1,*/}
+        {/*      backgroundColor: '#2d2d2d',*/}
+        {/*      borderRadius: '8px',*/}
+        {/*      color: 'white',*/}
+        {/*      fontFamily: 'Inter',*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    Past*/}
+        {/*  </Button>*/}
+        {/*</Box>*/}
+        {/*<Box>*/}
+        {/*  <ZuCalendar defaultValue={dayjs('2022-04-17')} />*/}
+        {/*</Box>*/}
       </Stack>
     </Stack>
   );

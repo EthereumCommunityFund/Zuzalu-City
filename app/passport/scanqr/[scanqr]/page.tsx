@@ -20,31 +20,26 @@ const Home = () => {
       maxWidth="640px"
     >
       <Stack direction="row" spacing="20px" alignItems="center">
-        <ZuButton
-          startIcon={<LeftArrowIcon />}
-          onClick={() => router.back()}
-        >
+        <ZuButton startIcon={<LeftArrowIcon />} onClick={() => router.back()}>
           Back
         </ZuButton>
-        <Typography
-          variant="subtitleLB"
-          color="white"
-        >
+        <Typography variant="subtitleLB" color="white">
           Scan QR Code
         </Typography>
       </Stack>
 
-      <ScanQRModal
-        setShowModal={setIsScanVerify}
-        showModal={isScanVerify}
-      />
+      <ScanQRModal setShowModal={setIsScanVerify} showModal={isScanVerify} />
       <Typography variant="bodyMB" color="white">
         Action (beta only has one action):
       </Typography>
       <Stack
         onClick={() => setIsScanVerify(true)}
-        sx={{ cursor: "pointer" }}
-        padding="10px" borderRadius="10px" bgcolor="#2d2d2d" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))">
+        sx={{ cursor: 'pointer' }}
+        padding="10px"
+        borderRadius="10px"
+        bgcolor="#2d2d2d"
+        border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+      >
         <Typography variant="subtitleSB" color="white">
           Verify
         </Typography>

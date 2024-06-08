@@ -16,18 +16,18 @@ const Home = () => {
   const [tabName, setTabName] = React.useState<string>('About');
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
-  const [eventData, setEventData] = React.useState<Event>()
+  const [eventData, setEventData] = React.useState<Event>();
 
   const params = useParams();
   const eventId = params.eventid.toString();
 
-  const {
-    composeClient
-  } = useCeramicContext()
+  const { composeClient } = useCeramicContext();
 
   const getEventDetailInfo = async () => {
     try {
-      const response: CeramicResponseType<EventEdge> = await composeClient.executeQuery(`
+      const response: CeramicResponseType<EventEdge> =
+        (await composeClient.executeQuery(
+          `
         query MyQuery($id: ID!) {
           node (id: $id) {
             ...on Event {
@@ -56,24 +56,24 @@ const Home = () => {
             }
           }
         }
-      `, {
-        id: eventId
-      }) as CeramicResponseType<EventEdge>;
+      `,
+          {
+            id: eventId,
+          },
+        )) as CeramicResponseType<EventEdge>;
       if (response.data) {
         if (response.data.node) {
           setEventData(response.data.node);
         }
       }
-
     } catch (err) {
       console.log('Failed to fetch event: ', err);
     }
-
   };
 
   React.useEffect(() => {
     getEventDetailInfo();
-  }, [])
+  }, []);
 
   return (
     <Stack direction="row" width="100%">
@@ -83,17 +83,17 @@ const Home = () => {
         <Header />
         <Thumb tabName={tabName} setTabName={setTabName} />
         <Stack padding="40px" justifyContent="center" alignItems="center">
-          {
-            eventData && <Stack width={900}>
+          {eventData && (
+            <Stack width={900}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={8}>
-                  <EventName 
-                    endTime={eventData.endTime} 
-                    startTime={eventData.startTime} 
-                    eventDescription={eventData.description} 
-                    spaceName={eventData.space?.name} 
+                  <EventName
+                    endTime={eventData.endTime}
+                    startTime={eventData.startTime}
+                    eventDescription={eventData.description}
+                    spaceName={eventData.space?.name}
                     eventName={eventData.title}
-                    location=''
+                    location=""
                   />
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -107,8 +107,7 @@ const Home = () => {
                 </Grid>
               </Grid>
             </Stack>
-          }
-
+          )}
         </Stack>
       </Stack>
     </Stack>

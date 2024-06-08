@@ -20,7 +20,7 @@ import { useAppContext } from '@/context/AppContext';
 
 const Header = () => {
   const theme = useTheme();
-  const {openSidebar, setOpenSidebar} = useAppContext();
+  const { openSidebar, setOpenSidebar } = useAppContext();
   const router = useRouter();
   const pathName = usePathname();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -68,18 +68,20 @@ const Header = () => {
         gap="10px"
         sx={{ cursor: 'pointer' }}
       >
-        {
-          (isTablet || pathName.split("/")[1] === "spaces" && pathName.split("/").length > 2) && <Button
+        {(isTablet ||
+          (pathName.split('/')[1] === 'spaces' &&
+            pathName.split('/').length > 2)) && (
+          <Button
             sx={{
               padding: '10px',
               width: '40px',
-              minWidth: 'unset'
+              minWidth: 'unset',
             }}
             onClick={() => setOpenSidebar(true)}
           >
             <MenuIcon />
           </Button>
-        }
+        )}
 
         <Box
           component="img"
@@ -137,7 +139,7 @@ const Header = () => {
             <MenuItem onClick={() => router.push('/passport')}>
               Passport
             </MenuItem>
-            <MenuItem onClick={handleSetting}>Setting</MenuItem>
+            {/*<MenuItem onClick={handleSetting}>Setting</MenuItem>*/}
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
             <Divider />
 
@@ -176,7 +178,11 @@ const Header = () => {
           Connect
         </Button>
       )}
-      <SidebarDrawer selected={'Home'} open={openSidebar} onClose={() => setOpenSidebar(false)} />
+      <SidebarDrawer
+        selected={'Home'}
+        open={openSidebar}
+        onClose={() => setOpenSidebar(false)}
+      />
     </Box>
   );
 };

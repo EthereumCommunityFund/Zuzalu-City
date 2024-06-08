@@ -149,7 +149,9 @@ export default function SpaceDetailPage() {
             width: '100%',
           },
           fontFamily: 'Inter',
+          backgroundColor: '#222222',
         }}
+        flex={'1'}
       >
         <Box
           sx={{

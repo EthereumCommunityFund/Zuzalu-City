@@ -104,7 +104,6 @@ export const CeramicProvider = ({ children }: any) => {
 
   const createProfile = async (newName: string) => {
     if (ceramic.did !== undefined && newName) {
-
       const update = await composeClient.executeQuery(`
         mutation {
           createMVPProfile(input: {
