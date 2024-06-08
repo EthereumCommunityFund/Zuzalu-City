@@ -4,6 +4,9 @@ import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
 import EditorJS from '@editorjs/editorjs';
+
+import './editor.css';
+
 // import dynamic from 'next/dynamic';
 // const EditorJS = dynamic(() => import('@editorjs/editorjs'), { ssr: false })
 

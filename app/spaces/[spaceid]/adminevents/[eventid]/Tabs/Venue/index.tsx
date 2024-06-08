@@ -1,19 +1,19 @@
+'use client';
 import React, { useState } from 'react';
+import { useParams } from 'next/navigation';
 import {
   Stack,
   SwipeableDrawer,
   Box,
   Typography,
-  FormControl,
   OutlinedInput,
-  InputAdornment,
   Button,
+  Select,
+  MenuItem,
+  Chip
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
@@ -28,18 +28,28 @@ import {
   MinusIcon,
 } from '@/components/icons';
 import BpCheckbox from '@/components/event/Checkbox';
-import TextEditor from '@/components/editor/editor';
 import { MOCK_DATA } from '@/mock';
 import { ZuButton, ZuInput } from '@/components/core';
+import { TimeRange } from './components';
+import { supabase } from '@/utils/supabase/client';
+import { VENUE_TAGS } from '@/constant';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
-};
+}
+
+type AvailableType = {
+  startTime: string,
+  endTime: string
+}
 
 const Venue: React.FC = () => {
+  const params = useParams();
+  const eventid = params.eventid.toString();
+
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -51,12 +61,65 @@ const Venue: React.FC = () => {
     setState({ ...state, [anchor]: open });
   };
 
+  const [name, setName] = useState<string>('');
+  const [tags, setTags] = useState<string[]>([]);
+
+  const handleChange = (e: any) => {
+    console.log(e.target.value)
+    setTags(
+      typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
+    );
+  }
+
+  const [avatar, setAvatar] = useState<SelectedFile>();
+  const [avatarURL, setAvatarURL] = useState<string>();
+  const connector = createConnector('NFT.storage', {
+    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
+  });
+
   const List = (anchor: Anchor) => {
-    const [avatar, setAvatar] = useState<SelectedFile>();
-    const [avatarURL, setAvatarURL] = useState<string>();
-    const connector = createConnector('NFT.storage', {
-      token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-    });
+    const [monday, setMonday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [tuesday, setTuesday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [wednesday, setWednesday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [thursday, setThursday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+    const [friday, setFriday] = useState<AvailableType[]>([{
+      startTime: '',
+      endTime: ''
+    }]);
+
+    const createVenue = async () => {
+      try {
+        const bookings = {
+          monday,
+          tuesday,
+          wednesday,
+          thursday,
+          friday
+        }
+        const { data } = await supabase.from("venue").insert({
+          name,
+          tags: tags.join(','),
+          eventid,
+          avatar: avatarURL,
+          bookings: JSON.stringify(bookings)
+        })
+        console.log("data", data)
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -115,7 +178,7 @@ const Venue: React.FC = () => {
               <Typography variant="subtitleMB">Venue Space Details</Typography>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Space Name*</Typography>
-                <ZuInput placeholder="Standard Pass" />
+                <ZuInput placeholder="Standard Pass" onChange={(e) => setName(e.target.value)} />
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
@@ -124,33 +187,59 @@ const Venue: React.FC = () => {
                     Search or create categories related to your space
                   </Typography>
                 </Stack>
-                <FormControl focused sx={{ border: 'none' }}>
-                  <OutlinedInput
-                    placeholder="Search or add a tag"
-                    sx={{
-                      backgroundColor:
-                        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
-                      },
+                <Box>
+                  <Select
+                    multiple
+                    value={tags}
+                    style={{ width: '100%' }}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222'
+                        }
+                      }
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
+                  >
+                    {
+                      VENUE_TAGS.map((tag, index) => {
+                        return (
+                          <MenuItem
+                            value={tag.value}
+                            key={index}
+                          >
+                            {
+                              tag.label
+                            }
+                          </MenuItem>
+                        )
+                      })
                     }
-                  />
-                </FormControl>
-                <Stack direction="row" spacing="10px">
+                  </Select>
+                </Box>
+                <Box display={'flex'} flexDirection={'row'} gap={'10px'} flexWrap={'wrap'}>
+                  {
+                    tags.map((tag, index) => {
+                      return (
+                        <Chip
+                          label={VENUE_TAGS.find((item) => item.value === tag)?.label}
+                          sx={{
+                            borderRadius: '10px'
+                          }}
+                          onDelete={
+                            () => {
+                              const newArray = tags.filter((item) => item !== tag);
+                              setTags(newArray)
+                            }
+                          }
+                          key={index}
+                        />
+                      )
+                    })
+                  }
+                </Box>
+                {/* <Stack direction="row" spacing="10px">
                   <Stack
                     direction="row"
                     spacing="10px"
@@ -175,7 +264,7 @@ const Venue: React.FC = () => {
                     <Typography variant="bodyMB">External Venue</Typography>
                     <XMarkIcon size={4} />
                   </Stack>
-                </Stack>
+                </Stack> */}
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Space Image</Typography>
@@ -201,6 +290,7 @@ const Venue: React.FC = () => {
                       setAvatar(file);
                     }}
                     onComplete={(result: any) => {
+                      console.log('resule', result)
                       setAvatarURL(result?.url);
                     }}
                   >
@@ -249,71 +339,12 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">MON</Typography>
                   </Stack>
-                  <Stack direction="row" spacing="10px" flex="4">
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      monday.map((item, index) => (
+                        <TimeRange key={`Monday-Item-${index}`} values={monday} setValues={setMonday} id={index} />
+                      ))
+                    }
                   </Stack>
                   <Stack
                     direction="row"
@@ -321,10 +352,24 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setMonday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...monday];
+                      prev.pop();
+                      setMonday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -339,71 +384,12 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">TUE</Typography>
                   </Stack>
-                  <Stack direction="row" spacing="10px" flex="4">
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      tuesday.map((item, index) => (
+                        <TimeRange key={`Tuesday-Item-${index}`} values={tuesday} setValues={setTuesday} id={index} />
+                      ))
+                    }
                   </Stack>
                   <Stack
                     direction="row"
@@ -411,10 +397,24 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setTuesday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...tuesday];
+                      prev.pop();
+                      setTuesday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -429,71 +429,12 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">WED</Typography>
                   </Stack>
-                  <Stack direction="row" spacing="10px" flex="4">
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      wednesday.map((item, index) => (
+                        <TimeRange key={`Wednesday-Item-${index}`} values={wednesday} setValues={setWednesday} id={index} />
+                      ))
+                    }
                   </Stack>
                   <Stack
                     direction="row"
@@ -501,10 +442,24 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setWednesday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...wednesday];
+                      prev.pop();
+                      setWednesday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -519,71 +474,12 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">THU</Typography>
                   </Stack>
-                  <Stack direction="row" spacing="10px" flex="4">
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      thursday.map((item, index) => (
+                        <TimeRange key={`Thursday-Item-${index}`} values={thursday} setValues={setThursday} id={index} />
+                      ))
+                    }
                   </Stack>
                   <Stack
                     direction="row"
@@ -591,10 +487,24 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setThursday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...thursday];
+                      prev.pop();
+                      setThursday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -609,71 +519,12 @@ const Venue: React.FC = () => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">FRI</Typography>
                   </Stack>
-                  <Stack direction="row" spacing="10px" flex="4">
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                    <TimePicker
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: '#313131',
-                          borderRadius: '10px',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                              '& .MuiMultiSectionDigitalClock-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
+                  <Stack spacing="10px" flex="4">
+                    {
+                      friday.map((item, index) => (
+                        <TimeRange key={`Friday-Item-${index}`} values={friday} setValues={setFriday} id={index} />
+                      ))
+                    }
                   </Stack>
                   <Stack
                     direction="row"
@@ -681,10 +532,24 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      setFriday(prev =>
+                        [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: ''
+                          }
+                        ]
+                      )
+                    }}>
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
+                      const prev = [...friday];
+                      prev.pop();
+                      setFriday(prev)
+                    }}>
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -751,6 +616,7 @@ const Venue: React.FC = () => {
                   flex: 1,
                 }}
                 startIcon={<XMarkIcon />}
+                onClick={() => toggleDrawer('right', false)}
               >
                 Discard
               </ZuButton>
@@ -761,6 +627,7 @@ const Venue: React.FC = () => {
                   flex: 1,
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
+                onClick={createVenue}
               >
                 Add Space
               </ZuButton>

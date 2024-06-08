@@ -452,7 +452,10 @@ const Create = () => {
                     setAvatar(result);
                   }}
                   onComplete={(result: any) => {
-                    setAvatarURL(result?.url);
+                    if (result && result.url) {
+                      console.log('hey', result);
+                      setAvatarURL(result.url);
+                    }
                   }}
                 >
                   <Button

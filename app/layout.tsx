@@ -10,6 +10,7 @@ import { CeramicProvider } from '../context/CeramicContext';
 import { Header } from '@/components/layout';
 import AuthPrompt from '@/components/AuthPrompt';
 import AppContextProvider from '@/context/AppContext';
+import React, { useEffect, useState } from 'react';
 const queryClient = new QueryClient();
 
 // export const metadata: Metadata = {
@@ -22,6 +23,11 @@ function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   return (
     <html lang="en">
       <head>
@@ -40,7 +46,7 @@ function RootLayout({
                 <WalletProvider>
                   <AppContextProvider>
                     <Header />
-                    <AuthPrompt />
+                    {isClient && <AuthPrompt />}
                     {children}
                   </AppContextProvider>
                 </WalletProvider>

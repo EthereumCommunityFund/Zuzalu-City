@@ -44,6 +44,20 @@ export const SPACE_CATEGORIES: {
   },
 ];
 
+export const VENUE_TAGS: {
+  value: string;
+  label: string;
+}[] = [
+  {
+    value: 'live_stream_available',
+    label: 'Live-stream Available',
+  },
+  {
+    value: 'external_venue',
+    label: 'External Venue',
+  },
+];
+
 export const SOCIAL_TYPES: {
   key: string;
   value: string;
