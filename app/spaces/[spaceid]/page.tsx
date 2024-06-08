@@ -115,7 +115,7 @@ export default function SpaceDetailPage() {
 
   useEffect(() => {
     getSpaceByID()
-      .then((space = {}) => {
+      .then((space = {} as Space) => {
         document.title = space.name + ' - ' + 'Zuzalu City';
       })
       .catch((error) => {
