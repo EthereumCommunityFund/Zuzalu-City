@@ -1,4 +1,5 @@
 import { BoxProps, Box } from '@mui/material';
+import React from 'react';
 
 interface SidebarButtonPropTypes extends BoxProps {
   isActive?: boolean;

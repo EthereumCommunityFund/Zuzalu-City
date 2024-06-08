@@ -8,11 +8,14 @@ import {
   Alert,
   useMediaQuery,
   Skeleton,
+  Stack,
 } from '@mui/material';
 import { EventCard } from '@/components/cards';
 // import AnnouncementCard from 'components/AnnouncementCart';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
+  ArrowDownIcon,
+  ChevronDownIcon,
   EventIcon,
   HomeIcon,
   PlusCircleIcon,
@@ -33,7 +36,6 @@ export default function SpaceDetailPage() {
   const params = useParams();
   const theme = useTheme();
   const { composeClient } = useCeramicContext();
-  const [aboutContent, setAboutContent] = useState<string>('');
   const [showMore, setShowMore] = useState(false);
   const [space, setSpace] = useState<Space>();
   const [showCopyToast, setShowCopyToast] = useState(false);
@@ -119,15 +121,10 @@ export default function SpaceDetailPage() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (showMore) {
-      const description = space?.description ?? '';
-      const shortDescription = description.substring(0, 30);
-      setAboutContent(shortDescription);
-    } else {
-      setAboutContent(space?.description as string);
-    }
-  }, [showMore]);
+  const shortDescription = (description: string, showMore: boolean) => {
+    if (showMore) return description;
+    return description.substring(0, 30);
+  };
 
   return (
     <Box
@@ -340,7 +337,7 @@ export default function SpaceDetailPage() {
                     color: '#919191',
                   }}
                 >
-                  About {space?.name}
+                  About {space.name}
                 </Box>
                 <Box
                   sx={{
@@ -361,7 +358,7 @@ export default function SpaceDetailPage() {
                       lineHeight: '160%',
                     }}
                   >
-                    {space?.name}
+                    {space.name}
                   </Box>
                   <Box
                     sx={{
@@ -373,7 +370,7 @@ export default function SpaceDetailPage() {
                       lineHeight: '160%',
                     }}
                   >
-                    {aboutContent}
+                    {shortDescription(space.description, showMore)}
                   </Box>
                 </Box>
               </>
@@ -398,11 +395,21 @@ export default function SpaceDetailPage() {
                   cursor: 'pointer',
                   boxSizing: 'border-box',
                 }}
-                content={showMore ? 'Show Less' : 'Show More'}
                 onClick={() => {
-                  setShowMore(!showMore);
+                  setShowMore((v) => !v);
                 }}
-              />
+              >
+                <Stack direction="row" spacing={'10px'} alignItems={'center'}>
+                  <ChevronDownIcon
+                    size={4}
+                    style={{
+                      transform: showMore ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transformOrigin: 'center',
+                    }}
+                  />
+                  <span>{showMore ? 'Show Less' : 'Show More'}</span>
+                </Stack>
+              </SidebarButton>
             )}
           </Box>
           <Box
@@ -436,7 +443,6 @@ export default function SpaceDetailPage() {
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: '10px',
                   padding: '4px 10px',
                   cursor: 'pointer',
                   '&:hover': {
@@ -446,9 +452,14 @@ export default function SpaceDetailPage() {
                   borderRadius: '10px',
                   opacity: 0.7,
                 }}
-                content="View All Events"
-                rightIcon={<RightArrowCircleSmallIcon />}
-              />
+              >
+                <Stack direction={'row'} alignItems={'center'} spacing={'10px'}>
+                  <span style={{ fontSize: 16, fontWeight: 400 }}>
+                    View All Events
+                  </span>
+                  <RightArrowCircleSmallIcon />
+                </Stack>
+              </SidebarButton>
             </Box>
             <Box
               sx={{
