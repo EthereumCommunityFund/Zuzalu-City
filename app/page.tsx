@@ -38,7 +38,7 @@ const Home: React.FC = () => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
@@ -248,7 +248,7 @@ const Home: React.FC = () => {
             borderLeft="1px solid #383838"
             flex={1}
             padding={isMobile ? '10px' : '30px'}
-            width={'calc(100vw - 260px)'}
+            width={isTablet ? '100vw' : 'calc(100vw - 260px)'}
           >
             <Box
               display="flex"
