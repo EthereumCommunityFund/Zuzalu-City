@@ -211,6 +211,7 @@ const Home: React.FC = () => {
     }
   };
   useEffect(() => {
+    document.title = 'Zuzalu City';
     const fetchData = async () => {
       try {
         await getSpaces();
