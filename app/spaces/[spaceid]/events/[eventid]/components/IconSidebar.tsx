@@ -10,8 +10,10 @@ import {
   SpacePlusIcon,
   StreamIcon,
 } from 'components/icons';
+import { useRouter } from 'next/navigation';
 
 const IconSidebar = () => {
+  const router = useRouter();
   return (
     <Stack
       bgcolor="#2D2D2D"
@@ -22,45 +24,54 @@ const IconSidebar = () => {
       paddingTop={3}
     >
       <Stack direction="column" spacing={3} alignItems="center">
-        <Stack>
+        <Stack sx={{ cursor: 'pointer' }} onClick={() => router.replace('/')}>
           <HomeIcon />
         </Stack>
-        <Stack>
-          <StreamIcon />
-        </Stack>
-        <Stack>
+        {/*<Stack>*/}
+        {/*  <StreamIcon />*/}
+        {/*</Stack>*/}
+        <Stack
+          sx={{ cursor: 'pointer' }}
+          onClick={() => router.replace('/spaces')}
+        >
           <SpaceIcon />
         </Stack>
-        <Stack>
+        <Stack
+          sx={{ cursor: 'pointer' }}
+          onClick={() => router.replace('/events')}
+        >
           <CalendarIcon />
         </Stack>
-        <Stack>
-          <BoltIcon />
-        </Stack>
+        {/*<Stack>*/}
+        {/*  <BoltIcon />*/}
+        {/*</Stack>*/}
       </Stack>
       <Stack direction="column" spacing={3} alignItems="center">
-        <Box
-          component="img"
-          src="/1.webp"
-          height="40px"
-          width="40px"
-          borderRadius="20px"
-        />
-        <Box
-          component="img"
-          src="/3.webp"
-          height="40px"
-          width="40px"
-          borderRadius="20px"
-        />
-        <Box
-          component="img"
-          src="/2.webp"
-          height="40px"
-          width="40px"
-          borderRadius="20px"
-        />
-        <Stack>
+        {/*<Box*/}
+        {/*  component="img"*/}
+        {/*  src="/1.webp"*/}
+        {/*  height="40px"*/}
+        {/*  width="40px"*/}
+        {/*  borderRadius="20px"*/}
+        {/*/>*/}
+        {/*<Box*/}
+        {/*  component="img"*/}
+        {/*  src="/3.webp"*/}
+        {/*  height="40px"*/}
+        {/*  width="40px"*/}
+        {/*  borderRadius="20px"*/}
+        {/*/>*/}
+        {/*<Box*/}
+        {/*  component="img"*/}
+        {/*  src="/2.webp"*/}
+        {/*  height="40px"*/}
+        {/*  width="40px"*/}
+        {/*  borderRadius="20px"*/}
+        {/*/>*/}
+        <Stack
+          sx={{ cursor: 'pointer' }}
+          onClick={() => router.replace('/spaces/create')}
+        >
           <SpacePlusIcon />
         </Stack>
       </Stack>

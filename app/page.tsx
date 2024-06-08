@@ -236,12 +236,13 @@ const Home: React.FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box width={'100vw'}>
+      <Box width={'100vw'} minHeight={'100vh'}>
         <AuthPrompt />
         <Box
           display="grid"
           gridTemplateColumns={'auto 1fr'}
           sx={{ backgroundColor: '#222222' }}
+          minHeight={'100vh'}
         >
           {!isTablet && <Sidebar selected="Home" />}
           <Box

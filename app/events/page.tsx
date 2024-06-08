@@ -104,7 +104,7 @@ const EventsPage: React.FC = () => {
     }
   }, [searchVal]);
 
-  const debounceGetEventsCity = debounce(getEvents, 500);
+  const debounceGetEventsCity = debounce(getEvents, 1000);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -225,6 +225,7 @@ const EventsPage: React.FC = () => {
                         position: 'sticky',
                         top: 60,
                       }}
+                      display="block"
                       color="white"
                       border="1px solid #383838"
                       align="center"
@@ -249,16 +250,16 @@ const EventsPage: React.FC = () => {
                           <EventCard key={`EventCard-${index}`} event={event} />
                         </Grid>
                       ))}
-                      <Grid
-                        key={`Lottery-Card`}
-                        xs={12}
-                        sm={6}
-                        md={4}
-                        xl={3}
-                        sx={{ display: 'flex', justifyContent: 'center' }}
-                      >
-                        <LotteryCard />
-                      </Grid>
+                      {/*<Grid*/}
+                      {/*  key={`Lottery-Card`}*/}
+                      {/*  xs={12}*/}
+                      {/*  sm={6}*/}
+                      {/*  md={4}*/}
+                      {/*  xl={3}*/}
+                      {/*  sx={{ display: 'flex', justifyContent: 'center' }}*/}
+                      {/*>*/}
+                      {/*  <LotteryCard />*/}
+                      {/*</Grid>*/}
                     </Box>
                   </div>
                 );

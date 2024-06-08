@@ -2,7 +2,7 @@
   position: relative;
 }
 
-.spaceButton:before{
+.spaceButton:before {
   display: block;
   content: '';
   position: absolute;
@@ -15,7 +15,7 @@
   opacity: 0.3;
 }
 
-.spaceButton:hover:before{
+.spaceButton:hover:before {
   opacity: 0.4;
 }
 

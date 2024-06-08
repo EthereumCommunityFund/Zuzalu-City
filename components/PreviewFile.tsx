@@ -24,12 +24,18 @@ export const PreviewFile = (props: {
       sx={{
         ...sx,
         backgroundColor: '#313131',
-        position: 'relative'
+        position: 'relative',
       }}
     >
       {file && (
         <Img3
-          style={{ maxHeight: '100%', maxWidth: '100%', ...sx, position: 'absolute', objectFit: 'cover' }}
+          style={{
+            maxHeight: '100%',
+            maxWidth: '100%',
+            ...sx,
+            position: 'absolute',
+            objectFit: 'cover',
+          }}
           src={file ? file : tempSrc}
           alt={file}
         />

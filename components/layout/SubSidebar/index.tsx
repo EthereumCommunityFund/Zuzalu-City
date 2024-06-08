@@ -99,19 +99,19 @@ const SubSidebar = () => {
             Home
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          padding={1}
-          spacing={1}
-          borderRadius="10px"
-          sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#383838' } }}
-        >
-          <MegaPhoneIcon />
-          <Typography color="white" variant="bodyBB">
-            Announcements
-          </Typography>
-        </Stack>
+        {/*<Stack*/}
+        {/*  direction="row"*/}
+        {/*  alignItems="center"*/}
+        {/*  padding={1}*/}
+        {/*  spacing={1}*/}
+        {/*  borderRadius="10px"*/}
+        {/*  sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#383838' } }}*/}
+        {/*>*/}
+        {/*  <MegaPhoneIcon />*/}
+        {/*  <Typography color="white" variant="bodyBB">*/}
+        {/*    Announcements*/}
+        {/*  </Typography>*/}
+        {/*</Stack>*/}
         <Stack
           direction="row"
           alignItems="center"

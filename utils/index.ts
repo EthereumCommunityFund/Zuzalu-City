@@ -16,9 +16,9 @@ export const convertDateStringFormat = (dateString: string): string => {
   // Get the month name and day of the month
   const monthName = date.toLocaleString('default', { month: 'long' });
   const dayOfMonth = date.getDate();
-  
+
   // Construct the desired output string
   const formattedDate = `${monthName} ${dayOfMonth}`;
-  
+
   return formattedDate;
-}
+};
