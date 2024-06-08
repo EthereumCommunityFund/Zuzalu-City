@@ -26,6 +26,10 @@ export interface Event {
     name?: string;
     gated?: string;
   };
+  profile?: {
+    username?: string;
+    avatar?: string;
+  };
 }
 
 export interface EventEdge {

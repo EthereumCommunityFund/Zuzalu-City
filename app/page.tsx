@@ -100,7 +100,6 @@ const Home: React.FC = () => {
           }
         }
       `);
-
       if ('spaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
         const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
@@ -140,6 +139,10 @@ const Home: React.FC = () => {
               tagline
               timezone
               title
+              profile {
+                username
+                avatar
+              }
             }
           }
         }
@@ -162,10 +165,9 @@ const Home: React.FC = () => {
 
   const getEventsByDate = async () => {
     try {
-      const response: any = await composeClient.executeQuery(
-        `
-      query {
-        eventIndex(filters:$input, first:20) {
+      const getEventsByDate_QUERY = `
+        query ($input:EventFiltersInput!) {
+        eventIndex(filters:$input, first: 20){
           edges {
             node {
               createdAt
@@ -186,16 +188,22 @@ const Home: React.FC = () => {
               tagline
               timezone
               title
+              profile {
+                username
+                avatar
+              }
             }
           }
         }
       }
-    `,
+    `;
+      const response: any = await composeClient.executeQuery(
+        getEventsByDate_QUERY,
         {
           input: {
             where: {
               startTime: {
-                greaterThan: selectedDate?.date,
+                equalTo: selectedDate?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
               },
             },
           },
@@ -227,7 +235,7 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
 
-  /* useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         await getEventsByDate();
@@ -236,7 +244,7 @@ const Home: React.FC = () => {
       }
     };
     fetchData();
-  }, [selectedDate]);*/
+  }, [selectedDate]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -389,6 +397,7 @@ const Home: React.FC = () => {
                                 spaceId={event.spaceId}
                                 key={`EventCard-${index}`}
                                 event={event}
+                                by={event.profile?.username}
                               />
                             ))}
                           </Box>
