@@ -14,6 +14,7 @@ import { EventCard } from '@/components/cards';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import SubSidebar from '@/components/layout/Sidebar/SubSidebar';
+import { groupEventsByMonth } from '@/components/cards/EventCard';
 
 const Home = () => {
   const router = useRouter();
@@ -173,41 +174,42 @@ const Home = () => {
             Manage Event
           </ZuButton>
         </Stack>
-        <Stack padding="20px" spacing={3}>
-          <Typography variant="subtitleSB">Upcoming Events(00)</Typography>
-          <Typography
-            color="white"
-            border="2px solid #383838"
-            align="center"
-            paddingY="8px"
-            borderRadius="40px"
-            variant="subtitleS"
-          >
-            {`${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`}
-          </Typography>
-        </Stack>
-        <Stack paddingX="20px">
-          {events.map((event, index) => (
-            <EventCard
-              key={`EventCard-${index}`}
-              name={event.title}
-              description={event.description}
-              logo={event.image_url}
-            />
-          ))}
-        </Stack>
+        {Object.entries(groupEventsByMonth(events)).map(
+          ([month, eventsList]) => {
+            return (
+              <div key={month}>
+                <Stack padding="20px" spacing={3}>
+                  <Typography variant="subtitleSB">
+                    Upcoming Events({events.length})
+                  </Typography>
+                  <Typography
+                    color="white"
+                    border="2px solid #383838"
+                    align="center"
+                    paddingY="8px"
+                    borderRadius="40px"
+                    variant="subtitleS"
+                  >
+                    {month}
+                  </Typography>
+                </Stack>
+                <Stack paddingX="20px">
+                  {eventsList.map((event, index) => (
+                    <EventCard key={`EventCard-${event.id}`} event={event} />
+                  ))}
+                </Stack>
+              </div>
+            );
+          },
+        )}
+
         <Stack padding="20px" spacing={3}>
           <Typography variant="subtitleSB">Past Events(00)</Typography>
           <Stack paddingX="20px">
             {events
               .filter((event) => date.getDate() > Date.parse(event.endTime))
               .map((event, index) => (
-                <EventCard
-                  key={`Past EventCard-${index}`}
-                  name={event.title}
-                  description={event.description}
-                  logo={event.image_url}
-                />
+                <EventCard key={`Past EventCard-${index}`} event={event} />
               ))}
           </Stack>
         </Stack>
