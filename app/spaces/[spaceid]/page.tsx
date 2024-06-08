@@ -99,8 +99,6 @@ export default function SpaceDetailPage() {
       const spaceData: Space = response.data.node as Space;
       setSpace(spaceData);
 
-      console.log('spaceData', spaceData);
-
       const eventData: SpaceEventData = response.data.node
         .events as SpaceEventData;
       const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
