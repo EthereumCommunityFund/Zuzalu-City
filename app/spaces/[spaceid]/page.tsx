@@ -239,24 +239,24 @@ export default function SpaceDetailPage() {
                 gap: '10px',
               }}
             >
-              <SidebarButton
-                content="Join Space"
-                sx={{
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  backgroundColor: '#ffffff0a',
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                  },
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: '10px',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  alignItems: 'center',
-                }}
-                icon={<PlusCircleIcon />}
-              ></SidebarButton>
+              {/*<SidebarButton*/}
+              {/*  content="Join Space"*/}
+              {/*  sx={{*/}
+              {/*    padding: '10px 14px',*/}
+              {/*    borderRadius: '10px',*/}
+              {/*    backgroundColor: '#ffffff0a',*/}
+              {/*    '&:hover': {*/}
+              {/*      backgroundColor: '#ffffff1a',*/}
+              {/*    },*/}
+              {/*    display: 'flex',*/}
+              {/*    flexDirection: 'row',*/}
+              {/*    gap: '10px',*/}
+              {/*    cursor: 'pointer',*/}
+              {/*    whiteSpace: 'nowrap',*/}
+              {/*    alignItems: 'center',*/}
+              {/*  }}*/}
+              {/*  icon={<PlusCircleIcon />}*/}
+              {/*/>*/}
               <CopyToClipboard
                 text={currentHref}
                 onCopy={() => {
