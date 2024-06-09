@@ -223,7 +223,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
             boxSizing: 'border-box',
           }}
         >
-          <SidebarButton icon={<HomeIcon />} content="Home" isActive={false} />
+          <SidebarButton icon={<HomeIcon />} onClick={() => router.push("/")} content="Home" isActive={false} />
           {/*<SidebarButton*/}
           {/*  icon={<AnnouncementsIcon />}*/}
           {/*  content="Announcements"*/}
