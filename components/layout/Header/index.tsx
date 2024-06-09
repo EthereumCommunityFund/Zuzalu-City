@@ -12,6 +12,7 @@ import {
   MenuItem,
   Divider,
 } from '@mui/material';
+import styles from './index.module.css';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -136,26 +137,26 @@ const Header = () => {
             }}
           >
             <MenuItem>{username}</MenuItem>
-            <MenuItem>Wallet Connected</MenuItem>
-            <MenuItem onClick={handleProfile}>Profile</MenuItem>
+            <MenuItem><span className={"text"}>Wallet Connected</span></MenuItem>
+            <MenuItem onClick={handleProfile}><span className={styles.text}>Profile</span></MenuItem>
             <MenuItem onClick={() => router.push('/passport')}>
-              Passport
+              <span className={styles.text}>Passport</span>
             </MenuItem>
             {/*<MenuItem onClick={handleSetting}>Setting</MenuItem>*/}
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem onClick={handleLogout}><span className={styles.text}>Logout</span></MenuItem>
             <Divider />
 
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              Blog
+              <span className={styles.text}>Blog</span>
             </MenuItem>
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              Privacy
+              <span className={styles.text}>Privacy</span>
             </MenuItem>
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              Terms
+              <span className={styles.text}>Terms</span>
             </MenuItem>
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              About Zuzalu City
+              <span className={styles.text}>About Zuzalu City</span>
             </MenuItem>
           </Menu>
         </>
