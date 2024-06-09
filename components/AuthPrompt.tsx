@@ -24,6 +24,7 @@ import {
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { useDisconnect } from 'wagmi';
 //const AuthPrompt: React.FC<{ onAuthenticated: () => void }> = ({
 type AuthPromptContent =
   | {
@@ -59,6 +60,7 @@ const AuthPrompt: React.FC<{}> = () => {
   } = useCeramicContext();
   //const { ceramic, composeClient } = clients;
   const [authState, setAuthState] = useState('');
+  const [authenticationAttempted, setAuthenticationAttempted] = useState(false);
   const isLogged = () => {
     return localStorage.getItem('logged_in') == 'true';
   };
@@ -123,8 +125,8 @@ const AuthPrompt: React.FC<{}> = () => {
                 width: '100%',
                 height: '100%',
                 p: 3,
-                bgcolor: 'rgba(34, 34, 34, 0.6)', // Background color
-                color: 'white', // Text color
+                bgcolor: 'rgba(34, 34, 34, 0.6)',
+                color: 'white',
                 borderRadius: 2,
                 border: '1px rgba(255, 255, 255, 0.10) solid',
                 backdropFilter: 'blur(40px)',
@@ -196,7 +198,10 @@ const AuthPrompt: React.FC<{}> = () => {
             actions: [
               <Button
                 key="finish"
-                onClick={() => hideAuthPrompt()}
+                onClick={() => {
+                  hideAuthPrompt();
+                  setAuthState('');
+                }}
                 sx={{
                   bgcolor: 'rgba(255, 255, 255, 0.10)',
                   color: 'white',
@@ -222,35 +227,38 @@ const AuthPrompt: React.FC<{}> = () => {
   ]);
 
   useEffect(() => {
-    if (isAuthPromptVisible) {
-      const existingusername = localStorage.getItem('username');
-      if (existingusername) {
-        setAuthState('Logged_In');
-      }
+    const existingUsername = localStorage.getItem('username');
+    if (existingUsername) {
+      setAuthState('Logged_In');
       getDialogContent();
     }
-  }, [isAuthPromptVisible]);
+  }, []);
 
   useEffect(() => {
-    const checkUserState = async () => {
-      if (isConnected) {
+    if (address && isAuthPromptVisible) {
+      const authenticateUser = async () => {
         try {
           await authenticate();
-          if (newUser) {
-            setAuthState('NEW_USER');
-          } else {
-            setAuthState('Logged_In');
-          }
+          setAuthState(newUser ? 'NEW_USER' : 'Logged_In');
+          getDialogContent();
         } catch (error) {
           console.error('Authentication failed:', error);
           setAuthState('CONNECT_WALLET');
         }
-      } else {
+      };
+      authenticateUser();
+    }
+  }, [address]);
+
+  useEffect(() => {
+    if (isAuthPromptVisible && !isConnected) {
+      const showAuth = async () => {
         setAuthState('CONNECT_WALLET');
-      }
-    };
-    checkUserState();
-  }, [isConnected, newUser]);
+        getDialogContent();
+      };
+      showAuth();
+    }
+  }, [isAuthPromptVisible]);
 
   const content = getDialogContent();
   if (content) {

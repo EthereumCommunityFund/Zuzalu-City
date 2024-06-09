@@ -17,7 +17,7 @@ import { SearchIcon, MenuIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import SidebarDrawer from '../Sidebar/SidebarDrawer';
 import { useAppContext } from '@/context/AppContext';
-
+import { useDisconnect } from 'wagmi';
 const Header = () => {
   const theme = useTheme();
   const { openSidebar, setOpenSidebar } = useAppContext();
@@ -28,7 +28,7 @@ const Header = () => {
   const { isAuthenticated, showAuthPrompt, logout, username } =
     useCeramicContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const { disconnect } = useDisconnect();
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -38,8 +38,10 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    disconnect();
     logout();
     handleMenuClose();
+    window.location.reload();
   };
   const handleProfile = () => {
     handleMenuClose();

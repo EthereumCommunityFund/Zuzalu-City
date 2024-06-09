@@ -116,3 +116,13 @@ export interface Venue {
   id: string;
   title: string;
 }
+
+export type Profile = {
+  id?: any;
+  username?: string | undefined;
+};
+
+export interface CreateProfileResult {
+  profile?: Profile;
+  error?: string;
+}
