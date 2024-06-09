@@ -26,6 +26,10 @@ export interface Event {
     name?: string;
     gated?: string;
   };
+  profile?: {
+    username?: string;
+    avatar?: string;
+  };
 }
 
 export interface EventEdge {
@@ -111,4 +115,14 @@ export interface SessionData {
 export interface Venue {
   id: string;
   title: string;
+}
+
+export type Profile = {
+  id?: any;
+  username?: string | undefined;
+};
+
+export interface CreateProfileResult {
+  profile?: Profile;
+  error?: string;
 }

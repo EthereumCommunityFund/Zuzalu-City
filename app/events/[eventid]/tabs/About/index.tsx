@@ -49,6 +49,10 @@ const About = () => {
                 name
                 gated
               }
+              profile {
+                username
+                avatar
+              }
             }
           }
         }
@@ -82,6 +86,8 @@ const About = () => {
               spaceName={eventData.space?.name}
               eventName={eventData.title}
               location=""
+              image_url={eventData.image_url}
+              organizer={eventData.profile?.username as string}
             />
           </Grid>
           <Grid item xs={12} md={5}>

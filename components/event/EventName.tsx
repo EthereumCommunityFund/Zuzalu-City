@@ -10,6 +10,8 @@ interface PropTypes {
   startTime: string;
   endTime: string;
   location: string;
+  image_url?: string;
+  organizer: string;
 }
 
 const EventName = ({
@@ -19,6 +21,8 @@ const EventName = ({
   endTime,
   startTime,
   location,
+  image_url,
+  organizer,
 }: PropTypes) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -30,11 +34,11 @@ const EventName = ({
         component="img"
         width={isTablet ? '350px' : '350px'}
         height={isTablet ? '350px' : '350px'}
-        src="/14.webp"
+        src={image_url}
         borderRadius="10px"
         border="1px solid rgba(255, 255, 255, 0.2)"
       />
-      <Stack
+      {/*<Stack
         direction="row"
         padding="4px 10px"
         borderRadius="10px"
@@ -47,8 +51,8 @@ const EventName = ({
         </Typography>
         <Typography color="white" variant="bodySB">
           HackZuzalu Side-events
-        </Typography>
-      </Stack>
+  </Typography>
+      </Stack>*/}
       <Typography color="white" variant="subtitleLB">
         {eventName}
       </Typography>
@@ -57,7 +61,7 @@ const EventName = ({
       </Typography>
       <Stack direction="row" spacing="5px" alignItems="center">
         <Typography color="white" variant="caption">
-          BY:{' '}
+          BY:{organizer}
         </Typography>
         <Box component="img" width={20} height={20} src="/0.webp" />
         <Typography color="white" variant="bodyS">
