@@ -1,9 +1,9 @@
 import React, {
   useState,
   useEffect,
-  Fragment,
-  ReactNode,
+  useRef,
   useCallback,
+  ReactNode,
 } from 'react';
 import { useCeramicContext } from '../context/CeramicContext';
 import { useAccount, useEnsName } from 'wagmi';
@@ -14,43 +14,15 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
-import {
-  Box,
-  Typography,
-  FormControl,
-  OutlinedInput,
-  InputAdornment,
-  Button,
-} from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { Box, Button, OutlinedInput, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useDisconnect } from 'wagmi';
-//const AuthPrompt: React.FC<{ onAuthenticated: () => void }> = ({
-type AuthPromptContent =
-  | {
-      title: string;
-      message: string;
-      actions: Element[];
-    }
-  | {
-      title: string;
-      message: string;
-      actions: { text: string; onClick: () => void }[];
-    }
-  | undefined;
 
 const AuthPrompt: React.FC<{}> = () => {
-  const { address, isConnected } = useAccount();
-  const [isVisible, setIsVisible] = useState(true);
+  const { isConnected, address } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const [inputUsername, setInputUsername] = useState('');
   const {
-    ceramic,
-    composeClient,
-    isAuthenticated,
     authenticate,
-    logout,
-    showAuthPrompt,
     hideAuthPrompt,
     isAuthPromptVisible,
     newUser,
@@ -58,41 +30,11 @@ const AuthPrompt: React.FC<{}> = () => {
     username,
     createProfile,
   } = useCeramicContext();
-  //const { ceramic, composeClient } = clients;
+
   const [authState, setAuthState] = useState('');
-  const [authenticationAttempted, setAuthenticationAttempted] = useState(false);
-  const isLogged = () => {
-    return localStorage.getItem('logged_in') == 'true';
-  };
-
-  const handleOpen = () => {
-    if (localStorage.getItem('logged_in')) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
-  };
-
-  const [isLoading, setIsLoading] = useState(true);
-  const handleKeyDid = () => {
-    localStorage.setItem('ceramic:auth_type', 'key');
-    authenticate;
-    setIsVisible(false);
-  };
-
-  const handleConnectWallet = () => {
-    if (isConnected) {
-      setAuthState('NEW_USER');
-    }
-  };
+  const authenticateCalled = useRef(false);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputUsername(newValue);
-  };
-  const handleEthPkh = () => {
-    localStorage.setItem('ceramic:auth_type', 'eth');
-    authenticate;
-    setIsVisible(false);
+    setInputUsername(e.target.value);
   };
 
   const getDialogContent = useCallback(() => {
@@ -105,10 +47,7 @@ const AuthPrompt: React.FC<{}> = () => {
             <div data-rk key="connectButton">
               <ConnectButton
                 key="connect"
-                showBalance={{
-                  smallScreen: false,
-                  largeScreen: false,
-                }}
+                showBalance={{ smallScreen: false, largeScreen: false }}
               />
             </div>,
           ],
@@ -121,37 +60,15 @@ const AuthPrompt: React.FC<{}> = () => {
           actions: [
             <Box
               key="action-buttons"
-              sx={{
-                width: '100%',
-                height: '100%',
-                p: 3,
-                bgcolor: 'rgba(34, 34, 34, 0.6)',
-                color: 'white',
-                borderRadius: 2,
-                border: '1px rgba(255, 255, 255, 0.10) solid',
-                backdropFilter: 'blur(40px)',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 3,
-                display: 'flex',
-                flexDirection: 'column',
-              }}
+              sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
             >
               <OutlinedInput
                 placeholder="Enter text here"
                 value={inputUsername}
                 onChange={handleInputChange}
-                style={{ width: '100%', color: 'white' }}
+                style={{ width: '100%' }}
               />
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  width: '100%',
-                  gap: 2,
-                }}
-              >
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
                 <Button
                   onClick={() => {
                     if (address) {
@@ -162,10 +79,6 @@ const AuthPrompt: React.FC<{}> = () => {
                     setAuthState('Logged_In');
                   }}
                   variant="outlined"
-                  sx={{
-                    color: 'white',
-                    borderColor: 'rgba(255, 255, 255, 0.10)',
-                  }}
                 >
                   Skip
                 </Button>
@@ -173,13 +86,6 @@ const AuthPrompt: React.FC<{}> = () => {
                   onClick={() => {
                     createProfile(inputUsername);
                     setAuthState('Logged_In');
-                  }}
-                  sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.10)',
-                    color: 'white',
-                    '&:hover': {
-                      bgcolor: 'rgba(255, 255, 255, 0.2)',
-                    },
                   }}
                   variant="contained"
                 >
@@ -201,13 +107,7 @@ const AuthPrompt: React.FC<{}> = () => {
                 onClick={() => {
                   hideAuthPrompt();
                   setAuthState('');
-                }}
-                sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.10)',
-                  color: 'white',
-                  '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.2)',
-                  },
+                  authenticateCalled.current = false;
                 }}
                 variant="contained"
               >
@@ -219,28 +119,30 @@ const AuthPrompt: React.FC<{}> = () => {
     }
   }, [
     authState,
-    setAuthState,
     profile,
     hideAuthPrompt,
     inputUsername,
-    setInputUsername,
+    address,
+    ensName,
+    username,
+    createProfile,
   ]);
 
   useEffect(() => {
     const existingUsername = localStorage.getItem('username');
     if (existingUsername) {
       setAuthState('Logged_In');
-      getDialogContent();
     }
   }, []);
 
   useEffect(() => {
-    if (address && isAuthPromptVisible) {
+    if (isConnected && isAuthPromptVisible && !authenticateCalled.current) {
       const authenticateUser = async () => {
         try {
+          authenticateCalled.current = true;
+          console.log(authenticateCalled.current, 'once');
           await authenticate();
           setAuthState(newUser ? 'NEW_USER' : 'Logged_In');
-          getDialogContent();
         } catch (error) {
           console.error('Authentication failed:', error);
           setAuthState('CONNECT_WALLET');
@@ -248,17 +150,13 @@ const AuthPrompt: React.FC<{}> = () => {
       };
       authenticateUser();
     }
-  }, [address]);
+  }, [isConnected]);
 
   useEffect(() => {
     if (isAuthPromptVisible && !isConnected) {
-      const showAuth = async () => {
-        setAuthState('CONNECT_WALLET');
-        getDialogContent();
-      };
-      showAuth();
+      setAuthState('CONNECT_WALLET');
     }
-  }, [isAuthPromptVisible]);
+  }, [isAuthPromptVisible, isConnected]);
 
   const content = getDialogContent();
   if (content) {
@@ -269,62 +167,58 @@ const AuthPrompt: React.FC<{}> = () => {
     };
 
     return (
-      <div>
-        <Dialog
-          open={isAuthPromptVisible}
-          onClose={hideAuthPrompt}
-          PaperProps={{
-            style: {
-              width: '40%',
-              height: 'auto',
-              padding: '20px 16px',
-              backgroundColor: 'rgba(34, 34, 34, 0.9)',
-              borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.10)',
-              backdropFilter: 'blur(40px)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              gap: '24px',
-            },
+      <Dialog
+        open={isAuthPromptVisible}
+        onClose={hideAuthPrompt}
+        PaperProps={{
+          style: {
+            width: '40%',
+            height: 'auto',
+            padding: '20px 16px',
+            backgroundColor: 'rgba(34, 34, 34, 0.9)',
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.10)',
+            backdropFilter: 'blur(40px)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            gap: '24px',
+          },
+        }}
+      >
+        <DialogTitle
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <DialogTitle
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
+          {title}
+          <IconButton
+            onClick={hideAuthPrompt}
+            style={{ color: 'white', marginRight: '-16px' }}
           >
-            {title}
-            <IconButton
-              onClick={hideAuthPrompt}
-              style={{ color: 'white', marginRight: '-16px' }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent
-            style={{ paddingLeft: '24px', width: '100%', color: 'white' }}
-          >
-            <DialogContentText style={{ color: 'white' }}>
-              {message}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions
-            style={{ justifyContent: 'center', width: '100%', padding: 0 }}
-          >
-            {' '}
-            {/* Center align actions */}
-            {actions}
-          </DialogActions>
-        </Dialog>
-      </div>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent
+          style={{ paddingLeft: '24px', width: '100%', color: 'white' }}
+        >
+          <DialogContentText style={{ color: 'white' }}>
+            {message}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions
+          style={{ justifyContent: 'center', width: '100%', padding: 0 }}
+        >
+          {actions}
+        </DialogActions>
+      </Dialog>
     );
   } else {
-    return <div></div>;
+    return null;
   }
 };
 
