@@ -140,7 +140,6 @@ const AuthPrompt: React.FC<{}> = () => {
       const authenticateUser = async () => {
         try {
           authenticateCalled.current = true;
-          console.log(authenticateCalled.current, 'once');
           await authenticate();
           setAuthState(newUser ? 'NEW_USER' : 'Logged_In');
         } catch (error) {
