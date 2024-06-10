@@ -23,6 +23,8 @@ import dayjs, { Dayjs } from 'dayjs';
 import TextEditor from '@/components/editor/editor';
 import BpCheckbox from './components/Checkbox';
 import { SPACE_CATEGORIES } from '@/constant';
+import { supabase } from '@/utils/supabase/client';
+import { OutputData } from '@editorjs/editorjs';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -37,6 +39,7 @@ const Home = () => {
   const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
   const [eventData, setEventData] = useState<Event>();
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
 
   const [state, setState] = React.useState({
     top: false,
@@ -151,11 +154,19 @@ const Home = () => {
     }
   };
 
+  const getLocations = async () => {
+    const { data } = await supabase.from("locations").select("*");
+    if (data !== null) {
+      setLocations(data.map((location) => location.name));
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getSessions();
         await getEventDetailInfo();
+        await getLocations();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -176,19 +187,19 @@ const Home = () => {
     const [sessionName, setSessionName] = useState<string>('');
     const [sessionTrack, setSessionTrack] = useState<string>('');
     const [sessionTags, setSessionTags] = useState<Array<string>>([]);
-    const [sessionDescription, setSessionDescription] = useState<string>('Test Session');
+    const [sessionDescription, setSessionDescription] = useState<OutputData>();
     const [sessionType, setSessionType] = useState<string>('');
     const [sessoinStatus, setSessionStatus] = useState<string>('');
     const [sessionGated, setSessionGated] = useState<string>('');
     const [sessionExperienceLevel, setSessionExperienceLevel] = useState<string>('');
     // const [sessionFormat, setSessionFormat] = useState<string>("");
     const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
-    const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
-      dayjs(),
-    );
+    const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
+    const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(dayjs());
     const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
     const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
     const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+    const [sessionLocation, setSessionLocation] = useState<string>();
 
 
     const handleChange = (e: any) => {
@@ -238,6 +249,7 @@ const Home = () => {
                 format: "person",
                 track: "${sessionTrack}",
                 gated: "${sessionGated}",
+                description: "${strDesc}"
               }
             }
           ) {
@@ -272,6 +284,7 @@ const Home = () => {
                 format: "online",
                 track: "${sessionTrack}",
                 gated: "${sessionGated}",
+                description: "${strDesc}"
               }
             }
           ) {
@@ -439,6 +452,7 @@ const Home = () => {
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
                   }}
+                  value={sessionDescription}
                   editor={editor}
                   setEditorInst={setEditorInst}
                 />
@@ -608,44 +622,64 @@ const Home = () => {
                     <Typography variant="bodyS">
                       Book a location to host this session
                     </Typography>
-                    <ZuInput placeholder="Room" />
-                    <Stack alignItems="center">
-                      <ArrowDownIcon />
-                    </Stack>
-                    <Stack
-                      borderRadius="10px"
-                      border="1px solid rgba(255, 255, 255, 0.10)"
-                      spacing="10px"
-                      padding="10px"
+                    <Select
+                      value={sessionLocation}
+                      onChange={(e) => setSessionLocation(e.target.value)}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            backgroundColor: '#222222',
+                          },
+                        },
+                      }}
                     >
-                      <Typography variant="caption">
-                        Your are booking at:
-                      </Typography>
+                      {
+                        locations.map((location, index) => (
+                          <MenuItem key={`Location-Index${index}`} value={location}>
+                            {location}
+                          </MenuItem>
+                        ))
+                      }
+                    </Select>
+                    {sessionLocation && <Stack>
+                      <Stack alignItems="center">
+                        <ArrowDownIcon />
+                      </Stack>
                       <Stack
                         borderRadius="10px"
-                        padding="10px"
-                        bgcolor="#313131"
-                        direction="row"
+                        border="1px solid rgba(255, 255, 255, 0.10)"
                         spacing="10px"
+                        padding="10px"
                       >
-                        <Box
-                          component="img"
-                          width="60px"
-                          height="60px"
-                          borderRadius="8px"
-                          src="/20.png"
-                        />
-                        <Stack spacing="4px">
-                          <Typography variant="bodyBB">Room One</Typography>
-                          <Typography variant="bodyS">
-                            Sessions booked: 22
-                          </Typography>
-                          <Typography variant="caption">
-                            Capacity: 15
-                          </Typography>
+                        <Typography variant="caption">
+                          Your are booking at:
+                        </Typography>
+                        <Stack
+                          borderRadius="10px"
+                          padding="10px"
+                          bgcolor="#313131"
+                          direction="row"
+                          spacing="10px"
+                        >
+                          <Box
+                            component="img"
+                            width="60px"
+                            height="60px"
+                            borderRadius="8px"
+                            src="/20.png"
+                          />
+                          <Stack spacing="4px">
+                            <Typography variant="bodyBB">{sessionLocation}</Typography>
+                            <Typography variant="bodyS">
+                              Sessions booked: 22
+                            </Typography>
+                            <Typography variant="caption">
+                              Capacity: 15
+                            </Typography>
+                          </Stack>
                         </Stack>
                       </Stack>
-                    </Stack>
+                    </Stack>}
                   </Stack>
                   <Stack spacing="20px">
                     <Stack spacing="10px">
@@ -655,7 +689,7 @@ const Home = () => {
                         location
                       </Typography>
                       <DatePicker
-                        onChange={(newValue) => setSessionStartTime(newValue)}
+                        onChange={(newValue) => setSessionDate(newValue)}
                         sx={{
                           '& .MuiSvgIcon-root': {
                             color: 'white',
@@ -751,33 +785,37 @@ const Home = () => {
                         />
                       </Stack>
                     </Stack>
-                    <Stack alignItems="center">
-                      <ArrowDownIcon />
-                    </Stack>
-                    <Stack
-                      spacing="10px"
-                      padding="10px"
-                      border="1px solid rgba(255, 255, 255, 0.10)"
-                      borderRadius="10px"
-                    >
-                      <Typography variant="caption">
-                        Date & times your are booking:
-                      </Typography>
-                      <Stack
-                        borderRadius="10px"
-                        padding="10px"
-                        bgcolor="#313131"
-                        spacing="10px"
-                      >
-                        <Typography variant="bodyBB">May 23, 2024</Typography>
-                        <Typography variant="bodyS">
-                          Start Time: 8:30AM
-                        </Typography>
-                        <Typography variant="bodyS">
-                          End Time: : 10:30AM
-                        </Typography>
+                    {sessionDate && sessionStartTime && sessionEndTime && <Stack spacing="10px">
+                      <Stack alignItems="center">
+                        <ArrowDownIcon />
                       </Stack>
-                    </Stack>
+                      <Stack
+                        spacing="10px"
+                        padding="10px"
+                        border="1px solid rgba(255, 255, 255, 0.10)"
+                        borderRadius="10px"
+                      >
+                        <Typography variant="caption">
+                          Date & times your are booking:
+                        </Typography>
+                        <Stack
+                          borderRadius="10px"
+                          padding="10px"
+                          bgcolor="#313131"
+                          spacing="10px"
+                        >
+                          <Typography variant="bodyBB">
+                            {`${sessionDate.format("MMMM")}` + " " + `${sessionDate.format("DD")}` + ", " + `${sessionDate.format("YYYY")}`}
+                          </Typography>
+                          <Typography variant="bodyS">
+                            Start Time: {`${sessionStartTime.format("HH")}` + `${sessionStartTime.format("A")}`}
+                          </Typography>
+                          <Typography variant="bodyS">
+                            End Time: : {`${sessionEndTime.format("HH")}` + `${sessionEndTime.format("A")}`}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </Stack>}
                   </Stack>
                 </Stack>
               )}
