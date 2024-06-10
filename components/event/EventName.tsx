@@ -27,7 +27,7 @@ const EventName = ({
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
-  console.log("event", JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text).join(','))
+  // console.log("event", JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text).join(','))
 
   function isValidJSON(str: string): boolean {
     try {
@@ -67,8 +67,18 @@ const EventName = ({
         {eventName}
       </Typography>
       <Typography color="white" variant="bodyM">
-        {!isValidJSON(eventDescription.replaceAll('\\"', '"')) ?
-          "JSON ERROR" : <Box component="pre" sx={{ fontFamily: "Inter" }}>{JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text).join('\n')}</Box>}
+        {
+          (eventDescription === null) && "NULL"
+        }
+        {
+          (eventDescription !== null && !isValidJSON(eventDescription.replaceAll('\\"', '"'))) && eventDescription
+        }
+        {
+          (eventDescription === null || !isValidJSON(eventDescription.replaceAll('\\"', '"')) || JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks[0] === undefined) ?
+            "JSON ERROR" : JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks[0].data.text
+        }
+        {/* {!isValidJSON(eventDescription.replaceAll('\\"', '"')) ?
+          "JSON ERROR" : <Box component="pre" sx={{ fontFamily: "Inter" }}>{JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text).join('\n')}</Box>} */}
       </Typography>
       <Stack direction="row" spacing="5px" alignItems="center">
         <Typography color="white" variant="caption">

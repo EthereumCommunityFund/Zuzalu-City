@@ -29,12 +29,15 @@ const EventAbout = ({ tagline, description }: EventAboutTypes) => {
         </Typography>
         <Typography color="white" variant="bodyB">
           {
-            description ? isValidJSON(description.replaceAll('\\"', '"'))
-              ? JSON.parse(description.replaceAll('\\"', '"'))
-                .blocks[0].data.text
-              : description : ""
+            (description === null) && "NULL"
           }
-
+          {
+            (description !== null && !isValidJSON(description.replaceAll('\\"', '"'))) && description
+          }
+          {
+            (description === null || !isValidJSON(description.replaceAll('\\"', '"')) || JSON.parse(description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
+              "JSON ERROR" : JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data.text
+          }
         </Typography>
         <ZuButton
           startIcon={<ChevronDownIcon />}
