@@ -84,6 +84,8 @@ const Home = () => {
               space {
                 name
                 gated
+                avatar
+                banner
               }
               profile {
                 username
@@ -103,6 +105,7 @@ const Home = () => {
         )) as CeramicResponseType<EventEdge>;
       if (response.data) {
         if (response.data.node) {
+          console.log("res", response.data.node)
           setEventData(response.data.node);
         }
       }
@@ -1245,9 +1248,9 @@ const Home = () => {
   return (
     <Stack direction="row" width="100%">
       {!isDesktop && <IconSidebar />}
-      {!isDesktop && <Sidebar />}
+      {!isDesktop && <Sidebar spaceId={params.spaceid.toString()} title={eventData?.space?.name} avatar={eventData?.space?.avatar} banner={eventData?.space?.banner} />}
       <Stack flex={1} borderLeft="1px solid #383838">
-        <Header name={eventData?.title} />
+        <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb tabName={tabName} setTabName={setTabName} />
         {
           tabName === "About" && (

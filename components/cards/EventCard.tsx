@@ -66,8 +66,6 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
     setIsMobile(isMobileEnv);
   }, []);
 
-  console.log("event descript", event)
-
   return (
     <Box
       padding="10px"

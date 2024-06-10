@@ -6,10 +6,11 @@ import { LeftArrowIcon, ShareIcon, ThreeHorizonIcon } from 'components/icons';
 import { ZuButton } from 'components/core';
 
 interface IHeader {
-  name?: string
+  name?: string;
+  spaceId?: string;
 }
 
-const Header: React.FC<IHeader> = ({ name }) => {
+const Header: React.FC<IHeader> = ({ name, spaceId }) => {
   const router = useRouter();
   return (
     <Stack
@@ -22,7 +23,7 @@ const Header: React.FC<IHeader> = ({ name }) => {
       <Stack direction="row" spacing={2} alignItems="center">
         <ZuButton
           startIcon={<LeftArrowIcon />}
-          onClick={() => router.push('/')}
+          onClick={() => router.push(`/spaces/${spaceId}`)}
         >
           Back
         </ZuButton>

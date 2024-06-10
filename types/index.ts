@@ -30,6 +30,8 @@ export interface Event {
   space?: {
     name?: string;
     gated?: string;
+    avatar?: string;
+    banner?: string;
   };
   profile?: {
     username?: string;
