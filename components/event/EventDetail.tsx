@@ -5,13 +5,13 @@ import { Stack, Typography, Box } from '@mui/material';
 import { RightArrowIcon } from 'components/icons';
 import { SOCIAL_TYPES } from '@/constant';
 
-type Link = {
+type UserLink = {
   title: string,
   links: string
 }
 interface IEventDetail {
   status?: string
-  links?: [Link]
+  links?: [UserLink]
 }
 
 const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [] }) => {
@@ -44,7 +44,7 @@ const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [] 
             <>
               {
                 links?.map((link, index) => (
-                  <Link href={link.links} target="_blank">
+                  <Link href={link.links} target="_blank" key={`UserLink-${index}`}>
                     <Stack
                       direction="row"
                       justifyContent="space-between"

@@ -61,6 +61,8 @@ const Sessions = () => {
   // const [sessionFormat, setSessionFormat] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   // const [sessionCreatedAt, setSessionCreatedAt] = useState<Dayjs | null>(dayjs());
+  const [sessoinStatus, setSessionStatus] = useState<string>('');
+  const [sessionGated, setSessionGated] = useState<string>('');
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
     dayjs(),
   );
@@ -71,6 +73,7 @@ const Sessions = () => {
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
 
   const profileId = profile?.id || '';
+  const eventId = params.eventid.toString();
 
   const getSessions = async () => {
     try {
@@ -138,6 +141,7 @@ const Sessions = () => {
     const [editor, setEditorInst] = useState<any>();
 
     const createSession = async () => {
+      console.log("id", profileId, sessionGated);
       if (!isAuthenticated) {
         console.log('Not authenticated');
         return;
@@ -146,11 +150,17 @@ const Sessions = () => {
       const output = await editor.save();
       let strDesc: any = JSON.stringify(output);
 
-      if (!output.blocks || output.blocks.length == 0) {
-        setError(true);
+      strDesc = strDesc.replaceAll('"', '\\"');
+
+      const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+
+      if (error) {
+        typeof window !== 'undefined' &&
+          window.alert(
+            'Please fill necessary fields!',
+          );
         return;
       }
-      strDesc = strDesc.replaceAll('"', '\\"');
 
       if (person) {
         const update = await composeClient.executeQuery(`
@@ -164,6 +174,11 @@ const Sessions = () => {
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 profileId: "${profileId}",
                 eventId: "${params.eventid.toString()}",
+                tags: "${sessionTags.join(',')}",
+                status: "${sessoinStatus}",
+                format: "person",
+                track: "${sessionTrack}",
+                gated: "${sessionGated}",
               }
             }
           ) {
@@ -193,7 +208,11 @@ const Sessions = () => {
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 profileId: "${profileId}",
                 eventId: "${params.eventid.toString()}",
+                tags: "${sessionTags.join(',')}",
+                status: "${sessoinStatus}",
                 format: "online",
+                track: "${sessionTrack}",
+                gated: "${sessionGated}",
               }
             }
           ) {

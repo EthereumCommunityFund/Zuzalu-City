@@ -6,6 +6,7 @@ import {
   EventName,
   EventAbout,
   EventDetail,
+  EventRegister
 } from 'components/event';
 import { CeramicResponseType, EventEdge, Event, Session, SessionData } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -1133,14 +1134,14 @@ const Home = () => {
                         image_url={eventData.image_url}
                       />
                     </Grid>
-                    {/* <Grid item xs={12} md={4}>
-                      <EventRegister />
-                    </Grid> */}
                     <Grid item xs={12} md={5}>
-                      <EventDetail status={eventData.status} links={eventData.customLinks} />
+                      <EventRegister />
                     </Grid>
                     <Grid item xs={12} md={7}>
                       <EventAbout tagline={eventData.tagline} description={eventData.description} />
+                    </Grid>
+                    <Grid item xs={12} md={5}>
+                      <EventDetail status={eventData.status} links={eventData.customLinks} />
                     </Grid>
                   </Grid>
                 </Stack>
