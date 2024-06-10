@@ -5,7 +5,11 @@ import { Stack, Typography } from '@mui/material';
 import { LeftArrowIcon, ShareIcon, ThreeHorizonIcon } from 'components/icons';
 import { ZuButton } from 'components/core';
 
-const Header = () => {
+interface IHeader {
+  name?: string
+}
+
+const Header: React.FC<IHeader> = ({ name }) => {
   const router = useRouter();
   return (
     <Stack
@@ -23,7 +27,7 @@ const Header = () => {
           Back
         </ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">
-          HackZuzalu
+          {name}
         </Typography>
       </Stack>
       <Stack direction="row" gap={1}>

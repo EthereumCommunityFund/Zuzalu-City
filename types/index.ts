@@ -4,6 +4,11 @@ export type IconProps = {
   cursor?: string;
 };
 
+export type Link = {
+  title: string;
+  links: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -30,6 +35,7 @@ export interface Event {
     username?: string;
     avatar?: string;
   };
+  customLinks?: [Link]
 }
 
 export interface EventEdge {

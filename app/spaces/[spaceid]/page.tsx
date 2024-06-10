@@ -128,6 +128,15 @@ export default function SpaceDetailPage() {
     return description.substring(0, 30);
   };
 
+  function isValidJSON(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -374,7 +383,10 @@ export default function SpaceDetailPage() {
                       lineHeight: '160%',
                     }}
                   >
-                    {shortDescription(space.description, showMore)}
+                    {shortDescription(isValidJSON(space.description.replaceAll('\\"', '"'))
+                      ? JSON.parse(space.description.replaceAll('\\"', '"'))
+                        .blocks[0].data.text
+                      : space.description, showMore)}
                   </Box>
                 </Box>
               </>

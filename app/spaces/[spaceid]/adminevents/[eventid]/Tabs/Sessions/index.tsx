@@ -29,6 +29,7 @@ import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Session, SessionData } from '@/types';
+import { OutputData } from '@editorjs/editorjs';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -53,7 +54,7 @@ const Sessions = () => {
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
   const [sessionDescription, setSessionDescription] =
-    useState<string>('Test Session');
+    useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
@@ -66,6 +67,7 @@ const Sessions = () => {
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [error, setError] = useState(false);
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
 
   const profileId = profile?.id || '';
@@ -141,6 +143,15 @@ const Sessions = () => {
         return;
       }
 
+      const output = await editor.save();
+      let strDesc: any = JSON.stringify(output);
+
+      if (!output.blocks || output.blocks.length == 0) {
+        setError(true);
+        return;
+      }
+      strDesc = strDesc.replaceAll('"', '\\"');
+
       if (person) {
         const update = await composeClient.executeQuery(`
         mutation {
@@ -182,6 +193,7 @@ const Sessions = () => {
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 profileId: "${profileId}",
                 eventId: "${params.eventid.toString()}",
+                format: "online",
               }
             }
           ) {
@@ -197,6 +209,7 @@ const Sessions = () => {
           }
         }
         `);
+        console.log("update", update)
         toggleDrawer('right', false);
         await getSessions();
       }
@@ -339,6 +352,7 @@ const Sessions = () => {
                 </Typography>
                 <TextEditor
                   holder="space_description"
+                  value={sessionDescription}
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
