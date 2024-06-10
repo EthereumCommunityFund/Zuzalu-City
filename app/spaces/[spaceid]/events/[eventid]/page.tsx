@@ -334,7 +334,6 @@ const Home = () => {
         }
       }
       `);
-      console.log("update", update)
       toggleDrawer('right', false);
       await getSessions();
     }
