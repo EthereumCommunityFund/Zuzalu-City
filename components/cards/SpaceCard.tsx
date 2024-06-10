@@ -94,7 +94,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             >
               1.4k
             </Typography>
-            <Button
+            {/* <Button
               size="small"
               startIcon={
                 joined ? (
@@ -115,7 +115,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               }}
             >
               {joined ? 'Joined' : 'Join'}
-            </Button>
+            </Button> */}
           </Stack>
         </Stack>
       </Stack>
