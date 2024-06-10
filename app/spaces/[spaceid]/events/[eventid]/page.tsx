@@ -8,7 +8,7 @@ import {
   EventDetail,
   EventRegister
 } from 'components/event';
-import { CeramicResponseType, EventEdge, Event, Session, SessionData } from '@/types';
+import { CeramicResponseType, EventEdge, Event, Session, SessionData, Profile, ProfileEdge, ProfileData } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
 import { LockIcon, PlusCircleIcon, XMarkIcon, ArchiveBoxIcon, SearchIcon, ArrowDownIcon, ChevronDownIcon } from '@/components/icons';
@@ -40,6 +40,7 @@ const Home = () => {
   const [eventData, setEventData] = useState<Event>();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
+  const [people, setPeople] = useState<Profile[]>([]);
 
   const [state, setState] = React.useState({
     top: false,
@@ -161,12 +162,43 @@ const Home = () => {
     }
   }
 
+  const getPeople = async () => {
+    try {
+      const response: any = await composeClient.executeQuery(`
+        query MyQuery {
+          mVPProfileIndex(first: 20) {
+            edges {
+              node {
+                id
+                username
+                avatar
+              }
+            }
+          }
+        }
+      `);
+
+      if ('mVPProfileIndex' in response.data) {
+        const profileData: ProfileEdge = response.data as ProfileEdge;
+        const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setPeople(fetchedPeople);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch sesssions:', error);
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getSessions();
         await getEventDetailInfo();
         await getLocations();
+        await getPeople();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -209,6 +241,20 @@ const Home = () => {
           : e.target.value,
       );
     };
+
+    const handleSpeakerChange = (e: any) => {
+      setSessionSpeakers(
+        typeof e.target.value === 'string'
+          ? e.target.value.split(',')
+          : e.target.value,)
+    }
+
+    const handleOrganizerChange = (e: any) => {
+      setSessionOrganizers(
+        typeof e.target.value === 'string'
+          ? e.target.value.split(',')
+          : e.target.value,)
+    }
 
     const createSession = async () => {
       console.log("id", profileId, sessionGated);
@@ -953,33 +999,55 @@ const Home = () => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <FormControl focused sx={{ border: 'none' }}>
-                  <OutlinedInput
-                    placeholder="Search or add a person"
-                    sx={{
-                      backgroundColor:
-                        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
+                <Box>
+                  <Select
+                    multiple
+                    value={sessionOrganizers}
+                    style={{ width: '100%' }}
+                    onChange={handleOrganizerChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222',
+                        },
                       },
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-                <Stack direction="row" spacing="10px">
+                  >
+                    {people.map((i, index) => {
+                      return (
+                        <MenuItem value={i.username} key={`Organizer_Index${index}`}>
+                          {i.username}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </Box>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={'10px'}
+                  flexWrap={'wrap'}
+                >
+                  {sessionOrganizers.map((i, index) => {
+                    return (
+                      <Chip
+                        label={i}
+                        sx={{
+                          borderRadius: '10px',
+                        }}
+                        onDelete={() => {
+                          const newArray = people.filter(
+                            (item) => item.username !== i,
+                          ).map(item => item.username);
+                          setSessionOrganizers(newArray);
+                        }}
+                        key={`Selected_Organizerr${index}`}
+                      />
+                    );
+                  })}
+                </Box>
+                {/* <Stack direction="row" spacing="10px">
                   <Stack
                     direction="row"
                     spacing="10px"
@@ -1016,7 +1084,7 @@ const Home = () => {
                     <Typography variant="bodyMB">drivenfast</Typography>
                     <XMarkIcon size={4} />
                   </Stack>
-                </Stack>
+                </Stack> */}
               </Stack>
               <Stack spacing="20px">
                 <Stack
@@ -1053,33 +1121,55 @@ const Home = () => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <FormControl focused sx={{ border: 'none' }}>
-                  <OutlinedInput
-                    placeholder="Search or add a person"
-                    sx={{
-                      backgroundColor:
-                        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
+                <Box>
+                  <Select
+                    multiple
+                    value={sessionSpeakers}
+                    style={{ width: '100%' }}
+                    onChange={handleSpeakerChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222',
+                        },
                       },
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-                <Stack direction="row" spacing="10px">
+                  >
+                    {people.map((i, index) => {
+                      return (
+                        <MenuItem value={i.username} key={`Speaker_Index${index}`}>
+                          {i.username}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </Box>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={'10px'}
+                  flexWrap={'wrap'}
+                >
+                  {sessionSpeakers.map((i, index) => {
+                    return (
+                      <Chip
+                        label={i}
+                        sx={{
+                          borderRadius: '10px',
+                        }}
+                        onDelete={() => {
+                          const newArray = people.filter(
+                            (item) => item.username !== i,
+                          ).map(item => item.username);
+                          setSessionSpeakers(newArray);
+                        }}
+                        key={`Selected_Speaker${index}`}
+                      />
+                    );
+                  })}
+                </Box>
+                {/* <Stack direction="row" spacing="10px">
                   <Stack
                     direction="row"
                     spacing="10px"
@@ -1116,7 +1206,7 @@ const Home = () => {
                     <Typography variant="bodyMB">drivenfast</Typography>
                     <XMarkIcon size={4} />
                   </Stack>
-                </Stack>
+                </Stack> */}
               </Stack>
             </Stack>
             <Box display="flex" gap="20px">
@@ -1143,7 +1233,7 @@ const Home = () => {
             </Box>
           </Box>
         </Box>
-      </LocalizationProvider>
+      </LocalizationProvider >
     );
   };
 
