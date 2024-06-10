@@ -75,7 +75,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
       width={'100%'}
       boxSizing={'border-box'}
       position={'relative'}
-      onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
+      onClick={() => router.push(`/spaces/${event.spaceId}/events/${event.id}`)}
     >
       <Box
         component="img"
