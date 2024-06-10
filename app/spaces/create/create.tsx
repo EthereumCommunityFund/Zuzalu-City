@@ -101,7 +101,6 @@ const Create = () => {
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
-    console.log("edit", output, strDesc)
 
     let socialLinks = {};
     let customLinks = [];
@@ -456,7 +455,6 @@ const Create = () => {
                   }}
                   onComplete={(result: any) => {
                     if (result && result.url) {
-                      console.log('hey', result);
                       setAvatarURL(result.url);
                     }
                   }}

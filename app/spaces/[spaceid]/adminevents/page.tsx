@@ -161,7 +161,6 @@ const Home = () => {
     const [locations, setLocations] = useState<string[]>(['']);
 
     const profileId = profile?.id || '';
-    console.log("profile", profileId);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -198,8 +197,6 @@ const Home = () => {
       setSocialLinks(temp);
     };
 
-    console.log("loca", locations)
-
     const createEvent = async () => {
       const isNeeded = inputs.name.length === 0 || !startTime || !endTime || !spaceId || !profileId;
       if (isNeeded) {
@@ -229,13 +226,10 @@ const Home = () => {
             }
           }
         }
-        console.log(Object.entries(socialLinks).map(([key, value]) => ({ title: key, links: value })), profileId)
-
         const output = await editor.save();
         let strDesc: any = JSON.stringify(output);
 
         strDesc = strDesc.replaceAll('"', '\\"');
-        console.log(output, strDesc);
 
         try {
           const update: any = await composeClient.executeQuery(
@@ -289,14 +283,11 @@ const Home = () => {
             },
           );
 
-          console.log("eventupdate", update);
-
           const { data } = await supabase.from('locations').insert({
             name: locations.join(','),
             eventId: update.data.createEvent.document.id
           })
 
-          console.log("data", data);
           typeof window !== 'undefined' &&
             window.alert(
               'Submitted! Create process probably complete after few minute. Please check it in Space List page.',

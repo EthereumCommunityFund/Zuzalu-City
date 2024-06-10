@@ -31,7 +31,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   banner
 }) => {
   const router = useRouter();
-  console.log("avatar", avatar, banner)
   return (
     <Stack
       padding={2}

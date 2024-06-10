@@ -11,7 +11,6 @@ const supabase = createClient(supabaseUrl, SUPABASE_KEY);
 
 
 export async function POST(request: Request) {
-  console.log("api call")
   const formData = await request.formData()
   const name = formData.get('name')
   // try {

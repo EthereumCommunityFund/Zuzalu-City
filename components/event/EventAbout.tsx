@@ -17,7 +17,6 @@ const EventAbout = ({ tagline, description }: EventAboutTypes) => {
       return false;
     }
   }
-  console.log("desc", description)
   return (
     <Stack direction="column" spacing={1}>
       <Stack bgcolor="#292929" padding="10px" spacing={1} borderRadius="10px">

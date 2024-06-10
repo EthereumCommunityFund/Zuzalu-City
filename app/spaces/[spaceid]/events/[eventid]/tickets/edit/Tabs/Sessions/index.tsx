@@ -137,7 +137,6 @@ const Sessions = () => {
 
     const createSession = async () => {
       if (!isAuthenticated) {
-        console.log('Not authenticated');
         return;
       }
 

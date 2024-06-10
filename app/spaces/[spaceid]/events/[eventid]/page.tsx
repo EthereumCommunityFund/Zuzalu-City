@@ -105,7 +105,6 @@ const Home = () => {
         )) as CeramicResponseType<EventEdge>;
       if (response.data) {
         if (response.data.node) {
-          console.log("res", response.data.node)
           setEventData(response.data.node);
         }
       }
@@ -162,7 +161,6 @@ const Home = () => {
   const getLocation = async () => {
     const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
     if (data !== null) {
-      console.log("location", data)
       setEventLocation(data[0].name)
     }
   }
@@ -249,9 +247,7 @@ const Home = () => {
   }
 
   const createSession = async () => {
-    console.log("id", profileId, sessionGated);
     if (!isAuthenticated) {
-      console.log('Not authenticated');
       return;
     }
 

@@ -141,9 +141,7 @@ const Sessions = () => {
     const [editor, setEditorInst] = useState<any>();
 
     const createSession = async () => {
-      console.log("id", profileId, sessionGated);
       if (!isAuthenticated) {
-        console.log('Not authenticated');
         return;
       }
 
@@ -228,7 +226,6 @@ const Sessions = () => {
           }
         }
         `);
-        console.log("update", update)
         toggleDrawer('right', false);
         await getSessions();
       }
