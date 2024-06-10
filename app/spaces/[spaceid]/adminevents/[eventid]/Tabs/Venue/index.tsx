@@ -65,7 +65,6 @@ const Venue: React.FC = () => {
   const [tags, setTags] = useState<string[]>([]);
 
   const handleChange = (e: any) => {
-    console.log(e.target.value)
     setTags(
       typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
     );
@@ -115,7 +114,6 @@ const Venue: React.FC = () => {
           avatar: avatarURL,
           bookings: JSON.stringify(bookings)
         })
-        console.log("data", data)
       } catch (err) {
         console.log(err);
       }
@@ -290,7 +288,6 @@ const Venue: React.FC = () => {
                       setAvatar(file);
                     }}
                     onComplete={(result: any) => {
-                      console.log('resule', result)
                       setAvatarURL(result?.url);
                     }}
                   >

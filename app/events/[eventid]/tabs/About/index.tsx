@@ -94,7 +94,7 @@ const About = () => {
             <EventRegister />
           </Grid>
           <Grid item xs={12} md={7}>
-            <EventAbout />
+            <EventAbout description={eventData.description} />
           </Grid>
           <Grid item xs={12} md={5}>
             <EventDetail />

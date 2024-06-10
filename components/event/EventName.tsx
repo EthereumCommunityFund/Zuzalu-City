@@ -28,6 +28,15 @@ const EventName = ({
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
+  function isValidJSON(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   return (
     <Stack spacing="10px">
       <Box
@@ -57,7 +66,18 @@ const EventName = ({
         {eventName}
       </Typography>
       <Typography color="white" variant="bodyM">
-        {eventDescription}
+        {
+          (eventDescription === null) && "NULL"
+        }
+        {
+          (eventDescription !== null && !isValidJSON(eventDescription.replaceAll('\\"', '"'))) && eventDescription
+        }
+        {
+          (eventDescription === null || !isValidJSON(eventDescription.replaceAll('\\"', '"')) || JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks[0] === undefined) ?
+            "JSON ERROR" : JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks[0].data.text
+        }
+        {/* {!isValidJSON(eventDescription.replaceAll('\\"', '"')) ?
+          "JSON ERROR" : <Box component="pre" sx={{ fontFamily: "Inter" }}>{JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text).join('\n')}</Box>} */}
       </Typography>
       <Stack direction="row" spacing="5px" alignItems="center">
         <Typography color="white" variant="caption">

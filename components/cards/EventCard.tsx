@@ -47,6 +47,15 @@ export const groupEventsByMonth = (events: Event[]) => {
   return groupedEvents;
 };
 
+function isValidJSON(str: string): boolean {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
   const theme = useTheme();
   const router = useRouter();
@@ -66,7 +75,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
       width={'100%'}
       boxSizing={'border-box'}
       position={'relative'}
-      onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
+      onClick={() => router.push(`/spaces/${event.spaceId}/events/${event.id}`)}
     >
       <Box
         component="img"
@@ -121,7 +130,16 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
             {event.title}
           </Typography>
           <Typography color="white" variant="bodyM">
-            {event.description}
+            {
+              (event.description === null) && "NULL"
+            }
+            {
+              (event.description !== null && !isValidJSON(event.description.replaceAll('\\"', '"'))) && event.description
+            }
+            {
+              (event.description === null || !isValidJSON(event.description.replaceAll('\\"', '"')) || JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
+                "JSON ERROR" : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0].data.text
+            }
           </Typography>
         </Box>
         <Box

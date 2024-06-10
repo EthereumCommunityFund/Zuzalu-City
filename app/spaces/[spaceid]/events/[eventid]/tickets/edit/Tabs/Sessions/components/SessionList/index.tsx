@@ -52,9 +52,6 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [] }) => {
         Monday, October 2023
       </Typography>
       <Stack spacing={2} divider={<Divider sx={{ borderColor: '#383838' }} />}>
-        {/* <SessionCard />
-        <SessionCard />
-        <SessionCard /> */}
         {sessions.map((session, index) => (
           <SessionCard
             key={`SessionCard-${index}`}
