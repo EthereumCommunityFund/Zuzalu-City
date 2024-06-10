@@ -34,7 +34,7 @@ const Custom_Option: TimeStepOptions = {
 };
 
 const Home = () => {
-  const [tabName, setTabName] = useState<string>('Sessions');
+  const [tabName, setTabName] = useState<string>('About');
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
   const [eventData, setEventData] = useState<Event>();
@@ -192,6 +192,153 @@ const Home = () => {
     }
   }
 
+
+
+  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+    setState({ ...state, [anchor]: open });
+  };
+
+  const profileId = profile?.id || '';
+
+  const [person, setPerson] = useState(true);
+  const [online, setOnline] = useState(false);
+  const [editor, setEditorInst] = useState<any>();
+  const [sessionName, setSessionName] = useState<string>('');
+  const [sessionTrack, setSessionTrack] = useState<string>('');
+  const [sessionTags, setSessionTags] = useState<Array<string>>([]);
+  const [sessionDescription, setSessionDescription] = useState<OutputData>();
+  const [sessionType, setSessionType] = useState<string>('');
+  const [sessoinStatus, setSessionStatus] = useState<string>('');
+  const [sessionGated, setSessionGated] = useState<string>('');
+  const [sessionExperienceLevel, setSessionExperienceLevel] = useState<string>('');
+  // const [sessionFormat, setSessionFormat] = useState<string>("");
+  const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
+  const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(dayjs());
+  const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
+  const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
+  const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [sessionLocation, setSessionLocation] = useState<string>();
+
+
+  const handleChange = (e: any) => {
+    setSessionTags(
+      typeof e.target.value === 'string'
+        ? e.target.value.split(',')
+        : e.target.value,
+    );
+  };
+
+  const handleSpeakerChange = (e: any) => {
+    setSessionSpeakers(
+      typeof e.target.value === 'string'
+        ? e.target.value.split(',')
+        : e.target.value,)
+  }
+
+  const handleOrganizerChange = (e: any) => {
+    setSessionOrganizers(
+      typeof e.target.value === 'string'
+        ? e.target.value.split(',')
+        : e.target.value,)
+  }
+
+  const createSession = async () => {
+    console.log("id", profileId, sessionGated);
+    if (!isAuthenticated) {
+      console.log('Not authenticated');
+      return;
+    }
+
+    const output = await editor.save();
+    let strDesc: any = JSON.stringify(output);
+
+    strDesc = strDesc.replaceAll('"', '\\"');
+
+    const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+
+    if (error) {
+      typeof window !== 'undefined' &&
+        window.alert(
+          'Please fill necessary fields!',
+        );
+      return;
+    }
+
+    if (person) {
+      const update = await composeClient.executeQuery(`
+      mutation {
+        createSession(
+          input: {
+            content: {
+              title: "${sessionName}",
+              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              profileId: "${profileId}",
+              eventId: "${params.eventid.toString()}",
+              tags: "${sessionTags.join(',')}",
+              status: "${sessoinStatus}",
+              format: "person",
+              track: "${sessionTrack}",
+              gated: "${sessionGated}",
+              description: "${strDesc}"
+            }
+          }
+        ) {
+          document {
+            id
+            title
+            createdAt
+            startTime
+            endTime
+            eventId
+            profileId
+          }
+        }
+      }
+      `);
+      toggleDrawer('right', false);
+      await getSessions();
+    } else {
+      const update = await composeClient.executeQuery(`
+      mutation {
+        createSession(
+          input: {
+            content: {
+              title: "${sessionName}",
+              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+              profileId: "${profileId}",
+              eventId: "${params.eventid.toString()}",
+              tags: "${sessionTags.join(',')}",
+              status: "${sessoinStatus}",
+              format: "online",
+              track: "${sessionTrack}",
+              gated: "${sessionGated}",
+              description: "${strDesc}"
+            }
+          }
+        ) {
+          document {
+            id
+            title
+            createdAt
+            startTime
+            endTime
+            eventId
+            profileId
+          }
+        }
+      }
+      `);
+      console.log("update", update)
+      toggleDrawer('right', false);
+      await getSessions();
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -206,151 +353,7 @@ const Home = () => {
     fetchData();
   }, []);
 
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
-
-  const profileId = profile?.id || '';
-
   const List = (anchor: Anchor) => {
-    const [person, setPerson] = useState(true);
-    const [online, setOnline] = useState(false);
-    const [editor, setEditorInst] = useState<any>();
-    const [sessionName, setSessionName] = useState<string>('');
-    const [sessionTrack, setSessionTrack] = useState<string>('');
-    const [sessionTags, setSessionTags] = useState<Array<string>>([]);
-    const [sessionDescription, setSessionDescription] = useState<OutputData>();
-    const [sessionType, setSessionType] = useState<string>('');
-    const [sessoinStatus, setSessionStatus] = useState<string>('');
-    const [sessionGated, setSessionGated] = useState<string>('');
-    const [sessionExperienceLevel, setSessionExperienceLevel] = useState<string>('');
-    // const [sessionFormat, setSessionFormat] = useState<string>("");
-    const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
-    const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
-    const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(dayjs());
-    const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
-    const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
-    const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
-    const [sessionLocation, setSessionLocation] = useState<string>();
-
-
-    const handleChange = (e: any) => {
-      setSessionTags(
-        typeof e.target.value === 'string'
-          ? e.target.value.split(',')
-          : e.target.value,
-      );
-    };
-
-    const handleSpeakerChange = (e: any) => {
-      setSessionSpeakers(
-        typeof e.target.value === 'string'
-          ? e.target.value.split(',')
-          : e.target.value,)
-    }
-
-    const handleOrganizerChange = (e: any) => {
-      setSessionOrganizers(
-        typeof e.target.value === 'string'
-          ? e.target.value.split(',')
-          : e.target.value,)
-    }
-
-    const createSession = async () => {
-      console.log("id", profileId, sessionGated);
-      if (!isAuthenticated) {
-        console.log('Not authenticated');
-        return;
-      }
-
-      const output = await editor.save();
-      let strDesc: any = JSON.stringify(output);
-
-      strDesc = strDesc.replaceAll('"', '\\"');
-
-      const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
-
-      if (error) {
-        typeof window !== 'undefined' &&
-          window.alert(
-            'Please fill necessary fields!',
-          );
-        return;
-      }
-
-      if (person) {
-        const update = await composeClient.executeQuery(`
-        mutation {
-          createSession(
-            input: {
-              content: {
-                title: "${sessionName}",
-                createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "${profileId}",
-                eventId: "${params.eventid.toString()}",
-                tags: "${sessionTags.join(',')}",
-                status: "${sessoinStatus}",
-                format: "person",
-                track: "${sessionTrack}",
-                gated: "${sessionGated}",
-                description: "${strDesc}"
-              }
-            }
-          ) {
-            document {
-              id
-              title
-              createdAt
-              startTime
-              endTime
-              eventId
-              profileId
-            }
-          }
-        }
-        `);
-        toggleDrawer('right', false);
-        await getSessions();
-      } else {
-        const update = await composeClient.executeQuery(`
-        mutation {
-          createSession(
-            input: {
-              content: {
-                title: "${sessionName}",
-                createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "${profileId}",
-                eventId: "${params.eventid.toString()}",
-                tags: "${sessionTags.join(',')}",
-                status: "${sessoinStatus}",
-                format: "online",
-                track: "${sessionTrack}",
-                gated: "${sessionGated}",
-                description: "${strDesc}"
-              }
-            }
-          ) {
-            document {
-              id
-              title
-              createdAt
-              startTime
-              endTime
-              eventId
-              profileId
-            }
-          }
-        }
-        `);
-        console.log("update", update)
-        toggleDrawer('right', false);
-        await getSessions();
-      }
-    };
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -490,7 +493,7 @@ const Home = () => {
                   Write an introduction for this session
                 </Typography>
                 <TextEditor
-                  holder="space_description"
+                  holder="session_description"
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',

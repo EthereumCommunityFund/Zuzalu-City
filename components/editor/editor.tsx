@@ -21,34 +21,50 @@ interface TextEditorPropTypes extends BoxProps {
 const TextEditor: FC<TextEditorPropTypes> = ({
   value,
   editor,
-  setEditorInst = (editor: any) => {},
+  setEditorInst = (editor: any) => { },
   holder = 'editorjs',
   children,
   ...props
 }: TextEditorPropTypes) => {
-  const ref: any = useRef();
+  const editorRef: any = useRef<EditorJS | null>();
 
   useEffect(() => {
-    if (!ref.current) {
+    const initializeEditor = () => {
+      if (editorRef.current) {
+        return;
+      }
+
       const editor = new EditorJS({
         holder: holder,
         tools,
         data: value,
+        onReady: () => {
+          editorRef.current = editor;
+          setEditorInst(editor);
+        },
       });
 
-      ref.current = editor;
-      setEditorInst(editor);
+      editorRef.current = editor;
+    };
+
+    if (document.getElementById(holder)) {
+      initializeEditor();
+    } else {
+      console.error(`Element with ID ${holder} is missing. Ensure the element is present in the DOM.`);
     }
 
     return () => {
-      if (ref.current && (ref.current as any).destroy) {
-        (ref.current as any).destroy();
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
       }
     };
-  }, []);
+  }, [holder, value, setEditorInst]);
 
   useEffect(() => {
-    editor?.render(value);
+    if (editorRef.current && value) {
+      editorRef.current.render(value);
+    }
   }, [value]);
 
   return (
