@@ -38,6 +38,7 @@ const Home = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
   const [eventData, setEventData] = useState<Event>();
+  const [eventLocation, setEventLocation] = useState<string>('');
   const [sessions, setSessions] = useState<Session[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [people, setPeople] = useState<Profile[]>([]);
@@ -155,10 +156,11 @@ const Home = () => {
     }
   };
 
-  const getLocations = async () => {
-    const { data } = await supabase.from("locations").select("*");
+  const getLocation = async () => {
+    const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
     if (data !== null) {
-      setLocations(data.map((location) => location.name));
+      console.log("location", data)
+      setEventLocation(data[0].name)
     }
   }
 
@@ -344,7 +346,7 @@ const Home = () => {
       try {
         await getSessions();
         await getEventDetailInfo();
-        await getLocations();
+        await getLocation();
         await getPeople();
       } catch (error) {
         console.error('An error occurred:', error);
@@ -1251,30 +1253,24 @@ const Home = () => {
           tabName === "About" && (
             <Stack padding="40px" justifyContent="center" alignItems="center">
               {eventData && (
-                <Stack width={900}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={7}>
-                      <EventName
-                        endTime={eventData.endTime}
-                        startTime={eventData.startTime}
-                        eventDescription={eventData.description}
-                        spaceName={eventData.space?.name}
-                        eventName={eventData.title}
-                        location=""
-                        organizer={eventData.profile?.username as string}
-                        image_url={eventData.image_url}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={5}>
-                      <EventRegister />
-                    </Grid>
-                    <Grid item xs={12} md={7}>
-                      <EventAbout tagline={eventData.tagline} description={eventData.description} />
-                    </Grid>
-                    <Grid item xs={12} md={5}>
-                      <EventDetail status={eventData.status} links={eventData.customLinks} />
-                    </Grid>
-                  </Grid>
+                <Stack width={900} direction="row" spacing="30px">
+                  <Stack spacing="30px" flex="2">
+                    <EventName
+                      endTime={eventData.endTime}
+                      startTime={eventData.startTime}
+                      eventDescription={eventData.description}
+                      spaceName={eventData.space?.name}
+                      eventName={eventData.title}
+                      location={eventLocation}
+                      organizer={eventData.profile?.username as string}
+                      image_url={eventData.image_url}
+                    />
+                    <EventAbout tagline={eventData.tagline} description={eventData.description} />
+                  </Stack>
+                  <Stack spacing="30px" flex="1">
+                    <EventRegister />
+                    <EventDetail status={eventData.status} links={eventData.customLinks} />
+                  </Stack>
                 </Stack>
               )}
             </Stack>

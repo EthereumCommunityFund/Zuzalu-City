@@ -26,45 +26,29 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   children,
   ...props
 }: TextEditorPropTypes) => {
-  const editorRef: any = useRef<EditorJS | null>();
+  const ref: any = useRef();
 
   useEffect(() => {
-    const initializeEditor = () => {
-      if (editorRef.current) {
-        return;
-      }
-
+    if (!ref.current) {
       const editor = new EditorJS({
         holder: holder,
         tools,
         data: value,
-        onReady: () => {
-          editorRef.current = editor;
-          setEditorInst(editor);
-        },
       });
 
-      editorRef.current = editor;
-    };
-
-    if (document.getElementById(holder)) {
-      initializeEditor();
-    } else {
-      console.error(`Element with ID ${holder} is missing. Ensure the element is present in the DOM.`);
+      ref.current = editor;
+      setEditorInst(editor);
     }
 
     return () => {
-      if (editorRef.current) {
-        editorRef.current.destroy();
-        editorRef.current = null;
+      if (ref.current && (ref.current as any).destroy) {
+        (ref.current as any).destroy();
       }
     };
-  }, [holder, value, setEditorInst]);
+  }, []);
 
   useEffect(() => {
-    if (editorRef.current && value) {
-      editorRef.current.render(value);
-    }
+    editor?.render(value);
   }, [value]);
 
   return (

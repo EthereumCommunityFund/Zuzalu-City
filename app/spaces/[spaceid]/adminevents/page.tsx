@@ -30,6 +30,7 @@ import { Sidebar } from 'components/layout';
 import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { supabase } from '@/utils/supabase/client';
 
 interface Inputs {
   name: string;
@@ -41,6 +42,19 @@ interface Inputs {
 }
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
+interface EventDocument {
+  document: {
+    id: string
+  }
+}
+interface CreateEvent {
+  createEvent: EventDocument
+}
+
+interface UpdateType {
+  data: CreateEvent
+}
 
 const Home = () => {
   const router = useRouter();
@@ -144,6 +158,7 @@ const Home = () => {
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
     const [status, setStatus] = useState<string>('')
+    const [locations, setLocations] = useState<string[]>(['']);
 
     const profileId = profile?.id || '';
     console.log("profile", profileId);
@@ -183,12 +198,14 @@ const Home = () => {
       setSocialLinks(temp);
     };
 
+    console.log("loca", locations)
+
     const createEvent = async () => {
       const isNeeded = inputs.name.length === 0 || !startTime || !endTime || !spaceId || !profileId;
       if (isNeeded) {
         typeof window !== 'undefined' &&
           window.alert(
-            'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
+            'Please input all necessary fields.',
           );
       } else {
         let socialLinks = {};
@@ -218,37 +235,38 @@ const Home = () => {
         let strDesc: any = JSON.stringify(output);
 
         strDesc = strDesc.replaceAll('"', '\\"');
+        console.log(output, strDesc);
 
         try {
-          const update = await composeClient.executeQuery(
+          const update: any = await composeClient.executeQuery(
             `
-          mutation CreateEventMutation($input: CreateEventInput!) {
-            createEvent(
-              input: $input
-            ) {
-              document {
-                id
-                spaceId
-                title
-                description
-                tagline
-                image_url
-                createdAt
-                startTime
-                endTime
-                profileId,
-                participant_count
-                max_participant
-                min_participant
-                status
-                customLinks {
-                  title
-                  links
-                }
-              }
-            }
-          }
-          `,
+         mutation CreateEventMutation($input: CreateEventInput!) {
+           createEvent(
+             input: $input
+           ) {
+             document {
+               id
+               spaceId
+               title
+               description
+               tagline
+               image_url
+               createdAt
+               startTime
+               endTime
+               profileId,
+               participant_count
+               max_participant
+               min_participant
+               status
+               customLinks {
+                 title
+                 links
+               }
+             }
+           }
+         }
+         `,
             {
               input: {
                 content: {
@@ -270,7 +288,15 @@ const Home = () => {
               },
             },
           );
+
           console.log("eventupdate", update);
+
+          const { data } = await supabase.from('locations').insert({
+            name: locations.join(','),
+            eventId: update.data.createEvent.document.id
+          })
+
+          console.log("data", data);
           typeof window !== 'undefined' &&
             window.alert(
               'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
@@ -281,46 +307,6 @@ const Home = () => {
         }
       }
 
-
-
-
-      //       const update = await composeClient.executeQuery(`
-      //       mutation MyMutation {
-      //         createEvent(
-      //           input: {
-      //             content: {
-      //               title: "${inputs.name}",
-      //               description: "${description}",
-      //               startTime: "${startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-      //               endTime: "${endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-      //               spaceId: "${spaceId}",
-      //               createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-      //               profileId: "${profile?.id}",
-      //               max_participant: 100,
-      //               min_participant: 10,
-      //               participant_count: 10,
-      //               image_url: "${avatarURL}",
-      //               customLinks: "${...socialLinks}",
-      //   }
-      // }
-      //         ) {
-      //           document {
-      //     id
-      //     title
-      //     description
-      //     startTime
-      //     endTime
-      //     spaceId
-      //     createdAt
-      //     profileId
-      //     max_participant
-      //     min_participant
-      //     participant_count
-      //     image_url
-      //   }
-      // }
-      //       }
-      // `);
       toggleDrawer('right', false);
       await getEvents();
     };
@@ -728,17 +714,18 @@ const Home = () => {
                   >
                     Location
                   </Typography>
-                  <ZuInput />
+                  {locations.map((location, index) => (
+                    <ZuInput key={`Location_Index${index}`} onChange={(e) => {
+                      let newLocations = locations;
+                      newLocations[index] = e.target.value;
+                      setLocations(newLocations);
+                    }} />
+                  ))}
                 </Stack>
                 <ZuButton
                   variant="contained"
                   endIcon={<PlusIcon />}
-                  sx={{
-                    backgroundColor: '#353535',
-                    color: 'white',
-                    borderRadius: '10px',
-                    textTransform: 'none',
-                  }}
+                  onClick={() => setLocations(prev => [...prev, ''])}
                 >
                   Add Address
                 </ZuButton>

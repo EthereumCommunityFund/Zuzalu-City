@@ -93,6 +93,16 @@ const Create = () => {
   const customLinksRef = useRef<HTMLDivElement>(null);
 
   const createSpace = async () => {
+    const output = await editor.save();
+    let strDesc: any = JSON.stringify(output);
+
+    if (!output.blocks || output.blocks.length == 0) {
+      setError(true);
+      return;
+    }
+    strDesc = strDesc.replaceAll('"', '\\"');
+    console.log("edit", output, strDesc)
+
     let socialLinks = {};
     let customLinks = [];
     if (
@@ -139,14 +149,7 @@ const Create = () => {
     }
 
     if (!isAuthenticated) return;
-    const output = await editor.save();
-    let strDesc: any = JSON.stringify(output);
 
-    if (!output.blocks || output.blocks.length == 0) {
-      setError(true);
-      return;
-    }
-    strDesc = strDesc.replaceAll('"', '\\"');
 
     try {
       const update = await composeClient.executeQuery(
