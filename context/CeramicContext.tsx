@@ -56,8 +56,8 @@ export const CeramicProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
   const [username, setUsername] = useState<string | undefined>(undefined);
-  const [newUser, setNewuser] = useState(false);
   const [profile, setProfile] = useState<Profile | undefined>();
+  let newUser = false;
   const authenticate = async () => {
     await authenticateCeramic(ceramic, composeClient);
     await getProfile();
@@ -100,6 +100,9 @@ export const CeramicProvider = ({ children }: any) => {
       );
       setProfile(basicProfile);
       setUsername(basicProfile?.username);
+      if (!basicProfile) {
+        newUser = true;
+      }
       return basicProfile;
     }
   };
@@ -137,9 +140,7 @@ export const CeramicProvider = ({ children }: any) => {
       return { error: 'Failed to create profile.' };
     }
   };
-  useEffect(() => {
-    setNewuser(!profile);
-  }, [profile]);
+
   return (
     <CeramicContext.Provider
       value={{
