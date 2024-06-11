@@ -44,7 +44,7 @@ const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [] 
             <>
               {
                 links?.map((link, index) => (
-                  <Link href={link.links} target="_blank" key={`UserLink-${index}`}>
+                  <Link href={link.links} target="_blank" key={`UserLink-${index}`} style={{ textDecoration: "none" }}>
                     <Stack
                       direction="row"
                       justifyContent="space-between"

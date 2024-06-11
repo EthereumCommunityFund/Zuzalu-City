@@ -159,9 +159,13 @@ const Home = () => {
   };
 
   const getLocation = async () => {
-    const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
-    if (data !== null) {
-      setEventLocation(data[0].name)
+    try {
+      const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
+      if (data !== null) {
+        setEventLocation(data[0].name)
+      }
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -1251,9 +1255,17 @@ const Home = () => {
           tabName === "About" && (
             <Stack padding="40px" justifyContent="center" alignItems="center">
               {eventData && (
-                <Stack width={900} direction="row" spacing="30px">
-                  <Stack spacing="30px" flex="2">
+                <Stack width={900} direction="row" spacing="20px">
+                  <Stack spacing="20px" flex="2">
+                    <Stack spacing="4px">
+                      <Box component="img" src="/sponsor_banner.png" height="100px" borderRadius="10px" />
+                      <Typography variant="caption" textAlign="right">
+                        Sponsored Banner
+                      </Typography>
+                    </Stack>
+
                     <EventName
+                      tagline={eventData.tagline}
                       endTime={eventData.endTime}
                       startTime={eventData.startTime}
                       eventDescription={eventData.description}
@@ -1264,9 +1276,88 @@ const Home = () => {
                       image_url={eventData.image_url}
                     />
                     <EventAbout tagline={eventData.tagline} description={eventData.description} />
+                    <Stack
+                      bgcolor="#292929"
+                      padding="20px"
+                      spacing="20px"
+                      borderRadius="10px"
+                    >
+                      <Typography variant="subtitleSB">
+                        EVENT SPONSORS
+                      </Typography>
+                      <Box
+                        display="flex"
+                        gap="20px"
+                        flexWrap="wrap"
+                      >
+                        <Stack alignItems="center" spacing="4px">
+                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                          <Typography variant="bodyS">
+                            SponsorName
+                          </Typography>
+                        </Stack>
+                        <Stack alignItems="center" spacing="4px">
+                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                          <Typography variant="bodyS">
+                            SponsorName
+                          </Typography>
+                        </Stack>
+                        <Stack alignItems="center" spacing="4px">
+                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                          <Typography variant="bodyS">
+                            SponsorName
+                          </Typography>
+                        </Stack>
+                        <Stack alignItems="center" spacing="4px">
+                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                          <Typography variant="bodyS">
+                            SponsorName
+                          </Typography>
+                        </Stack>
+                        <Stack alignItems="center" spacing="4px">
+                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                          <Typography variant="bodyS">
+                            SponsorName
+                          </Typography>
+                        </Stack>
+                      </Box>
+                    </Stack>
+                    <Stack
+                      bgcolor="#292929"
+                      padding="20px"
+                      spacing="20px"
+                      borderRadius="10px"
+                      height="300px"
+                    >
+                      <Typography variant="subtitleSB">
+                        ORGANIZER UPDATES
+                      </Typography>
+                      <Stack spacing="10px">
+                        <Stack direction="row" alignItems="center" spacing="10px">
+                          <Box component="img" src="/5.webp" width="30px" height="30px" borderRadius="20px" />
+                          <Typography variant="bodyMB">
+                            drivenfast
+                          </Typography>
+                          <Typography variant="caption">
+                            3 DAYS AGO
+                          </Typography>
+                        </Stack>
+                        <Typography variant="bodyM">
+                          ZuConnect is an experience crafted with love by Zuzalu, whose mission is to
+                          foster a global network of communities to advance humanity by creating playgrounds
+                          at the intersection of free and open technology, science, health, and social innovation.
+                        </Typography>
+                      </Stack>
+                    </Stack>
                   </Stack>
-                  <Stack spacing="30px" flex="1">
+                  <Stack spacing="20px" flex="1">
                     <EventRegister />
+                    <Stack spacing="4px">
+                      <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
+                      <Typography variant="caption" textAlign="right">
+                        Sponsored Banner
+                      </Typography>
+                    </Stack>
                     <EventDetail status={eventData.status} links={eventData.customLinks} />
                   </Stack>
                 </Stack>
@@ -1370,7 +1461,7 @@ const Home = () => {
           )
         }
       </Stack>
-    </Stack>
+    </Stack >
   );
 };
 
