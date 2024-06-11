@@ -200,7 +200,7 @@ const EventRegister = () => {
           >
             Register For Event
           </ZuButton>
-          <Typography textAlign="center" caption="10px">
+          <Typography textAlign="center" variant="caption">
             OR
           </Typography>
           <ZuButton
