@@ -60,8 +60,12 @@ const About = () => {
               timezone
               title
               space {
+                id
                 name
                 gated
+                avatar
+                banner
+                description
               }
               profile {
                 username

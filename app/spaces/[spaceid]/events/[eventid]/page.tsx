@@ -1249,8 +1249,8 @@ const Home = () => {
 
   return (
     <Stack direction="row" width="100%">
-      {/* {!isDesktop && <IconSidebar />} */}
-      {/* {!isDesktop && <Sidebar spaceId={params.spaceid.toString()} title={eventData?.space?.name} avatar={eventData?.space?.avatar} banner={eventData?.space?.banner} />} */}
+      {!isDesktop && <IconSidebar />}
+      {!isDesktop && <Sidebar spaceId={params.spaceid.toString()} title={eventData?.space?.name} avatar={eventData?.space?.avatar} banner={eventData?.space?.banner} />}
       <Stack flex={1} borderLeft="1px solid #383838">
         <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb tabName={tabName} setTabName={setTabName} />
@@ -1362,9 +1362,9 @@ const Home = () => {
                       </Typography>
                     </Stack> */}
                     <EventDetail status={eventData.status} links={eventData.customLinks} />
-                    <Stack>
+                    {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
-                    </Stack>
+                    </Stack> */}
                   </Stack>
                 </Stack>
               )}
