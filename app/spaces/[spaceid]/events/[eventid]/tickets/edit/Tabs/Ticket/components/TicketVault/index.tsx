@@ -2,19 +2,59 @@ import {
   CopyIcon,
   GoToExplorerIcon,
   ScrollIcon,
+  USDCIcon,
   USDTIcon,
 } from '@/components/icons';
 import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import { SendNFTTicket, WithdrawToken } from './component';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { SCROLL_EXPLORER, mUSDC_TOKEN } from '@/constant';
+import { shortenAddress } from '@/utils/format';
+import { client } from '@/context/WalletContext';
+import { Address, GetEnsNameReturnType } from 'viem';
+import { ERC20_ABI } from '@/utils/erc20_abi';
 
-const TicketVault = () => {
-  const [action, setAction] = React.useState('Withdraw');
+interface ITicketVault {
+  vaultIndex: number;
+  ticketAddresses: Array<string>;
+  tickets: Array<any> 
+}
 
+const TicketVault = ({vaultIndex, ticketAddresses, tickets}: ITicketVault) => {
   const isMobile = useMediaQuery('(max-width:500px)');
+  const [action, setAction] = React.useState('Withdraw');
+  const [controller, setController] = useState<GetEnsNameReturnType>("");
+  const [balance, setBalance] = useState<number>(0);
+
+  let ticketAddress = ticketAddresses[vaultIndex];
+  let ticket = tickets[vaultIndex];
+  
+  const getInfoFromContract = async () => {
+    const ensName = await client.getEnsName({
+      address: ticket[7].result, 
+    });
+    
+    const balance = await client.readContract({
+      address: ticket[2]?.result as Address,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf',
+      args: [ticketAddress]
+    }) as number;
+
+    setController(ensName);
+    setBalance(balance);
+  }
+  
+  useEffect(() => {
+    getInfoFromContract();
+  }, [ticketAddress])
+
+  console.log({controller, ticket});
+  
+  
   return (
-    <Stack sx={{ background: '#222', height: '100%' }}>
+    <Stack sx={{ background: '#222', height: isMobile ? '100%' : 'calc(100vh - 6.2rem)' }}>
       <Box
         sx={{
           background: 'rgba(255, 255, 255, 0.02)',
@@ -45,7 +85,7 @@ const TicketVault = () => {
               lineHeight={'120%'}
               color="white"
             >
-              TicketName
+              {ticket[1]?.result}
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -92,7 +132,7 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                120
+                {String(ticket[3]?.result)}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -105,7 +145,7 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                USDT
+                {ticket[2]?.result === mUSDC_TOKEN ? "USDC" : "USDT"}
               </Typography>
             </Box>
 
@@ -129,50 +169,62 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                0x9999...f08E
-                {/* 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E */}
+                {shortenAddress(ticketAddress)}
               </Typography>
 
               <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
                 <CopyIcon cursor="pointer" />
               </Box>
 
-              <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
-                <GoToExplorerIcon cursor="pointer" />
+              <Box
+                marginLeft={'4px'} sx={{ cursor: 'pointer' }}
+                onClick={() => window.open(`${SCROLL_EXPLORER}/address/${ticketAddress}`, "_blank")} 
+              >
+                <GoToExplorerIcon 
+                cursor="pointer" />
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography
-                fontSize="14px"
-                fontFamily={'Inter'}
-                lineHeight={'160%'}
-                color="white"
-                sx={{ opacity: '0.6' }}
-              >
-                Controller:
-              </Typography>
-              <Typography
-                fontSize="14px"
-                color="white"
-                fontWeight={'400'}
-                lineHeight={'160%'}
-                marginLeft={'10px'}
-                sx={{
-                  opacity: '0.8',
-                }}
-              >
-                etherbro.eth
-              </Typography>
+            {
+              controller && (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography
+                    fontSize="14px"
+                    fontFamily={'Inter'}
+                    lineHeight={'160%'}
+                    color="white"
+                    sx={{ opacity: '0.6' }}
+                  >
+                    Controller:
+                  </Typography>
+                  <Typography
+                    fontSize="14px"
+                    color="white"
+                    fontWeight={'400'}
+                    lineHeight={'160%'}
+                    marginLeft={'10px'}
+                    sx={{
+                      opacity: '0.8',
+                    }}
+                  >
+                    {controller}
+                  </Typography>
 
-              <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
-                <CopyIcon cursor="pointer" />
-              </Box>
+                  <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
+                    <CopyIcon cursor="pointer" />
+                  </Box>
 
-              <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
-                <GoToExplorerIcon cursor="pointer" />
-              </Box>
-            </Box>
+                  <Box
+                    marginLeft={'4px'} sx={{ cursor: 'pointer' }}
+                    onClick={() => window.open(`${SCROLL_EXPLORER}/address/${controller}`, "_blank")} 
+                  >
+                    <GoToExplorerIcon 
+                    cursor="pointer" />
+                  </Box>
+                </Box>
+              )
+            }
+
           </Stack>
         </Stack>
       </Box>
@@ -203,7 +255,7 @@ const TicketVault = () => {
                 fontWeight={'700'}
                 lineHeight={'120%'}
               >
-                1680
+                {balance}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -216,7 +268,7 @@ const TicketVault = () => {
                   opacity: '0.5',
                 }}
               >
-                USDT
+                {ticket[2]?.result === mUSDC_TOKEN ? "USDC" : "USDT"}
               </Typography>
             </Box>
           </Box>
@@ -247,7 +299,8 @@ const TicketVault = () => {
                 alignItems: 'center',
               }}
             >
-              <USDTIcon />
+              {ticket[2]?.result === mUSDC_TOKEN ? <USDCIcon /> : <USDTIcon />}
+              
               <Typography
                 fontSize="14px"
                 color="white"
@@ -255,7 +308,7 @@ const TicketVault = () => {
                 fontWeight={'600'}
                 lineHeight={'160%'}
               >
-                USDT
+               {ticket[2]?.result === mUSDC_TOKEN ? "USDC" : "USDT"}
               </Typography>
             </Box>
           </Box>
@@ -310,7 +363,7 @@ const TicketVault = () => {
               fontWeight={'700'}
               lineHeight={'120%'}
             >
-              14
+              {String(ticket[4]?.result)}
             </Typography>
           </Box>
           <Box
@@ -343,7 +396,13 @@ const TicketVault = () => {
               >
                 Scrollscan
               </Typography>
-              <GoToExplorerIcon cursor="pointer" />
+              <Box
+                marginLeft={'4px'} sx={{ cursor: 'pointer' }}
+                onClick={() => window.open(`${SCROLL_EXPLORER}/address/${ticketAddress}`, "_blank")} 
+              >
+                <GoToExplorerIcon 
+                cursor="pointer" />
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -395,11 +454,12 @@ const TicketVault = () => {
           </Typography>
         </Box>
 
-        {action === 'Withdraw' ? <WithdrawToken /> : <SendNFTTicket />}
-      </Box>
-
-      <Box display="flex" marginTop={'20px'} justifyContent={'center'}>
-        <ScrollIcon />
+        {action === 'Withdraw' ? <WithdrawToken
+          tokenSymbol={ticket[2]?.result}
+          balance={balance}
+          ticketAddress={ticketAddress}
+          tokenAddress={ticket[2]?.result}
+        /> : <SendNFTTicket />}
       </Box>
     </Stack>
   );

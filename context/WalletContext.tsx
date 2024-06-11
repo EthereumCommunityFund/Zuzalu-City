@@ -1,19 +1,26 @@
 import '@rainbow-me/rainbowkit/styles.css';
 import {
-  getDefaultConfig,
   RainbowKitProvider,
   darkTheme,
 } from '@rainbow-me/rainbowkit';
-import { WagmiProvider } from 'wagmi';
-import { mainnet } from 'wagmi/chains';
+import { WagmiProvider, createConfig, http } from 'wagmi';
+import { scrollSepolia } from 'wagmi/chains';
 import React, { ReactNode } from 'react';
+import { createPublicClient } from 'viem';
 
-const config = getDefaultConfig({
-  appName: 'Zuzalu-City',
-  projectId: 'c03c9a642678acc298d24ef5b031203c',
-  chains: [mainnet],
+export const config = createConfig({
+  chains: [scrollSepolia],
+  transports: {
+    [scrollSepolia.id]: http(),
+    // [scrollSepolia.id]: http("https://scroll-sepolia.drpc.org"),
+  },
   ssr: true,
-});
+})
+
+export const client = createPublicClient({
+  chain: scrollSepolia,
+  transport: http("https://scroll-sepolia.drpc.org"),
+})
 
 interface WalletProviderProps {
   children: ReactNode;

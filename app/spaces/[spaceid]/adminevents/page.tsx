@@ -16,24 +16,32 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircleIcon, PlusIcon, XMarkIcon } from 'components/icons';
 import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
 import { ZuButton } from 'components/core';
-import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
-import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';
-import { Sidebar } from 'components/layout';
+import { Address } from 'viem';
+import { config } from '@/context/WalletContext';
+import { TICKET_FACTORY_ADDRESS, ticketFactoryGetContract } from '@/constant';
+import { scrollSepolia } from 'viem/chains';
+import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 
 interface Inputs {
   name: string;
+  symbol: string;
   tagline: string;
 }
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
+import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
+import { useAccount } from 'wagmi';
+import { convertDateToEpoch } from '@/utils/format';
+
 const Home = () => {
+  const { address, isConnected } = useAccount();
   const params = useParams();
   const spaceId = params.spaceid.toString();
   console.log('spaceID', spaceId);
@@ -41,6 +49,9 @@ const Home = () => {
   const connector = createConnector('NFT.storage', {
     token: process.env.CONNECTOR_TOKEN ?? '',
   });
+
+  console.log({ address, isConnected });
+
 
   const [state, setState] = useState({
     top: false,
@@ -131,6 +142,7 @@ const Home = () => {
     const [online, setOnline] = useState(false);
     const [inputs, setInputs] = useState<Inputs>({
       name: '',
+      symbol: '',
       tagline: '',
     });
     const [description, setDescription] = useState<string>('');
@@ -160,46 +172,67 @@ const Home = () => {
         startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
         endTime,
       );
-      const update = await composeClient.executeQuery(`
-      mutation MyMutation {
-        createEvent(
-          input: {
-            content: {
-              title: "${inputs.name}",
-              description: "${description}",
-              startTime: "${startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              endTime: "${endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              spaceId: "${spaceId}",
-              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              profileId: "${profile?.id}",
-              max_participant: 100,
-              min_participant: 10,
-              participant_count: 10,
-              image_url: "${avatarURL}",
+      
+      const createEventHash = await writeContract(config, {
+        chainId: scrollSepolia.id,
+        address: TICKET_FACTORY_ADDRESS as Address,
+        abi: TICKET_FACTORY_ABI,
+        // ...ticketFactoryContract,
+        functionName: "createEvent",
+        args: [address, inputs?.name, inputs?.symbol, convertDateToEpoch(startTime)]
+      })
+      
+      const { status: createEventStatus } = await waitForTransactionReceipt(config, {
+        hash: createEventHash,
+      })
+      
+      const events = await ticketFactoryGetContract.getEvents.EventCreated({});
+      const eventTicketId = String(events[0]?.args?.eventId);
+      console.log({ eventTicketId });
+
+      if (createEventStatus === "success") {
+        const update = await composeClient.executeQuery(`
+        mutation MyMutation {
+          createEvent(
+            input: {
+              content: {
+                title: "${inputs.name}",
+                description: "${description}",
+                startTime: "${startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                endTime: "${endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                spaceId: "${spaceId}",
+                createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                profileId: "${profile?.id}",
+                max_participant: 100,
+                min_participant: 10,
+                participant_count: 10,
+                image_url: "${avatarURL}",
+              }
+            }
+          ) {
+            document {
+              id
+              title
+              description
+              startTime
+              endTime
+              spaceId
+              createdAt
+              profileId
+              max_participant
+              min_participant
+              participant_count
+              image_url
             }
           }
-        ) {
-          document {
-            id
-            title
-            description
-            startTime
-            endTime
-            spaceId
-            createdAt
-            profileId
-            max_participant
-            min_participant
-            participant_count
-            image_url
-          }
         }
+        `);
+        console.log(update);
+        toggleDrawer('right', false);
+        await getEvents();
       }
-      `);
-      console.log(update);
-      toggleDrawer('right', false);
-      await getEvents();
     };
+
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
@@ -280,6 +313,39 @@ const Home = () => {
                       },
                     }}
                     placeholder="Type an awesome name"
+                  />
+                </Box>
+                <Box>
+                  <Typography
+                    color="white"
+                    fontSize="18px"
+                    fontWeight={700}
+                    fontFamily="Inter"
+                  >
+                    Event Symbol
+                  </Typography>
+                  <Input
+                    onChange={handleInputChange}
+                    name="symbol"
+                    sx={{
+                      color: 'white',
+                      backgroundColor: '#373737',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      width: '100%',
+                      fontSize: '15px',
+                      fontFamily: 'Inter',
+                      '&::after': {
+                        borderBottom: 'none',
+                      },
+                      '&::before': {
+                        borderBottom: 'none',
+                      },
+                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                        borderBottom: 'none',
+                      },
+                    }}
+                    placeholder="Type an awesome symbol"
                   />
                 </Box>
                 <Box>

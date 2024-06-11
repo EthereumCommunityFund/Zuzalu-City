@@ -11,11 +11,17 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface TicketListProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
   setToggleAction: React.Dispatch<React.SetStateAction<string>>;
+  setVaultIndex: React.Dispatch<React.SetStateAction<number>>;
+  tickets: Array<any>;
+  ticketAddresses: Array<string>;
 }
 
 const TicketList: React.FC<TicketListProps> = ({
   onToggle = (anchor: Anchor, open: boolean) => {},
   setToggleAction,
+  tickets,
+  ticketAddresses,
+  setVaultIndex
 }) => {
   return (
     <Stack direction="column" spacing={3}>
@@ -37,10 +43,14 @@ const TicketList: React.FC<TicketListProps> = ({
             New Ticket
           </ZuButton>
         </Stack>
-        {MOCK_DATA.tickets.map((ticket: TicketCardProps, index: number) => (
+        {/* {MOCK_DATA.tickets.map((ticket: TicketCardProps, index: number) => ( */}
+        {tickets.map((ticket: TicketCardProps, index: number) => (
           <TicketCard
             key={`TicketListItem-${index}`}
-            {...ticket}
+            ticket={ticket}
+            index={index}
+            setVaultIndex={setVaultIndex}
+            ticketAddresses={ticketAddresses}
             onToggle={onToggle}
             setToggleAction={setToggleAction}
           />
