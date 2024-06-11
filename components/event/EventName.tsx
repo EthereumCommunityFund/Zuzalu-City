@@ -43,8 +43,8 @@ const EventName = ({
     <Stack spacing="10px">
       <Box
         component="img"
-        width={isTablet ? '350px' : '350px'}
-        height={isTablet ? '350px' : '350px'}
+        width={isMobile ? '350px' : '500px'}
+        height={isMobile ? '350px' : '500px'}
         src={image_url}
         borderRadius="10px"
         border="1px solid rgba(255, 255, 255, 0.2)"

@@ -1257,12 +1257,12 @@ const Home = () => {
               {eventData && (
                 <Stack width={900} direction="row" spacing="20px">
                   <Stack spacing="20px" flex="2">
-                    <Stack spacing="4px">
+                    {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="100px" borderRadius="10px" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
                       </Typography>
-                    </Stack>
+                    </Stack> */}
 
                     <EventName
                       tagline={eventData.tagline}
@@ -1352,12 +1352,12 @@ const Home = () => {
                   </Stack>
                   <Stack spacing="20px" flex="1">
                     <EventRegister />
-                    <Stack spacing="4px">
+                    {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
                       </Typography>
-                    </Stack>
+                    </Stack> */}
                     <EventDetail status={eventData.status} links={eventData.customLinks} />
                   </Stack>
                 </Stack>
