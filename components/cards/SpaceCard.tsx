@@ -5,10 +5,10 @@ import { Typography, Button, Box, Stack } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
 
 export type SpaceCardProps = {
-  id: string;
+  id?: string;
   bgImage?: string;
   logoImage?: string;
-  title: string;
+  title?: string;
   description?: string;
   joined?: boolean;
 };
@@ -21,6 +21,15 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   description = 'Welcome Zucity',
   joined = false,
 }) => {
+
+  function isValidJSON(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   return (
     <Link href={`/spaces/${id}`} style={{ textDecoration: 'none' }}>
       <Stack
@@ -71,7 +80,11 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               color="white"
               sx={{ wordWrap: 'break-word' }}
             >
-              {description}
+              {isValidJSON(description.replaceAll('\\"', '"'))
+                ? JSON.parse(description.replaceAll('\\"', '"')).blocks[0]
+                  .data.text
+                : description
+              }
             </Typography>
           </Stack>
           <Stack direction="row">

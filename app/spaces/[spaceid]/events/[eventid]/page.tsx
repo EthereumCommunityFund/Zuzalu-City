@@ -8,6 +8,7 @@ import {
   EventDetail,
   EventRegister
 } from 'components/event';
+import { SpaceCard } from '@/components/cards';
 import { CeramicResponseType, EventEdge, Event, Session, SessionData, Profile, ProfileEdge, ProfileData } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
@@ -82,10 +83,12 @@ const Home = () => {
               timezone
               title
               space {
+                id
                 name
                 gated
                 avatar
                 banner
+                description
               }
               profile {
                 username
@@ -1246,14 +1249,14 @@ const Home = () => {
 
   return (
     <Stack direction="row" width="100%">
-      {!isDesktop && <IconSidebar />}
-      {!isDesktop && <Sidebar spaceId={params.spaceid.toString()} title={eventData?.space?.name} avatar={eventData?.space?.avatar} banner={eventData?.space?.banner} />}
+      {/* {!isDesktop && <IconSidebar />} */}
+      {/* {!isDesktop && <Sidebar spaceId={params.spaceid.toString()} title={eventData?.space?.name} avatar={eventData?.space?.avatar} banner={eventData?.space?.banner} />} */}
       <Stack flex={1} borderLeft="1px solid #383838">
         <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb tabName={tabName} setTabName={setTabName} />
         {
           tabName === "About" && (
-            <Stack padding="40px" justifyContent="center" alignItems="center">
+            <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
               {eventData && (
                 <Stack width={900} direction="row" spacing="20px">
                   <Stack spacing="20px" flex="2">
@@ -1359,6 +1362,9 @@ const Home = () => {
                       </Typography>
                     </Stack> */}
                     <EventDetail status={eventData.status} links={eventData.customLinks} />
+                    <Stack>
+                      <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
+                    </Stack>
                   </Stack>
                 </Stack>
               )}
@@ -1367,7 +1373,7 @@ const Home = () => {
         }
         {
           tabName === "Sessions" && (
-            <Stack padding="20px 80px">
+            <Stack padding="20px 80px" bgcolor="#222222" height="100vh">
               <Grid container spacing="30px">
                 <Grid item xs={12} md={8}>
                   <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>

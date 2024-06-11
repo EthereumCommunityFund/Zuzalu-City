@@ -1,6 +1,6 @@
 'use client';
-import * as React from 'react';
-import { Stack, Grid } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Stack, Box, Typography } from '@mui/material';
 import {
   EventName,
   EventDetail,
@@ -10,14 +10,28 @@ import {
 import { useParams } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
+import { supabase } from '@/utils/supabase/client';
+import { SpaceCard } from '@/components/cards';
 
 const About = () => {
   const [eventData, setEventData] = React.useState<Event>();
+  const [eventLocation, setEventLocation] = useState<string>('');
 
   const params = useParams();
   const eventId = params.eventid.toString();
 
   const { composeClient } = useCeramicContext();
+
+  const getLocation = async () => {
+    try {
+      const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
+      if (data !== null) {
+        setEventLocation(data[0].name)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   const getEventDetailInfo = async () => {
     try {
@@ -75,32 +89,118 @@ const About = () => {
     getEventDetailInfo();
   }, []);
   return eventData ? (
-    <Stack padding="40px" direction="row" justifyContent="center">
-      <Stack width={'900px'}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={7}>
+    <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
+      {eventData && (
+        <Stack width={900} direction="row" spacing="20px">
+          <Stack spacing="20px" flex="2">
+            {/* <Stack spacing="4px">
+                      <Box component="img" src="/sponsor_banner.png" height="100px" borderRadius="10px" />
+                      <Typography variant="caption" textAlign="right">
+                        Sponsored Banner
+                      </Typography>
+                    </Stack> */}
+
             <EventName
+              tagline={eventData.tagline}
               endTime={eventData.endTime}
               startTime={eventData.startTime}
               eventDescription={eventData.description}
               spaceName={eventData.space?.name}
               eventName={eventData.title}
-              location=""
-              image_url={eventData.image_url}
+              location={eventLocation}
               organizer={eventData.profile?.username as string}
+              image_url={eventData.image_url}
             />
-          </Grid>
-          <Grid item xs={12} md={5}>
+            <EventAbout tagline={eventData.tagline} description={eventData.description} />
+            <Stack
+              bgcolor="#292929"
+              padding="20px"
+              spacing="20px"
+              borderRadius="10px"
+            >
+              <Typography variant="subtitleSB">
+                EVENT SPONSORS
+              </Typography>
+              <Box
+                display="flex"
+                gap="20px"
+                flexWrap="wrap"
+              >
+                <Stack alignItems="center" spacing="4px">
+                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                  <Typography variant="bodyS">
+                    SponsorName
+                  </Typography>
+                </Stack>
+                <Stack alignItems="center" spacing="4px">
+                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                  <Typography variant="bodyS">
+                    SponsorName
+                  </Typography>
+                </Stack>
+                <Stack alignItems="center" spacing="4px">
+                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                  <Typography variant="bodyS">
+                    SponsorName
+                  </Typography>
+                </Stack>
+                <Stack alignItems="center" spacing="4px">
+                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                  <Typography variant="bodyS">
+                    SponsorName
+                  </Typography>
+                </Stack>
+                <Stack alignItems="center" spacing="4px">
+                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
+                  <Typography variant="bodyS">
+                    SponsorName
+                  </Typography>
+                </Stack>
+              </Box>
+            </Stack>
+            <Stack
+              bgcolor="#292929"
+              padding="20px"
+              spacing="20px"
+              borderRadius="10px"
+              height="300px"
+            >
+              <Typography variant="subtitleSB">
+                ORGANIZER UPDATES
+              </Typography>
+              <Stack spacing="10px">
+                <Stack direction="row" alignItems="center" spacing="10px">
+                  <Box component="img" src="/5.webp" width="30px" height="30px" borderRadius="20px" />
+                  <Typography variant="bodyMB">
+                    drivenfast
+                  </Typography>
+                  <Typography variant="caption">
+                    3 DAYS AGO
+                  </Typography>
+                </Stack>
+                <Typography variant="bodyM">
+                  ZuConnect is an experience crafted with love by Zuzalu, whose mission is to
+                  foster a global network of communities to advance humanity by creating playgrounds
+                  at the intersection of free and open technology, science, health, and social innovation.
+                </Typography>
+              </Stack>
+            </Stack>
+          </Stack>
+          <Stack spacing="20px" flex="1">
             <EventRegister />
-          </Grid>
-          <Grid item xs={12} md={7}>
-            <EventAbout description={eventData.description} />
-          </Grid>
-          <Grid item xs={12} md={5}>
-            <EventDetail />
-          </Grid>
-        </Grid>
-      </Stack>
+            {/* <Stack spacing="4px">
+                      <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
+                      <Typography variant="caption" textAlign="right">
+                        Sponsored Banner
+                      </Typography>
+                    </Stack> */}
+            <EventDetail status={eventData.status} links={eventData.customLinks} />
+            <Stack>
+              <SpaceCard id={eventData?.space?.id} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
+            </Stack>
+          </Stack>
+        </Stack>
+      )}
     </Stack>
   ) : (
     <></>
