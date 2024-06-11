@@ -14,7 +14,7 @@ const Overview = () => {
   const theme = useTheme();
   const params = useParams();
   const connector = createConnector('NFT.storage', {
-    token: process.env.CONNECTOR_TOKEN ?? '',
+    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
   const { composeClient } = useCeramicContext();
 
@@ -31,79 +31,52 @@ const Overview = () => {
   const [editor, setEditorInst] = useState<any>();
 
   const getSpace = async () => {
-    console.log('Fetching spaces...');
     try {
-      const response: any = await composeClient.executeQuery(`
-        query MyQuery {
-          spaceIndex(first: 20) {
-            edges {
-              node {
-                id
-                avatar
-                banner
-                description
-                name
-                profileId
-                tagline
-                website
-                twitter
-                telegram
-                nostr
-                lens
-                github
-                discord
-                ens
-              }
+      const response: any = await composeClient.executeQuery(
+        `
+        query GetSpace($id: ID!) {
+          node(id: $id) {
+            ...on Space {
+              id
+              avatar
+              banner
+              description
+              name
+              profileId
+              tagline
+              website
+              twitter
+              telegram
+              nostr
+              lens
+              github
+              discord
+              ens
             }
           }
         }
-      `);
+      `,
+        { id: params.spaceid },
+      );
 
-      if ('spaceIndex' in response.data) {
-        const spaceData: SpaceData = response.data as SpaceData;
-        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
-          (edge) => edge.node,
-        );
-        const editSpace = fetchedSpaces.filter(
-          (space) => space.id === params.spaceid.toString(),
-        )[0];
-        setSpace(editSpace);
-        setName(editSpace.name);
-        setDescription(
-          JSON.parse(editSpace.description.replaceAll('\\"', '"')),
-        );
-        setTagline(editSpace.tagline);
-        console.log('Spaces fetched:', fetchedSpaces);
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
+      const editSpace: Space = response.data.node as Space;
+      setSpace(editSpace);
+      setName(editSpace.name);
+      setDescription(JSON.parse(editSpace.description.replaceAll('\\"', '"')));
+      setTagline(editSpace.tagline);
     } catch (error) {
       console.error('Failed to fetch spaces:', error);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getSpace();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+    getSpace().catch((error) => {
+      console.error('An error occurred:', error);
+    });
   }, []);
 
   return (
-    <Stack
-      spacing="20px"
-      padding="40px"
-      sx={{
-        width: 'calc(100% - 420px)',
-        [theme.breakpoints.down('md')]: {
-          width: '100%',
-        },
-      }}
-    >
+    <Stack spacing="20px" padding="40px" sx={{ width: '100%', maxWidth: 800 }}>
       <Box
         sx={{
           display: 'flex',
@@ -183,10 +156,11 @@ const Overview = () => {
           holder="space_description"
           placeholder="Write Space Description"
           sx={{
+            width: '100%',
             backgroundColor: '#ffffff0d',
             fontFamily: 'Inter',
             color: 'white',
-            padding: '12px 12px 12px 80px',
+            padding: '10px',
             borderRadius: '10px',
           }}
           value={description}
@@ -266,9 +240,11 @@ const Overview = () => {
               accept={['.gif', '.jpeg', '.gif']}
               connector={connector}
               multiple={false}
-              crop={false} // must be false when accept is svg
+              crop={{
+                size: { width: 400, height: 400 },
+                aspectRatio: 1,
+              }} // must be false when accept is svg
               onComplete={(result: any) => {
-                console.log('complete', result);
                 setAvatarURL(result?.url);
               }}
             >
@@ -281,7 +257,7 @@ const Overview = () => {
                   border: '1px solid #383838',
                 }}
               >
-                Upload
+                Upload Image
               </Button>
             </Uploader3>
             <PreviewFile
@@ -306,7 +282,7 @@ const Overview = () => {
             Space Main Banner
           </Typography>
           <Typography fontSize={'13px'} fontWeight={500} lineHeight={'140%'}>
-            200 x 200 Min. (1:1 Ratio) Upload PNG, GIF or JPEG
+            Recommend size of 20 x 220 Accept PNG GIF or JPEG
           </Typography>
           <Box
             sx={{
@@ -319,9 +295,11 @@ const Overview = () => {
               accept={['.gif', '.jpeg', '.gif']}
               connector={connector}
               multiple={false}
-              crop={false} // must be false when accept is svg
+              crop={{
+                size: { width: 600, height: 400 },
+                aspectRatio: 740 / 200,
+              }}
               onComplete={(result: any) => {
-                console.log('complete', result);
                 setBannerURL(result?.url);
               }}
             >
@@ -334,7 +312,7 @@ const Overview = () => {
                   border: '1px solid #383838',
                 }}
               >
-                Upload
+                Upload Image
               </Button>
             </Uploader3>
             <PreviewFile

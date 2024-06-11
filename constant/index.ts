@@ -36,42 +36,56 @@ export const ticketFactoryGetContract = getContract({
 export const NEXT_PUBLIC_API_BASE_URL = 'http://localhost:3000';
 
 export const SPACE_CATEGORIES: {
-  value: string,
-  label: string
+  value: string;
+  label: string;
 }[] = [
-    {
-      value: 'network_states',
-      label: 'Network States'
-    },
-    {
-      value: 'charter_cities',
-      label: 'Charter Cities'
-    },
-    {
-      value: 'coordinations',
-      label: 'Coordinations'
-    },
-    {
-      value: 'zk_tech',
-      label: 'ZK Tech'
-    },
-    {
-      value: 'core_eth_development',
-      label: 'Core Ethereum Development'
-    },
-    {
-      value: 'l2_projects',
-      label: 'Layer2 Projects'
-    },
-    {
-      value: 'decentralized_social',
-      label: 'Decentralized Social'
-    }
-  ]
+  {
+    value: 'network_states',
+    label: 'Network States',
+  },
+  {
+    value: 'charter_cities',
+    label: 'Charter Cities',
+  },
+  {
+    value: 'coordinations',
+    label: 'Coordinations',
+  },
+  {
+    value: 'zk_tech',
+    label: 'ZK Tech',
+  },
+  {
+    value: 'core_eth_development',
+    label: 'Core Ethereum Development',
+  },
+  {
+    value: 'l2_projects',
+    label: 'Layer2 Projects',
+  },
+  {
+    value: 'decentralized_social',
+    label: 'Decentralized Social',
+  },
+];
+
+export const VENUE_TAGS: {
+  value: string;
+  label: string;
+}[] = [
+  {
+    value: 'live_stream_available',
+    label: 'Live-stream Available',
+  },
+  {
+    value: 'external_venue',
+    label: 'External Venue',
+  },
+];
 
 export const SOCIAL_TYPES: {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }[] = [
     {
       key: 'github',

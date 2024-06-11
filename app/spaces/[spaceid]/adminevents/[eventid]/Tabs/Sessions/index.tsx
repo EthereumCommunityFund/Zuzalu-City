@@ -29,6 +29,7 @@ import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Session, SessionData } from '@/types';
+import { OutputData } from '@editorjs/editorjs';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -53,25 +54,28 @@ const Sessions = () => {
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
   const [sessionDescription, setSessionDescription] =
-    useState<string>('Test Session');
+    useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   // const [sessionCreatedAt, setSessionCreatedAt] = useState<Dayjs | null>(dayjs());
+  const [sessoinStatus, setSessionStatus] = useState<string>('');
+  const [sessionGated, setSessionGated] = useState<string>('');
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
     dayjs(),
   );
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [error, setError] = useState(false);
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
 
   const profileId = profile?.id || '';
+  const eventId = params.eventid.toString();
 
   const getSessions = async () => {
-    console.log('Fetching sessions...');
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
@@ -108,7 +112,6 @@ const Sessions = () => {
           (edge) => edge.node,
         );
         setSessions(fetchedSessions);
-        console.log('Sessions fetched:', fetchedSessions);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -139,14 +142,24 @@ const Sessions = () => {
 
     const createSession = async () => {
       if (!isAuthenticated) {
-        console.log('Not authenticated');
         return;
       }
-      console.log(
-        'date',
-        sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-        sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-      );
+
+      const output = await editor.save();
+      let strDesc: any = JSON.stringify(output);
+
+      strDesc = strDesc.replaceAll('"', '\\"');
+
+      const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+
+      if (error) {
+        typeof window !== 'undefined' &&
+          window.alert(
+            'Please fill necessary fields!',
+          );
+        return;
+      }
+
       if (person) {
         const update = await composeClient.executeQuery(`
         mutation {
@@ -154,24 +167,22 @@ const Sessions = () => {
             input: {
               content: {
                 title: "${sessionName}",
-                description: "${sessionDescription}",
-                track: "${sessionTrack}",
-                tags: "${sessionTags.join().toString()},
-                type: "${sessionType}",
-                experience_level: "${sessionExperienceLevel},
-                format: "person",
                 createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 profileId: "${profileId}",
                 eventId: "${params.eventid.toString()}",
+                tags: "${sessionTags.join(',')}",
+                status: "${sessoinStatus}",
+                format: "person",
+                track: "${sessionTrack}",
+                gated: "${sessionGated}",
               }
             }
           ) {
             document {
               id
               title
-              description
               createdAt
               startTime
               endTime
@@ -181,7 +192,6 @@ const Sessions = () => {
           }
         }
         `);
-        console.log(update);
         toggleDrawer('right', false);
         await getSessions();
       } else {
@@ -194,8 +204,13 @@ const Sessions = () => {
                 createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "k2t6wzhkhabz4a09lsxkr3jbej43j9ubk0dt841uy8uq3m5c5y2iauknqo87t2",
-                eventId: "kjzl6kcym7w8yb0t9l54s3c8c2vyqpec0oy9dvnrmw6muqbvldeowp6ooo85sqr",
+                profileId: "${profileId}",
+                eventId: "${params.eventid.toString()}",
+                tags: "${sessionTags.join(',')}",
+                status: "${sessoinStatus}",
+                format: "online",
+                track: "${sessionTrack}",
+                gated: "${sessionGated}",
               }
             }
           ) {
@@ -211,7 +226,6 @@ const Sessions = () => {
           }
         }
         `);
-        console.log(update);
         toggleDrawer('right', false);
         await getSessions();
       }
@@ -354,6 +368,7 @@ const Sessions = () => {
                 </Typography>
                 <TextEditor
                   holder="space_description"
+                  value={sessionDescription}
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',

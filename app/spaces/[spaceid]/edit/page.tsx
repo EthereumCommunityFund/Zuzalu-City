@@ -17,9 +17,9 @@ export default function SpaceEditPage() {
         return <Overview />;
     }
   };
-  console.log('tab', tabName);
+
   return (
-    <Stack flexDirection="row">
+    <Stack flexDirection="row" width={'100%'}>
       <SpaceEditSidebar tabName={tabName} setTabName={setTabName} />
       {renderPage()}
     </Stack>

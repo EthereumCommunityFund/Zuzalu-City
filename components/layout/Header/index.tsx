@@ -12,25 +12,24 @@ import {
   MenuItem,
   Divider,
 } from '@mui/material';
+import styles from './index.module.css';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { SearchIcon, MenuIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import SidebarDrawer from '../Sidebar/SidebarDrawer';
 import { useAppContext } from '@/context/AppContext';
-
+import { useDisconnect } from 'wagmi';
 const Header = () => {
   const theme = useTheme();
-  const {openSidebar, setOpenSidebar} = useAppContext();
+  const { openSidebar, setOpenSidebar } = useAppContext();
   const router = useRouter();
   const pathName = usePathname();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const { isAuthenticated, showAuthPrompt, logout, username } =
     useCeramicContext();
-
-  console.log('AUth', isAuthenticated, username);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const { disconnect } = useDisconnect();
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -40,8 +39,10 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    disconnect();
     logout();
     handleMenuClose();
+    window.location.reload();
   };
   const handleProfile = () => {
     handleMenuClose();
@@ -70,18 +71,20 @@ const Header = () => {
         gap="10px"
         sx={{ cursor: 'pointer' }}
       >
-        {
-          (isTablet || pathName.split("/")[1] === "spaces" && pathName.split("/").length > 2) && <Button
-            sx={{
-              padding: '10px',
-              width: '40px',
-              minWidth: 'unset'
-            }}
-            onClick={() => setOpenSidebar(true)}
-          >
-            <MenuIcon />
-          </Button>
-        }
+        {(isTablet ||
+          (pathName.split('/')[1] === 'spaces' &&
+            pathName.split('/').length > 2)) && (
+            <Button
+              sx={{
+                padding: '10px',
+                width: '40px',
+                minWidth: 'unset',
+              }}
+              onClick={() => setOpenSidebar(true)}
+            >
+              <MenuIcon />
+            </Button>
+          )}
 
         <Box
           component="img"
@@ -134,26 +137,26 @@ const Header = () => {
             }}
           >
             <MenuItem>{username}</MenuItem>
-            <MenuItem>Wallet Connected</MenuItem>
-            <MenuItem onClick={handleProfile}>Profile</MenuItem>
-            <MenuItem onClick={() => router.push('/passport')}>
-              Passport
-            </MenuItem>
-            <MenuItem onClick={handleSetting}>Setting</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem><span className={"text"}>Wallet Connected</span></MenuItem>
+            <MenuItem onClick={handleProfile}><span className={styles.text}>Profile</span></MenuItem>
+            {/* <MenuItem onClick={() => router.push('/passport')}>
+              <span className={styles.text}>Passport</span>
+            </MenuItem> */}
+            {/*<MenuItem onClick={handleSetting}>Setting</MenuItem>*/}
+            <MenuItem onClick={handleLogout}><span className={styles.text}>Logout</span></MenuItem>
             <Divider />
 
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              Blog
+              <span className={styles.text}>Blog</span>
             </MenuItem>
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              Privacy
+              <span className={styles.text}>Privacy</span>
             </MenuItem>
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              Terms
+              <span className={styles.text}>Terms</span>
             </MenuItem>
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
-              About Zuzalu City
+              <span className={styles.text}>About Zuzalu City</span>
             </MenuItem>
           </Menu>
         </>
@@ -178,7 +181,11 @@ const Header = () => {
           Connect
         </Button>
       )}
-      <SidebarDrawer selected={'Home'} open={openSidebar} onClose={() => setOpenSidebar(false)} />
+      <SidebarDrawer
+        selected={'Home'}
+        open={openSidebar}
+        onClose={() => setOpenSidebar(false)}
+      />
     </Box>
   );
 };

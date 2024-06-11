@@ -1,26 +1,22 @@
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CeramicClient } from '@ceramicnetwork/http-client';
 import { ComposeClient } from '@composedb/client';
 import { RuntimeCompositeDefinition } from '@composedb/types';
 import { definition } from '../composites/definition.js';
-import React from 'react';
 import { authenticateCeramic } from '../utils/ceramicAuth';
+import { Profile, CreateProfileResult } from '@/types/index.js';
 /**
  * Configure ceramic Client & create context.
  */
 const ceramicUrl =
   process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
-console.log('ceramic url', ceramicUrl);
 
 const ceramic = new CeramicClient(ceramicUrl);
 const composeClient = new ComposeClient({
   ceramic: ceramicUrl,
   definition: definition as RuntimeCompositeDefinition,
 });
-type Profile = {
-  id?: any;
-  username?: string | undefined;
-};
+
 interface CeramicContextType {
   ceramic: CeramicClient;
   composeClient: ComposeClient;
@@ -33,7 +29,7 @@ interface CeramicContextType {
   isAuthPromptVisible: boolean;
   showAuthPrompt: () => void;
   hideAuthPrompt: () => void;
-  createProfile: (newName: string) => Promise<void>;
+  createProfile: (newName: string) => Promise<CreateProfileResult>;
 }
 
 const CeramicContext = createContext<CeramicContextType>({
@@ -48,22 +44,23 @@ const CeramicContext = createContext<CeramicContextType>({
   isAuthPromptVisible: false,
   showAuthPrompt: () => {},
   hideAuthPrompt: () => {},
-  createProfile: async (newName: string) => {},
+  createProfile: async (newName: string): Promise<CreateProfileResult> => {
+    if (!newName) {
+      return { error: 'Name is required.' };
+    }
+    return { profile: { id: 'newId', username: newName } };
+  },
 });
 
 export const CeramicProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
   const [username, setUsername] = useState<string | undefined>(undefined);
-  const [newUser, setNewuser] = useState(false);
   const [profile, setProfile] = useState<Profile | undefined>();
-
+  let newUser = false;
   const authenticate = async () => {
-    console.log('authenticating', ceramicUrl, ceramic, composeClient);
     await authenticateCeramic(ceramic, composeClient);
-    setIsAuthenticated(true);
     await getProfile();
-    console.log(newUser, profile, 'info');
     setIsAuthenticated(true);
   };
 
@@ -77,10 +74,13 @@ export const CeramicProvider = ({ children }: any) => {
   const hideAuthPrompt = () => setAuthPromptVisible(false);
 
   const logout = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('ceramic:eth_did');
+    localStorage.removeItem('display did');
+    localStorage.removeItem('logged_in');
     setIsAuthenticated(false);
   };
   const getProfile = async () => {
-    console.log('getting profile ceramic.did: ', ceramic.did);
     if (ceramic.did !== undefined) {
       const profile: any = await composeClient.executeQuery(`
         query {
@@ -94,60 +94,50 @@ export const CeramicProvider = ({ children }: any) => {
       `);
       const basicProfile: { id: string; username: string } | undefined =
         profile?.data?.viewer?.mvpProfile;
-      console.log('Basic Profile:', basicProfile);
       localStorage.setItem(
         'username',
         profile?.data?.viewer?.mvpProfile?.username,
       );
       setProfile(basicProfile);
       setUsername(basicProfile?.username);
-      console.log(basicProfile?.username);
       if (!basicProfile) {
-        setProfile(undefined);
-        setNewuser(true);
+        newUser = true;
       }
+      return basicProfile;
     }
   };
 
-  const createProfile = async (newName: string) => {
-    if (ceramic.did !== undefined && newName) {
-      console.log(newName, 'username');
+  const createProfile = async (
+    newName: string,
+  ): Promise<CreateProfileResult> => {
+    if (!ceramic.did || !newName) {
+      return { error: 'Invalid DID or name provided.' };
+    }
+
+    try {
       const update = await composeClient.executeQuery(`
         mutation {
           createMVPProfile(input: {
             content: {
               username: "${newName}"
             }
-          }) 
-          {
+          }) {
             document {
               username
             }
           }
         }
       `);
+
       if (update.errors) {
-        alert(update.errors);
-      } else {
-        const updatedProfile: any = await composeClient.executeQuery(`
-        query {
-          viewer {
-            mvpProfile {
-              id
-              username
-            }
-          }
-        }
-      `);
-        console.log(updatedProfile, 'updated profile');
-        const newProfile: { id: string; username: string } | undefined =
-          updatedProfile?.data?.viewer?.mvpProfile;
-        setProfile(newProfile);
-        if (newProfile?.username) {
-          setUsername(newProfile.username);
-          localStorage.setItem('username', newProfile.username);
-        }
+        return { error: update.errors.map((e: any) => e.message).join(', ') };
       }
+
+      const updatedProfile = await getProfile();
+      return { profile: updatedProfile };
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      return { error: 'Failed to create profile.' };
     }
   };
 

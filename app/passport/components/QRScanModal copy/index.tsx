@@ -1,5 +1,13 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { Typography, IconButton, Box, Modal, Button, Select, MenuItem } from '@mui/material';
+import {
+  Typography,
+  IconButton,
+  Box,
+  Modal,
+  Button,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ZuSelect } from 'components/core';
 const QrReader = require('react-qr-scanner');
@@ -45,14 +53,26 @@ const ScanQRModal = ({ showModal, setShowModal }: IScanQRModal) => {
   return (
     <>
       <VerificationSuccess isSuccess={isSuccess} setIsSuccess={setIsSuccess} />
-      <VerificationFailed isFailed={isFailed} setIsFailed={setIsFailed} setShowModal={setShowModal} />
+      <VerificationFailed
+        isFailed={isFailed}
+        setIsFailed={setIsFailed}
+        setShowModal={setShowModal}
+      />
       <Modal open={showModal} onClose={() => setShowModal(false)}>
         <Box sx={modalStyle}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.75}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={1.75}
+          >
             <Typography variant="h6" color="white">
               Scan Ticket
             </Typography>
-            <IconButton onClick={() => setShowModal(false)} sx={{ color: 'white' }}>
+            <IconButton
+              onClick={() => setShowModal(false)}
+              sx={{ color: 'white' }}
+            >
               <CloseIcon />
             </IconButton>
           </Box>
@@ -71,7 +91,12 @@ const ScanQRModal = ({ showModal, setShowModal }: IScanQRModal) => {
               onScan={handleScan}
             />
           )}
-          <Typography textAlign="center" fontWeight={700} fontSize="18px" color="white">
+          <Typography
+            textAlign="center"
+            fontWeight={700}
+            fontSize="18px"
+            color="white"
+          >
             {verifying ? 'Verifying...' : 'Scanning...'}
           </Typography>
           <Box mt={2.5} color="white">
@@ -89,15 +114,26 @@ interface IVerificationSuccess {
   setIsSuccess: Dispatch<SetStateAction<boolean>>;
 }
 
-const VerificationSuccess = ({ isSuccess, setIsSuccess }: IVerificationSuccess) => {
+const VerificationSuccess = ({
+  isSuccess,
+  setIsSuccess,
+}: IVerificationSuccess) => {
   return (
     <Modal open={isSuccess} onClose={() => setIsSuccess(false)}>
       <Box sx={modalStyle}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.75}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={1.75}
+        >
           <Typography variant="h6" color="white">
             Scan Ticket
           </Typography>
-          <IconButton onClick={() => setIsSuccess(false)} sx={{ color: 'white' }}>
+          <IconButton
+            onClick={() => setIsSuccess(false)}
+            sx={{ color: 'white' }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
@@ -108,7 +144,13 @@ const VerificationSuccess = ({ isSuccess, setIsSuccess }: IVerificationSuccess) 
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect width="360" height="360" rx="10" fill="#7DFFD1" fillOpacity="0.1" />
+          <rect
+            width="360"
+            height="360"
+            rx="10"
+            fill="#7DFFD1"
+            fillOpacity="0.1"
+          />
           <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -135,7 +177,13 @@ const VerificationSuccess = ({ isSuccess, setIsSuccess }: IVerificationSuccess) 
             </linearGradient>
           </defs>
         </svg>
-        <Typography mt={2.5} textAlign="center" fontWeight={700} fontSize="18px" color="#7DFFD1">
+        <Typography
+          mt={2.5}
+          textAlign="center"
+          fontWeight={700}
+          fontSize="18px"
+          color="#7DFFD1"
+        >
           Verified
         </Typography>
       </Box>
@@ -149,7 +197,11 @@ interface IVerificationFailed {
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }
 
-const VerificationFailed = ({ isFailed, setIsFailed, setShowModal }: IVerificationFailed) => {
+const VerificationFailed = ({
+  isFailed,
+  setIsFailed,
+  setShowModal,
+}: IVerificationFailed) => {
   const handleReScan = () => {
     setShowModal(true);
     setIsFailed(false);
@@ -157,11 +209,19 @@ const VerificationFailed = ({ isFailed, setIsFailed, setShowModal }: IVerificati
   return (
     <Modal open={isFailed} onClose={() => setIsFailed(false)}>
       <Box sx={modalStyle}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.75}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={1.75}
+        >
           <Typography variant="h6" color="white">
             Scan Ticket
           </Typography>
-          <IconButton onClick={() => setIsFailed(false)} sx={{ color: 'white' }}>
+          <IconButton
+            onClick={() => setIsFailed(false)}
+            sx={{ color: 'white' }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
@@ -172,7 +232,13 @@ const VerificationFailed = ({ isFailed, setIsFailed, setShowModal }: IVerificati
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect width="360" height="360" rx="10" fill="#FF5E5E" fillOpacity="0.1" />
+          <rect
+            width="360"
+            height="360"
+            rx="10"
+            fill="#FF5E5E"
+            fillOpacity="0.1"
+          />
           <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -199,10 +265,28 @@ const VerificationFailed = ({ isFailed, setIsFailed, setShowModal }: IVerificati
             </linearGradient>
           </defs>
         </svg>
-        <Typography mb={3.5} mt={2.5} textAlign="center" fontWeight={700} fontSize="18px" color="#FF5E5E">
+        <Typography
+          mb={3.5}
+          mt={2.5}
+          textAlign="center"
+          fontWeight={700}
+          fontSize="18px"
+          color="#FF5E5E"
+        >
           Unverified
         </Typography>
-        <Button onClick={handleReScan} fullWidth sx={{ px: 1.75, py: 1, borderRadius: '10px', fontWeight: 600, backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'white' }}>
+        <Button
+          onClick={handleReScan}
+          fullWidth
+          sx={{
+            px: 1.75,
+            py: 1,
+            borderRadius: '10px',
+            fontWeight: 600,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            color: 'white',
+          }}
+        >
           Re-Scan
         </Button>
       </Box>

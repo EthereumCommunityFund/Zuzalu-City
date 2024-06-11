@@ -7,8 +7,8 @@ export const RightArrowCircleSmallIcon = () => {
         padding: '4px',
         borderRadius: '100%',
         backgroundColor: '#ffffff0f',
-        width: '16px',
-        height: '16px',
+        width: '26px',
+        height: '26px',
       }}
     >
       <svg
@@ -17,8 +17,8 @@ export const RightArrowCircleSmallIcon = () => {
         fill="currentColor"
         color="rgb(255, 255, 255)"
         style={{
-          width: '16px',
-          height: '16px',
+          width: '18px',
+          height: '18px',
         }}
       >
         <path

@@ -4,6 +4,11 @@ export type IconProps = {
   cursor?: string;
 };
 
+export type Link = {
+  title: string;
+  links: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -22,6 +27,19 @@ export interface Event {
   min_participant: number;
   max_participant: number;
   createdAt: string;
+  space?: {
+    id?: string;
+    name?: string;
+    gated?: string;
+    avatar?: string;
+    banner?: string;
+    description?: string;
+  };
+  profile?: {
+    username?: string;
+    avatar?: string;
+  };
+  customLinks?: [Link]
 }
 
 export interface EventEdge {
@@ -35,6 +53,10 @@ export interface EventData {
 }
 export interface SpaceEventEdge {
   node: Event;
+}
+
+export interface CeramicResponseType<T> {
+  data?: T;
 }
 
 export interface SpaceEventData {
@@ -103,4 +125,27 @@ export interface SessionData {
 export interface Venue {
   id: string;
   title: string;
+}
+
+
+
+export type Profile = {
+  id: any;
+  username: string;
+  avatar?: string;
+};
+export interface ProfileData {
+  node: Profile
+}
+
+export interface ProfileEdge {
+  mVPProfileIndex: {
+    edges: ProfileData[]
+  }
+}
+
+
+export interface CreateProfileResult {
+  profile?: Profile;
+  error?: string;
 }

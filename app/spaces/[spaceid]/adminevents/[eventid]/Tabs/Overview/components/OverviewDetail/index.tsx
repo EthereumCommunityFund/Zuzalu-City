@@ -2,9 +2,83 @@ import * as React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { EventIcon, LockIcon, MapIcon } from 'components/icons';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { CeramicResponseType, Event, EventEdge } from '@/types';
+import { useParams } from 'next/navigation';
+import { convertDateStringFormat } from '@/utils';
 
 const OverviewDetail = () => {
-  return (
+  const {
+    ceramic,
+    composeClient,
+    isAuthenticated,
+    authenticate,
+    logout,
+    showAuthPrompt,
+    hideAuthPrompt,
+    isAuthPromptVisible,
+    newUser,
+    profile,
+    username,
+    createProfile,
+  } = useCeramicContext();
+  const params = useParams();
+  const eventId = params.eventid.toString();
+
+  const [eventData, setEventData] = React.useState<Event>();
+
+  const getEventDetailInfo = async () => {
+    try {
+      const response: CeramicResponseType<EventEdge> =
+        (await composeClient.executeQuery(
+          `
+        query MyQuery ($id: ID!) {
+          node (id: $id) {
+            ...on Event {
+              id
+              title
+              description
+              status
+              endTime
+              spaceId
+              tagline
+              timezone
+              createdAt
+              image_url
+              profileId
+              startTime
+              description
+              meeting_url
+              external_url
+              max_participant
+              space {
+                name
+                gated
+              }
+            }
+          }
+        }
+      `,
+          {
+            id: eventId,
+          },
+        )) as CeramicResponseType<EventEdge>;
+
+      if (response.data) {
+        if (response.data.node) {
+          setEventData(response.data.node);
+        }
+      }
+    } catch (err) {
+      console.log('Failed to fetch event: ', err);
+    }
+  };
+
+  React.useEffect(() => {
+    getEventDetailInfo();
+  }, []);
+
+  return eventData ? (
     <Stack
       marginY={4}
       padding={2}
@@ -15,7 +89,7 @@ const OverviewDetail = () => {
     >
       <Box
         component="img"
-        src="/12.webp"
+        src={eventData.image_url ? eventData.image_url : '/12.webp'}
         borderRadius={3}
         height={450}
         width={450}
@@ -38,43 +112,50 @@ const OverviewDetail = () => {
           </Typography>
           <Box component="img" src="/1.webp" height={20} width={20} />
           <Typography variant="body2" color="white">
-            Zuzalu City Contributors
+            {eventData.space && eventData.space.name}
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={1}>
           <EventIcon />
           <Typography variant="body1" color="white">
-            October 8 - October 28
+            {convertDateStringFormat(eventData.startTime)} -{' '}
+            {convertDateStringFormat(eventData.endTime)}
           </Typography>
         </Stack>
         <Typography variant="h5" color="white">
-          ZuVillage Georgia
+          {eventData.title}
         </Typography>
         <Typography variant="body1" color="white">
-          A two-month gathering of up to 500 individuals to promote/research the
-          defensive, decentralized, differentiated, and democratic acceleration
-          of technology.
+          {eventData.description}
         </Typography>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <MapIcon size={4} />
-          <Typography variant="caption" color="white">
-            GEORGIA
-          </Typography>
-        </Stack>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <MapIcon size={4} />
-          <Typography variant="caption" color="white">
-            ONLINE
-          </Typography>
-        </Stack>
-        <ZuButton
-          startIcon={<LockIcon size={4} />}
-          sx={{ backgroundColor: '#2F4541', maxWidth: '20%' }}
-        >
-          Gated
-        </ZuButton>
+        {eventData.timezone && (
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <MapIcon size={4} />
+            <Typography variant="caption" color="white">
+              {eventData.timezone}
+            </Typography>
+          </Stack>
+        )}
+        {eventData.status && (
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <MapIcon size={4} />
+            <Typography variant="caption" color="white">
+              {eventData.status}
+            </Typography>
+          </Stack>
+        )}
+        {eventData.space && eventData.space.gated && (
+          <ZuButton
+            startIcon={<LockIcon size={4} />}
+            sx={{ backgroundColor: '#2F4541', maxWidth: '20%' }}
+          >
+            GATED
+          </ZuButton>
+        )}
       </Stack>
     </Stack>
+  ) : (
+    <></>
   );
 };
 

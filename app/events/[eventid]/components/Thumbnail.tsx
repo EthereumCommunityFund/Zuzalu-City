@@ -1,10 +1,13 @@
 'use client';
-import * as React from 'react';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { LeftArrowIcon, ShareIcon, HomeIcon } from 'components/icons';
 
 const Thumbnail = () => {
+  const router = useRouter();
+
   return (
     <Stack
       direction="row"
@@ -17,6 +20,7 @@ const Thumbnail = () => {
         <ZuButton
           sx={{ backgroundColor: '#333333' }}
           startIcon={<LeftArrowIcon />}
+          onClick={() => router.push("/")}
         >
           Back
         </ZuButton>

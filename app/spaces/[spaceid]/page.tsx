@@ -1,11 +1,21 @@
 'use client';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from '@mui/material/styles';
-import { Box, Snackbar, Typography, Alert, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Snackbar,
+  Typography,
+  Alert,
+  useMediaQuery,
+  Skeleton,
+  Stack,
+} from '@mui/material';
 import { EventCard } from '@/components/cards';
 // import AnnouncementCard from 'components/AnnouncementCart';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
+  ArrowDownIcon,
+  ChevronDownIcon,
   EventIcon,
   HomeIcon,
   PlusCircleIcon,
@@ -20,15 +30,15 @@ import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, Event, SpaceEventData } from '@/types';
 import { Sidebar } from '@/components/layout';
+import { groupEventsByMonth } from '@/components/cards/EventCard';
+import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 // import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
   const params = useParams();
   const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  console.log('router', params);
+  const router = useRouter();
   const { composeClient } = useCeramicContext();
-  const [aboutContent, setAboutContent] = useState<string>('');
   const [showMore, setShowMore] = useState(false);
   const [space, setSpace] = useState<Space>();
   const [showCopyToast, setShowCopyToast] = useState(false);
@@ -39,7 +49,6 @@ export default function SpaceDetailPage() {
   }, []);
 
   const getSpaceByID = async () => {
-    console.log('Fetching spaces...');
     try {
       const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {
@@ -92,38 +101,42 @@ export default function SpaceDetailPage() {
       const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
         id: spaceId,
       });
-      console.log(response);
       const spaceData: Space = response.data.node as Space;
       setSpace(spaceData);
+
       const eventData: SpaceEventData = response.data.node
         .events as SpaceEventData;
       const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
       setEvents(fetchedEvents);
+      return spaceData;
     } catch (error) {
       console.error('Failed to fetch space:', error);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getSpaceByID();
-      } catch (error) {
+    getSpaceByID()
+      .then((space = {} as Space) => {
+        document.title = space.name + ' - ' + 'Zuzalu City';
+      })
+      .catch((error) => {
         console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+      });
   }, []);
 
-  useEffect(() => {
-    if (showMore) {
-      const description = space?.description ?? '';
-      const shortDescription = description.substring(0, 30);
-      setAboutContent(shortDescription);
-    } else {
-      setAboutContent(space?.description as string);
+  const shortDescription = (description: string, showMore: boolean) => {
+    if (showMore) return description;
+    return description.substring(0, 30);
+  };
+
+  function isValidJSON(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
     }
-  }, [showMore]);
+  }
 
   return (
     <Box
@@ -133,7 +146,12 @@ export default function SpaceDetailPage() {
         width: '100%',
       }}
     >
-      <SubSidebar title={space?.name} spaceId={params.spaceid.toString()} />
+      <SubSidebar
+        title={space?.name}
+        spaceId={params.spaceid.toString()}
+        avatar={space?.avatar}
+        banner={space?.banner}
+      />
       <Box
         sx={{
           width: 'calc(100% - 280px)',
@@ -141,7 +159,9 @@ export default function SpaceDetailPage() {
             width: '100%',
           },
           fontFamily: 'Inter',
+          backgroundColor: '#222222',
         }}
+        flex={'1'}
       >
         <Box
           sx={{
@@ -162,26 +182,28 @@ export default function SpaceDetailPage() {
               height: '240px',
             }}
           >
-            <Image
-              loader={() =>
-                'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=1024 1024w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png 1920w'
-              }
-              src={
-                'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512 512w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=1024 1024w, https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png 1920w'
-              }
-              alt=""
-              width={'100'}
-              height={'240'}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                objectFit: 'cover',
-                width: '100%',
-                height: '100%',
-                borderRadius: '10px',
-              }}
-              className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
-            />
+            {space ? (
+              <Image
+                src={
+                  space?.banner ||
+                  'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png'
+                }
+                alt={space?.name || ''}
+                width={200}
+                height={200}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  objectFit: 'cover',
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '10px',
+                }}
+                className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
+              />
+            ) : (
+              <Skeleton variant="rectangular" width={'100%'} height={'100%'} />
+            )}
             <Box
               sx={{
                 width: '90px',
@@ -197,17 +219,24 @@ export default function SpaceDetailPage() {
                 flexDirection: 'row',
               }}
             >
-              <Image
-                loader={() =>
-                  'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
-                }
-                src={
-                  'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
-                }
-                width={80}
-                height={80}
-                alt=""
-              />
+              {space ? (
+                <Image
+                  loader={() =>
+                    space?.avatar ||
+                    'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+                  }
+                  src={
+                    space?.avatar ||
+                    'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+                  }
+                  style={{ borderRadius: '100%' }}
+                  width={80}
+                  height={80}
+                  alt={space.name}
+                />
+              ) : (
+                <Skeleton variant="circular" width={80} height={80} />
+              )}
             </Box>
           </Box>
           <Box
@@ -224,24 +253,24 @@ export default function SpaceDetailPage() {
                 gap: '10px',
               }}
             >
-              <SidebarButton
-                content="Join Space"
-                sx={{
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  backgroundColor: '#ffffff0a',
-                  '&:hover': {
-                    backgroundColor: '#ffffff1a',
-                  },
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: '10px',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  alignItems: 'center',
-                }}
-                icon={<PlusCircleIcon />}
-              ></SidebarButton>
+              {/*<SidebarButton*/}
+              {/*  content="Join Space"*/}
+              {/*  sx={{*/}
+              {/*    padding: '10px 14px',*/}
+              {/*    borderRadius: '10px',*/}
+              {/*    backgroundColor: '#ffffff0a',*/}
+              {/*    '&:hover': {*/}
+              {/*      backgroundColor: '#ffffff1a',*/}
+              {/*    },*/}
+              {/*    display: 'flex',*/}
+              {/*    flexDirection: 'row',*/}
+              {/*    gap: '10px',*/}
+              {/*    cursor: 'pointer',*/}
+              {/*    whiteSpace: 'nowrap',*/}
+              {/*    alignItems: 'center',*/}
+              {/*  }}*/}
+              {/*  icon={<PlusCircleIcon />}*/}
+              {/*/>*/}
               <CopyToClipboard
                 text={currentHref}
                 onCopy={() => {
@@ -284,9 +313,11 @@ export default function SpaceDetailPage() {
             }}
           >
             <Typography fontWeight={700} fontSize={'25px'} lineHeight={'120%'}>
-              {space?.name}
+              {space ? space.name : <Skeleton width={200} />}
             </Typography>
-            <Typography color={'#bebebe'}>{space?.tagline}</Typography>
+            <Typography color={'#bebebe'}>
+              {space ? space.tagline : <Skeleton />}
+            </Typography>
             <Box
               sx={{
                 color: '#7b7b7b',
@@ -301,12 +332,7 @@ export default function SpaceDetailPage() {
             </Box>
           </Box>
         </Box>
-        <Box
-          sx={{
-            width: '100%',
-            backgroundColor: '#222222',
-          }}
-        >
+        <Box sx={{ width: '100%', backgroundColor: '#222222' }}>
           <Box
             sx={{
               padding: '20px',
@@ -316,160 +342,90 @@ export default function SpaceDetailPage() {
               boxSizing: 'border-box',
             }}
           >
-            <Box
-              sx={{
-                fontSize: '18px',
-                fontWeight: '700',
-                color: '#919191',
-              }}
-            >
-              About {space?.name}
-            </Box>
-            <Box
-              sx={{
-                padding: '20px',
-                width: '100%',
-                backgroundColor: '#ffffff05',
-                borderRadius: '10px',
-                height: 'fit-content',
-                boxSizing: 'border-box',
-              }}
-            >
-              <Box
-                sx={{
-                  fontWeight: '700',
-                  color: 'white',
-                  marginTop: '12px',
-                  fontSize: '18px',
-                  lineHeight: '160%',
-                }}
-              >
-                {space?.name}
-              </Box>
-              <Box
-                sx={{
-                  marginTop: '12px',
-                  color: 'white',
-                  opacity: '0.8',
-                  fontWeight: '400',
-                  fontSize: '14px',
-                  lineHeight: '160%',
-                }}
-              >
-                {aboutContent}
-              </Box>
-            </Box>
+            {space ? (
+              <>
+                <Box
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    color: '#919191',
+                  }}
+                >
+                  About {space.name}
+                </Box>
+                <Box
+                  sx={{
+                    padding: '20px',
+                    width: '100%',
+                    backgroundColor: '#ffffff05',
+                    borderRadius: '10px',
+                    height: 'fit-content',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      fontWeight: '700',
+                      color: 'white',
+                      marginTop: '12px',
+                      fontSize: '18px',
+                      lineHeight: '160%',
+                    }}
+                  >
+                    {space.name}
+                  </Box>
+                  <Box
+                    sx={{
+                      marginTop: '12px',
+                      color: 'white',
+                      opacity: '0.8',
+                      fontWeight: '400',
+                      fontSize: '14px',
+                      lineHeight: '160%',
+                    }}
+                  >
+                    {shortDescription(isValidJSON(space.description.replaceAll('\\"', '"'))
+                      ? JSON.parse(space.description.replaceAll('\\"', '"'))
+                        .blocks[0].data.text
+                      : space.description, showMore)}
+                  </Box>
+                </Box>
+              </>
+            ) : (
+              <Skeleton variant="rounded" width={'100%'} height={60} />
+            )}
 
-            <SidebarButton
-              sx={{
-                width: '100%',
-                padding: '10px 14px',
-                backgroundColor: '#2b2b2b',
-                '&:hover': {
-                  backgroundColor: '#ffffff1a',
-                },
-                borderRadius: '10px',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxSizing: 'border-box',
-              }}
-              content={showMore ? 'Show Less' : 'Show More'}
-              onClick={() => {
-                setShowMore(!showMore);
-              }}
-            ></SidebarButton>
-          </Box>
-          <Box
-            sx={{
-              padding: '20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexDirection: 'row',
-              }}
-            >
-              <Box
-                sx={{
-                  fontSize: '18px',
-                  fontWeight: '700',
-                  color: '#919191',
-                }}
-              >
-                Upcoming Events ({MOCK_DATA.upcomingEvents.length})
-              </Box>
+            {space && (
               <SidebarButton
                 sx={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  backgroundColor: '#2b2b2b',
+                  '&:hover': {
+                    backgroundColor: '#ffffff1a',
+                  },
+                  borderRadius: '10px',
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '4px 10px',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: '#e6e6e61a',
-                  },
-                  backgroundColor: 'transparent',
-                  borderRadius: '10px',
-                  opacity: 0.7,
-                }}
-                content="View All Events"
-                rightIcon={<RightArrowCircleSmallIcon />}
-              ></SidebarButton>
-            </Box>
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-              }}
-            >
-              <Box
-                sx={{
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  paddingLeft: '14px',
-                  paddingRight: '14px',
-                  paddingTop: '8px',
-                  paddingBottom: '8px',
-                  border: '1px solid #ffffff1a',
-                  borderRadius: '50px',
-                  display: 'flex',
-                  alignItems: 'center',
                   justifyContent: 'center',
-                  position: 'sticky',
-                  backdropFilter: 'blur(40px)',
-                  top: '10px',
-                  backgroundColor: '#222222cc',
+                  cursor: 'pointer',
+                  boxSizing: 'border-box',
+                }}
+                onClick={() => {
+                  setShowMore((v) => !v);
                 }}
               >
-                October 2023
-              </Box>
-              <Box>
-                {events.map((event, index) => (
-                  <EventCard
-                    id={event.id}
-                    spaceId={event.spaceId}
-                    key={`EventCard-${index}`}
-                    name={event.title}
-                    description={event.description}
-                  />
-                ))}
-              </Box>
-            </Box>
+                <Stack direction="row" spacing={'10px'} alignItems={'center'}>
+                  {showMore ? <ChevronDownIcon
+                    size={4}
+                  /> : <ChevronUpIcon size={4} />}
+                  <span>{showMore ? 'Show Less' : 'Show More'}</span>
+                </Stack>
+              </SidebarButton>
+            )}
+          </Box>
+          {events.length > 0 && (
             <Box
               sx={{
                 padding: '20px',
@@ -487,19 +443,23 @@ export default function SpaceDetailPage() {
                   flexDirection: 'row',
                 }}
               >
-                {/*<Box
+                <Box
                   sx={{
                     fontSize: '18px',
                     fontWeight: '700',
                     color: '#919191',
                   }}
                 >
-                  Past Events ({MOCK_DATA.pastEvents.length})
+                  Upcoming Events ({events.length})
                 </Box>
                 <SidebarButton
+                  onClick={() => {
+                    router.push(`/spaces/${params.spaceid}/events`);
+                  }}
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
+                    alignItems: 'center',
                     padding: '4px 10px',
                     cursor: 'pointer',
                     '&:hover': {
@@ -509,11 +469,117 @@ export default function SpaceDetailPage() {
                     borderRadius: '10px',
                     opacity: 0.7,
                   }}
-                  content="See All"
-                ></SidebarButton>*/}
+                >
+                  <Stack
+                    direction={'row'}
+                    alignItems={'center'}
+                    spacing={'10px'}
+                  >
+                    <span style={{ fontSize: 16, fontWeight: 400 }}>
+                      View All Events
+                    </span>
+                    <RightArrowCircleSmallIcon />
+                  </Stack>
+                </SidebarButton>
+              </Box>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                {Object.entries(groupEventsByMonth(events)).map(
+                  ([key, value], index) => {
+                    return (
+                      <div key={key + index}>
+                        <Box
+                          sx={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            paddingLeft: '14px',
+                            paddingRight: '14px',
+                            paddingTop: '8px',
+                            paddingBottom: '8px',
+                            border: '1px solid #ffffff1a',
+                            borderRadius: '50px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'sticky',
+                            backdropFilter: 'blur(40px)',
+                            top: '10px',
+                            backgroundColor: '#222222cc',
+                          }}
+                        >
+                          {key}
+                        </Box>
+                        <Box>
+                          {value.map((event, index) => {
+                            return (
+                              <EventCard
+                                id={event.id}
+                                key={`EventCard-${event.id}`}
+                                spaceId={event.spaceId}
+                                event={event}
+                                by={space?.name}
+                              />
+                            );
+                          })}
+                        </Box>
+                      </div>
+                    );
+                  },
+                )}
+              </Box>
+              <Box
+                sx={{
+                  padding: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '20px',
+                }}
+              >
+                {/*<Box*/}
+                {/*  sx={{*/}
+                {/*    display: 'flex',*/}
+                {/*    width: '100%',*/}
+                {/*    justifyContent: 'space-between',*/}
+                {/*    alignItems: 'center',*/}
+                {/*    flexDirection: 'row',*/}
+                {/*  }}*/}
+                {/*>*/}
+                {/*  <Box*/}
+                {/*    sx={{*/}
+                {/*      fontSize: '18px',*/}
+                {/*      fontWeight: '700',*/}
+                {/*      color: '#919191',*/}
+                {/*    }}*/}
+                {/*  >*/}
+                {/*    Past Events ({MOCK_DATA.pastEvents.length})*/}
+                {/*  </Box>*/}
+                {/*  <SidebarButton*/}
+                {/*    sx={{*/}
+                {/*      display: 'flex',*/}
+                {/*      flexDirection: 'row',*/}
+                {/*      padding: '4px 10px',*/}
+                {/*      cursor: 'pointer',*/}
+                {/*      '&:hover': {*/}
+                {/*        backgroundColor: '#e6e6e61a',*/}
+                {/*      },*/}
+                {/*      backgroundColor: 'transparent',*/}
+                {/*      borderRadius: '10px',*/}
+                {/*      opacity: 0.7,*/}
+                {/*    }}*/}
+                {/*    content="See All"*/}
+                {/*  ></SidebarButton>*/}
+                {/*</Box>*/}
               </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       </Box>
     </Box>

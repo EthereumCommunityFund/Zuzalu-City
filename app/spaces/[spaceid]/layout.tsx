@@ -13,10 +13,13 @@ export default function SpacePageLayout({
   children,
 }: SpacePageLayoutPropTypes) {
   const theme = useTheme();
-  
 
-  return <Box sx={{ color: 'white', display: 'flex', flexDirection: 'row' }}>
-    
-    {children}
-  </Box>;
+  return (
+    <Box
+      sx={{ color: 'white', display: 'flex', flexDirection: 'row' }}
+      minHeight={'100vh'}
+    >
+      {children}
+    </Box>
+  );
 }

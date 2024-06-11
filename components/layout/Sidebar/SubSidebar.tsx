@@ -10,7 +10,14 @@ import {
   UserPlusIcon,
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
-import { Box, Popover, Stack, StackProps, Typography } from '@mui/material';
+import {
+  Box,
+  Popover,
+  Skeleton,
+  Stack,
+  StackProps,
+  Typography,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 
@@ -19,6 +26,8 @@ import styles from './SubSidebar.module.css';
 interface SubSidebarProps {
   spaceId: string;
   title?: string;
+  avatar?: string;
+  banner?: string;
 }
 
 const MenuItem: React.FC<
@@ -43,7 +52,12 @@ const MenuItem: React.FC<
   );
 };
 
-const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
+const SubSidebar: React.FC<SubSidebarProps> = ({
+  spaceId,
+  title,
+  avatar,
+  banner,
+}) => {
   const theme = useTheme();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
@@ -58,6 +72,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
+
 
   return (
     <Stack
@@ -86,7 +101,12 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
         }}
       >
         <Stack spacing="10px" onMouseLeave={handleClose}>
-          <div className={styles.spaceButton}>
+          <div
+            style={{
+              backgroundImage: `url(${banner})`,
+            }}
+            className={styles.spaceButton}
+          >
             <Stack
               borderRadius="10px"
               padding="10px 14px"
@@ -107,7 +127,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
                 width={35}
                 height={35}
                 borderRadius={'100%'}
-                src="/1.webp"
+                src={avatar || '/1.webp'}
               />
               <Typography
                 flex={1}
@@ -117,7 +137,11 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
                 lineHeight={'22px'}
                 sx={{ textWrap: 'wrap' }}
               >
-                {title}
+                {title ? (
+                  title
+                ) : (
+                  <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                )}
               </Typography>
               <ChevronDownIcon size={5} />
             </Stack>
@@ -200,7 +224,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({ spaceId, title }) => {
             boxSizing: 'border-box',
           }}
         >
-          <SidebarButton icon={<HomeIcon />} content="Home" isActive={false} />
+          <SidebarButton icon={<HomeIcon />} onClick={() => router.push("/spaces")} content="Home" isActive={false} />
           {/*<SidebarButton*/}
           {/*  icon={<AnnouncementsIcon />}*/}
           {/*  content="Announcements"*/}

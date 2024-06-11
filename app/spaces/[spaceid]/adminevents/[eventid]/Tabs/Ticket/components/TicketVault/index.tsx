@@ -7,12 +7,70 @@ import {
 import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import { SendNFTTicket, WithdrawToken } from './component';
-import React from 'react';
-
+import * as React from 'react';
+import { ethers } from 'ethers';
+import ContractAbi from '@/contracts/ticektContract.json';
 const TicketVault = () => {
   const [action, setAction] = React.useState('Withdraw');
-
   const isMobile = useMediaQuery('(max-width:500px)');
+  const [price, setPrice] = React.useState('');
+  const [receiveToken, setReceiveToken] = React.useState('');
+  const [revenue, setRevenue] = React.useState('');
+  const [sold, setSold] = React.useState(0);
+  async function getContractData() {
+    const abi = ContractAbi;
+    const provider = new ethers.JsonRpcProvider(
+      'https://scroll-sepolia.drpc.org',
+    );
+    const contract = new ethers.Contract(
+      '0x1CACDa81696334385f5cFD95497150dD8b5d4a55',
+      abi,
+      provider,
+    );
+    /*const erc20Abi = [
+      'function name() view returns (string)',
+      'function symbol() view returns (string)',
+      'function decimals() view returns (uint8)',
+    ];
+
+    const paymentTokenAddress = await contract.paymentToken();
+    const tokenContract = new ethers.Contract(
+      paymentTokenAddress,
+      erc20Abi,
+      provider,
+    );
+
+    const tokenName = await tokenContract.name();*/
+
+    const ticketPriceBigNumber = await contract.ticketPrice();
+    const ticketPriceBigInt = BigInt(ticketPriceBigNumber.toString());
+
+    /*let totalRevenueBigInt = BigInt(0);
+
+    const filter = contract.filters.TicketMinted();
+    const events = await contract.queryFilter(filter);
+    const totalSold = events.length;
+
+    events.forEach(() => {
+      totalRevenueBigInt += ticketPriceBigInt;
+    });
+    setRevenue(totalRevenueBigInt.toString());*/
+    //setReceiveToken(tokenName);
+    setPrice(ethers.formatEther(ticketPriceBigNumber));
+    //setSold(totalSold);
+  }
+
+  React.useEffect(() => {
+    const fetchContractData = async () => {
+      try {
+        await getContractData();
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchContractData();
+  }, []);
+
   return (
     <Stack sx={{ background: '#222', height: '100%' }}>
       <Box
@@ -92,7 +150,7 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                120
+                {price}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -105,7 +163,7 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                USDT
+                {receiveToken}
               </Typography>
             </Box>
 
@@ -203,7 +261,7 @@ const TicketVault = () => {
                 fontWeight={'700'}
                 lineHeight={'120%'}
               >
-                1680
+                {revenue}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -216,7 +274,7 @@ const TicketVault = () => {
                   opacity: '0.5',
                 }}
               >
-                USDT
+                {receiveToken}
               </Typography>
             </Box>
           </Box>
@@ -255,7 +313,7 @@ const TicketVault = () => {
                 fontWeight={'600'}
                 lineHeight={'160%'}
               >
-                USDT
+                {receiveToken}
               </Typography>
             </Box>
           </Box>
@@ -310,7 +368,7 @@ const TicketVault = () => {
               fontWeight={'700'}
               lineHeight={'120%'}
             >
-              14
+              {sold}
             </Typography>
           </Box>
           <Box

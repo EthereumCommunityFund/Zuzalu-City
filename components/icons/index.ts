@@ -63,6 +63,7 @@ import { XCricleIcon } from './XCircle';
 import { Cog6Icon } from './Cog6';
 import { NewspaperIcon } from './Newspaper';
 import { MinusIcon } from './Minus';
+import { TicketIcon } from './Ticket';
 
 export {
   HomeIcon,
@@ -130,4 +131,5 @@ export {
   Cog6Icon,
   NewspaperIcon,
   MinusIcon,
+  TicketIcon
 };

@@ -24,6 +24,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { convertDateToEpoch } from '@/utils/format';
 import { TICKET_ABI } from '@/utils/ticket_abi';
 import { useEffect } from 'react';
+import { IEventArg } from '@/app/spaces/[spaceid]/adminevents/page';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -118,7 +119,7 @@ const Ticket = () => {
       })
         
       const events = await ticketFactoryGetContract.getEvents.TicketCreated({});
-      const eventTicketId = String(events[0]?.args?.eventId);
+      const eventTicketId = String((events[0] as unknown as IEventArg)?.args?.eventId);
       console.log({ eventTicketId });
       
       if (createTicketStatus === "success") {
