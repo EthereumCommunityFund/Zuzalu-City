@@ -12,6 +12,7 @@ interface PropTypes {
   location: string;
   image_url?: string;
   organizer: string;
+  tagline?: string;
 }
 
 const EventName = ({
@@ -23,6 +24,7 @@ const EventName = ({
   location,
   image_url,
   organizer,
+  tagline
 }: PropTypes) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -41,8 +43,8 @@ const EventName = ({
     <Stack spacing="10px">
       <Box
         component="img"
-        width={isTablet ? '350px' : '350px'}
-        height={isTablet ? '350px' : '350px'}
+        width={isMobile ? '350px' : '500px'}
+        height={isMobile ? '350px' : '500px'}
         src={image_url}
         borderRadius="10px"
         border="1px solid rgba(255, 255, 255, 0.2)"
@@ -66,7 +68,8 @@ const EventName = ({
         {eventName}
       </Typography>
       <Typography color="white" variant="bodyM">
-        {
+        {tagline}
+        {/* {
           (eventDescription === null) && "NULL"
         }
         {
@@ -75,7 +78,7 @@ const EventName = ({
         {
           (eventDescription === null || !isValidJSON(eventDescription.replaceAll('\\"', '"')) || JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks[0] === undefined) ?
             "JSON ERROR" : JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks[0].data.text
-        }
+        } */}
         {/* {!isValidJSON(eventDescription.replaceAll('\\"', '"')) ?
           "JSON ERROR" : <Box component="pre" sx={{ fontFamily: "Inter" }}>{JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text).join('\n')}</Box>} */}
       </Typography>

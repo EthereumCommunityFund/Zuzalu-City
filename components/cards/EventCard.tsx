@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
@@ -59,12 +59,20 @@ function isValidJSON(str: string): boolean {
 const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     const isMobileEnv: boolean = util.isMobile();
     setIsMobile(isMobileEnv);
   }, []);
+
+  const handleNavigation = () => {
+    if (pathname !== "/")
+      router.push(`/spaces/${event.spaceId}/events/${event.id}`);
+    else
+      router.push(`/events/${event.id}`);
+  }
 
   return (
     <Box
@@ -75,7 +83,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
       width={'100%'}
       boxSizing={'border-box'}
       position={'relative'}
-      onClick={() => router.push(`/spaces/${event.spaceId}/events/${event.id}`)}
+      onClick={handleNavigation}
     >
       <Box
         component="img"

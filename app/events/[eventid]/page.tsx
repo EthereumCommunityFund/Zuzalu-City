@@ -17,7 +17,7 @@ const Home = () => {
   };
   const [tabName, setTabName] = React.useState('About');
   return (
-    <Stack>
+    <Stack color="white">
       <Thumbnail />
       <Subbar tabName={tabName} setTabName={setTabName} />
       {renderPage()}

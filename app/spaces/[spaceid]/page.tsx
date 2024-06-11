@@ -31,6 +31,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, Event, SpaceEventData } from '@/types';
 import { Sidebar } from '@/components/layout';
 import { groupEventsByMonth } from '@/components/cards/EventCard';
+import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 // import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
@@ -416,13 +417,9 @@ export default function SpaceDetailPage() {
                 }}
               >
                 <Stack direction="row" spacing={'10px'} alignItems={'center'}>
-                  <ChevronDownIcon
+                  {showMore ? <ChevronDownIcon
                     size={4}
-                    style={{
-                      transform: showMore ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transformOrigin: 'center',
-                    }}
-                  />
+                  /> : <ChevronUpIcon size={4} />}
                   <span>{showMore ? 'Show Less' : 'Show More'}</span>
                 </Stack>
               </SidebarButton>

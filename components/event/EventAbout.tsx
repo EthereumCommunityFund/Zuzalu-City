@@ -18,44 +18,35 @@ const EventAbout = ({ tagline, description }: EventAboutTypes) => {
     }
   }
   return (
-    <Stack direction="column" spacing={1}>
-      <Stack bgcolor="#292929" padding="10px" spacing={1} borderRadius="10px">
+    <Stack bgcolor="#292929" padding="10px" borderRadius="10px">
+      <Stack padding="10px" spacing="20px">
         <Typography color="white" variant="subtitleSB">
           ABOUT THIS EVENT
         </Typography>
-        <Typography color="white" variant="subtitleMB">
-          {tagline}
-        </Typography>
-        <Typography color="white" variant="bodyB">
-          {
-            (description === null) && "NULL"
-          }
-          {
-            (description !== null && !isValidJSON(description.replaceAll('\\"', '"'))) && description
-          }
-          {
-            (description === null || !isValidJSON(description.replaceAll('\\"', '"')) || JSON.parse(description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
-              "JSON ERROR" : JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data.text
-          }
-        </Typography>
-        <ZuButton
-          startIcon={<ChevronDownIcon />}
-          sx={{ backgroundColor: '#313131', width: '100%' }}
-        >
-          Show More
-        </ZuButton>
+        <Stack>
+          <Typography color="white" variant="subtitleMB">
+            {tagline}
+          </Typography>
+          <Typography color="white" variant="bodyB">
+            {
+              (description === null) && "NULL"
+            }
+            {
+              (description !== null && !isValidJSON(description.replaceAll('\\"', '"'))) && description
+            }
+            {
+              (description === null || !isValidJSON(description.replaceAll('\\"', '"')) || JSON.parse(description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
+                "JSON ERROR" : JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data.text
+            }
+          </Typography>
+        </Stack>
       </Stack>
-      {/*<Stack
-        bgcolor="#292929"
-        padding="10px"
-        spacing={1}
-        borderRadius="10px"
-        height="300px"
+      <ZuButton
+        startIcon={<ChevronDownIcon />}
+        sx={{ backgroundColor: '#313131', width: '100%' }}
       >
-        <Typography color="white" variant="subtitleSB">
-          ORGANIZER UPDATES
-        </Typography>
-  </Stack>*/}
+        Show More
+      </ZuButton>
     </Stack>
   );
 };

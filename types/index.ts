@@ -28,10 +28,12 @@ export interface Event {
   max_participant: number;
   createdAt: string;
   space?: {
+    id?: string;
     name?: string;
     gated?: string;
     avatar?: string;
     banner?: string;
+    description?: string;
   };
   profile?: {
     username?: string;
