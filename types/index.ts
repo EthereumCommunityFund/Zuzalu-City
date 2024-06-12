@@ -1,3 +1,5 @@
+export type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
 export type IconProps = {
   size?: number;
   color?: string;

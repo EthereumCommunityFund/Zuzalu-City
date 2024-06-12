@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { Stack, Typography, Box, Divider } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { CheckCircleIcon, ChevronDownIcon, RightArrowCircleIcon, ScrollIcon } from 'components/icons';
-import Ticket from './Ticket';
 import { ChevronUpIcon } from '../icons/ChevronUp';
 import BpCheckbox from './Checkbox';
+import { Anchor } from '@/types';
 
-const EventRegister = () => {
+interface EventRegisterProps {
+  onToggle: (anchor: Anchor, open: boolean) => void;
+}
+
+const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
   const [isOne, setIsOne] = useState<boolean>(false);
   const [isTwo, setIsTwo] = useState<boolean>(false);
 
@@ -191,6 +195,7 @@ const EventRegister = () => {
         </Stack>
         <Stack spacing="10px">
           <ZuButton
+            onClick={() => onToggle('right', true)}
             sx={{
               backgroundColor: '#373b36',
               color: '#D7FFC4',
