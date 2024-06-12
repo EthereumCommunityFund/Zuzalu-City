@@ -20,6 +20,7 @@ interface IAbout {
 }
 
 const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
+  console.log("here", eventData)
   const [eventLocation, setEventLocation] = useState<string>('');
 
   const params = useParams();
@@ -80,9 +81,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 description
               }
               profile {
-                username  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-                  setState({ ...state, [anchor]: open });
-                };
+                username  
                 avatar
               }
             }
@@ -111,7 +110,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     const fetchData = async () => {
       try {
         await getEventDetailInfo();
-        await getLocation();
+        // await getLocation();
       } catch (err) {
         console.log(err);
       }
