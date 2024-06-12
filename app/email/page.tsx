@@ -37,7 +37,7 @@ const Home = () => {
             Attendees Must Know
           </Typography>
           <Typography variant="bodyBB">
-            This content is pulled from the field "Add Agreement" in a ticket form
+            This content is pulled from the field &quot;Add Agreement&quot; in a ticket form
           </Typography>
           <ZuButton startIcon={<RightArrowIcon color="#67DBFF" />}
             sx={{ width: "100%", backgroundColor: '#2c383b', color: "#67DBFF" }}

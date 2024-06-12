@@ -12,6 +12,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { SpaceCard } from '@/components/cards';
+import { Anchor } from '@/types';
 
 const About = () => {
   const [eventData, setEventData] = React.useState<Event>();
@@ -21,6 +22,13 @@ const About = () => {
   const eventId = params.eventid.toString();
 
   const { composeClient } = useCeramicContext();
+
+  const [state, setState] = useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
 
   const getLocation = async () => {
     try {
@@ -68,7 +76,9 @@ const About = () => {
                 description
               }
               profile {
-                username
+                username  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+                  setState({ ...state, [anchor]: open });
+                };
                 avatar
               }
             }
@@ -92,6 +102,11 @@ const About = () => {
   React.useEffect(() => {
     getEventDetailInfo();
   }, []);
+
+  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+    setState({ ...state, [anchor]: open });
+  };
+
   return eventData ? (
     <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
       {eventData && (
@@ -191,7 +206,7 @@ const About = () => {
             </Stack>
           </Stack>
           <Stack spacing="20px" flex="1">
-            <EventRegister />
+            <EventRegister onToggle={toggleDrawer} />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
