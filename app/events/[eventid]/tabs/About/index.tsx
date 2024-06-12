@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Stack, Box, Typography } from '@mui/material';
 import {
   EventName,
@@ -14,8 +14,12 @@ import { supabase } from '@/utils/supabase/client';
 import { SpaceCard } from '@/components/cards';
 import { Anchor } from '@/types';
 
-const About = () => {
-  const [eventData, setEventData] = React.useState<Event>();
+interface IAbout {
+  eventData: Event | undefined;
+  setEventData: Dispatch<SetStateAction<Event | undefined>>;
+}
+
+const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [eventLocation, setEventLocation] = useState<string>('');
 
   const params = useParams();
@@ -99,15 +103,25 @@ const About = () => {
     }
   };
 
-  React.useEffect(() => {
-    getEventDetailInfo();
-  }, []);
-
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
 
-  return eventData ? (
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getEventDetailInfo();
+        await getLocation();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+
+  return (
     <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
       {eventData && (
         <Stack width={900} direction="row" spacing="20px">
@@ -214,16 +228,14 @@ const About = () => {
                       </Typography>
                     </Stack> */}
             <EventDetail status={eventData.status} links={eventData.customLinks} />
-            <Stack>
-              <SpaceCard id={eventData?.space?.id} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
-            </Stack>
+            {/* <Stack>
+                      <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
+                    </Stack> */}
           </Stack>
         </Stack>
       )}
     </Stack>
-  ) : (
-    <></>
-  );
+  )
 };
 
 export default About;
