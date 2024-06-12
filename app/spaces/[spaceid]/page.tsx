@@ -32,6 +32,7 @@ import { Space, Event, SpaceEventData } from '@/types';
 import { Sidebar } from '@/components/layout';
 import { groupEventsByMonth } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
+import TextEditor from '@/components/editor/editor';
 // import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
@@ -359,8 +360,9 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     backgroundColor: '#ffffff05',
                     borderRadius: '10px',
-                    height: 'fit-content',
+                    height: !showMore ? '157px' :'fit-content',
                     boxSizing: 'border-box',
+                    overflow: 'hidden'
                   }}
                 >
                   <Box
@@ -374,21 +376,25 @@ export default function SpaceDetailPage() {
                   >
                     {space.name}
                   </Box>
-                  <Box
+                  <TextEditor
+                    holder='space-detail-editor'
+                    readonly={true}
+                    value={JSON.parse(space.description.replaceAll('\\"', '"'))}
                     sx={{
-                      marginTop: '12px',
+                      fontFamily: 'Inter',
                       color: 'white',
-                      opacity: '0.8',
-                      fontWeight: '400',
-                      fontSize: '14px',
-                      lineHeight: '160%',
+                      borderRadius: '10px',
+                      height: 'auto',
+                      overflow: 'auto',
+                      padding: '0px',
+                      '& > div > div': {
+                        paddingBottom: '0px !important',
+                      },
+                      '& .ce-block__content': {
+                        maxWidth: '100% !important', // Adjust the margin value as needed
+                      },
                     }}
-                  >
-                    {shortDescription(isValidJSON(space.description.replaceAll('\\"', '"'))
-                      ? JSON.parse(space.description.replaceAll('\\"', '"'))
-                        .blocks[0].data.text
-                      : space.description, showMore)}
-                  </Box>
+                  />
                 </Box>
               </>
             ) : (
