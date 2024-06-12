@@ -1,8 +1,8 @@
 'use client';
-import React from 'react';
-import { Stack, Typography, Box, Divider } from '@mui/material';
+import React, { useState } from 'react';
+import { Stack, Typography, Box, Divider, Modal } from '@mui/material';
 import { ZuButton, ZuInput } from '@/components/core';
-import { RightArrowIcon, RefreshIcon, LeftArrowIcon, Square2StackIcon, ChevronDownIcon, ChevronUpIcon, ArrowTopRightSquareIcon, ArrowUpLeftIcon } from '@/components/icons';
+import { RightArrowIcon, RefreshIcon, LeftArrowIcon, Square2StackIcon, ChevronDownIcon, ChevronUpIcon, ArrowTopRightSquareIcon, ArrowUpLeftIcon, ScrollIcon, CloseIcon } from '@/components/icons';
 
 interface IProps {
   setIsAgree?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -99,6 +99,9 @@ export const Code: React.FC<IProps> = ({ setIsEmail, setIsCode }) => {
 }
 
 export const Mint: React.FC<IProps> = ({ setIsCode, setIsMint }) => {
+  const [isOpen, setIsOpen] = useState(true);
+  const [awaiting, setAwaiting] = useState(false);
+
   return (
     <Stack borderRadius="10px" border="1px solid #383838" padding="20px" spacing="20px" alignItems="center">
       <Box component="img" width="250px" height="250px" borderRadius="20px" src="26.png" />
@@ -148,6 +151,44 @@ export const Mint: React.FC<IProps> = ({ setIsCode, setIsMint }) => {
       >
         Mint Ticket
       </ZuButton>
+      <Modal open={isOpen} onClose={() => setIsOpen(false)} sx={{ color: "white" }}>
+        <Stack spacing="30px" borderRadius="10px" width="360px"
+          padding="20px"
+          border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+          sx={{
+            position: 'absolute',
+            background: 'rgba(52, 52, 52, 0.80)',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="subtitleLB">
+              Sign Transaction
+            </Typography>
+            <Stack
+              bgcolor="#414141"
+              borderRadius="10px"
+              color="white"
+              height="fit-content"
+              padding="10px"
+            >
+              <CloseIcon size={5} />
+            </Stack>
+          </Stack>
+          <Stack py="20px" borderRadius="10px" bgcolor="#383838">
+            <Typography variant="bodyB" textAlign="center">
+              {awaiting ? "Awaiting transaction..." : "Confirming..."}
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing="10px" justifyContent="center">
+            <Typography variant="caption" sx={{ opacity: 0.6 }}>
+              POWERED BY:
+            </Typography>
+            <ScrollIcon />
+          </Stack>
+        </Stack>
+      </Modal>
     </Stack>
   )
 }
@@ -238,7 +279,7 @@ export const Completion: React.FC<IProps> = ({ setIsMint, setIsCompletion, setVi
         }
       </Stack>
       <ZuButton startIcon={<ArrowUpLeftIcon size={5} color="#67DBFF" />}
-        onClick={() => { setIsMint(false); setIsCompletion(true); }}
+        onClick={() => { setIsMint(false); setIsCompletion(false); }}
         sx={{ width: "100%", backgroundColor: '#2c383b', color: "#67DBFF" }}
       >
         Back to Event View
