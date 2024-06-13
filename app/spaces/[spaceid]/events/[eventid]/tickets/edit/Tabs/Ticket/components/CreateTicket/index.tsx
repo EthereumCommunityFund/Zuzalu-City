@@ -178,7 +178,12 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
   );
 };
 
-export const TicketSetup = ({ setIsNext, setIsConfirm, selectedToken, setSelectedToken }: IProps) => {
+export const TicketSetup = ({
+  setIsNext,
+  setIsConfirm,
+  selectedToken,
+  setSelectedToken,
+}: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
 
   return (
@@ -386,32 +391,44 @@ export const TicketSetup = ({ setIsNext, setIsConfirm, selectedToken, setSelecte
   );
 };
 
-export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTicketFree, setIsTicketFree, isShowQtyRemaining, setIsShowQtyRemaining,
-  isHideUntilSetDate, setIsHideUntilSetDate, isHideAfterSetDate, setIsHideAfterSetDate, isHideWhenSoldOut, setIsHideWhenSoldOut, selectedToken,
-  ticketMintDeadline, setTicketMintDeadline
+export const CreateTicket = ({
+  handleChange,
+  setIsConfirm,
+  setGoToSummary,
+  isTicketFree,
+  setIsTicketFree,
+  isShowQtyRemaining,
+  setIsShowQtyRemaining,
+  isHideUntilSetDate,
+  setIsHideUntilSetDate,
+  isHideAfterSetDate,
+  setIsHideAfterSetDate,
+  isHideWhenSoldOut,
+  setIsHideWhenSoldOut,
+  selectedToken,
+  ticketMintDeadline,
+  setTicketMintDeadline,
 }: IProps) => {
-
   const fileInputField = useRef<HTMLInputElement>(null);
   // const [File, setFile] = useState(second)
   // const handleClick = (event: any) => {
   //   hiddenFileInput?.current.click();
   // };
 
+  const [fileUploaded, setFileUploaded] = useState<HTMLInputElement | null>(
+    null,
+  );
+  const [imageUrl, setImageUrl] = useState<string>('');
 
-
-  const [fileUploaded, setFileUploaded] = useState<HTMLInputElement | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>("");
-
-
-  const handleFilesChange = (event: { target: { files: any; }; }) => {
+  const handleFilesChange = (event: { target: { files: any } }) => {
     const fileUpload = event.target.files[0];
-    setFileUploaded(fileUpload)
+    setFileUploaded(fileUpload);
     console.log({ fileUploaded });
 
     // const filesLength = fileUpload.length;
     console.log({ fileUploaded });
     if (fileUpload) {
-      setImageUrl(URL.createObjectURL(fileUpload))
+      setImageUrl(URL.createObjectURL(fileUpload));
     }
   };
 
@@ -443,7 +460,7 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
           </Typography>
           <Input
             required
-            name='ticketName'
+            name="ticketName"
             onChange={handleChange}
             sx={{
               color: 'white',
@@ -466,66 +483,66 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
             placeholder="Enter a name for your event"
           />
 
-          {
-            !isTicketFree && (
-              <Box>
-                <Typography
-                  color="white"
-                  fontSize="16px"
-                  fontWeight={500}
-                  marginTop={'20px'}
-                  fontFamily="Inter"
-                  marginBottom="10px"
-                >
-                  Ticket Price
-                </Typography>
-                <Box position="relative">
-                  <Input
-                    required
-                    name='ticketPrice'
-                    onChange={handleChange}
-                    sx={{
-                      color: 'white',
-                      backgroundColor: '#2d2d2d',
-                      padding: '12px 10px',
-                      borderRadius: '8px',
-                      width: '100%',
-                      fontSize: '15px',
-                      fontFamily: 'Inter',
-                      '&::after': {
-                        borderBottom: 'none',
-                      },
-                      '&::before': {
-                        borderBottom: 'none',
-                      },
-                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                        borderBottom: 'none',
-                      },
-                    }}
-                    placeholder="00.00"
-                  />
+          {!isTicketFree && (
+            <Box>
+              <Typography
+                color="white"
+                fontSize="16px"
+                fontWeight={500}
+                marginTop={'20px'}
+                fontFamily="Inter"
+                marginBottom="10px"
+              >
+                Ticket Price
+              </Typography>
+              <Box position="relative">
+                <Input
+                  required
+                  name="ticketPrice"
+                  onChange={handleChange}
+                  sx={{
+                    color: 'white',
+                    backgroundColor: '#2d2d2d',
+                    padding: '12px 10px',
+                    borderRadius: '8px',
+                    width: '100%',
+                    fontSize: '15px',
+                    fontFamily: 'Inter',
+                    '&::after': {
+                      borderBottom: 'none',
+                    },
+                    '&::before': {
+                      borderBottom: 'none',
+                    },
+                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                      borderBottom: 'none',
+                    },
+                  }}
+                  placeholder="00.00"
+                />
 
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      height: '28px',
-                      padding: '14px',
-                      color: 'white',
-                      borderRadius: '10px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      position: 'absolute',
-                      right: '12px',
-                      top: '14px',
-                    }}
-                  >
-                    {selectedToken === "USDT" ? <USDTIcon /> : <USDCIcon />}
-                    <Typography marginLeft={'10px'}>{selectedToken === "USDT" ? "USDT" : "USDC"}</Typography>
-                  </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: '28px',
+                    padding: '14px',
+                    color: 'white',
+                    borderRadius: '10px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    position: 'absolute',
+                    right: '12px',
+                    top: '14px',
+                  }}
+                >
+                  {selectedToken === 'USDT' ? <USDTIcon /> : <USDCIcon />}
+                  <Typography marginLeft={'10px'}>
+                    {selectedToken === 'USDT' ? 'USDT' : 'USDC'}
+                  </Typography>
                 </Box>
               </Box>
-            )
-          }
+            </Box>
+          )}
         </Box>
 
         <Box display="flex">
@@ -568,7 +585,7 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
           </Typography>
           <Input
             required
-            name='quantity'
+            name="quantity"
             onChange={handleChange}
             sx={{
               color: 'white',
@@ -643,7 +660,7 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
           </Typography>
           <TextField
             required
-            name='description'
+            name="description"
             onChange={handleChange}
             multiline
             rows={4}
@@ -700,8 +717,8 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
 
           <Input
             id="tb-file-upload"
-            type='file'
-            name='ticketImage'
+            type="file"
+            name="ticketImage"
             inputProps={{
               accept: 'image/*',
             }}
@@ -729,13 +746,11 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
             placeholder="Enter a name for your event"
           />
           <ZuButton>
-            <label htmlFor="tb-file-upload">
-              Upload Image{" "}
-            </label>
-            {fileUploaded ? ` - ${fileUploaded?.name.substring(0, 6)}...${fileUploaded?.name.slice(-6)}` : ''}
+            <label htmlFor="tb-file-upload">Upload Image </label>
+            {fileUploaded
+              ? ` - ${fileUploaded?.name.substring(0, 6)}...${fileUploaded?.name.slice(-6)}`
+              : ''}
           </ZuButton>
-
-
 
           <Box
             marginTop={'12px'}
@@ -747,17 +762,18 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
               width: '220px',
             }}
           >
-
-            {imageUrl && <Image
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-              alt={imageUrl}
-              src={imageUrl}
-              width={100}
-              height={100}
-            />}
+            {imageUrl && (
+              <Image
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+                alt={imageUrl}
+                src={imageUrl}
+                width={100}
+                height={100}
+              />
+            )}
           </Box>
         </Box>
       </Box>
@@ -817,29 +833,22 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
               },
               backgroundColor: '#2d2d2d',
             }}
-            placeholder='Select'
+            placeholder="Select"
             MenuProps={{
               PaperProps: {
                 style: {
-                  backgroundColor: '#222222'
-                }
-              }
+                  backgroundColor: '#222222',
+                },
+              },
             }}
           >
-            {
-              STARTING_STATUS.map((status, index) => {
-                return (
-                  <MenuItem
-                    value={status.key}
-                    key={index}
-                  >
-                    {
-                      status.value
-                    }
-                  </MenuItem>
-                )
-              })
-            }
+            {STARTING_STATUS.map((status, index) => {
+              return (
+                <MenuItem value={status.key} key={index}>
+                  {status.value}
+                </MenuItem>
+              );
+            })}
           </Select>
         </Box>
 
@@ -1150,7 +1159,7 @@ export const CreateTicket = ({ handleChange, setIsConfirm, setGoToSummary, isTic
       >
         <ScrollIcon />
       </Box>
-    </Box >
+    </Box>
   );
 };
 
@@ -1161,7 +1170,7 @@ export const TicketCreationSummary = ({
   setIsConfirm,
   setGoToSummary,
   setPurchasingTicket,
-  handleSubmit
+  handleSubmit,
 }: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
   return (
@@ -1277,7 +1286,7 @@ export const TicketCreationSummary = ({
                 alignItems: 'center',
               }}
             >
-              {selectedToken === "USDT" ? <USDTIcon /> : <USDCIcon />}
+              {selectedToken === 'USDT' ? <USDTIcon /> : <USDCIcon />}
               <Typography
                 fontSize="14px"
                 color="white"
@@ -1285,7 +1294,7 @@ export const TicketCreationSummary = ({
                 fontWeight={'600'}
                 lineHeight={'160%'}
               >
-                {selectedToken === "USDT" ? "USDT" : "USDC"}
+                {selectedToken === 'USDT' ? 'USDT' : 'USDC'}
               </Typography>
             </Box>
           </Box>
@@ -1328,7 +1337,7 @@ export const TicketCreationSummary = ({
                   opacity: '0.8',
                 }}
               >
-                {isTicketFree ? "Free" : ticketInfo?.ticketPrice}
+                {isTicketFree ? 'Free' : ticketInfo?.ticketPrice}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -1446,7 +1455,7 @@ export const ProcessingTicket = ({
   setPurchasingTicket,
   toggleDrawer,
   isSubmitLoading,
-  txnHash
+  txnHash,
 }: IProps) => {
   let status = false;
   const isMobile = useMediaQuery('(max-width:500px)');
@@ -1492,32 +1501,29 @@ export const ProcessingTicket = ({
         <TicketProcessingProgress txnHash={txnHash} />
       </Box>
 
-      {
-        !isSubmitLoading && (
-          <Box paddingX={'30px'}>
-            <Button
-              onClick={() => {
-                setPurchasingTicket(false), toggleDrawer('right', false);
-              }}
-              sx={{
-                backgroundColor: 'rgba(103, 219, 255, 0.10)',
-                color: '#67DBFF',
-                border: '1px solid rgba(103, 219, 255, 0.20)',
-                width: '100%',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: 600,
-                fontFamily: 'Inter',
-                textTransform: 'capitalize',
-              }}
-              startIcon={<CircleCloseIcon />}
-            >
-              Close
-            </Button>
-          </Box>
-        )
-      }
-
+      {!isSubmitLoading && (
+        <Box paddingX={'30px'}>
+          <Button
+            onClick={() => {
+              setPurchasingTicket(false), toggleDrawer('right', false);
+            }}
+            sx={{
+              backgroundColor: 'rgba(103, 219, 255, 0.10)',
+              color: '#67DBFF',
+              border: '1px solid rgba(103, 219, 255, 0.20)',
+              width: '100%',
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: 600,
+              fontFamily: 'Inter',
+              textTransform: 'capitalize',
+            }}
+            startIcon={<CircleCloseIcon />}
+          >
+            Close
+          </Button>
+        </Box>
+      )}
 
       <Box display="flex" justifyContent={'center'} marginTop={'30px'}>
         <ScrollIcon />
@@ -1526,8 +1532,7 @@ export const ProcessingTicket = ({
   );
 };
 
-
-export const TicketProcessingProgress = ({txnHash}: any) => {
+export const TicketProcessingProgress = ({ txnHash }: any) => {
   const steps = [
     // {
     //   label: 'Ticketing Contract Deployed',
@@ -1592,10 +1597,14 @@ export const TicketProcessingProgress = ({txnHash}: any) => {
                     <CopyIcon cursor="pointer" />
 
                     <Box
-                      onClick={() => window.open(`${SCROLL_EXPLORER}/tx/${txnHash}`, "_blank")} 
+                      onClick={() =>
+                        window.open(
+                          `${SCROLL_EXPLORER}/tx/${txnHash}`,
+                          '_blank',
+                        )
+                      }
                     >
-                      <GoToExplorerIcon 
-                      cursor="pointer" />
+                      <GoToExplorerIcon cursor="pointer" />
                     </Box>
                   </Box>
                 )}

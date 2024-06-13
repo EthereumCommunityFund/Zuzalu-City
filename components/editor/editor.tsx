@@ -21,7 +21,7 @@ interface TextEditorPropTypes extends BoxProps {
 const TextEditor: FC<TextEditorPropTypes> = ({
   value,
   editor,
-  setEditorInst = (editor: any) => { },
+  setEditorInst = (editor: any) => {},
   holder = 'editorjs',
   children,
   ...props

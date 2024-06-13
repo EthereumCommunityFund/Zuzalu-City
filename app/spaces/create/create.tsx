@@ -149,7 +149,6 @@ const Create = () => {
 
     if (!isAuthenticated) return;
 
-
     try {
       const update = await composeClient.executeQuery(
         `

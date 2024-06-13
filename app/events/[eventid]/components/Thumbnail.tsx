@@ -20,7 +20,7 @@ const Thumbnail = () => {
         <ZuButton
           sx={{ backgroundColor: '#333333' }}
           startIcon={<LeftArrowIcon />}
-          onClick={() => router.push("/")}
+          onClick={() => router.push('/')}
         >
           Back
         </ZuButton>

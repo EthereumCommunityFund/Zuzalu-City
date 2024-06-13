@@ -45,7 +45,7 @@ const TicketCard: React.FC<TicketCardProps> = ({
 }) => {
   const isMobile = useMediaQuery('(max-width:500px)');
   let status = true;
-  
+
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
@@ -57,7 +57,7 @@ const TicketCard: React.FC<TicketCardProps> = ({
       onClick={() => {
         setToggleAction && setToggleAction('ViewVault'),
           onToggle('right', true);
-          setVaultIndex && setVaultIndex(index)
+        setVaultIndex && setVaultIndex(index);
       }}
     >
       <Image
@@ -82,7 +82,8 @@ const TicketCard: React.FC<TicketCardProps> = ({
             {ticket[1]?.result}
           </Typography>{' '}
           <Typography classes="subtitle2" color="white">
-            {String(ticket[3]?.result)} {ticket[2]?.result === mUSDC_TOKEN ? "USDC" : "USDT"}
+            {String(ticket[3]?.result)}{' '}
+            {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
           </Typography>
         </Stack>
         <Stack
@@ -113,12 +114,14 @@ const TicketCard: React.FC<TicketCardProps> = ({
               :
             </Typography>
             <Typography color={status ? '#65C0A0' : '#C09965'}>
-            To All
+              To All
             </Typography>
           </Stack>
           <Typography>Sold: {String(ticket[4]?.result)}</Typography>
         </Stack>
-        <Typography variant="caption">ADDRESS: {shortenAddress(ticketAddresses[index])}</Typography>
+        <Typography variant="caption">
+          ADDRESS: {shortenAddress(ticketAddresses[index])}
+        </Typography>
       </Stack>
     </Stack>
   );

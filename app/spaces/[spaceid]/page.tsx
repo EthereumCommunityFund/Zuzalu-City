@@ -384,10 +384,13 @@ export default function SpaceDetailPage() {
                       lineHeight: '160%',
                     }}
                   >
-                    {shortDescription(isValidJSON(space.description.replaceAll('\\"', '"'))
-                      ? JSON.parse(space.description.replaceAll('\\"', '"'))
-                        .blocks[0].data.text
-                      : space.description, showMore)}
+                    {shortDescription(
+                      isValidJSON(space.description.replaceAll('\\"', '"'))
+                        ? JSON.parse(space.description.replaceAll('\\"', '"'))
+                            .blocks[0].data.text
+                        : space.description,
+                      showMore,
+                    )}
                   </Box>
                 </Box>
               </>
@@ -417,9 +420,11 @@ export default function SpaceDetailPage() {
                 }}
               >
                 <Stack direction="row" spacing={'10px'} alignItems={'center'}>
-                  {showMore ? <ChevronDownIcon
-                    size={4}
-                  /> : <ChevronUpIcon size={4} />}
+                  {showMore ? (
+                    <ChevronDownIcon size={4} />
+                  ) : (
+                    <ChevronUpIcon size={4} />
+                  )}
                   <span>{showMore ? 'Show Less' : 'Show More'}</span>
                 </Stack>
               </SidebarButton>

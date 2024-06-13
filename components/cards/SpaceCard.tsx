@@ -21,7 +21,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   description = 'Welcome Zucity',
   joined = false,
 }) => {
-
   function isValidJSON(str: string): boolean {
     try {
       JSON.parse(str);
@@ -81,10 +80,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               sx={{ wordWrap: 'break-word' }}
             >
               {isValidJSON(description.replaceAll('\\"', '"'))
-                ? JSON.parse(description.replaceAll('\\"', '"')).blocks[0]
-                  .data.text
-                : description
-              }
+                ? JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
+                    .text
+                : description}
             </Typography>
           </Stack>
           <Stack direction="row">

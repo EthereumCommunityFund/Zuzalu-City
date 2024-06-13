@@ -131,5 +131,5 @@ export {
   Cog6Icon,
   NewspaperIcon,
   MinusIcon,
-  TicketIcon
+  TicketIcon,
 };

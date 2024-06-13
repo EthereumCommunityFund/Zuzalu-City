@@ -5,7 +5,7 @@ import {
   OutlinedInput,
   InputAdornment,
   Box,
-  Skeleton
+  Skeleton,
 } from '@mui/material';
 import {
   SearchIcon,
@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   spaceId,
   title,
   avatar,
-  banner
+  banner,
 }) => {
   const router = useRouter();
   return (

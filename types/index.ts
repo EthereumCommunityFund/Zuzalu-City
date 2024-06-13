@@ -7,7 +7,7 @@ export type IconProps = {
 export type Link = {
   title: string;
   links: string;
-}
+};
 
 export interface Event {
   id: string;
@@ -39,7 +39,7 @@ export interface Event {
     username?: string;
     avatar?: string;
   };
-  customLinks?: [Link]
+  customLinks?: [Link];
 }
 
 export interface EventEdge {
@@ -127,23 +127,20 @@ export interface Venue {
   title: string;
 }
 
-
-
 export type Profile = {
   id: any;
   username: string;
   avatar?: string;
 };
 export interface ProfileData {
-  node: Profile
+  node: Profile;
 }
 
 export interface ProfileEdge {
   mVPProfileIndex: {
-    edges: ProfileData[]
-  }
+    edges: ProfileData[];
+  };
 }
-
 
 export interface CreateProfileResult {
   profile?: Profile;

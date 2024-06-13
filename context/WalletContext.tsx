@@ -1,8 +1,5 @@
 import '@rainbow-me/rainbowkit/styles.css';
-import {
-  RainbowKitProvider,
-  darkTheme,
-} from '@rainbow-me/rainbowkit';
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { scrollSepolia } from 'wagmi/chains';
 import React, { ReactNode } from 'react';
@@ -15,12 +12,12 @@ export const config = createConfig({
     // [scrollSepolia.id]: http("https://scroll-sepolia.drpc.org"),
   },
   ssr: true,
-})
+});
 
 export const client = createPublicClient({
   chain: scrollSepolia,
-  transport: http("https://scroll-sepolia.drpc.org"),
-})
+  transport: http('https://scroll-sepolia.drpc.org'),
+});
 
 interface WalletProviderProps {
   children: ReactNode;

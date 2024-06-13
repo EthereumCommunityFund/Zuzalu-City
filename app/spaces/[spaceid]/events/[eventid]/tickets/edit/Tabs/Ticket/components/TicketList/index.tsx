@@ -21,7 +21,7 @@ const TicketList: React.FC<TicketListProps> = ({
   setToggleAction,
   tickets,
   ticketAddresses,
-  setVaultIndex
+  setVaultIndex,
 }) => {
   return (
     <Stack direction="column" spacing={3}>

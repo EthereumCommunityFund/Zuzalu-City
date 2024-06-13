@@ -24,14 +24,17 @@ const About = () => {
 
   const getLocation = async () => {
     try {
-      const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
+      const { data } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('eventId', eventId);
       if (data !== null) {
-        setEventLocation(data[0].name)
+        setEventLocation(data[0].name);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
 
   const getEventDetailInfo = async () => {
     try {
@@ -93,7 +96,12 @@ const About = () => {
     getEventDetailInfo();
   }, []);
   return eventData ? (
-    <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
+    <Stack
+      padding="40px"
+      justifyContent="center"
+      alignItems="center"
+      bgcolor="#222222"
+    >
       {eventData && (
         <Stack width={900} direction="row" spacing="20px">
           <Stack spacing="20px" flex="2">
@@ -115,50 +123,67 @@ const About = () => {
               organizer={eventData.profile?.username as string}
               image_url={eventData.image_url}
             />
-            <EventAbout tagline={eventData.tagline} description={eventData.description} />
+            <EventAbout
+              tagline={eventData.tagline}
+              description={eventData.description}
+            />
             <Stack
               bgcolor="#292929"
               padding="20px"
               spacing="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleSB">
-                EVENT SPONSORS
-              </Typography>
-              <Box
-                display="flex"
-                gap="20px"
-                flexWrap="wrap"
-              >
+              <Typography variant="subtitleSB">EVENT SPONSORS</Typography>
+              <Box display="flex" gap="20px" flexWrap="wrap">
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
               </Box>
             </Stack>
@@ -169,23 +194,25 @@ const About = () => {
               borderRadius="10px"
               height="300px"
             >
-              <Typography variant="subtitleSB">
-                ORGANIZER UPDATES
-              </Typography>
+              <Typography variant="subtitleSB">ORGANIZER UPDATES</Typography>
               <Stack spacing="10px">
                 <Stack direction="row" alignItems="center" spacing="10px">
-                  <Box component="img" src="/5.webp" width="30px" height="30px" borderRadius="20px" />
-                  <Typography variant="bodyMB">
-                    drivenfast
-                  </Typography>
-                  <Typography variant="caption">
-                    3 DAYS AGO
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/5.webp"
+                    width="30px"
+                    height="30px"
+                    borderRadius="20px"
+                  />
+                  <Typography variant="bodyMB">drivenfast</Typography>
+                  <Typography variant="caption">3 DAYS AGO</Typography>
                 </Stack>
                 <Typography variant="bodyM">
-                  ZuConnect is an experience crafted with love by Zuzalu, whose mission is to
-                  foster a global network of communities to advance humanity by creating playgrounds
-                  at the intersection of free and open technology, science, health, and social innovation.
+                  ZuConnect is an experience crafted with love by Zuzalu, whose
+                  mission is to foster a global network of communities to
+                  advance humanity by creating playgrounds at the intersection
+                  of free and open technology, science, health, and social
+                  innovation.
                 </Typography>
               </Stack>
             </Stack>
@@ -198,9 +225,18 @@ const About = () => {
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-            <EventDetail status={eventData.status} links={eventData.customLinks} />
+            <EventDetail
+              status={eventData.status}
+              links={eventData.customLinks}
+            />
             <Stack>
-              <SpaceCard id={eventData?.space?.id} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
+              <SpaceCard
+                id={eventData?.space?.id}
+                title={eventData?.space?.name}
+                logoImage={eventData?.space?.avatar}
+                bgImage={eventData?.space?.banner}
+                description={eventData?.space?.description}
+              />
             </Stack>
           </Stack>
         </Stack>

@@ -1,18 +1,50 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Stack, Grid, useTheme, useMediaQuery, Typography, Divider, Box, FormControl, OutlinedInput, InputAdornment, SwipeableDrawer, Select, Chip, MenuItem } from '@mui/material';
+import {
+  Stack,
+  Grid,
+  useTheme,
+  useMediaQuery,
+  Typography,
+  Divider,
+  Box,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  SwipeableDrawer,
+  Select,
+  Chip,
+  MenuItem,
+} from '@mui/material';
 import { IconSidebar, Header, Thumb, Sidebar } from './components';
 import {
   EventName,
   EventAbout,
   EventDetail,
-  EventRegister
+  EventRegister,
 } from 'components/event';
 import { SpaceCard } from '@/components/cards';
-import { CeramicResponseType, EventEdge, Event, Session, SessionData, Profile, ProfileEdge, ProfileData } from '@/types';
+import {
+  CeramicResponseType,
+  EventEdge,
+  Event,
+  Session,
+  SessionData,
+  Profile,
+  ProfileEdge,
+  ProfileData,
+} from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
-import { LockIcon, PlusCircleIcon, XMarkIcon, ArchiveBoxIcon, SearchIcon, ArrowDownIcon, ChevronDownIcon } from '@/components/icons';
+import {
+  LockIcon,
+  PlusCircleIcon,
+  XMarkIcon,
+  ArchiveBoxIcon,
+  SearchIcon,
+  ArrowDownIcon,
+  ChevronDownIcon,
+} from '@/components/icons';
 import SessionCard from '../../adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
 import { ZuButton, ZuInput, ZuSwitch } from '@/components/core';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -163,14 +195,17 @@ const Home = () => {
 
   const getLocation = async () => {
     try {
-      const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
+      const { data } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('eventId', eventId);
       if (data !== null) {
-        setEventLocation(data[0].name)
+        setEventLocation(data[0].name);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
 
   const getPeople = async () => {
     try {
@@ -200,9 +235,7 @@ const Home = () => {
     } catch (error) {
       console.error('Failed to fetch sesssions:', error);
     }
-  }
-
-
+  };
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -220,16 +253,18 @@ const Home = () => {
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
   const [sessionGated, setSessionGated] = useState<string>('');
-  const [sessionExperienceLevel, setSessionExperienceLevel] = useState<string>('');
+  const [sessionExperienceLevel, setSessionExperienceLevel] =
+    useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
-  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(dayjs());
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
+    dayjs(),
+  );
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
   const [sessionLocation, setSessionLocation] = useState<string>();
-
 
   const handleChange = (e: any) => {
     setSessionTags(
@@ -243,15 +278,17 @@ const Home = () => {
     setSessionSpeakers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
-  }
+        : e.target.value,
+    );
+  };
 
   const handleOrganizerChange = (e: any) => {
     setSessionOrganizers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
-  }
+        : e.target.value,
+    );
+  };
 
   const createSession = async () => {
     if (!isAuthenticated) {
@@ -263,13 +300,19 @@ const Home = () => {
 
     strDesc = strDesc.replaceAll('"', '\\"');
 
-    const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+    const error =
+      !eventId ||
+      !sessionStartTime ||
+      !sessionEndTime ||
+      !sessionName ||
+      !sessoinStatus ||
+      !sessionTags ||
+      !sessionTrack ||
+      !profileId;
 
     if (error) {
       typeof window !== 'undefined' &&
-        window.alert(
-          'Please fill necessary fields!',
-        );
+        window.alert('Please fill necessary fields!');
       return;
     }
 
@@ -361,7 +404,6 @@ const Home = () => {
   }, []);
 
   const List = (anchor: Anchor) => {
-
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
@@ -475,9 +517,8 @@ const Home = () => {
                     return (
                       <Chip
                         label={
-                          SPACE_CATEGORIES.find(
-                            (item) => item.value === tag,
-                          )?.label
+                          SPACE_CATEGORIES.find((item) => item.value === tag)
+                            ?.label
                         }
                         sx={{
                           borderRadius: '10px',
@@ -571,9 +612,7 @@ const Home = () => {
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Gated</Typography>
-                <Typography variant="bodyS">
-                  Gated
-                </Typography>
+                <Typography variant="bodyS">Gated</Typography>
                 <ZuInput
                   onChange={(e) => setSessionGated(e.target.value)}
                   placeholder="Gated"
@@ -689,53 +728,58 @@ const Home = () => {
                         },
                       }}
                     >
-                      {
-                        locations.map((location, index) => (
-                          <MenuItem key={`Location-Index${index}`} value={location}>
-                            {location}
-                          </MenuItem>
-                        ))
-                      }
+                      {locations.map((location, index) => (
+                        <MenuItem
+                          key={`Location-Index${index}`}
+                          value={location}
+                        >
+                          {location}
+                        </MenuItem>
+                      ))}
                     </Select>
-                    {sessionLocation && <Stack>
-                      <Stack alignItems="center">
-                        <ArrowDownIcon />
-                      </Stack>
-                      <Stack
-                        borderRadius="10px"
-                        border="1px solid rgba(255, 255, 255, 0.10)"
-                        spacing="10px"
-                        padding="10px"
-                      >
-                        <Typography variant="caption">
-                          Your are booking at:
-                        </Typography>
+                    {sessionLocation && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
                         <Stack
                           borderRadius="10px"
-                          padding="10px"
-                          bgcolor="#313131"
-                          direction="row"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
                           spacing="10px"
+                          padding="10px"
                         >
-                          <Box
-                            component="img"
-                            width="60px"
-                            height="60px"
-                            borderRadius="8px"
-                            src="/20.png"
-                          />
-                          <Stack spacing="4px">
-                            <Typography variant="bodyBB">{sessionLocation}</Typography>
-                            <Typography variant="bodyS">
-                              Sessions booked: 22
-                            </Typography>
-                            <Typography variant="caption">
-                              Capacity: 15
-                            </Typography>
+                          <Typography variant="caption">
+                            Your are booking at:
+                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            direction="row"
+                            spacing="10px"
+                          >
+                            <Box
+                              component="img"
+                              width="60px"
+                              height="60px"
+                              borderRadius="8px"
+                              src="/20.png"
+                            />
+                            <Stack spacing="4px">
+                              <Typography variant="bodyBB">
+                                {sessionLocation}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                Sessions booked: 22
+                              </Typography>
+                              <Typography variant="caption">
+                                Capacity: 15
+                              </Typography>
+                            </Stack>
                           </Stack>
                         </Stack>
                       </Stack>
-                    </Stack>}
+                    )}
                   </Stack>
                   <Stack spacing="20px">
                     <Stack spacing="10px">
@@ -841,37 +885,47 @@ const Home = () => {
                         />
                       </Stack>
                     </Stack>
-                    {sessionDate && sessionStartTime && sessionEndTime && <Stack spacing="10px">
-                      <Stack alignItems="center">
-                        <ArrowDownIcon />
-                      </Stack>
-                      <Stack
-                        spacing="10px"
-                        padding="10px"
-                        border="1px solid rgba(255, 255, 255, 0.10)"
-                        borderRadius="10px"
-                      >
-                        <Typography variant="caption">
-                          Date & times your are booking:
-                        </Typography>
+                    {sessionDate && sessionStartTime && sessionEndTime && (
+                      <Stack spacing="10px">
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
                         <Stack
-                          borderRadius="10px"
-                          padding="10px"
-                          bgcolor="#313131"
                           spacing="10px"
+                          padding="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          borderRadius="10px"
                         >
-                          <Typography variant="bodyBB">
-                            {`${sessionDate.format("MMMM")}` + " " + `${sessionDate.format("DD")}` + ", " + `${sessionDate.format("YYYY")}`}
+                          <Typography variant="caption">
+                            Date & times your are booking:
                           </Typography>
-                          <Typography variant="bodyS">
-                            Start Time: {`${sessionStartTime.format("HH")}` + `${sessionStartTime.format("A")}`}
-                          </Typography>
-                          <Typography variant="bodyS">
-                            End Time: : {`${sessionEndTime.format("HH")}` + `${sessionEndTime.format("A")}`}
-                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            spacing="10px"
+                          >
+                            <Typography variant="bodyBB">
+                              {`${sessionDate.format('MMMM')}` +
+                                ' ' +
+                                `${sessionDate.format('DD')}` +
+                                ', ' +
+                                `${sessionDate.format('YYYY')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              Start Time:{' '}
+                              {`${sessionStartTime.format('HH')}` +
+                                `${sessionStartTime.format('A')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              End Time: :{' '}
+                              {`${sessionEndTime.format('HH')}` +
+                                `${sessionEndTime.format('A')}`}
+                            </Typography>
+                          </Stack>
                         </Stack>
                       </Stack>
-                    </Stack>}
+                    )}
                   </Stack>
                 </Stack>
               )}
@@ -1026,7 +1080,10 @@ const Home = () => {
                   >
                     {people.map((i, index) => {
                       return (
-                        <MenuItem value={i.username} key={`Organizer_Index${index}`}>
+                        <MenuItem
+                          value={i.username}
+                          key={`Organizer_Index${index}`}
+                        >
                           {i.username}
                         </MenuItem>
                       );
@@ -1047,9 +1104,9 @@ const Home = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people.filter(
-                            (item) => item.username !== i,
-                          ).map(item => item.username);
+                          const newArray = people
+                            .filter((item) => item.username !== i)
+                            .map((item) => item.username);
                           setSessionOrganizers(newArray);
                         }}
                         key={`Selected_Organizerr${index}`}
@@ -1148,7 +1205,10 @@ const Home = () => {
                   >
                     {people.map((i, index) => {
                       return (
-                        <MenuItem value={i.username} key={`Speaker_Index${index}`}>
+                        <MenuItem
+                          value={i.username}
+                          key={`Speaker_Index${index}`}
+                        >
                           {i.username}
                         </MenuItem>
                       );
@@ -1169,9 +1229,9 @@ const Home = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people.filter(
-                            (item) => item.username !== i,
-                          ).map(item => item.username);
+                          const newArray = people
+                            .filter((item) => item.username !== i)
+                            .map((item) => item.username);
                           setSessionSpeakers(newArray);
                         }}
                         key={`Selected_Speaker${index}`}
@@ -1243,231 +1303,278 @@ const Home = () => {
             </Box>
           </Box>
         </Box>
-      </LocalizationProvider >
+      </LocalizationProvider>
     );
   };
 
   return (
     <Stack direction="row" width="100%">
       {!isDesktop && <IconSidebar />}
-      {!isDesktop && <Sidebar spaceId={params.spaceid.toString()} title={eventData?.space?.name} avatar={eventData?.space?.avatar} banner={eventData?.space?.banner} />}
+      {!isDesktop && (
+        <Sidebar
+          spaceId={params.spaceid.toString()}
+          title={eventData?.space?.name}
+          avatar={eventData?.space?.avatar}
+          banner={eventData?.space?.banner}
+        />
+      )}
       <Stack flex={1} borderLeft="1px solid #383838">
         <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb tabName={tabName} setTabName={setTabName} />
-        {
-          tabName === "About" && (
-            <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
-              {eventData && (
-                <Stack width={900} direction="row" spacing="20px">
-                  <Stack spacing="20px" flex="2">
-                    {/* <Stack spacing="4px">
+        {tabName === 'About' && (
+          <Stack
+            padding="40px"
+            justifyContent="center"
+            alignItems="center"
+            bgcolor="#222222"
+          >
+            {eventData && (
+              <Stack width={900} direction="row" spacing="20px">
+                <Stack spacing="20px" flex="2">
+                  {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="100px" borderRadius="10px" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
 
-                    <EventName
-                      tagline={eventData.tagline}
-                      endTime={eventData.endTime}
-                      startTime={eventData.startTime}
-                      eventDescription={eventData.description}
-                      spaceName={eventData.space?.name}
-                      eventName={eventData.title}
-                      location={eventLocation}
-                      organizer={eventData.profile?.username as string}
-                      image_url={eventData.image_url}
-                    />
-                    <EventAbout tagline={eventData.tagline} description={eventData.description} />
-                    <Stack
-                      bgcolor="#292929"
-                      padding="20px"
-                      spacing="20px"
-                      borderRadius="10px"
-                    >
-                      <Typography variant="subtitleSB">
-                        EVENT SPONSORS
-                      </Typography>
-                      <Box
-                        display="flex"
-                        gap="20px"
-                        flexWrap="wrap"
-                      >
-                        <Stack alignItems="center" spacing="4px">
-                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                          <Typography variant="bodyS">
-                            SponsorName
-                          </Typography>
-                        </Stack>
-                        <Stack alignItems="center" spacing="4px">
-                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                          <Typography variant="bodyS">
-                            SponsorName
-                          </Typography>
-                        </Stack>
-                        <Stack alignItems="center" spacing="4px">
-                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                          <Typography variant="bodyS">
-                            SponsorName
-                          </Typography>
-                        </Stack>
-                        <Stack alignItems="center" spacing="4px">
-                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                          <Typography variant="bodyS">
-                            SponsorName
-                          </Typography>
-                        </Stack>
-                        <Stack alignItems="center" spacing="4px">
-                          <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                          <Typography variant="bodyS">
-                            SponsorName
-                          </Typography>
-                        </Stack>
-                      </Box>
-                    </Stack>
-                    <Stack
-                      bgcolor="#292929"
-                      padding="20px"
-                      spacing="20px"
-                      borderRadius="10px"
-                      height="300px"
-                    >
-                      <Typography variant="subtitleSB">
-                        ORGANIZER UPDATES
-                      </Typography>
-                      <Stack spacing="10px">
-                        <Stack direction="row" alignItems="center" spacing="10px">
-                          <Box component="img" src="/5.webp" width="30px" height="30px" borderRadius="20px" />
-                          <Typography variant="bodyMB">
-                            drivenfast
-                          </Typography>
-                          <Typography variant="caption">
-                            3 DAYS AGO
-                          </Typography>
-                        </Stack>
-                        <Typography variant="bodyM">
-                          ZuConnect is an experience crafted with love by Zuzalu, whose mission is to
-                          foster a global network of communities to advance humanity by creating playgrounds
-                          at the intersection of free and open technology, science, health, and social innovation.
-                        </Typography>
+                  <EventName
+                    tagline={eventData.tagline}
+                    endTime={eventData.endTime}
+                    startTime={eventData.startTime}
+                    eventDescription={eventData.description}
+                    spaceName={eventData.space?.name}
+                    eventName={eventData.title}
+                    location={eventLocation}
+                    organizer={eventData.profile?.username as string}
+                    image_url={eventData.image_url}
+                  />
+                  <EventAbout
+                    tagline={eventData.tagline}
+                    description={eventData.description}
+                  />
+                  <Stack
+                    bgcolor="#292929"
+                    padding="20px"
+                    spacing="20px"
+                    borderRadius="10px"
+                  >
+                    <Typography variant="subtitleSB">EVENT SPONSORS</Typography>
+                    <Box display="flex" gap="20px" flexWrap="wrap">
+                      <Stack alignItems="center" spacing="4px">
+                        <Box
+                          component="img"
+                          src="/sponsor.png"
+                          width="100px"
+                          height="100px"
+                          borderRadius="10px"
+                        />
+                        <Typography variant="bodyS">SponsorName</Typography>
                       </Stack>
+                      <Stack alignItems="center" spacing="4px">
+                        <Box
+                          component="img"
+                          src="/sponsor.png"
+                          width="100px"
+                          height="100px"
+                          borderRadius="10px"
+                        />
+                        <Typography variant="bodyS">SponsorName</Typography>
+                      </Stack>
+                      <Stack alignItems="center" spacing="4px">
+                        <Box
+                          component="img"
+                          src="/sponsor.png"
+                          width="100px"
+                          height="100px"
+                          borderRadius="10px"
+                        />
+                        <Typography variant="bodyS">SponsorName</Typography>
+                      </Stack>
+                      <Stack alignItems="center" spacing="4px">
+                        <Box
+                          component="img"
+                          src="/sponsor.png"
+                          width="100px"
+                          height="100px"
+                          borderRadius="10px"
+                        />
+                        <Typography variant="bodyS">SponsorName</Typography>
+                      </Stack>
+                      <Stack alignItems="center" spacing="4px">
+                        <Box
+                          component="img"
+                          src="/sponsor.png"
+                          width="100px"
+                          height="100px"
+                          borderRadius="10px"
+                        />
+                        <Typography variant="bodyS">SponsorName</Typography>
+                      </Stack>
+                    </Box>
+                  </Stack>
+                  <Stack
+                    bgcolor="#292929"
+                    padding="20px"
+                    spacing="20px"
+                    borderRadius="10px"
+                    height="300px"
+                  >
+                    <Typography variant="subtitleSB">
+                      ORGANIZER UPDATES
+                    </Typography>
+                    <Stack spacing="10px">
+                      <Stack direction="row" alignItems="center" spacing="10px">
+                        <Box
+                          component="img"
+                          src="/5.webp"
+                          width="30px"
+                          height="30px"
+                          borderRadius="20px"
+                        />
+                        <Typography variant="bodyMB">drivenfast</Typography>
+                        <Typography variant="caption">3 DAYS AGO</Typography>
+                      </Stack>
+                      <Typography variant="bodyM">
+                        ZuConnect is an experience crafted with love by Zuzalu,
+                        whose mission is to foster a global network of
+                        communities to advance humanity by creating playgrounds
+                        at the intersection of free and open technology,
+                        science, health, and social innovation.
+                      </Typography>
                     </Stack>
                   </Stack>
-                  <Stack spacing="20px" flex="1">
-                    <EventRegister />
-                    {/* <Stack spacing="4px">
+                </Stack>
+                <Stack spacing="20px" flex="1">
+                  <EventRegister />
+                  {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-                    <EventDetail status={eventData.status} links={eventData.customLinks} />
-                    {/* <Stack>
+                  <EventDetail
+                    status={eventData.status}
+                    links={eventData.customLinks}
+                  />
+                  {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}
+                </Stack>
+              </Stack>
+            )}
+          </Stack>
+        )}
+        {tabName === 'Sessions' && (
+          <Stack padding="20px 80px" bgcolor="#222222" height="100vh">
+            <Grid container spacing="30px">
+              <Grid item xs={12} md={8}>
+                <Stack
+                  borderRadius="10px"
+                  border="1px solid #383838"
+                  bgcolor="#262626"
+                  flex={8}
+                >
+                  <Stack spacing="10px" padding="10px">
+                    <Typography
+                      textAlign="center"
+                      padding="10px"
+                      variant="bodyBB"
+                      bgcolor="#2c2c2c"
+                      borderRadius="10px"
+                    >
+                      Monday, October 30
+                    </Typography>
+                    {sessions.length !== 0 ? (
+                      sessions.map((session, index) => (
+                        <SessionCard
+                          key={`SessionCard-${index}`}
+                          title={session.title}
+                          startTime={session.startTime}
+                          endTime={session.endTime}
+                          location={session.meeting_url}
+                        />
+                      ))
+                    ) : (
+                      <Stack
+                        direction="column"
+                        alignItems="center"
+                        bgcolor="#2d2d2d"
+                        padding="20px"
+                        borderRadius="10px"
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <PlusCircleIcon color="#6c6c6c" size={15} />
+                        <Typography variant="subtitle2">No Sessions</Typography>
+                        <Typography variant="body2">
+                          Create a Session
+                        </Typography>
+                      </Stack>
+                    )}
                   </Stack>
                 </Stack>
-              )}
-            </Stack>
-          )
-        }
-        {
-          tabName === "Sessions" && (
-            <Stack padding="20px 80px" bgcolor="#222222" height="100vh">
-              <Grid container spacing="30px">
-                <Grid item xs={12} md={8}>
-                  <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>
-                    <Stack spacing="10px" padding="10px">
-                      <Typography textAlign="center" padding="10px" variant="bodyBB" bgcolor="#2c2c2c" borderRadius="10px">
-                        Monday, October 30
-                      </Typography>
-                      {
-                        sessions.length !== 0 ? sessions.map((session, index) => (
-                          <SessionCard
-                            key={`SessionCard-${index}`}
-                            title={session.title}
-                            startTime={session.startTime}
-                            endTime={session.endTime}
-                            location={session.meeting_url}
-                          />
-                        )) : (
-                          <Stack
-                            direction="column"
-                            alignItems="center"
-                            bgcolor="#2d2d2d"
-                            padding="20px"
-                            borderRadius="10px"
-                            sx={{ cursor: "pointer" }}
-                          >
-                            <PlusCircleIcon color="#6c6c6c" size={15} />
-                            <Typography variant="subtitle2">No Sessions</Typography>
-                            <Typography variant="body2">Create a Session</Typography>
-                          </Stack>
-                        )
-                      }
-                    </Stack>
-                  </Stack>
-
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" padding="10px" flex={4}>
-                    <Stack paddingY="10px">
-                      <ZuButton startIcon={<LockIcon />} sx={{ width: "100%" }}
-                        onClick={() => toggleDrawer('right', true)}
-                      >
-                        Add a Session
-                      </ZuButton>
-                    </Stack>
-                    <Stack spacing="10px" divider={<Divider sx={{ border: "1px solid #383838" }} />}>
-                      <Typography variant="subtitleSB">
-                        Sessions: Sort & Filter
-                      </Typography>
-                      <Stack paddingY="10px" spacing="10px">
-                        <ZuInput placeholder="Tracks" />
-                        <ZuInput placeholder="Dates" />
-                        <ZuInput placeholder="Location" />
-                      </Stack>
-                      <Stack spacing="10px">
-                        <Typography variant="bodyMB">
-                          Gated For:
-                        </Typography>
-                        <Stack direction="row" flexWrap="wrap" gap="10px">
-                          <ZuButton>
-                            ZuConnect Resident
-                          </ZuButton>
-                          <ZuButton>
-                            DevConnect Attendee
-                          </ZuButton>
-                          <ZuButton>
-                            Zuzalu Resident
-                          </ZuButton>
-                        </Stack>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Grid>
               </Grid>
-              <SwipeableDrawer
-                hideBackdrop={true}
-                sx={{
-                  '& .MuiDrawer-paper': {
-                    marginTop: '50px',
-                    height: 'calc(100% - 50px)',
-                    boxShadow: 'none',
-                  },
-                }}
-                anchor="right"
-                open={state['right']}
-                onClose={() => toggleDrawer('right', false)}
-                onOpen={() => toggleDrawer('right', true)}
-              >
-                {List('right')}
-              </SwipeableDrawer>
-            </Stack>
-          )
-        }
+              <Grid item xs={12} md={4}>
+                <Stack
+                  borderRadius="10px"
+                  border="1px solid #383838"
+                  bgcolor="#262626"
+                  padding="10px"
+                  flex={4}
+                >
+                  <Stack paddingY="10px">
+                    <ZuButton
+                      startIcon={<LockIcon />}
+                      sx={{ width: '100%' }}
+                      onClick={() => toggleDrawer('right', true)}
+                    >
+                      Add a Session
+                    </ZuButton>
+                  </Stack>
+                  <Stack
+                    spacing="10px"
+                    divider={<Divider sx={{ border: '1px solid #383838' }} />}
+                  >
+                    <Typography variant="subtitleSB">
+                      Sessions: Sort & Filter
+                    </Typography>
+                    <Stack paddingY="10px" spacing="10px">
+                      <ZuInput placeholder="Tracks" />
+                      <ZuInput placeholder="Dates" />
+                      <ZuInput placeholder="Location" />
+                    </Stack>
+                    <Stack spacing="10px">
+                      <Typography variant="bodyMB">Gated For:</Typography>
+                      <Stack direction="row" flexWrap="wrap" gap="10px">
+                        <ZuButton>ZuConnect Resident</ZuButton>
+                        <ZuButton>DevConnect Attendee</ZuButton>
+                        <ZuButton>Zuzalu Resident</ZuButton>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Grid>
+            </Grid>
+            <SwipeableDrawer
+              hideBackdrop={true}
+              sx={{
+                '& .MuiDrawer-paper': {
+                  marginTop: '50px',
+                  height: 'calc(100% - 50px)',
+                  boxShadow: 'none',
+                },
+              }}
+              anchor="right"
+              open={state['right']}
+              onClose={() => toggleDrawer('right', false)}
+              onOpen={() => toggleDrawer('right', true)}
+            >
+              {List('right')}
+            </SwipeableDrawer>
+          </Stack>
+        )}
       </Stack>
-    </Stack >
+    </Stack>
   );
 };
 

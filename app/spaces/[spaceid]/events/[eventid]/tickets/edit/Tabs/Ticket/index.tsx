@@ -18,7 +18,12 @@ import { scrollSepolia } from 'viem/chains';
 import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 import { client, config } from '@/context/WalletContext';
-import { TICKET_FACTORY_ADDRESS, mUSDC_TOKEN, mUSDT_TOKEN, ticketFactoryGetContract } from '@/constant';
+import {
+  TICKET_FACTORY_ADDRESS,
+  mUSDC_TOKEN,
+  mUSDT_TOKEN,
+  ticketFactoryGetContract,
+} from '@/constant';
 import { Address } from 'viem';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertDateToEpoch } from '@/utils/format';
@@ -29,7 +34,6 @@ import { IEventArg } from '@/app/spaces/[spaceid]/adminevents/page';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Ticket = () => {
-
   const { address } = useAccount();
   const [state, setState] = React.useState({
     top: false,
@@ -58,7 +62,14 @@ const Ticket = () => {
       [name]: value,
     });
   };
-  console.log({ ticketInfo }, isTicketFree, isShowQtyRemaining, isHideUntilSetDate, isHideAfterSetDate, isHideWhenSoldOut);
+  console.log(
+    { ticketInfo },
+    isTicketFree,
+    isShowQtyRemaining,
+    isHideUntilSetDate,
+    isHideAfterSetDate,
+    isHideWhenSoldOut,
+  );
 
   const [isConfirm, setIsConfirm] = React.useState(false);
   const [isNext, setIsNext] = React.useState(false);
@@ -68,15 +79,18 @@ const Ticket = () => {
   const [txnHash, setTxnHash] = React.useState('');
   const [selectedFile, setSelectedFile] = React.useState<string | null>(null);
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
-  const [ticketMintDeadline, setTicketMintDeadline] = React.useState<Dayjs | null>(dayjs());
-  const [vaultIndex, setVaultIndex] = React.useState<number>(0)
+  const [ticketMintDeadline, setTicketMintDeadline] =
+    React.useState<Dayjs | null>(dayjs());
+  const [vaultIndex, setVaultIndex] = React.useState<number>(0);
 
-
-  const handleFileChange = (event: { target: { files: any[]; }; }) => {
+  const handleFileChange = (event: { target: { files: any[] } }) => {
     const file = event.target.files[0];
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
 
-    if (file && allowedExtensions.includes(file.name.split('.').pop().toLowerCase())) {
+    if (
+      file &&
+      allowedExtensions.includes(file.name.split('.').pop().toLowerCase())
+    ) {
       setSelectedFile(file);
       setPreviewImage(URL.createObjectURL(file));
     } else {
@@ -85,126 +99,141 @@ const Ticket = () => {
     }
   };
 
+  // the event ticket ID here will be retrieved from ceramic
   let eventId = 0;
 
-  const [isSubmitLoading, setIsSubmitLoading] = React.useState(false)
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [tickets, setTickets] = React.useState<Array<any>>([])
-  const [ticketAddresses, setTicketAddresses] = React.useState<Array<string>>([])
+  const [isSubmitLoading, setIsSubmitLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [tickets, setTickets] = React.useState<Array<any>>([]);
+  const [ticketAddresses, setTicketAddresses] = React.useState<Array<string>>(
+    [],
+  );
 
-  const handleSubmit = async(e: any)=> {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     try {
       setIsSubmitLoading(true);
       setPurchasingTicket(true);
       setGoToSummary(false);
-      
+
       const createTicketHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI,
-        functionName: "createNewTicket",
+        functionName: 'createNewTicket',
         args: [
-          eventId, 
-          selectedToken === "USDT" ? mUSDT_TOKEN : mUSDC_TOKEN,
+          eventId,
+          selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
           convertDateToEpoch(ticketMintDeadline),
-          ticketInfo?.ticketPrice
-        ]
-      })
+          ticketInfo?.ticketPrice,
+          ticketInfo?.quantity,
+        ],
+      });
       setTxnHash(createTicketHash);
-      
-      const { status: createTicketStatus } = await waitForTransactionReceipt(config, {
-        hash: createTicketHash,
-      })
-        
+
+      const { status: createTicketStatus } = await waitForTransactionReceipt(
+        config,
+        {
+          hash: createTicketHash,
+        },
+      );
+
       const events = await ticketFactoryGetContract.getEvents.TicketCreated({});
-      const eventTicketId = String((events[0] as unknown as IEventArg)?.args?.eventId);
+      const eventTicketId = String(
+        (events[0] as unknown as IEventArg)?.args?.eventId,
+      );
       console.log({ eventTicketId });
-      
-      if (createTicketStatus === "success") {
+
+      if (createTicketStatus === 'success') {
         // setPurchasingTicket(true);
         // setGoToSummary(false);
       }
 
-      setIsSubmitLoading(false)
+      setIsSubmitLoading(false);
     } catch (error) {
       console.log(error);
-      setIsSubmitLoading(false)
+      setIsSubmitLoading(false);
     }
-
-  }
-
-
+  };
 
   const readFromContract = async () => {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    const getTicketAddresses = await client.readContract({
-      address: TICKET_FACTORY_ADDRESS as Address,
-      abi: TICKET_FACTORY_ABI,
-      functionName: 'getTickets',
-      args: ['0']
-    }) as Array<string>;
+      const getTicketAddresses = (await client.readContract({
+        address: TICKET_FACTORY_ADDRESS as Address,
+        abi: TICKET_FACTORY_ABI,
+        functionName: 'getTickets',
+        args: ['0'],
+      })) as Array<string>;
 
-    console.log({ getTicketAddresses });
-    setTicketAddresses(getTicketAddresses)
+      console.log({ getTicketAddresses });
+      setTicketAddresses(getTicketAddresses);
 
-    let results = [];
-    for (let i = 0; i < getTicketAddresses?.length; i++) {      
-      const ticketContract = {
-        address: getTicketAddresses[i] as any,
-        abi: TICKET_ABI
-      } as const
-      console.log({ticketContract});
+      if (getTicketAddresses?.length > 0) {
+        let results = [];
+        for (let i = 0; i < getTicketAddresses?.length; i++) {
+          const ticketContract = {
+            address: getTicketAddresses[i] as Address,
+            abi: TICKET_ABI,
+          } as const;
+          console.log({ ticketContract });
 
-      const result = await client.multicall({
-        contracts: [
-          {
-            ...ticketContract,
-            functionName: 'name',
-          },
-          {
-            ...ticketContract,
-            functionName: 'symbol',
-          },
-          {
-            ...ticketContract,
-            functionName: 'paymentToken',
-          },
-          {
-            ...ticketContract,
-            functionName: 'ticketPrice',
-          },
-          {
-            ...ticketContract,
-            functionName: 'totalTicketsMinted',
-          },
-          {
-            ...ticketContract,
-            functionName: 'eventTime',
-          },
-          {
-            ...ticketContract,
-            functionName: 'ticketMintCloseTime',
-          },
-          {
-            ...ticketContract,
-            functionName: 'owner',
-          }
-        ]
-      })
-      results.push(result);      
+          const result = await client.multicall({
+            contracts: [
+              {
+                ...ticketContract,
+                functionName: 'name',
+              },
+              {
+                ...ticketContract,
+                functionName: 'symbol',
+              },
+              {
+                ...ticketContract,
+                functionName: 'paymentToken',
+              },
+              {
+                ...ticketContract,
+                functionName: 'ticketPrice',
+              },
+              {
+                ...ticketContract,
+                functionName: 'totalTicketsMinted',
+              },
+              {
+                ...ticketContract,
+                functionName: 'eventTime',
+              },
+              {
+                ...ticketContract,
+                functionName: 'ticketMintCloseTime',
+              },
+              {
+                ...ticketContract,
+                functionName: 'owner',
+              },
+              {
+                ...ticketContract,
+                functionName: 'ticketCap',
+              },
+            ],
+          });
+          results.push(result);
+        }
+        setTickets(results);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
     }
-    setTickets(results)
-    setIsLoading(false);
-  }
+  };
 
   useEffect(() => {
     readFromContract();
-  }, [])
-
-
+  }, []);
 
   const list = (anchor: Anchor) => (
     <Box
@@ -223,12 +252,16 @@ const Ticket = () => {
         borderBottom="1px solid #383838"
         paddingX={3}
       >
-        <ZuButton onClick={() => {toggleDrawer('right', false),
-          setIsConfirm(false)
-          setGoToSummary(false)
-          setPurchasingTicket(false)
-          setIsNext(false)
-        }}>Close</ZuButton>
+        <ZuButton
+          onClick={() => {
+            toggleDrawer('right', false), setIsConfirm(false);
+            setGoToSummary(false);
+            setPurchasingTicket(false);
+            setIsNext(false);
+          }}
+        >
+          Close
+        </ZuButton>
         <Typography marginLeft={'14px'} fontSize="18px" fontWeight="bold">
           Create Ticket
         </Typography>
@@ -239,7 +272,11 @@ const Ticket = () => {
       )}
       {!goToSummary && !isConfirm && !purchasingTicket && isNext && (
         <TicketSetup
-          setIsNext={setIsNext} setIsConfirm={setIsConfirm} setSelectedToken={setSelectedToken} selectedToken={selectedToken} />
+          setIsNext={setIsNext}
+          setIsConfirm={setIsConfirm}
+          setSelectedToken={setSelectedToken}
+          selectedToken={selectedToken}
+        />
       )}
       {isConfirm && !purchasingTicket && !goToSummary && !isNext && (
         <CreateTicket
@@ -309,10 +346,10 @@ const Ticket = () => {
           Create Ticket
         </Typography>
       </Box>
-      <TicketVault 
-        vaultIndex={vaultIndex} 
+      <TicketVault
+        vaultIndex={vaultIndex}
         ticketAddresses={ticketAddresses}
-        tickets={tickets} 
+        tickets={tickets}
       />
     </Box>
   );
@@ -320,15 +357,21 @@ const Ticket = () => {
   return (
     <Stack spacing={2}>
       <TicketHeader />
-      {
-        isLoading ? (<Box>
-          <Typography>
-            Loading...
-          </Typography>
-        </Box>) : 
-        <TicketList setVaultIndex={setVaultIndex} ticketAddresses={ticketAddresses} tickets={tickets} setToggleAction={setToggleAction} onToggle={toggleDrawer} />
-      }
-      <TicketAdd />
+      {isLoading ? (
+        <Box>
+          <Typography>Loading...</Typography>
+        </Box>
+      ) : tickets.length > 0 ? (
+        <TicketList
+          setVaultIndex={setVaultIndex}
+          ticketAddresses={ticketAddresses}
+          tickets={tickets}
+          setToggleAction={setToggleAction}
+          onToggle={toggleDrawer}
+        />
+      ) : (
+        <TicketAdd onToggle={toggleDrawer} setToggleAction={setToggleAction} />
+      )}
       <TicketAccess />
       <SwipeableDrawer
         hideBackdrop={true}

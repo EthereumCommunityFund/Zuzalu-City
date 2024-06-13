@@ -68,11 +68,10 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
   }, []);
 
   const handleNavigation = () => {
-    if (pathname !== "/")
+    if (pathname !== '/')
       router.push(`/spaces/${event.spaceId}/events/${event.id}`);
-    else
-      router.push(`/events/${event.id}`);
-  }
+    else router.push(`/events/${event.id}`);
+  };
 
   return (
     <Box
@@ -138,16 +137,17 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
             {event.title}
           </Typography>
           <Typography color="white" variant="bodyM">
-            {
-              (event.description === null) && "NULL"
-            }
-            {
-              (event.description !== null && !isValidJSON(event.description.replaceAll('\\"', '"'))) && event.description
-            }
-            {
-              (event.description === null || !isValidJSON(event.description.replaceAll('\\"', '"')) || JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
-                "JSON ERROR" : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0].data.text
-            }
+            {event.description === null && 'NULL'}
+            {event.description !== null &&
+              !isValidJSON(event.description.replaceAll('\\"', '"')) &&
+              event.description}
+            {event.description === null ||
+            !isValidJSON(event.description.replaceAll('\\"', '"')) ||
+            JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
+              undefined
+              ? 'JSON ERROR'
+              : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0]
+                  .data.text}
           </Typography>
         </Box>
         <Box

@@ -53,8 +53,7 @@ const Sessions = () => {
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
-  const [sessionDescription, setSessionDescription] =
-    useState<OutputData>();
+  const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
@@ -150,13 +149,19 @@ const Sessions = () => {
 
       strDesc = strDesc.replaceAll('"', '\\"');
 
-      const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+      const error =
+        !eventId ||
+        !sessionStartTime ||
+        !sessionEndTime ||
+        !sessionName ||
+        !sessoinStatus ||
+        !sessionTags ||
+        !sessionTrack ||
+        !profileId;
 
       if (error) {
         typeof window !== 'undefined' &&
-          window.alert(
-            'Please fill necessary fields!',
-          );
+          window.alert('Please fill necessary fields!');
         return;
       }
 

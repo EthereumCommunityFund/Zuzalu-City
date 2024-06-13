@@ -24,7 +24,7 @@ const EventName = ({
   location,
   image_url,
   organizer,
-  tagline
+  tagline,
 }: PropTypes) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
