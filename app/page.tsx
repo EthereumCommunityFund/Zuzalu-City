@@ -95,6 +95,10 @@ const Home: React.FC = () => {
                 github
                 discord
                 ens
+                category
+                members{
+                  id
+                }
               }
             }
           }

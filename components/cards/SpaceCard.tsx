@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Typography, Button, Box, Stack } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
 import TextEditor from '../editor/editor';
+import { SPACE_CATEGORIES } from '@/constant';
 
 export type SpaceCardProps = {
   id?: string;
@@ -12,6 +13,10 @@ export type SpaceCardProps = {
   title?: string;
   description?: string;
   joined?: boolean;
+  members?: {
+    id: string
+  }[],
+  categories?: string
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
@@ -21,7 +26,10 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   title,
   description = 'Welcome Zucity',
   joined = false,
+  members = [],
+  categories = ''
 }) => {
+
 
   function isValidJSON(str: string): boolean {
     try {
@@ -88,13 +96,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           </Stack>
           <Stack direction="row">
             <Typography color="white" variant="caption">
-              AI
-            </Typography>
-            <Typography color="white" variant="caption" marginX="10px">
-              COMMUNITY TOOLS
-            </Typography>
-            <Typography color="white" variant="caption">
-              +3
+              {
+                categories && categories.split(", ").map((category) => SPACE_CATEGORIES.filter((cat) => cat.value === category)[0].label).join(", ")
+              }
             </Typography>
           </Stack>
           <Stack direction="row" alignItems="center" spacing="10px">
@@ -104,7 +108,10 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               variant="bodyS"
               sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
             >
-              1.4k
+              {
+                members ? (members.length >= 1000 ? (members.length / 1000).toFixed(1) + 'k' : members.length)
+                : 0
+              }
             </Typography>
             {/* <Button
               size="small"

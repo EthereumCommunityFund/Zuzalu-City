@@ -78,6 +78,8 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
                   .data.text
               : item.description
           }
+          members={item.members}
+          categories={item.category}
         />
       ))}
     </Box>
