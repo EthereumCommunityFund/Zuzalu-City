@@ -84,15 +84,39 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               overflow: 'auto',
             }}
           >
-            <Typography
-              variant="bodyM"
-              color="white"
-              sx={{ wordWrap: 'break-word' }}
-            >
-              {
-                description
-              }
-            </Typography>
+            {
+              isValidJSON(description.replaceAll('\\"', '"')) ? <TextEditor
+                holder={'space-detail-editor' + id}
+                readonly={true}
+                value={JSON.parse(description.replaceAll('\\"', '"'))}
+                sx={{
+                  fontFamily: 'Inter',
+                  color: 'white',
+                  height: 'auto',
+                  overflow: 'hidden',
+                  padding: '0px',
+                  '& > div > div': {
+                    paddingBottom: '0px !important',
+                  },
+                  '& .ce-block__content': {
+                    maxWidth: '100% !important', // Adjust the margin value as needed
+                  },
+                  '& .ce-block:first-child': {
+                    display: 'none'
+                  }
+                }}
+              />
+                : <Typography
+                  variant="bodyM"
+                  color="white"
+                  sx={{ wordWrap: 'break-word' }}
+                >
+                  {
+                    description
+                  }
+                </Typography>
+            }
+
           </Stack>
           <Stack direction="row">
             <Typography color="white" variant="caption">
@@ -101,19 +125,22 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               }
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" spacing="10px">
-            <UsersIcon size={4} />
-            <Typography
-              color="white"
-              variant="bodyS"
-              sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
-            >
-              {
-                members ? (members.length >= 1000 ? (members.length / 1000).toFixed(1) + 'k' : members.length)
-                : 0
-              }
-            </Typography>
-            {/* <Button
+
+          {
+            members && members.length > 0 && <Stack direction="row" alignItems="center" spacing="10px">
+              <UsersIcon size={4} />
+              <Typography
+                color="white"
+                variant="bodyS"
+                sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
+              >
+                {
+                  members.length >= 1000 ? (members.length / 1000).toFixed(1) + 'k' : members.length
+                }
+              </Typography>
+            </Stack>
+          }
+          {/* <Button
               size="small"
               startIcon={
                 joined ? (
@@ -135,10 +162,10 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             >
               {joined ? 'Joined' : 'Join'}
             </Button> */}
-          </Stack>
+
         </Stack>
       </Stack>
-    </Link>
+    </Link >
   );
 };
 
