@@ -54,9 +54,11 @@ export const CeramicProvider = ({ children }: any) => {
   const [profile, setProfile] = useState<Profile | undefined>();
   const [newUser, setNewUser] = useState(false);
   const authenticate = async () => {
-    await authenticateCeramic(ceramic, composeClient);
-    setIsAuthenticated(true);
-    await getProfile();
+    if(typeof window !== undefined) {
+      await authenticateCeramic(ceramic, composeClient);
+      setIsAuthenticated(true);
+      await getProfile();
+    }
   };
   const showAuthPrompt = () => {
     setAuthPromptVisible(true);
