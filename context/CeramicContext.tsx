@@ -29,7 +29,7 @@ interface CeramicContextType {
   isAuthPromptVisible: boolean;
   showAuthPrompt: () => void;
   hideAuthPrompt: () => void;
-  createProfile: (newName: string) => Promise<CreateProfileResult>;
+  createProfile: (newName: string) => Promise<void>;
 }
 
 const CeramicContext = createContext<CeramicContextType>({
@@ -44,12 +44,7 @@ const CeramicContext = createContext<CeramicContextType>({
   isAuthPromptVisible: false,
   showAuthPrompt: () => {},
   hideAuthPrompt: () => {},
-  createProfile: async (newName: string): Promise<CreateProfileResult> => {
-    if (!newName) {
-      return { error: 'Name is required.' };
-    }
-    return { profile: { id: 'newId', username: newName } };
-  },
+  createProfile: async (newName: string) => {},
 });
 
 export const CeramicProvider = ({ children }: any) => {
@@ -57,13 +52,12 @@ export const CeramicProvider = ({ children }: any) => {
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [profile, setProfile] = useState<Profile | undefined>();
-  let newUser = false;
+  const [newUser, setNewUser] = useState(false);
   const authenticate = async () => {
     await authenticateCeramic(ceramic, composeClient);
-    await getProfile();
     setIsAuthenticated(true);
+    await getProfile();
   };
-
   const showAuthPrompt = () => {
     setAuthPromptVisible(true);
     const existingusername = localStorage.getItem('username');
@@ -79,6 +73,7 @@ export const CeramicProvider = ({ children }: any) => {
     localStorage.removeItem('display did');
     localStorage.removeItem('logged_in');
     setIsAuthenticated(false);
+    setNewUser(false);
   };
   const getProfile = async () => {
     if (ceramic.did !== undefined) {
@@ -101,17 +96,14 @@ export const CeramicProvider = ({ children }: any) => {
       setProfile(basicProfile);
       setUsername(basicProfile?.username);
       if (!basicProfile) {
-        newUser = true;
+        setNewUser(true);
       }
-      return basicProfile;
     }
   };
 
-  const createProfile = async (
-    newName: string,
-  ): Promise<CreateProfileResult> => {
+  const createProfile = async (newName: string) => {
     if (!ceramic.did || !newName) {
-      return { error: 'Invalid DID or name provided.' };
+      console.error('Invalid DID or name provided.');
     }
 
     try {
@@ -130,14 +122,11 @@ export const CeramicProvider = ({ children }: any) => {
       `);
 
       if (update.errors) {
-        return { error: update.errors.map((e: any) => e.message).join(', ') };
+        console.error('Error creating profile:', update.errors);
       }
-
-      const updatedProfile = await getProfile();
-      return { profile: updatedProfile };
+      await getProfile();
     } catch (error) {
       console.error('Error creating profile:', error);
-      return { error: 'Failed to create profile.' };
     }
   };
 

@@ -149,7 +149,6 @@ const Create = () => {
 
     if (!isAuthenticated) return;
 
-
     try {
       const update = await composeClient.executeQuery(
         `
@@ -164,9 +163,10 @@ const Create = () => {
             admin {
               id
             }
-            profileId,
-            avatar,
+            profileId
+            avatar
             banner
+            category
           }
         }
       }
