@@ -63,6 +63,14 @@ import { XCricleIcon } from './XCircle';
 import { Cog6Icon } from './Cog6';
 import { NewspaperIcon } from './Newspaper';
 import { MinusIcon } from './Minus';
+import { TicketIcon } from './Ticket';
+import { ArrowUpRightIcon } from './ArrowUpRight';
+import { ArrowDownTrayIcon } from './ArrowDownTray'
+import { ArrowUpLeftIcon } from './ArrowUpLeft';
+import { ChevronUpIcon } from './ChevronUp';
+import { RefreshIcon } from './RefreshIcon';
+import { Square2StackIcon } from './Square2Stack';
+import { ArrowTopRightSquareIcon } from './ArrowTopRightSquare';
 
 export {
   HomeIcon,
@@ -130,4 +138,12 @@ export {
   Cog6Icon,
   NewspaperIcon,
   MinusIcon,
+  TicketIcon,
+  ArrowUpRightIcon,
+  ArrowDownTrayIcon,
+  ArrowUpLeftIcon,
+  ChevronUpIcon,
+  RefreshIcon,
+  Square2StackIcon,
+  ArrowTopRightSquareIcon
 };

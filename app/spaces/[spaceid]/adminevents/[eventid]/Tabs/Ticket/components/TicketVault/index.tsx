@@ -27,7 +27,6 @@ const TicketVault = () => {
       abi,
       provider,
     );
-    console.log(contract, 'contract');
     /*const erc20Abi = [
       'function name() view returns (string)',
       'function symbol() view returns (string)',
@@ -35,7 +34,6 @@ const TicketVault = () => {
     ];
 
     const paymentTokenAddress = await contract.paymentToken();
-    console.log(paymentTokenAddress, 'paymentTokenAddress');
     const tokenContract = new ethers.Contract(
       paymentTokenAddress,
       erc20Abi,
@@ -60,9 +58,6 @@ const TicketVault = () => {
     //setReceiveToken(tokenName);
     setPrice(ethers.formatEther(ticketPriceBigNumber));
     //setSold(totalSold);
-    //console.log(`Total Revenue: ${totalRevenueBigInt.toString()}`);
-    console.log(`Ticket Price: ${ethers.formatEther(ticketPriceBigNumber)}`);
-    //console.log(`Ticket Sold: ${totalSold}`);
   }
 
   React.useEffect(() => {

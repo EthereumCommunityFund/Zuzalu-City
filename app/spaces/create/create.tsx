@@ -93,6 +93,15 @@ const Create = () => {
   const customLinksRef = useRef<HTMLDivElement>(null);
 
   const createSpace = async () => {
+    const output = await editor.save();
+    let strDesc: any = JSON.stringify(output);
+
+    if (!output.blocks || output.blocks.length == 0) {
+      setError(true);
+      return;
+    }
+    strDesc = strDesc.replaceAll('"', '\\"');
+
     let socialLinks = {};
     let customLinks = [];
     if (
@@ -139,14 +148,7 @@ const Create = () => {
     }
 
     if (!isAuthenticated) return;
-    const output = await editor.save();
-    let strDesc: any = JSON.stringify(output);
 
-    if (!output.blocks || output.blocks.length == 0) {
-      setError(true);
-      return;
-    }
-    strDesc = strDesc.replaceAll('"', '\\"');
 
     try {
       const update = await composeClient.executeQuery(
@@ -453,7 +455,6 @@ const Create = () => {
                   }}
                   onComplete={(result: any) => {
                     if (result && result.url) {
-                      console.log('hey', result);
                       setAvatarURL(result.url);
                     }
                   }}

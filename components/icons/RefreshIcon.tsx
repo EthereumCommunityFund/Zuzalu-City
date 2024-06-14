@@ -1,11 +1,15 @@
-export const RefreshIcon = () => {
+import React from 'react';
+import { IconProps } from 'types';
+
+export const RefreshIcon: React.FC<IconProps> = ({ size = 6 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
       color="rgb(255, 255, 255)"
-      style={{ width: '100%', height: '100%' }}
+      width={`${size * 4}px`}
+      height={`${size * 4}px`}
     >
       <path
         fillRule="evenodd"

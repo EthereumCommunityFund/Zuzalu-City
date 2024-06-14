@@ -29,6 +29,7 @@ import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Session, SessionData } from '@/types';
+import { OutputData } from '@editorjs/editorjs';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -53,22 +54,26 @@ const Sessions = () => {
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
   const [sessionDescription, setSessionDescription] =
-    useState<string>('Test Session');
+    useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   // const [sessionCreatedAt, setSessionCreatedAt] = useState<Dayjs | null>(dayjs());
+  const [sessoinStatus, setSessionStatus] = useState<string>('');
+  const [sessionGated, setSessionGated] = useState<string>('');
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
     dayjs(),
   );
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [error, setError] = useState(false);
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
 
   const profileId = profile?.id || '';
+  const eventId = params.eventid.toString();
 
   const getSessions = async () => {
     try {
@@ -137,7 +142,21 @@ const Sessions = () => {
 
     const createSession = async () => {
       if (!isAuthenticated) {
-        console.log('Not authenticated');
+        return;
+      }
+
+      const output = await editor.save();
+      let strDesc: any = JSON.stringify(output);
+
+      strDesc = strDesc.replaceAll('"', '\\"');
+
+      const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+
+      if (error) {
+        typeof window !== 'undefined' &&
+          window.alert(
+            'Please fill necessary fields!',
+          );
         return;
       }
 
@@ -153,6 +172,11 @@ const Sessions = () => {
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 profileId: "${profileId}",
                 eventId: "${params.eventid.toString()}",
+                tags: "${sessionTags.join(',')}",
+                status: "${sessoinStatus}",
+                format: "person",
+                track: "${sessionTrack}",
+                gated: "${sessionGated}",
               }
             }
           ) {
@@ -182,6 +206,11 @@ const Sessions = () => {
                 endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
                 profileId: "${profileId}",
                 eventId: "${params.eventid.toString()}",
+                tags: "${sessionTags.join(',')}",
+                status: "${sessoinStatus}",
+                format: "online",
+                track: "${sessionTrack}",
+                gated: "${sessionGated}",
               }
             }
           ) {
@@ -339,6 +368,7 @@ const Sessions = () => {
                 </Typography>
                 <TextEditor
                   holder="space_description"
+                  value={sessionDescription}
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',

@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
@@ -47,15 +47,32 @@ export const groupEventsByMonth = (events: Event[]) => {
   return groupedEvents;
 };
 
+function isValidJSON(str: string): boolean {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     const isMobileEnv: boolean = util.isMobile();
     setIsMobile(isMobileEnv);
   }, []);
+
+  const handleNavigation = () => {
+    if (pathname !== "/")
+      router.push(`/spaces/${event.spaceId}/events/${event.id}`);
+    else
+      router.push(`/events/${event.id}`);
+  }
 
   return (
     <Box
@@ -66,7 +83,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
       width={'100%'}
       boxSizing={'border-box'}
       position={'relative'}
-      onClick={() => router.push(`/spaces/${spaceId}/events/${id}`)}
+      onClick={handleNavigation}
     >
       <Box
         component="img"
@@ -121,7 +138,16 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
             {event.title}
           </Typography>
           <Typography color="white" variant="bodyM">
-            {event.description}
+            {
+              (event.description === null) && "NULL"
+            }
+            {
+              (event.description !== null && !isValidJSON(event.description.replaceAll('\\"', '"'))) && event.description
+            }
+            {
+              (event.description === null || !isValidJSON(event.description.replaceAll('\\"', '"')) || JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
+                "JSON ERROR" : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0].data.text
+            }
           </Typography>
         </Box>
         <Box

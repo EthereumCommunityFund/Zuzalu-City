@@ -1,8 +1,15 @@
+export type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
 export type IconProps = {
   size?: number;
   color?: string;
   cursor?: string;
 };
+
+export type Link = {
+  title: string;
+  links: string;
+}
 
 export interface Event {
   id: string;
@@ -23,13 +30,18 @@ export interface Event {
   max_participant: number;
   createdAt: string;
   space?: {
+    id?: string;
     name?: string;
     gated?: string;
+    avatar?: string;
+    banner?: string;
+    description?: string;
   };
   profile?: {
     username?: string;
     avatar?: string;
   };
+  customLinks?: [Link]
 }
 
 export interface EventEdge {
@@ -117,10 +129,23 @@ export interface Venue {
   title: string;
 }
 
+
+
 export type Profile = {
-  id?: any;
-  username?: string | undefined;
+  id: any;
+  username: string;
+  avatar?: string;
 };
+export interface ProfileData {
+  node: Profile
+}
+
+export interface ProfileEdge {
+  mVPProfileIndex: {
+    edges: ProfileData[]
+  }
+}
+
 
 export interface CreateProfileResult {
   profile?: Profile;

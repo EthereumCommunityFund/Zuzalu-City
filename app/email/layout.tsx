@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Zuzalu City Powered By Ethereum Community Fund',
 };
 
-function EventLayout({
+function EmailLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -24,4 +24,4 @@ function EventLayout({
   );
 }
 
-export default EventLayout;
+export default EmailLayout;

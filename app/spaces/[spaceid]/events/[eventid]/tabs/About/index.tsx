@@ -1,24 +1,13 @@
 'use client';
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Box, Typography, SwipeableDrawer } from '@mui/material';
-import {
-  EventName,
-  EventDetail,
-  EventRegister,
-  EventAbout,
-  Initial,
-  Disclaimer,
-  Email,
-  Payment
-} from 'components/event';
+import { Stack, Typography, Box, SwipeableDrawer } from '@mui/material';
+import { EventName, EventAbout, EventRegister, EventDetail, Initial, Disclaimer, Email, Payment } from '@/components/event';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
+import { CeramicResponseType, Event, EventEdge, Anchor } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
-import { SpaceCard } from '@/components/cards';
-import { Anchor } from '@/types';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -26,14 +15,6 @@ interface IAbout {
 }
 
 const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
-  console.log("here", eventData)
-  const [eventLocation, setEventLocation] = useState<string>('');
-
-  const [isInitial, setIsInitial] = useState<boolean>(false);
-  const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
-  const [isEmail, setIsEmail] = useState<boolean>(false);
-  const [isPayment, setIsPayment] = useState<boolean>(false);
-
   const params = useParams();
   const eventId = params.eventid.toString();
 
@@ -46,16 +27,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     right: false,
   });
 
-  const getLocation = async () => {
-    try {
-      const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
-      if (data !== null) {
-        setEventLocation(data[0].name)
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  }
+  const [eventLocation, setEventLocation] = useState<string>('');
+
+  const [isInitial, setIsInitial] = useState<boolean>(false);
+  const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
+  const [isEmail, setIsEmail] = useState<boolean>(false);
+  const [isPayment, setIsPayment] = useState<boolean>(false);
 
   const getEventDetailInfo = async () => {
     try {
@@ -92,8 +69,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 description
               }
               profile {
-                username  
+                username
                 avatar
+              }
+              customLinks {
+                title
+                links
               }
             }
           }
@@ -113,22 +94,32 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     }
   };
 
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
+  const getLocation = async () => {
+    try {
+      const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
+      if (data !== null) {
+        setEventLocation(data[0].name)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getEventDetailInfo();
-        // await getLocation();
+        await getLocation();
       } catch (err) {
         console.log(err);
       }
     }
-
     fetchData();
-  }, []);
+  }, [])
+
+  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+    setState({ ...state, [anchor]: open });
+  };
 
   const List = (anchor: Anchor) => {
 
@@ -172,7 +163,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
       </Box>
     );
   };
-
 
   return (
     <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
@@ -305,6 +295,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
       )}
     </Stack>
   )
-};
+}
 
 export default About;

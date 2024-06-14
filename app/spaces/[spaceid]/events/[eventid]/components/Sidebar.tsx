@@ -5,6 +5,7 @@ import {
   OutlinedInput,
   InputAdornment,
   Box,
+  Skeleton
 } from '@mui/material';
 import {
   SearchIcon,
@@ -14,8 +15,21 @@ import {
   ChevronDownIcon,
 } from 'components/icons';
 import { useRouter } from 'next/navigation';
+import styles from './Sidebar.module.css';
 
-const Sidebar = () => {
+interface SidebarProps {
+  spaceId: string;
+  title?: string;
+  avatar?: string;
+  banner?: string;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({
+  spaceId,
+  title,
+  avatar,
+  banner
+}) => {
   const router = useRouter();
   return (
     <Stack
@@ -26,34 +40,50 @@ const Sidebar = () => {
       bgcolor="#222222"
       height="auto"
     >
-      <Stack>
+      <div
+        style={{
+          backgroundImage: `url(${banner})`,
+        }}
+        className={styles.spaceButton}
+      >
         <Stack
-          bgcolor="#404440"
           borderRadius="10px"
-          border="1px solid #383838"
-          padding="10px"
+          padding="10px 14px"
           direction="row"
           spacing="10px"
           alignItems="center"
-          sx={{ cursor: 'pointer' }}
+          sx={{
+            cursor: 'pointer',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            backgroundColor: 'rgba(34,34,34,0.1)',
+            backdropFilter: 'blur(10px)',
+          }}
         >
           <Box
             component="img"
-            width={40}
-            height={40}
-            borderRadius={20}
-            src="/1.webp"
+            width={35}
+            height={35}
+            borderRadius={'100%'}
+            src={avatar || '/1.webp'}
           />
           <Typography
+            flex={1}
             variant="subtitleS"
             color="white"
+            fontSize={'18px'}
+            lineHeight={'22px'}
             sx={{ textWrap: 'wrap' }}
           >
-            Zuzalu City Contributors
+            {title ? (
+              title
+            ) : (
+              <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+            )}
           </Typography>
-          <ChevronDownIcon />
+          <ChevronDownIcon size={5} />
         </Stack>
-      </Stack>
+      </div>
       <Stack
         direction="column"
         spacing={0.5}
