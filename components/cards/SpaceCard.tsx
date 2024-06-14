@@ -76,37 +76,15 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               overflow: 'auto',
             }}
           >
-            {
-              description.includes("{") ? <TextEditor
-                holder='space-detail-editor'
-                readonly={true}
-                value={JSON.parse(description.replaceAll('\\"', '"'))}
-                sx={{
-                  fontFamily: 'Inter',
-                  color: 'white',
-                  borderRadius: '10px',
-                  height: 'auto',
-                  overflow: 'auto',
-                  padding: '0px',
-                  '& > div > div': {
-                    paddingBottom: '0px !important',
-                  },
-                  '& .ce-block__content': {
-                    maxWidth: '100% !important', // Adjust the margin value as needed
-                  },
-                }}
-              />
-                : <Typography
-                  variant="bodyM"
-                  color="white"
-                  sx={{ wordWrap: 'break-word' }}
-                >
-                  {
-                    description
-                  }
-                </Typography>
-            }
-
+            <Typography
+              variant="bodyM"
+              color="white"
+              sx={{ wordWrap: 'break-word' }}
+            >
+              {
+                description
+              }
+            </Typography>
           </Stack>
           <Stack direction="row">
             <Typography color="white" variant="caption">
