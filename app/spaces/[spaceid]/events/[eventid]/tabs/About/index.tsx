@@ -2,8 +2,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useParams } from 'next/navigation';
 import { Stack, Typography, Box, SwipeableDrawer } from '@mui/material';
-import { Initial, Disclaimer, Email, Payment } from './Register';
-import { EventName, EventAbout, EventRegister, EventDetail } from '@/components/event';
+import { EventName, EventAbout, EventRegister, EventDetail, Initial, Disclaimer, Email, Payment } from '@/components/event';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
 import { CeramicResponseType, Event, EventEdge, Anchor } from '@/types';

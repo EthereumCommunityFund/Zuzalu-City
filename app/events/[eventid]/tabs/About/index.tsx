@@ -1,13 +1,19 @@
 'use client';
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { Stack, Box, Typography } from '@mui/material';
+import { useParams } from 'next/navigation';
+import { Stack, Box, Typography, SwipeableDrawer } from '@mui/material';
 import {
   EventName,
   EventDetail,
   EventRegister,
   EventAbout,
+  Initial,
+  Disclaimer,
+  Email,
+  Payment
 } from 'components/event';
-import { useParams } from 'next/navigation';
+import { ZuButton } from '@/components/core';
+import { XMarkIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
@@ -22,6 +28,11 @@ interface IAbout {
 const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   console.log("here", eventData)
   const [eventLocation, setEventLocation] = useState<string>('');
+
+  const [isInitial, setIsInitial] = useState<boolean>(false);
+  const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
+  const [isEmail, setIsEmail] = useState<boolean>(false);
+  const [isPayment, setIsPayment] = useState<boolean>(false);
 
   const params = useParams();
   const eventId = params.eventid.toString();
@@ -118,6 +129,49 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
     fetchData();
   }, []);
+
+  const List = (anchor: Anchor) => {
+
+    const handleClose = () => {
+      toggleDrawer('right', false);
+      setIsEmail(false);
+    };
+
+    return (
+      <Box
+        sx={{
+          width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+          backgroundColor: '#222222',
+        }}
+        role="presentation"
+        zIndex="10"
+        borderLeft="1px solid #383838"
+        height="100%"
+      >
+        <Stack
+          direction="row"
+          spacing="14px"
+          alignItems="center"
+          height="50px"
+          borderBottom="1px solid #383838"
+          paddingX={3}
+        >
+          <ZuButton startIcon={<XMarkIcon />} onClick={() => handleClose()}>
+            Close
+          </ZuButton>
+          <Typography
+            variant="subtitleSB"
+          >
+            Register for Event
+          </Typography>
+        </Stack>
+        {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
+        {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
+        {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
+        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />}
+      </Box>
+    );
+  };
 
 
   return (
@@ -231,6 +285,22 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}
           </Stack>
+          <SwipeableDrawer
+            hideBackdrop={true}
+            sx={{
+              '& .MuiDrawer-paper': {
+                marginTop: '50px',
+                height: 'calc(100% - 50px)',
+                boxShadow: 'none',
+              },
+            }}
+            anchor="right"
+            open={state['right']}
+            onClose={() => toggleDrawer('right', false)}
+            onOpen={() => toggleDrawer('right', true)}
+          >
+            {List('right')}
+          </SwipeableDrawer>
         </Stack>
       )}
     </Stack>
