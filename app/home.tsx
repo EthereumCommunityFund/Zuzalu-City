@@ -252,7 +252,7 @@ const Home: React.FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box width={'100vw'} minHeight={'100vh'}>
+      <Box width={'100vw'} minHeight={'calc(100vh - 50px)'}>
         <AuthPrompt />
         <Box
           display="grid"
