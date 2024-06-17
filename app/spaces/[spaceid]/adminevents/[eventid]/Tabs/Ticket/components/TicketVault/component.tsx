@@ -1,12 +1,18 @@
-import { ZuButton } from '@/components/core';
+import React, { useState } from 'react';
+import { ZuButton, ZuInput } from '@/components/core';
 import {
+  ArrowDownSquare,
   CloseIcon,
+  PlusCircleIcon,
   RightArrowIcon,
   ScrollIcon,
   SendIcon,
+  ChevronDownIcon,
+  XCricleIcon,
+  LeftArrowIcon,
+  CheckIcon
 } from '@/components/icons';
-import { Box, Button, Input, Typography } from '@mui/material';
-import React from 'react';
+import { Box, Button, Input, Stack, TextField, Typography } from '@mui/material';
 
 export const WithdrawToken = () => {
   const [showWithdrawalModal, setShowWithdrawalModal] = React.useState(false);
@@ -315,6 +321,172 @@ export const SendNFTTicket = () => {
   );
 };
 
+export const Whitelist = () => {
+  const [addresses, setAddresses] = useState<string[]>([]);
+
+  return (
+    <Stack spacing="30px">
+      <Stack spacing="10px">
+        <Stack direction="row" spacing="10px" alignItems="center">
+          <ArrowDownSquare />
+          <Typography variant="subtitleMB">
+            Whitelist
+          </Typography>
+        </Stack>
+        <Stack direction="row" spacing="10px" alignItems="center">
+          <Typography variant="bodyS">
+            Total Invites Sent
+          </Typography>
+          <Typography variant="bodyMB">
+            00
+          </Typography>
+        </Stack>
+      </Stack>
+      <Stack spacing="20px">
+        {addresses.length === 0 ? <Stack spacing="10px">
+          <Typography variant="bodyBB">
+            Input Approved Addresses
+          </Typography>
+          <Typography variant="bodyM">
+            Upload addresses of individuals to directly gain access to mint this ticket.
+            These users will interact and pay the set contributing amount of the ticket.
+          </Typography>
+        </Stack> :
+          <Stack spacing="20px">
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">
+                Approved Addresses
+              </Typography>
+              <Typography variant="bodyM">
+                Upload addresses of individuals to directly gain access to mint this ticket.
+                These users will interact and pay the set contributing amount of the ticket.
+              </Typography>
+            </Stack>
+            <Stack spacing="20px">
+              {
+                addresses.map((item, index) => (
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Address (eth)</Typography>
+                    <Stack direction="row" spacing="10px" alignItems="center">
+                      <ZuInput
+                        value={item}
+                        onChange={(e) =>
+                          setAddresses((prev) =>
+                            prev.map((item, i) =>
+                              i === index ? e.target.value : item,
+                            ),
+                          )
+                        }
+                      />
+                      <Box
+                        padding="8px 10px 6px 10px"
+                        bgcolor="#373737"
+                        borderRadius="10px"
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() =>
+                          setAddresses((prev) => prev.filter((_, i) => i !== index))
+                        }
+                      >
+                        <XCricleIcon />
+                      </Box>
+                    </Stack>
+                  </Stack>
+                ))
+              }
+            </Stack>
+          </Stack>
+        }
+        <Stack
+          onClick={() => {
+            setAddresses((prev) => {
+              const newState = [...prev, ''];
+              return newState;
+            });
+          }}
+          sx={{ cursor: "pointer" }}
+          direction="row" spacing="10px" padding="8px 14px" justifyContent="center" borderRadius="10px" bgcolor="#313131" alignItems="center"
+        >
+          <PlusCircleIcon />
+          <Typography variant="bodyM">
+            Add Address
+          </Typography>
+        </Stack>
+        <Stack
+          sx={{ cursor: "pointer" }}
+          direction="row" spacing="10px" padding="10px 20px" justifyContent="center" borderRadius="10px" border="1px solid #383838"
+        >
+          <Typography variant="bodyM">
+            View existing list of addresses added
+          </Typography>
+          <ChevronDownIcon size={4.5} />
+        </Stack>
+      </Stack>
+      <ZuButton
+        sx={{
+          backgroundColor: '#2f474e',
+          color: '#67DAFF',
+          width: '100%',
+        }}
+        startIcon={<RightArrowIcon color="#67DAFF" />}
+      >
+        Next Step
+      </ZuButton>
+      <Stack direction="row" spacing="20px">
+        <ZuButton
+          sx={{
+            width: '100%',
+          }}
+          startIcon={<LeftArrowIcon />}
+        >
+          Back
+        </ZuButton>
+        <ZuButton
+          sx={{
+            backgroundColor: '#2f474e',
+            color: '#67DAFF',
+            width: '100%',
+          }}
+          startIcon={<RightArrowIcon color="#67DAFF" />}
+        >
+          Upload & Send
+        </ZuButton>
+      </Stack>
+      <Stack spacing="10px">
+        <Typography variant="bodyBB">
+          Send email invitations (optional)
+        </Typography>
+        <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+          Input corresponding emails of the eth addresses to be sent a notification link to mint this ticket.
+        </Typography>
+        <TextField
+          multiline
+          rows={4}
+          placeholder="simon@ecf.network, reno@ecf.network"
+          sx={{
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '10px',
+            border: 'none',
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: "none"
+            }
+          }}
+        />
+      </Stack>
+      <Stack padding="10px" borderRadius="10px" bgcolor="#313131">
+        <Typography variant="bodyM" textAlign="center">
+          Contract being updated...
+        </Typography>
+      </Stack>
+      <Stack direction="row" padding="10px" borderRadius="10px" bgcolor="rgba(125, 255, 209, 0.10)" justifyContent="center" spacing="10px">
+        <CheckIcon />
+        <Typography variant="bodyM" textAlign="center" color="#7DFFD1">
+          Contract Updated
+        </Typography>
+      </Stack>
+    </Stack>
+  )
+}
+
 export const ConfirmSendNFTTicketTransaction = ({
   showNFTTicketModal,
   setShowNFTTicketModal,
@@ -447,7 +619,7 @@ export const ConfirmSendNFTTicketTransaction = ({
                   fontFamily: 'Inter',
                   textTransform: 'capitalize',
                 }}
-                // startIcon={<LeftArrowIcon />}
+              // startIcon={<LeftArrowIcon />}
               >
                 Cancel
               </Button>
@@ -610,7 +782,7 @@ export const ConfirmWithdrawalTransaction = ({
                   fontFamily: 'Inter',
                   textTransform: 'capitalize',
                 }}
-                // startIcon={<LeftArrowIcon />}
+              // startIcon={<LeftArrowIcon />}
               >
                 Cancel
               </Button>

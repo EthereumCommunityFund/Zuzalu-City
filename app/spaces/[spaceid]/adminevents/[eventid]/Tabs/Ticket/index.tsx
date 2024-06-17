@@ -13,6 +13,7 @@ import {
   TicketVault,
 } from './components';
 import { ZuButton } from 'components/core';
+import { XMarkIcon } from '@/components/icons';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -86,10 +87,8 @@ const Ticket = () => {
   );
   const vault = (anchor: Anchor) => (
     <Box
-      sx={{
-        maxWidth: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
-        backgroundColor: '#222222',
-      }}
+      bgcolor="#222222"
+      width="700px"
       role="presentation"
       zIndex="100"
       borderLeft="1px solid #383838"
@@ -101,9 +100,9 @@ const Ticket = () => {
         borderBottom="1px solid #383838"
         paddingX={3}
       >
-        <ZuButton onClick={() => toggleDrawer('right', false)}>Close</ZuButton>
+        <ZuButton onClick={() => toggleDrawer('right', false)} startIcon={<XMarkIcon />}>Close</ZuButton>
         <Typography marginLeft={'14px'} fontSize="18px" fontWeight="bold">
-          Create Ticket
+          View Ticket
         </Typography>
       </Box>
       <TicketVault />
