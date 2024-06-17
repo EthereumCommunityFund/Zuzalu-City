@@ -145,6 +145,7 @@ export default function SpaceDetailPage() {
         display: 'flex',
         flexDirection: 'row',
         width: '100%',
+        overflowY: 'auto',
       }}
     >
       <SubSidebar
@@ -156,6 +157,8 @@ export default function SpaceDetailPage() {
       <Box
         sx={{
           width: 'calc(100% - 280px)',
+          maxHeight: 'calc(100vh - 50px)',
+          overflowY: 'auto',
           [theme.breakpoints.down('lg')]: {
             width: '100%',
           },
@@ -360,9 +363,9 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     backgroundColor: '#ffffff05',
                     borderRadius: '10px',
-                    height: !showMore ? '157px' :'fit-content',
+                    height: !showMore ? '157px' : 'fit-content',
                     boxSizing: 'border-box',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
                   }}
                 >
                   <Box
@@ -377,7 +380,7 @@ export default function SpaceDetailPage() {
                     {space.name}
                   </Box>
                   <TextEditor
-                    holder='space-detail-editor'
+                    holder="space-detail-editor"
                     readonly={true}
                     value={JSON.parse(space.description.replaceAll('\\"', '"'))}
                     sx={{
@@ -423,9 +426,11 @@ export default function SpaceDetailPage() {
                 }}
               >
                 <Stack direction="row" spacing={'10px'} alignItems={'center'}>
-                  {showMore ? <ChevronDownIcon
-                    size={4}
-                  /> : <ChevronUpIcon size={4} />}
+                  {showMore ? (
+                    <ChevronDownIcon size={4} />
+                  ) : (
+                    <ChevronUpIcon size={4} />
+                  )}
                   <span>{showMore ? 'Show Less' : 'Show More'}</span>
                 </Stack>
               </SidebarButton>
