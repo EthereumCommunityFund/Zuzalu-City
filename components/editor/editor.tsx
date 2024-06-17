@@ -4,6 +4,7 @@ import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
 import EditorJS from '@editorjs/editorjs';
+import { MDImporter, MDParser } from './markdownParser';
 
 import './editor.css';
 
@@ -12,18 +13,21 @@ import './editor.css';
 
 interface TextEditorPropTypes extends BoxProps {
   value?: OutputData;
-  placeholder?: string;
-  editor: any;
-  setEditorInst?: (editor: any) => void;
+  setData?: (value: OutputData) => void;
   holder: string;
+  placeholder?: string;
+  readonly?: boolean;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
-  value,
-  editor,
-  setEditorInst = (editor: any) => {},
+  value = { blocks: [] },
+  setData = (value: OutputData) => {
+    console.log(value);
+  },
   holder = 'editorjs',
   children,
+  readonly = false,
+  placeholder = 'Write an Amazing Blog',
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -33,11 +37,22 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       const editor = new EditorJS({
         holder: holder,
         tools,
+        placeholder: placeholder,
         data: value,
+        readOnly: readonly,
+        async onChange(api, event) {
+          try {
+            if (!readonly) {
+              const data = await api.saver.save();
+              setData(data);
+            }
+          } catch (err) {
+            console.log('EditorJS Error: ', err);
+          }
+        },
       });
 
       ref.current = editor;
-      setEditorInst(editor);
     }
 
     return () => {
@@ -46,10 +61,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       }
     };
   }, []);
-
-  useEffect(() => {
-    editor?.render(value);
-  }, [value]);
 
   return (
     <Fragment>

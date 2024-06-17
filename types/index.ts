@@ -1,3 +1,5 @@
+export type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
 export type IconProps = {
   size?: number;
   color?: string;
@@ -79,6 +81,9 @@ export interface Space {
   discord?: string;
   ens?: string;
   category?: string;
+  members?: {
+    id: string
+  }[]
 }
 
 export interface SpaceEdge {

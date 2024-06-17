@@ -64,6 +64,14 @@ import { Cog6Icon } from './Cog6';
 import { NewspaperIcon } from './Newspaper';
 import { MinusIcon } from './Minus';
 import { TicketIcon } from './Ticket';
+import { ArrowUpRightIcon } from './ArrowUpRight';
+import { ArrowDownTrayIcon } from './ArrowDownTray'
+import { ArrowUpLeftIcon } from './ArrowUpLeft';
+import { ChevronUpIcon } from './ChevronUp';
+import { RefreshIcon } from './RefreshIcon';
+import { Square2StackIcon } from './Square2Stack';
+import { ArrowTopRightSquareIcon } from './ArrowTopRightSquare';
+import { ArrowDownSquare } from './ArrowDownSquare';
 
 export {
   HomeIcon,
@@ -132,4 +140,15 @@ export {
   NewspaperIcon,
   MinusIcon,
   TicketIcon,
+<<<<<<< HEAD
+=======
+  ArrowUpRightIcon,
+  ArrowDownTrayIcon,
+  ArrowUpLeftIcon,
+  ChevronUpIcon,
+  RefreshIcon,
+  Square2StackIcon,
+  ArrowTopRightSquareIcon,
+  ArrowDownSquare
+>>>>>>> 2f07ba14bb1c99814969a8c289139e03dfb9c89d
 };

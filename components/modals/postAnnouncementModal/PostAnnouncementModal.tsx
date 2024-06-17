@@ -118,12 +118,11 @@ export const PostAnnouncementModal = ({
                 color: 'white',
                 padding: '20px',
                 borderRadius: '10px',
+                height: 'auto',
+                minHeight: '270px',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                height: '155px',
                 overflow: 'auto',
               }}
-              editor={editor}
-              setEditorInst={setEditorInst}
             />
           </Stack>
           <Stack

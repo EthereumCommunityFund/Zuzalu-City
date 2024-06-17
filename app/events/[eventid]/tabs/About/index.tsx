@@ -1,26 +1,50 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { Stack, Box, Typography } from '@mui/material';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useParams } from 'next/navigation';
+import { Stack, Box, Typography, SwipeableDrawer } from '@mui/material';
 import {
   EventName,
   EventDetail,
   EventRegister,
   EventAbout,
+  Initial,
+  Disclaimer,
+  Email,
+  Payment
 } from 'components/event';
-import { useParams } from 'next/navigation';
+import { ZuButton } from '@/components/core';
+import { XMarkIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { SpaceCard } from '@/components/cards';
+import { Anchor } from '@/types';
 
-const About = () => {
-  const [eventData, setEventData] = React.useState<Event>();
+interface IAbout {
+  eventData: Event | undefined;
+  setEventData: Dispatch<SetStateAction<Event | undefined>>;
+}
+
+const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
+  console.log("here", eventData)
   const [eventLocation, setEventLocation] = useState<string>('');
+
+  const [isInitial, setIsInitial] = useState<boolean>(false);
+  const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
+  const [isEmail, setIsEmail] = useState<boolean>(false);
+  const [isPayment, setIsPayment] = useState<boolean>(false);
 
   const params = useParams();
   const eventId = params.eventid.toString();
 
   const { composeClient } = useCeramicContext();
+
+  const [state, setState] = useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
 
   const getLocation = async () => {
     try {
@@ -71,7 +95,7 @@ const About = () => {
                 description
               }
               profile {
-                username
+                username  
                 avatar
               }
             }
@@ -92,9 +116,23 @@ const About = () => {
     }
   };
 
-  React.useEffect(() => {
-    getEventDetailInfo();
+  const toggleDrawer = (anchor: Anchor, open: boolean) => {
+    setState({ ...state, [anchor]: open });
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getEventDetailInfo();
+        // await getLocation();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetchData();
   }, []);
+<<<<<<< HEAD
   return eventData ? (
     <Stack
       padding="40px"
@@ -102,6 +140,55 @@ const About = () => {
       alignItems="center"
       bgcolor="#222222"
     >
+=======
+
+  const List = (anchor: Anchor) => {
+
+    const handleClose = () => {
+      toggleDrawer('right', false);
+      setIsEmail(false);
+    };
+
+    return (
+      <Box
+        sx={{
+          width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+          backgroundColor: '#222222',
+        }}
+        role="presentation"
+        zIndex="10"
+        borderLeft="1px solid #383838"
+        height="100%"
+      >
+        <Stack
+          direction="row"
+          spacing="14px"
+          alignItems="center"
+          height="50px"
+          borderBottom="1px solid #383838"
+          paddingX={3}
+        >
+          <ZuButton startIcon={<XMarkIcon />} onClick={() => handleClose()}>
+            Close
+          </ZuButton>
+          <Typography
+            variant="subtitleSB"
+          >
+            Register for Event
+          </Typography>
+        </Stack>
+        {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
+        {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
+        {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
+        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />}
+      </Box>
+    );
+  };
+
+
+  return (
+    <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
+>>>>>>> 2f07ba14bb1c99814969a8c289139e03dfb9c89d
       {eventData && (
         <Stack width={900} direction="row" spacing="20px">
           <Stack spacing="20px" flex="2">
@@ -218,13 +305,14 @@ const About = () => {
             </Stack>
           </Stack>
           <Stack spacing="20px" flex="1">
-            <EventRegister />
+            <EventRegister onToggle={toggleDrawer} />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
+<<<<<<< HEAD
             <EventDetail
               status={eventData.status}
               links={eventData.customLinks}
@@ -238,13 +326,33 @@ const About = () => {
                 description={eventData?.space?.description}
               />
             </Stack>
+=======
+            <EventDetail status={eventData.status} links={eventData.customLinks} />
+            {/* <Stack>
+                      <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
+                    </Stack> */}
+>>>>>>> 2f07ba14bb1c99814969a8c289139e03dfb9c89d
           </Stack>
+          <SwipeableDrawer
+            hideBackdrop={true}
+            sx={{
+              '& .MuiDrawer-paper': {
+                marginTop: '50px',
+                height: 'calc(100% - 50px)',
+                boxShadow: 'none',
+              },
+            }}
+            anchor="right"
+            open={state['right']}
+            onClose={() => toggleDrawer('right', false)}
+            onOpen={() => toggleDrawer('right', true)}
+          >
+            {List('right')}
+          </SwipeableDrawer>
         </Stack>
       )}
     </Stack>
-  ) : (
-    <></>
-  );
+  )
 };
 
 export default About;

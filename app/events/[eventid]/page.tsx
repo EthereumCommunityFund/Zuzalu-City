@@ -1,26 +1,29 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { Stack } from '@mui/material';
 import { Thumbnail, Subbar } from './components';
 import { About, Sessions } from './tabs';
+import { Event } from '@/types';
 
 const Home = () => {
-  const renderPage = () => {
-    switch (tabName) {
-      case 'About':
-        return <About />;
-      case 'Sessions':
-        return <Sessions />;
-      default:
-        return <About />;
-    }
-  };
-  const [tabName, setTabName] = React.useState('About');
+  const [tabName, setTabName] = useState('About');
+
+  const [eventData, setEventData] = useState<Event>();
+
   return (
     <Stack color="white">
       <Thumbnail />
       <Subbar tabName={tabName} setTabName={setTabName} />
-      {renderPage()}
+      {
+        tabName === "About" && (
+          <About eventData={eventData} setEventData={setEventData} />
+        )
+      }
+      {
+        tabName === "Sessions" && (
+          <Sessions />
+        )
+      }
     </Stack>
   );
 };

@@ -59,10 +59,8 @@ const Create = () => {
   const [avatarURL, setAvatarURL] = useState<string>();
   const [banner, setBanner] = useState<SelectedFile>();
   const [bannerURL, setBannerURL] = useState<string>();
-  // const [description, setDescription] = useState<string>('');
   const [description, setDescription] = useState<OutputData>();
   const [error, setError] = useState(false);
-  const [editor, setEditorInst] = useState<any>();
   const [categories, setCategories] = useState<string[]>([]);
   const [socialLinks, setSocialLinks] = useState<number[]>([0]);
   const [customLinks, setCustomLinks] = useState<number[]>([0]);
@@ -93,14 +91,14 @@ const Create = () => {
   const customLinksRef = useRef<HTMLDivElement>(null);
 
   const createSpace = async () => {
-    const output = await editor.save();
-    let strDesc: any = JSON.stringify(output);
+    let strDesc: any = JSON.stringify(description);
 
-    if (!output.blocks || output.blocks.length == 0) {
+    if (!description || !description.blocks || description.blocks.length == 0) {
       setError(true);
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
+    console.log('strDesc: ', strDesc)
 
     let socialLinks = {};
     let customLinks = [];
@@ -163,9 +161,10 @@ const Create = () => {
             admin {
               id
             }
-            profileId,
-            avatar,
+            profileId
+            avatar
             banner
+            category
           }
         }
       }
@@ -287,16 +286,15 @@ const Create = () => {
                 <TextEditor
                   holder="space_description"
                   value={description}
-                  editor={editor}
-                  setEditorInst={setEditorInst}
+                  setData={setDescription}
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
                     color: 'white',
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
-                    height: '163px',
-                    maxHeight: '163px',
+                    height: 'auto',
+                    minHeight: '270px',
                     overflow: 'auto',
                     '& > div > div': {
                       paddingBottom: '0px !important',
@@ -304,7 +302,7 @@ const Create = () => {
                   }}
                 />
                 <Stack direction="row" justifyContent="space-between">
-                  <Stack
+                  {/* <Stack
                     sx={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -341,7 +339,7 @@ const Create = () => {
                     <Typography color="white" variant="caption">
                       Markdown Available
                     </Typography>
-                  </Stack>
+                  </Stack> */}
                   <Typography variant="caption" color="white">
                     1000 Characters Left
                   </Typography>
