@@ -258,7 +258,7 @@ const Home: React.FC = () => {
           display="grid"
           gridTemplateColumns={'auto 1fr'}
           sx={{ backgroundColor: '#222222' }}
-          minHeight={'100vh'}
+          height={'calc(100vh - 50px)'}
         >
           {!isTablet && <Sidebar selected="Home" />}
           <Box
@@ -266,6 +266,11 @@ const Home: React.FC = () => {
             flex={1}
             padding={isMobile ? '10px' : '30px'}
             width={isTablet ? '100vw' : 'calc(100vw - 260px)'}
+            height={'100%'}
+            sx={{
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}
           >
             <Box
               display="flex"
