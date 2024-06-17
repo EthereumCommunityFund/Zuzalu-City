@@ -415,18 +415,18 @@ const TicketVault = () => {
           }}
         >
           <Typography
-            onClick={() => setAction('Withdraw')}
+            onClick={() => setAction('Whitelist')}
             textAlign={'center'}
-            paddingY={'8px'}
             width={'100%'}
+            paddingY={'8px'}
             sx={{
               cursor: 'pointer',
-              borderRadius: `${action === 'Withdraw' ? '8px' : null}`,
-              border: `${action === 'Withdraw' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
-              background: `${action === 'Withdraw' ? 'rgba(255, 255, 255, 0.10)' : null}`,
+              borderRadius: `${action === 'Whitelist' ? '8px' : null}`,
+              border: `${action === 'Whitelist' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
+              background: `${action === 'Whitelist' ? 'rgba(255, 255, 255, 0.10)' : null}`,
             }}
           >
-            Withdraw Token
+            Whitelist
           </Typography>
           <Typography
             onClick={() => setAction('SendTicket')}
@@ -443,18 +443,18 @@ const TicketVault = () => {
             Send Ticket
           </Typography>
           <Typography
-            onClick={() => setAction('Whitelist')}
+            onClick={() => setAction('Withdraw')}
             textAlign={'center'}
-            width={'100%'}
             paddingY={'8px'}
+            width={'100%'}
             sx={{
               cursor: 'pointer',
-              borderRadius: `${action === 'Whitelist' ? '8px' : null}`,
-              border: `${action === 'Whitelist' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
-              background: `${action === 'Whitelist' ? 'rgba(255, 255, 255, 0.10)' : null}`,
+              borderRadius: `${action === 'Withdraw' ? '8px' : null}`,
+              border: `${action === 'Withdraw' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
+              background: `${action === 'Withdraw' ? 'rgba(255, 255, 255, 0.10)' : null}`,
             }}
           >
-            Whitelist
+            Withdraw Token
           </Typography>
         </Box>
 

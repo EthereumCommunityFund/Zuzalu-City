@@ -10,9 +10,12 @@ import {
   ChevronDownIcon,
   XCricleIcon,
   LeftArrowIcon,
-  CheckIcon
+  CheckIcon,
+  CircleCloseIcon,
+  CopyIcon,
+  GoToExplorerIcon
 } from '@/components/icons';
-import { Box, Button, Input, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Input, Stack, TextField, Typography, Step, Stepper, StepLabel } from '@mui/material';
 
 export const WithdrawToken = () => {
   const [showWithdrawalModal, setShowWithdrawalModal] = React.useState(false);
@@ -321,8 +324,93 @@ export const SendNFTTicket = () => {
   );
 };
 
+const steps = [
+  {
+    label: 'Addresses being uploaded',
+    description: '0x9999...f08E',
+    // description: '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+  },
+  {
+    label: 'Ticket contract updated',
+    description: '0x9999...f08E',
+    // description: '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+  },
+  {
+    label: 'Sending email notifications',
+    description: '0x0184..287d6',
+  },
+  {
+    label: 'Last Step',
+    description: `desc`,
+  },
+];
+
+const TicketProcessingProgress = () => {
+  const [activeStep, setActiveStep] = React.useState(0);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+  };
+
+  return (
+    <Box>
+      <Stepper activeStep={activeStep} orientation="vertical">
+        {steps.map((step, index) => (
+          <Step key={step.label}>
+            <StepLabel
+              sx={{
+                '.mui-10z7562-MuiSvgIcon-root-MuiStepIcon-root.Mui-active': {
+                  color: '#7DFFD1',
+                },
+              }}
+            >
+              <Typography
+                fontSize={'14px'}
+                fontWeight={'600'}
+                lineHeight={'160%'}
+                color="white"
+              >
+                {step.label}
+              </Typography>
+              <Stack direction="row" display={'flex'} alignItems='center' spacing="10px">
+                <Typography
+                  fontSize={'14px'}
+                  fontWeight={'400'}
+                  lineHeight={'160%'}
+                  color="white"
+                  sx={{ opacity: '0.8' }}
+                >
+                  {step.description}
+                </Typography>
+                {(index === 2 || index === 3) ? null : (
+                  <>
+                    <CopyIcon cursor="pointer" />
+                    <GoToExplorerIcon cursor="pointer" />
+                  </>
+                )}
+              </Stack>
+            </StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+    </Box>
+  );
+};
+
 export const Whitelist = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
+  const [initial, setInitial] = useState<boolean>(false);
+  const [email, setEmail] = useState<boolean>(false);
+  const [process, setProcess] = useState<boolean>(false);
+  const [updated, setUpdated] = useState<boolean>(false);
 
   return (
     <Stack spacing="30px">
@@ -335,154 +423,190 @@ export const Whitelist = () => {
         </Stack>
         <Stack direction="row" spacing="10px" alignItems="center">
           <Typography variant="bodyS">
-            Total Invites Sent
+            Total Invites Sent:
           </Typography>
           <Typography variant="bodyMB">
             00
           </Typography>
         </Stack>
       </Stack>
-      <Stack spacing="20px">
-        {addresses.length === 0 ? <Stack spacing="10px">
-          <Typography variant="bodyBB">
-            Input Approved Addresses
-          </Typography>
-          <Typography variant="bodyM">
-            Upload addresses of individuals to directly gain access to mint this ticket.
-            These users will interact and pay the set contributing amount of the ticket.
-          </Typography>
-        </Stack> :
+      {!initial && !email && !process && (
+        <>
           <Stack spacing="20px">
-            <Stack spacing="10px">
+            {addresses.length === 0 ? <Stack spacing="10px">
               <Typography variant="bodyBB">
-                Approved Addresses
+                Input Approved Addresses
               </Typography>
               <Typography variant="bodyM">
                 Upload addresses of individuals to directly gain access to mint this ticket.
                 These users will interact and pay the set contributing amount of the ticket.
               </Typography>
+            </Stack> :
+              <Stack spacing="20px">
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">
+                    Approved Addresses
+                  </Typography>
+                  <Typography variant="bodyM">
+                    Upload addresses of individuals to directly gain access to mint this ticket.
+                    These users will interact and pay the set contributing amount of the ticket.
+                  </Typography>
+                </Stack>
+                <Stack spacing="20px">
+                  {
+                    addresses.map((item, index) => (
+                      <Stack spacing="10px">
+                        <Typography variant="bodyBB">Address (eth)</Typography>
+                        <Stack direction="row" spacing="10px" alignItems="center">
+                          <ZuInput
+                            value={item}
+                            onChange={(e) =>
+                              setAddresses((prev) =>
+                                prev.map((item, i) =>
+                                  i === index ? e.target.value : item,
+                                ),
+                              )
+                            }
+                          />
+                          <Box
+                            padding="8px 10px 6px 10px"
+                            bgcolor="#373737"
+                            borderRadius="10px"
+                            sx={{ cursor: 'pointer' }}
+                            onClick={() =>
+                              setAddresses((prev) => prev.filter((_, i) => i !== index))
+                            }
+                          >
+                            <XCricleIcon />
+                          </Box>
+                        </Stack>
+                      </Stack>
+                    ))
+                  }
+                </Stack>
+              </Stack>
+            }
+            <Stack
+              onClick={() => {
+                setAddresses((prev) => {
+                  const newState = [...prev, ''];
+                  return newState;
+                });
+              }}
+              sx={{ cursor: "pointer" }}
+              direction="row" spacing="10px" padding="8px 14px" justifyContent="center" borderRadius="10px" bgcolor="#313131" alignItems="center"
+            >
+              <PlusCircleIcon />
+              <Typography variant="bodyM">
+                Add Address
+              </Typography>
             </Stack>
-            <Stack spacing="20px">
-              {
-                addresses.map((item, index) => (
-                  <Stack spacing="10px">
-                    <Typography variant="bodyBB">Address (eth)</Typography>
-                    <Stack direction="row" spacing="10px" alignItems="center">
-                      <ZuInput
-                        value={item}
-                        onChange={(e) =>
-                          setAddresses((prev) =>
-                            prev.map((item, i) =>
-                              i === index ? e.target.value : item,
-                            ),
-                          )
-                        }
-                      />
-                      <Box
-                        padding="8px 10px 6px 10px"
-                        bgcolor="#373737"
-                        borderRadius="10px"
-                        sx={{ cursor: 'pointer' }}
-                        onClick={() =>
-                          setAddresses((prev) => prev.filter((_, i) => i !== index))
-                        }
-                      >
-                        <XCricleIcon />
-                      </Box>
-                    </Stack>
-                  </Stack>
-                ))
-              }
+            <Stack
+              sx={{ cursor: "pointer" }}
+              direction="row" spacing="10px" padding="10px 20px" justifyContent="center" borderRadius="10px" border="1px solid #383838"
+            >
+              <Typography variant="bodyM">
+                View existing list of addresses added
+              </Typography>
+              <ChevronDownIcon size={4.5} />
             </Stack>
           </Stack>
-        }
-        <Stack
-          onClick={() => {
-            setAddresses((prev) => {
-              const newState = [...prev, ''];
-              return newState;
-            });
-          }}
-          sx={{ cursor: "pointer" }}
-          direction="row" spacing="10px" padding="8px 14px" justifyContent="center" borderRadius="10px" bgcolor="#313131" alignItems="center"
-        >
-          <PlusCircleIcon />
-          <Typography variant="bodyM">
-            Add Address
-          </Typography>
-        </Stack>
-        <Stack
-          sx={{ cursor: "pointer" }}
-          direction="row" spacing="10px" padding="10px 20px" justifyContent="center" borderRadius="10px" border="1px solid #383838"
-        >
-          <Typography variant="bodyM">
-            View existing list of addresses added
-          </Typography>
-          <ChevronDownIcon size={4.5} />
-        </Stack>
-      </Stack>
-      <ZuButton
-        sx={{
-          backgroundColor: '#2f474e',
-          color: '#67DAFF',
-          width: '100%',
-        }}
-        startIcon={<RightArrowIcon color="#67DAFF" />}
-      >
-        Next Step
-      </ZuButton>
-      <Stack direction="row" spacing="20px">
-        <ZuButton
-          sx={{
-            width: '100%',
-          }}
-          startIcon={<LeftArrowIcon />}
-        >
-          Back
-        </ZuButton>
-        <ZuButton
-          sx={{
-            backgroundColor: '#2f474e',
-            color: '#67DAFF',
-            width: '100%',
-          }}
-          startIcon={<RightArrowIcon color="#67DAFF" />}
-        >
-          Upload & Send
-        </ZuButton>
-      </Stack>
-      <Stack spacing="10px">
-        <Typography variant="bodyBB">
-          Send email invitations (optional)
-        </Typography>
-        <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
-          Input corresponding emails of the eth addresses to be sent a notification link to mint this ticket.
-        </Typography>
-        <TextField
-          multiline
-          rows={4}
-          placeholder="simon@ecf.network, reno@ecf.network"
-          sx={{
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '10px',
-            border: 'none',
-            '& .MuiOutlinedInput-notchedOutline': {
-              border: "none"
-            }
-          }}
-        />
-      </Stack>
-      <Stack padding="10px" borderRadius="10px" bgcolor="#313131">
-        <Typography variant="bodyM" textAlign="center">
-          Contract being updated...
-        </Typography>
-      </Stack>
-      <Stack direction="row" padding="10px" borderRadius="10px" bgcolor="rgba(125, 255, 209, 0.10)" justifyContent="center" spacing="10px">
-        <CheckIcon />
-        <Typography variant="bodyM" textAlign="center" color="#7DFFD1">
-          Contract Updated
-        </Typography>
-      </Stack>
+          <ZuButton
+            sx={{
+              backgroundColor: '#2f474e',
+              color: '#67DAFF',
+              width: '100%',
+            }}
+            startIcon={<RightArrowIcon color="#67DAFF" />}
+            onClick={() => { setEmail(true) }}
+          >
+            Next Step
+          </ZuButton>
+        </>
+      )}
+      {
+        !initial && email && !process && (
+          <>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">
+                Send email invitations (optional)
+              </Typography>
+              <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+                Input corresponding emails of the eth addresses to be sent a notification link to mint this ticket.
+              </Typography>
+              <TextField
+                multiline
+                rows={4}
+                placeholder="simon@ecf.network, reno@ecf.network"
+                sx={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  borderRadius: '10px',
+                  border: 'none',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    border: "none"
+                  }
+                }}
+              />
+              <Stack
+                sx={{ cursor: "pointer" }}
+                direction="row" spacing="10px" padding="10px 20px" justifyContent="center" borderRadius="10px" border="1px solid #383838"
+              >
+                <Typography variant="bodyM">
+                  View existing list of addresses added
+                </Typography>
+                <ChevronDownIcon size={4.5} />
+              </Stack>
+            </Stack>
+            <Stack direction="row" spacing="20px">
+              <ZuButton
+                sx={{
+                  width: '100%',
+                }}
+                startIcon={<LeftArrowIcon />}
+                onClick={() => setEmail(false)}
+              >
+                Back
+              </ZuButton>
+              <ZuButton
+                sx={{
+                  backgroundColor: '#2f474e',
+                  color: '#67DAFF',
+                  width: '100%',
+                }}
+                startIcon={<RightArrowIcon color="#67DAFF" />}
+                onClick={() => { setProcess(true); setEmail(false); }}
+              >
+                Upload & Send
+              </ZuButton>
+            </Stack>
+          </>
+        )
+      }
+      {
+        !initial && !email && process && (
+          <>
+            {!updated ? <Stack padding="10px" borderRadius="10px" bgcolor="#313131">
+              <Typography variant="bodyM" textAlign="center">
+                Contract being updated...
+              </Typography>
+            </Stack> :
+              <Stack direction="row" padding="10px" borderRadius="10px" bgcolor="rgba(125, 255, 209, 0.10)" justifyContent="center" spacing="10px">
+                <CheckIcon />
+                <Typography variant="bodyM" textAlign="center" color="#7DFFD1">
+                  Contract Updated
+                </Typography>
+              </Stack>}
+            <TicketProcessingProgress />
+            <ZuButton sx={{
+              backgroundColor: '#2f474e',
+              color: '#67DAFF',
+              width: '100%',
+            }} startIcon={<XCricleIcon color="#67DAFF" />}>
+              Close
+            </ZuButton>
+          </>
+        )
+      }
     </Stack>
   )
 }
