@@ -41,7 +41,6 @@ const Sessions = () => {
   const [locations, setLocations] = useState<string[]>([]);
   const [person, setPerson] = useState(true);
   const [online, setOnline] = useState(false);
-  const [editor, setEditorInst] = useState<any>();
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
@@ -166,8 +165,7 @@ const Sessions = () => {
       return;
     }
 
-    const output = await editor.save();
-    let strDesc: any = JSON.stringify(output);
+    let strDesc: any = JSON.stringify(sessionDescription);
 
     strDesc = strDesc.replaceAll('"', '\\"');
 
@@ -403,8 +401,7 @@ const Sessions = () => {
                     borderRadius: '10px',
                   }}
                   value={sessionDescription}
-                  editor={editor}
-                  setEditorInst={setEditorInst}
+                  setData={setSessionDescription}
                 />
                 <Stack
                   sx={{

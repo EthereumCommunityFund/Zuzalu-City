@@ -157,6 +157,8 @@ const Overview = () => {
           placeholder="Write Space Description"
           sx={{
             width: '100%',
+            height: 'auto',
+            minHeight: '270px',
             backgroundColor: '#ffffff0d',
             fontFamily: 'Inter',
             color: 'white',
@@ -164,10 +166,9 @@ const Overview = () => {
             borderRadius: '10px',
           }}
           value={description}
-          editor={editor}
-          setEditorInst={setEditorInst}
+          setData={setDescription}
         />
-        <Stack
+        {/* <Stack
           sx={{
             display: 'flex',
             flexDirection: 'row',
@@ -202,7 +203,7 @@ const Overview = () => {
             </defs>
           </svg>
           <Typography>Markdown Available</Typography>
-        </Stack>
+        </Stack> */}
       </Box>
       <Box
         sx={{
