@@ -14,9 +14,9 @@ export type SpaceCardProps = {
   description?: string;
   joined?: boolean;
   members?: {
-    id: string
-  }[],
-  categories?: string
+    id: string;
+  }[];
+  categories?: string;
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
@@ -27,10 +27,8 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   description = 'Welcome Zucity',
   joined = false,
   members = [],
-  categories = ''
+  categories = '',
 }) => {
-
-
   function isValidJSON(str: string): boolean {
     try {
       JSON.parse(str);
@@ -84,8 +82,8 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               overflow: 'auto',
             }}
           >
-            {
-              isValidJSON(description.replaceAll('\\"', '"')) ? <TextEditor
+            {isValidJSON(description.replaceAll('\\"', '"')) ? (
+              <TextEditor
                 holder={'space-detail-editor' + id}
                 readonly={true}
                 value={JSON.parse(description.replaceAll('\\"', '"'))}
@@ -102,44 +100,49 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
                     maxWidth: '100% !important', // Adjust the margin value as needed
                   },
                   '& .ce-block:first-child': {
-                    display: 'none'
-                  }
+                    display: 'none',
+                  },
                 }}
               />
-                : <Typography
-                  variant="bodyM"
-                  color="white"
-                  sx={{ wordWrap: 'break-word' }}
-                >
-                  {
-                    description
-                  }
-                </Typography>
-            }
-
+            ) : (
+              <Typography
+                variant="bodyM"
+                color="white"
+                sx={{ wordWrap: 'break-word' }}
+              >
+                {description}
+              </Typography>
+            )}
           </Stack>
           <Stack direction="row">
             <Typography color="white" variant="caption">
-              {
-                categories && categories.split(", ").map((category) => SPACE_CATEGORIES.filter((cat) => cat.value === category)[0].label).join(", ")
-              }
+              {categories &&
+                categories
+                  .split(', ')
+                  .map(
+                    (category) =>
+                      SPACE_CATEGORIES.filter(
+                        (cat) => cat.value === category,
+                      )[0].label,
+                  )
+                  .join(', ')}
             </Typography>
           </Stack>
 
-          {
-            members && members.length > 0 && <Stack direction="row" alignItems="center" spacing="10px">
+          {members && members.length > 0 && (
+            <Stack direction="row" alignItems="center" spacing="10px">
               <UsersIcon size={4} />
               <Typography
                 color="white"
                 variant="bodyS"
                 sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
               >
-                {
-                  members.length >= 1000 ? (members.length / 1000).toFixed(1) + 'k' : members.length
-                }
+                {members.length >= 1000
+                  ? (members.length / 1000).toFixed(1) + 'k'
+                  : members.length}
               </Typography>
             </Stack>
-          }
+          )}
           {/* <Button
               size="small"
               startIcon={
@@ -162,10 +165,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             >
               {joined ? 'Joined' : 'Join'}
             </Button> */}
-
         </Stack>
       </Stack>
-    </Link >
+    </Link>
   );
 };
 
