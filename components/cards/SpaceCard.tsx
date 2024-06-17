@@ -3,6 +3,8 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Typography, Button, Box, Stack } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
+import TextEditor from '../editor/editor';
+import { SPACE_CATEGORIES } from '@/constant';
 
 export type SpaceCardProps = {
   id?: string;
@@ -11,6 +13,10 @@ export type SpaceCardProps = {
   title?: string;
   description?: string;
   joined?: boolean;
+  members?: {
+    id: string;
+  }[];
+  categories?: string;
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
@@ -20,8 +26,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   title,
   description = 'Welcome Zucity',
   joined = false,
+  members = [],
+  categories = '',
 }) => {
-
   function isValidJSON(str: string): boolean {
     try {
       JSON.parse(str);
@@ -75,35 +82,68 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               overflow: 'auto',
             }}
           >
-            <Typography
-              variant="bodyM"
-              color="white"
-              sx={{ wordWrap: 'break-word' }}
-            >
-              {description}
-            </Typography>
+            {isValidJSON(description.replaceAll('\\"', '"')) ? (
+              <TextEditor
+                holder={'space-detail-editor' + id}
+                readonly={true}
+                value={JSON.parse(description.replaceAll('\\"', '"'))}
+                sx={{
+                  fontFamily: 'Inter',
+                  color: 'white',
+                  height: 'auto',
+                  overflow: 'hidden',
+                  padding: '0px',
+                  '& > div > div': {
+                    paddingBottom: '0px !important',
+                  },
+                  '& .ce-block__content': {
+                    maxWidth: '100% !important', // Adjust the margin value as needed
+                  },
+                  '& .ce-block:first-child': {
+                    display: 'none',
+                  },
+                }}
+              />
+            ) : (
+              <Typography
+                variant="bodyM"
+                color="white"
+                sx={{ wordWrap: 'break-word' }}
+              >
+                {description}
+              </Typography>
+            )}
           </Stack>
           <Stack direction="row">
             <Typography color="white" variant="caption">
-              AI
-            </Typography>
-            <Typography color="white" variant="caption" marginX="10px">
-              COMMUNITY TOOLS
-            </Typography>
-            <Typography color="white" variant="caption">
-              +3
+              {categories &&
+                categories
+                  .split(', ')
+                  .map(
+                    (category) =>
+                      SPACE_CATEGORIES.filter(
+                        (cat) => cat.value === category,
+                      )[0].label,
+                  )
+                  .join(', ')}
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" spacing="10px">
-            <UsersIcon size={4} />
-            <Typography
-              color="white"
-              variant="bodyS"
-              sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
-            >
-              1.4k
-            </Typography>
-            {/* <Button
+
+          {members && members.length > 0 && (
+            <Stack direction="row" alignItems="center" spacing="10px">
+              <UsersIcon size={4} />
+              <Typography
+                color="white"
+                variant="bodyS"
+                sx={{ textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)' }}
+              >
+                {members.length >= 1000
+                  ? (members.length / 1000).toFixed(1) + 'k'
+                  : members.length}
+              </Typography>
+            </Stack>
+          )}
+          {/* <Button
               size="small"
               startIcon={
                 joined ? (
@@ -125,7 +165,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             >
               {joined ? 'Joined' : 'Join'}
             </Button> */}
-          </Stack>
         </Stack>
       </Stack>
     </Link>
