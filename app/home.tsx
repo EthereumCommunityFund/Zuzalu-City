@@ -34,6 +34,8 @@ import {
   formatDateToMonth,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
+import SlotDates from '@/components/calendar/SlotDate';
+
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -45,6 +47,7 @@ const Home: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [eventsForCalendar, setEventsForCalendar] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(
@@ -55,6 +58,16 @@ const Home: React.FC = () => {
       }),
     ),
   );
+
+  const [dateForCalendar, setDateForCalendar] = useState<Dayjs | null>(
+    dayjs(
+      new Date().toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
+    ),
+  )
 
   const [expand, setExpand] = useState<boolean>(false);
 
@@ -169,6 +182,8 @@ const Home: React.FC = () => {
 
   const getEventsByDate = async () => {
     try {
+
+      console.log('selectedDate: ', selectedDate?.format('YYYY-MM-DDTHH:mm:ss[Z]'))
       const getEventsByDate_QUERY = `
         query ($input:EventFiltersInput!) {
         eventIndex(filters:$input, first: 20){
@@ -226,6 +241,73 @@ const Home: React.FC = () => {
       console.error('Failed to fetch events:', error);
     }
   };
+
+  const getEventsInMonth = async () => {
+    try {
+      const getEventsByDate_QUERY = `
+        query ($input:EventFiltersInput!) {
+        eventIndex(filters:$input, first: 20){
+          edges {
+            node {
+              description
+              external_url
+              gated
+              image_url
+              max_participant
+              meeting_url
+              min_participant
+              participant_count
+              profileId
+              spaceId
+              status
+              tagline
+              timezone
+              title
+              profile {
+                username
+                avatar
+              }
+              createdAt
+              endTime
+              id
+              startTime
+            }
+          }
+        }
+      }
+    `;
+      const response: any = await composeClient.executeQuery(
+        getEventsByDate_QUERY,
+        {
+          input: {
+            where: {
+              startTime: {
+                lessThanOrEqualTo: dateForCalendar?.endOf('month').format('YYYY-MM-DDTHH:mm:ss[Z]'),
+                greaterThanOrEqualTo: dateForCalendar?.startOf('month').format('YYYY-MM-DDTHH:mm:ss[Z]')
+              },
+            },
+          },
+        },
+      );
+      if (response && response.data && 'eventIndex' in response.data) {
+        const eventData: EventData = response.data as EventData;
+        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setEventsForCalendar(fetchedEvents);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  }
+
+  const handleMonthChange = (date: Dayjs) => {
+    console.log('date: ', date.endOf('month').toISOString());
+    setDateForCalendar(date);
+  };
+
   useEffect(() => {
     document.title = 'Zuzalu City';
     const fetchData = async () => {
@@ -249,6 +331,10 @@ const Home: React.FC = () => {
     };
     fetchData();
   }, [selectedDate]);
+
+  useEffect(() => {
+    getEventsInMonth();
+  }, [dateForCalendar])
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -467,6 +553,17 @@ const Home: React.FC = () => {
                         <ZuCalendar
                           value={selectedDate}
                           onChange={(val) => setSelectedDate(val)}
+                          slots={{
+                            day: SlotDates
+                          }}
+                          slotProps={{
+                            day: {
+                              highlightedDays: eventsForCalendar.map((event) => {
+                                return (new Date(event.startTime).getDate()) + 1
+                              })
+                            } as any
+                          }}
+                          onMonthChange={(val) => handleMonthChange(val)}
                         />
                       </Box>
                     </Box>
