@@ -80,11 +80,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               color="white"
               sx={{ wordWrap: 'break-word' }}
             >
-              {isValidJSON(description.replaceAll('\\"', '"'))
-                ? JSON.parse(description.replaceAll('\\"', '"')).blocks[0]
-                  .data.text
-                : description
-              }
+              {description}
             </Typography>
           </Stack>
           <Stack direction="row">
