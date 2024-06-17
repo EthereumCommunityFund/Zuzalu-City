@@ -455,7 +455,7 @@ export const Whitelist = () => {
                 <Stack spacing="20px">
                   {
                     addresses.map((item, index) => (
-                      <Stack spacing="10px">
+                      <Stack spacing="10px" key={`InviteAddressIndex-${index}`}>
                         <Typography variant="bodyBB">Address (eth)</Typography>
                         <Stack direction="row" spacing="10px" alignItems="center">
                           <ZuInput
