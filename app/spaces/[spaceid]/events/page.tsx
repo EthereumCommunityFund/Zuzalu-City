@@ -162,8 +162,8 @@ const Home = () => {
           alignItems="center"
           sx={{
             position: 'sticky',
-            top: 0,
-            backgroundColor: '#000',
+            top: 61,
+            backgroundColor: 'rgba(0,0,0,0.65)',
             zIndex: 1,
           }}
         >
