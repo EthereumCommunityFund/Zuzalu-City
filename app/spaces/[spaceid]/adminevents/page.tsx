@@ -198,6 +198,7 @@ const Home = () => {
     };
 
     const createEvent = async () => {
+      console.log(profileId, "adfasfd", description)
       const isNeeded =
         inputs.name.length === 0 ||
         !startTime ||
@@ -229,8 +230,8 @@ const Home = () => {
             }
           }
         }
-        const output = await editor.save();
-        let strDesc: any = JSON.stringify(output);
+        // const output = await editor.save();
+        let strDesc: any = JSON.stringify(description);
 
         strDesc = strDesc.replaceAll('"', '\\"');
 
