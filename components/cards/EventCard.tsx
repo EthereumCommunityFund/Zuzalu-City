@@ -7,6 +7,7 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
 import * as util from '../../utils/index';
+import { supabase } from '@/utils/supabase/client';
 
 type EventCardProps = {
   id?: string;
@@ -61,8 +62,24 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [eventLocation, setEventLocation] = useState<string>('');
+
+  const getLocation = async () => {
+    try {
+      const { data } = await supabase.from("locations").select("*").eq('eventId', event.id);
+      if (data !== null) {
+        setEventLocation(data[0].name)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   useEffect(() => {
+    const fetchData = async () => {
+      await getLocation();
+    }
+    fetchData();
     const isMobileEnv: boolean = util.isMobile();
     setIsMobile(isMobileEnv);
   }, []);
@@ -158,7 +175,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
         >
           <MapIcon size={4} />
           <Typography color="white" variant="caption">
-            ISTANBUL, TURKEY
+            {eventLocation}
           </Typography>
         </Box>
       </Box>
