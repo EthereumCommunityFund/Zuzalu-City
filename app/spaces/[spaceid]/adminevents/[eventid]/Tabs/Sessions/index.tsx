@@ -272,8 +272,8 @@ const Sessions = () => {
       return;
     }
 
-    const output = await editor.save();
-    let strDesc: any = JSON.stringify(output);
+    // const output = await editor.save();
+    let strDesc: any = JSON.stringify(sessionDescription);
 
     strDesc = strDesc.replaceAll('"', '\\"');
 

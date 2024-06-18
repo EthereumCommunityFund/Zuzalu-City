@@ -240,8 +240,8 @@ const Home = () => {
             }
           }
         }
-        const output = await editor.save();
-        let strDesc: any = JSON.stringify(output);
+        // const output = await editor.save();
+        let strDesc: any = JSON.stringify(description);
 
         strDesc = strDesc.replaceAll('"', '\\"');
 
