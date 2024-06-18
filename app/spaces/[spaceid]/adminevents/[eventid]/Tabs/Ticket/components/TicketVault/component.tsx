@@ -498,159 +498,93 @@ export const ConfirmSendNFTTicketTransaction = ({
 }: IConfirmSendNFTTicketTransaction) => {
   return (
     <>
-      {showNFTTicketModal && (
-        <div className="fixed z-50 overflow-y-auto top-1/2 left-1/2 transform -translate-x-1/2 md:-translate-y-1/2 w-[535px]">
-          <div className="backdrop-blur-xl rounded-[10px] bg-[rgba(52,52,52,0.80)] border-2 border-[rgba(255,255,255,0.10)] relative p-5 shadow-lg">
-            <div className="flex justify-between items-center mb-[14px]">
-              <Box display={'flex'} alignItems={'center'}>
-                <SendIcon />
-
-                <Typography
-                  marginLeft="10px"
-                  fontSize={'18px'}
-                  color={'white'}
-                  fontWeight={'bold'}
-                >
-                  Confirm Transaction
-                </Typography>
-              </Box>
-
-              <div
-                onClick={() => setShowNFTTicketModal(false)}
-                className="cursor-pointer p-2.5 rounded-[10px] bg-[rgba(255,255,255,0.05)] text-white"
+      <Modal open={showNFTTicketModal} onClose={() => setShowNFTTicketModal(false)}>
+        <Stack padding="20px" border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+          spacing="20px" color="white" width="535px" borderRadius="10px"
+          sx={{
+            position: 'absolute',
+            background: 'rgba(52, 52, 52, 0.80)',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <Stack direction="row" alignItems={'center'} spacing="24px">
+            <Stack direction="row" alignItems={'center'} spacing="10px" flex={1}>
+              <SendIcon />
+              <Typography
+                variant="subtitleSB"
               >
-                <CloseIcon />
-              </div>
-            </div>
-
-            <Box
-              marginY={'20px'}
-              padding={'10px'}
-              sx={{
-                borderRadius: '10px',
-                border: '1px solid rgba(255, 255, 255, 0.10)',
-                background: 'rgba(255, 255, 255, 0.05)',
-              }}
+                Confirm Transaction
+              </Typography>
+            </Stack>
+            <Stack
+              onClick={() => setShowNFTTicketModal(false)}
+              padding="10px" borderRadius="10px" bgcolor="#3f3f3f"
+              sx={{ cursor: "pointer" }}
             >
-              <Box marginBottom={'10px'} display={'flex'} alignItems={'center'}>
-                <Typography
-                  fontSize={'14px'}
-                  fontWeight={'600'}
-                  lineHeight={'160%'}
-                >
-                  To Addess:
+              <CloseIcon />
+            </Stack>
+          </Stack>
+          <Stack padding="10px" borderRadius="10px" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))" bgcolor="#3f3f3f" spacing="20px">
+            <Stack spacing="14px">
+              <Stack direction="row" alignItems="center" spacing="10px">
+                <Typography variant="bodyMB">
+                  To Address:
                 </Typography>
-                <Typography
-                  marginLeft={'6px'}
-                  fontSize={'14px'}
-                  lineHeight={'160%'}
-                  sx={{ opacity: '0.8' }}
-                >
+                <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   {recipient}
                 </Typography>
-              </Box>
-
-              <Box marginBottom={'10px'} display={'flex'} alignItems={'center'}>
-                <Typography
-                  fontSize={'14px'}
-                  fontWeight={'600'}
-                  lineHeight={'160%'}
-                >
-                  Token ID:
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing="10px">
+                <Typography variant="bodyMB">
+                  Token_ID:
                 </Typography>
-                <Typography
-                  marginLeft={'6px'}
-                  fontSize={'14px'}
-                  lineHeight={'160%'}
-                  sx={{ opacity: '0.8' }}
-                >
+                <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   {tokenId}
                 </Typography>
-              </Box>
-
-              <Box marginBottom={'10px'} display={'flex'} alignItems={'center'}>
-                <Typography
-                  fontSize={'14px'}
-                  fontWeight={'600'}
-                  lineHeight={'160%'}
-                >
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing="10px">
+                <Typography variant="bodyMB">
                   Amount:
                 </Typography>
-                <Typography
-                  marginLeft={'6px'}
-                  fontSize={'14px'}
-                  lineHeight={'160%'}
-                  sx={{ opacity: '0.8' }}
-                >
+                <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   1
                 </Typography>
-              </Box>
-
-              {/* <Box display={'flex'} alignItems={'center'}>
-                <Typography
-                  fontSize={'14px'}
-                  fontWeight={'600'}
-                  lineHeight={'160%'}
-                >
-                  Contract execution fee(?):
-                </Typography>
-                <Typography
-                  marginLeft={'6px'}
-                  fontSize={'14px'}
-                  lineHeight={'160%'}
-                  sx={{ opacity: '0.8' }}
-                >
-                  0.0000
-                </Typography>
-              </Box> */}
-            </Box>
-
-            <Box
-              display={'flex'}
-              gap={'14px'}
-              justifyContent={'space-between'}
-              alignItems={'center'}
-              marginTop={'10px'}
+              </Stack>
+            </Stack>
+            <Stack direction="row" spacing="10px" alignItems="center">
+              <Typography variant="bodyMB">
+                Contract execution fee(?)
+              </Typography>
+              <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+                0.00000
+              </Typography>
+            </Stack>
+          </Stack>
+          <Stack direction="row" spacing="20px">
+            <ZuButton
+              onClick={() => setShowNFTTicketModal(false)}
+              sx={{
+                width: '100%',
+              }}
             >
-              <Button
-                onClick={() => setShowNFTTicketModal(false)}
-                sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  color: 'white',
-                  width: '100%',
-                  borderRadius: '10px',
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  fontFamily: 'Inter',
-                  textTransform: 'capitalize',
-                }}
-                // startIcon={<LeftArrowIcon />}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSendNFTTicket}
-                sx={{
-                  backgroundColor: '#2f474e',
-                  color: '#67DAFF',
-                  width: '100%',
-                  borderRadius: '10px',
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  fontFamily: 'Inter',
-                  textTransform: 'capitalize',
-                }}
-                startIcon={<RightArrowIcon />}
-              >
-                Mint Ticket
-              </Button>
-            </Box>
-            <Box display="flex" justifyContent={'center'} marginTop={'30px'}>
-              <ScrollIcon />
-            </Box>
-          </div>
-        </div>
-      )}
+              Cancel
+            </ZuButton>
+            <ZuButton
+              onClick={handleSendNFTTicket}
+              sx={{
+                backgroundColor: '#2f474e',
+                color: '#67DAFF',
+                width: '100%',
+              }}
+              startIcon={<RightArrowIcon color="#67DAFF" />}
+            >
+              Transfer Amount
+            </ZuButton>
+          </Stack>
+        </Stack>
+      </Modal>
     </>
   );
 };
@@ -664,150 +598,93 @@ export const ConfirmWithdrawalTransaction = ({
 }: IConfirmWithdrawalTransaction) => {
   return (
     <>
-      {showWithdrawalModal && (
-        <Box>
-          <Box
-            display={'flex'}
-            alignItems={'center'}
-            marginTop={'30px'}
-            marginBottom={'14px'}
-          >
-            <SendIcon />
-
-            <Typography
-              marginLeft="10px"
-              fontSize={'18px'}
-              color={'white'}
-              fontWeight={'bold'}
-            >
-              Confirm Transaction
-            </Typography>
-          </Box>
-
-          <Box
-            marginY={'20px'}
-            padding={'10px'}
-            sx={{
-              borderRadius: '10px',
-              border: '1px solid rgba(255, 255, 255, 0.10)',
-              background: 'rgba(255, 255, 255, 0.05)',
-            }}
-          >
-            <Box marginBottom={'10px'} display={'flex'} alignItems={'center'}>
+      <Modal open={showWithdrawalModal} onClose={() => setShowWithdrawalModal(false)}>
+        <Stack padding="20px" border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+          spacing="20px" color="white" width="535px" borderRadius="10px"
+          sx={{
+            position: 'absolute',
+            background: 'rgba(52, 52, 52, 0.80)',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <Stack direction="row" alignItems={'center'} spacing="24px">
+            <Stack direction="row" alignItems={'center'} spacing="10px" flex={1}>
+              <SendIcon />
               <Typography
-                fontSize={'14px'}
-                fontWeight={'600'}
-                lineHeight={'160%'}
+                variant="subtitleSB"
               >
-                To Addess:
+                Confirm Transaction
               </Typography>
-              <Typography
-                marginLeft={'6px'}
-                fontSize={'14px'}
-                lineHeight={'160%'}
-                sx={{ opacity: '0.8' }}
-              >
-                {recipient}
-              </Typography>
-            </Box>
-
-            <Box marginBottom={'10px'} display={'flex'} alignItems={'center'}>
-              <Typography
-                fontSize={'14px'}
-                fontWeight={'600'}
-                lineHeight={'160%'}
-              >
-                Token:
-              </Typography>
-              <Typography
-                marginLeft={'6px'}
-                fontSize={'14px'}
-                lineHeight={'160%'}
-                sx={{ opacity: '0.8' }}
-              >
-                USDT
-              </Typography>
-            </Box>
-
-            <Box marginBottom={'10px'} display={'flex'} alignItems={'center'}>
-              <Typography
-                fontSize={'14px'}
-                fontWeight={'600'}
-                lineHeight={'160%'}
-              >
-                Amount:
-              </Typography>
-              <Typography
-                marginLeft={'6px'}
-                fontSize={'14px'}
-                lineHeight={'160%'}
-                sx={{ opacity: '0.8' }}
-              >
-                {amount}
-              </Typography>
-            </Box>
-
-            {/* <Box display={'flex'} alignItems={'center'}>
-              <Typography
-                fontSize={'14px'}
-                fontWeight={'600'}
-                lineHeight={'160%'}
-              >
-                Contract execution fee(?):
-              </Typography>
-              <Typography
-                marginLeft={'6px'}
-                fontSize={'14px'}
-                lineHeight={'160%'}
-                sx={{ opacity: '0.8' }}
-              >
-                0.0000
-              </Typography>
-            </Box> */}
-          </Box>
-
-          <Box
-            display={'flex'}
-            gap={'14px'}
-            justifyContent={'space-between'}
-            alignItems={'center'}
-            marginTop={'10px'}
-          >
-            <Button
+            </Stack>
+            <Stack
               onClick={() => setShowWithdrawalModal(false)}
+              padding="10px" borderRadius="10px" bgcolor="#3f3f3f"
+              sx={{ cursor: "pointer" }}
+            >
+              <CloseIcon />
+            </Stack>
+          </Stack>
+          <Stack padding="10px" borderRadius="10px" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))" bgcolor="#3f3f3f" spacing="20px">
+            <Stack spacing="14px">
+              <Stack direction="row" alignItems="center" spacing="10px">
+                <Typography variant="bodyMB">
+                  To Address:
+                </Typography>
+                <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+                  {recipient}
+                </Typography>
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing="10px">
+                <Typography variant="bodyMB">
+                  Token:
+                </Typography>
+                <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+                  USDT
+                </Typography>
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing="10px">
+                <Typography variant="bodyMB">
+                  Amount:
+                </Typography>
+                <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+                  {amount}
+                </Typography>
+              </Stack>
+            </Stack>
+            <Stack direction="row" spacing="10px" alignItems="center">
+              <Typography variant="bodyMB">
+                Contract execution fee(?)
+              </Typography>
+              <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+                0.00000
+              </Typography>
+            </Stack>
+          </Stack>
+          <Stack direction="row" spacing="20px">
+            <ZuButton
               sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                color: 'white',
                 width: '100%',
-                borderRadius: '10px',
-                fontSize: '18px',
-                fontWeight: 600,
-                fontFamily: 'Inter',
-                textTransform: 'capitalize',
               }}
-              // startIcon={<LeftArrowIcon />}
+              onClick={() => setShowWithdrawalModal(false)}
             >
               Cancel
-            </Button>
-            <Button
-              onClick={handleWithdraw}
+            </ZuButton>
+            <ZuButton
               sx={{
                 backgroundColor: '#2f474e',
                 color: '#67DAFF',
                 width: '100%',
-                borderRadius: '10px',
-                fontSize: '18px',
-                fontWeight: 600,
-                fontFamily: 'Inter',
-                textTransform: 'capitalize',
               }}
-              startIcon={<RightArrowIcon />}
+              startIcon={<RightArrowIcon color="#67DAFF" />}
+              onClick={handleWithdraw}
             >
               Transfer Amount
-            </Button>
-          </Box>
-        </Box>
-      )}
+            </ZuButton>
+          </Stack>
+        </Stack>
+      </Modal>
     </>
   );
 };

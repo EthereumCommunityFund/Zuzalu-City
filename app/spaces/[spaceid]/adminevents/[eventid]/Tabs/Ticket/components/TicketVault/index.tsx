@@ -60,7 +60,7 @@ const TicketVault = ({
     <Stack
       sx={{
         background: '#222',
-        height: isMobile ? '100%' : 'calc(100vh - 6.2rem)',
+        width: '700px'
       }}
     >
       <Box
@@ -74,17 +74,7 @@ const TicketVault = ({
           spacing={2.5}
           marginTop={'10px'}
         >
-          <Image
-            style={{
-              width: '100%',
-              height: 'auto',
-            }}
-            alt={'/24.webp'}
-            src={'/24.webp'}
-            width={100}
-            height={100}
-          />
-
+          <Box component="img" width="100px" height="100px" borderRadius="8px" src="/24.webp" />
           <Stack direction="column" spacing={0.9}>
             <Typography
               variant="h5"

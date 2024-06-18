@@ -380,7 +380,7 @@ const Ticket = () => {
         sx={{
           '& .MuiDrawer-paper': {
             marginTop: '50px',
-            height: 'calc(100% - 50px)',
+            height: 'calc(100% - 35px)',
             boxShadow: 'none',
           },
         }}
