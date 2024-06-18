@@ -9,7 +9,7 @@ export type IconProps = {
 export type Link = {
   title: string;
   links: string;
-}
+};
 
 export interface Event {
   id: string;
@@ -41,8 +41,8 @@ export interface Event {
     username?: string;
     avatar?: string;
   };
-  customLinks?: [Link],
-  tracks?: string
+  customLinks?: [Link];
+  tracks?: string;
 }
 
 export interface EventEdge {
@@ -83,8 +83,8 @@ export interface Space {
   ens?: string;
   category?: string;
   members?: {
-    id: string
-  }[]
+    id: string;
+  }[];
 }
 
 export interface SpaceEdge {
@@ -110,7 +110,6 @@ export interface Session {
   track?: string;
   format?: string;
   status?: string;
-  tagline?: string;
   timezone?: string;
   video_url?: string;
   description?: string;
@@ -133,23 +132,20 @@ export interface Venue {
   title: string;
 }
 
-
-
 export type Profile = {
   id: any;
   username: string;
   avatar?: string;
 };
 export interface ProfileData {
-  node: Profile
+  node: Profile;
 }
 
 export interface ProfileEdge {
   mVPProfileIndex: {
-    edges: ProfileData[]
-  }
+    edges: ProfileData[];
+  };
 }
-
 
 export interface CreateProfileResult {
   profile?: Profile;

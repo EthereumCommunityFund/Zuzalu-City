@@ -29,7 +29,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   members = [],
   categories = '',
 }) => {
-  console.log("space card", categories)
   function isValidJSON(str: string): boolean {
     try {
       JSON.parse(str);
@@ -88,7 +87,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               color="white"
               sx={{ wordWrap: 'break-word' }}
             >
-              {description && JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data.text}
+              {description &&
+                JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
+                  .text}
             </Typography>
           </Stack>
           <Stack direction="row">
