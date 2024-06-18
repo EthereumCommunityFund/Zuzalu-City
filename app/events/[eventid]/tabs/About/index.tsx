@@ -132,15 +132,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
     fetchData();
   }, []);
-<<<<<<< HEAD
-  return eventData ? (
-    <Stack
-      padding="40px"
-      justifyContent="center"
-      alignItems="center"
-      bgcolor="#222222"
-    >
-=======
 
   const List = (anchor: Anchor) => {
 
@@ -188,7 +179,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
   return (
     <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
->>>>>>> 2f07ba14bb1c99814969a8c289139e03dfb9c89d
       {eventData && (
         <Stack width={900} direction="row" spacing="20px">
           <Stack spacing="20px" flex="2">
@@ -312,26 +302,10 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-<<<<<<< HEAD
-            <EventDetail
-              status={eventData.status}
-              links={eventData.customLinks}
-            />
-            <Stack>
-              <SpaceCard
-                id={eventData?.space?.id}
-                title={eventData?.space?.name}
-                logoImage={eventData?.space?.avatar}
-                bgImage={eventData?.space?.banner}
-                description={eventData?.space?.description}
-              />
-            </Stack>
-=======
             <EventDetail status={eventData.status} links={eventData.customLinks} />
             {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}
->>>>>>> 2f07ba14bb1c99814969a8c289139e03dfb9c89d
           </Stack>
           <SwipeableDrawer
             hideBackdrop={true}
