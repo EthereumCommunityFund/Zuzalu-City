@@ -537,15 +537,15 @@ const Sessions = () => {
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
+                    height: 'auto',
+                    minHeight: '270px',
                     color: 'white',
                     padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
                   }}
-                  value={sessionDescription}
-                  editor={editor}
-                  setEditorInst={setEditorInst}
+                  setData={setSessionDescription}
                 />
-                <Stack
+                {/* <Stack
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -580,7 +580,7 @@ const Sessions = () => {
                     </defs>
                   </svg>
                   <Typography variant="bodyS">Markdown Available</Typography>
-                </Stack>
+                </Stack> */}
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Type</Typography>

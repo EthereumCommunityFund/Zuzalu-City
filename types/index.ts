@@ -82,6 +82,9 @@ export interface Space {
   discord?: string;
   ens?: string;
   category?: string;
+  members?: {
+    id: string
+  }[]
 }
 
 export interface SpaceEdge {

@@ -398,16 +398,15 @@ const Home = () => {
                   <TextEditor
                     holder="space_description"
                     value={description}
-                    editor={editor}
-                    setEditorInst={setEditorInst}
+                    setData={setDescription}
                     sx={{
                       backgroundColor: '#ffffff0d',
                       fontFamily: 'Inter',
                       color: 'white',
                       padding: '12px 12px 12px 80px',
                       borderRadius: '10px',
-                      height: '163px',
-                      maxHeight: '163px',
+                      height: 'auto',
+                      minHeight: '270px',
                       overflow: 'auto',
                       '& > div > div': {
                         paddingBottom: '0px !important',
