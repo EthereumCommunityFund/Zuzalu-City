@@ -24,7 +24,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   bgImage = '/5.webp',
   logoImage = '/1.webp',
   title,
-  description = 'Welcome Zucity',
+  description,
   joined = false,
   members = [],
   categories = '',
@@ -87,7 +87,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               color="white"
               sx={{ wordWrap: 'break-word' }}
             >
-              {description}
+              {description && JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data.text}
             </Typography>
           </Stack>
           <Stack direction="row">
