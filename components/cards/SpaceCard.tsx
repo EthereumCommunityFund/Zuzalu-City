@@ -29,6 +29,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   members = [],
   categories = '',
 }) => {
+  console.log("space card", categories)
   function isValidJSON(str: string): boolean {
     try {
       JSON.parse(str);
