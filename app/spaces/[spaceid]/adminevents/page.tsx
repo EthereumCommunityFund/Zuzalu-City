@@ -27,6 +27,7 @@ import { Event, EventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Address } from 'viem';
 import { config } from '@/context/WalletContext';
+import { OutputData } from '@editorjs/editorjs';
 import {
   TICKET_FACTORY_ADDRESS,
   ticketFactoryGetContract,
@@ -84,8 +85,6 @@ const Home = () => {
   const connector = createConnector('NFT.storage', {
     token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
-
-  console.log({ address, isConnected });
 
   const [state, setState] = useState({
     top: false,
@@ -150,6 +149,7 @@ const Home = () => {
       }
     };
     fetchData();
+    console.log(profile);
   }, []);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
@@ -168,8 +168,8 @@ const Home = () => {
       max_participant: 0,
       timezone: '',
     });
-    const [description, setDescription] = useState();
-    // const [description, setDescription] = useState<OutputData>();
+
+    const [description, setDescription] = useState<OutputData>();
     const [avatar, setAvatar] = useState<SelectedFile>();
     const [avatarURL, setAvatarURL] = useState<string>();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
@@ -179,12 +179,12 @@ const Home = () => {
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
     const [status, setStatus] = useState<string>('');
     const [locations, setLocations] = useState<string[]>(['']);
+    const [error, setError] = useState(false);
 
     const profileId = profile?.id || '';
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
-
       if (
         name === 'participant' ||
         name === 'max_participant' ||
@@ -231,6 +231,7 @@ const Home = () => {
       if (isNeeded) {
         typeof window !== 'undefined' &&
           window.alert('Please input all necessary fields.');
+        console.log(inputs, startTime, endTime, spaceId, profileId);
       } else {
         let socialLinks = {};
 
@@ -253,9 +254,16 @@ const Home = () => {
             }
           }
         }
-        const output = await editor.save();
-        let strDesc: any = JSON.stringify(output);
+        let strDesc: any = JSON.stringify(description);
 
+        if (
+          !description ||
+          !description.blocks ||
+          description.blocks.length == 0
+        ) {
+          setError(true);
+          return;
+        }
         strDesc = strDesc.replaceAll('"', '\\"');
 
         try {
@@ -463,14 +471,14 @@ const Home = () => {
                 </Box>
                 <Stack spacing="10px">
                   <Typography variant="subtitleSB">
-                    Space Description
+                    Event Description
                   </Typography>
                   <Typography color="white" variant="caption">
                     This is a description greeting for new members. You can also
                     update descriptions.
                   </Typography>
                   <TextEditor
-                    holder="space_description"
+                    holder="event_description"
                     value={description}
                     setData={setDescription}
                     sx={{

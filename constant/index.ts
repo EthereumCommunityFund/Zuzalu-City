@@ -14,7 +14,7 @@ export const PROVIDER =
 export const CONTRACT_ADDRESS = '0xB05611bC75Fdd276b336eD8f2f3cE24d8A10a751';
 
 export const TICKET_FACTORY_ADDRESS =
-  '0x816fdc48a808db3f4ff7d5a6dbefee52251ed4a3' as const;
+  '0x3550Dfe42C13B3cbABC082CEAD2a8e8fa194e006' as const;
 export const mUSDT_TOKEN =
   '0xd61f92AA071012a7048B81b0B222a228503593e1' as const;
 export const mUSDC_TOKEN =

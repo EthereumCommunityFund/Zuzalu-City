@@ -14,10 +14,12 @@ import {
   USDTIcon,
   UncheckCircleIcon,
 } from '@/components/icons';
+import { STARTING_STATUS } from '@/constant';
 import {
   Box,
   Button,
   Input,
+  MenuItem,
   Select,
   Stack,
   Step,
@@ -28,7 +30,13 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import Image from 'next/image';
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { shortenAddress } from '@/utils/format';
+import { SCROLL_EXPLORER } from '@/constant';
 
 interface IProps {
   setIsConfirm?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -36,6 +44,30 @@ interface IProps {
   setPurchasingTicket?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setIsNext?: React.Dispatch<React.SetStateAction<boolean>> | any;
   toggleDrawer?: any;
+  handleChange?: any;
+  isTicketFree?: boolean;
+  setIsTicketFree?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  isShowQtyRemaining?: boolean;
+  setIsShowQtyRemaining?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  isHideUntilSetDate?: boolean;
+  setIsHideUntilSetDate?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  isHideAfterSetDate?: boolean;
+  setIsHideAfterSetDate?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  isHideWhenSoldOut?: boolean;
+  setIsHideWhenSoldOut?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  selectedToken?: string;
+  setSelectedToken?: React.Dispatch<React.SetStateAction<string>> | any;
+  ticketInfo?: any;
+  handleSubmit?: any;
+  selectedFile?: string | null;
+  setSelectedFile?: React.Dispatch<React.SetStateAction<string | null>> | any;
+  previewImage?: string | null;
+  setPreviewImage?: React.Dispatch<React.SetStateAction<string | null>> | any;
+  handleFileChange?: any;
+  ticketMintDeadline?: any;
+  setTicketMintDeadline?: any;
+  isSubmitLoading?: boolean;
+  txnHash?: string;
 }
 
 export const InitialSetup = ({ setIsNext }: IProps) => {
@@ -122,6 +154,7 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
       <Box paddingX={3} marginTop={'10px'}>
         <Button
           onClick={() => setIsNext(true)}
+          // onClick={() => alert("OKKAAAYYYY")}
           sx={{
             backgroundColor: '#2f474e',
             color: '#67DAFF',
@@ -145,8 +178,12 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
   );
 };
 
-export const TicketSetup = ({ setIsNext, setIsConfirm }: IProps) => {
-  const [selectedToken, setSelectedToken] = React.useState('USDT');
+export const TicketSetup = ({
+  setIsNext,
+  setIsConfirm,
+  selectedToken,
+  setSelectedToken,
+}: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
 
   return (
@@ -354,8 +391,46 @@ export const TicketSetup = ({ setIsNext, setIsConfirm }: IProps) => {
   );
 };
 
-export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
-  const [isChecked, setIsChecked] = React.useState(true);
+export const CreateTicket = ({
+  handleChange,
+  setIsConfirm,
+  setGoToSummary,
+  isTicketFree,
+  setIsTicketFree,
+  isShowQtyRemaining,
+  setIsShowQtyRemaining,
+  isHideUntilSetDate,
+  setIsHideUntilSetDate,
+  isHideAfterSetDate,
+  setIsHideAfterSetDate,
+  isHideWhenSoldOut,
+  setIsHideWhenSoldOut,
+  selectedToken,
+  ticketMintDeadline,
+  setTicketMintDeadline,
+}: IProps) => {
+  const fileInputField = useRef<HTMLInputElement>(null);
+  // const [File, setFile] = useState(second)
+  // const handleClick = (event: any) => {
+  //   hiddenFileInput?.current.click();
+  // };
+
+  const [fileUploaded, setFileUploaded] = useState<HTMLInputElement | null>(
+    null,
+  );
+  const [imageUrl, setImageUrl] = useState<string>('');
+
+  const handleFilesChange = (event: { target: { files: any } }) => {
+    const fileUpload = event.target.files[0];
+    setFileUploaded(fileUpload);
+    console.log({ fileUploaded });
+
+    // const filesLength = fileUpload.length;
+    console.log({ fileUploaded });
+    if (fileUpload) {
+      setImageUrl(URL.createObjectURL(fileUpload));
+    }
+  };
 
   return (
     <Box>
@@ -384,6 +459,9 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
             Ticket Name
           </Typography>
           <Input
+            required
+            name="ticketName"
+            onChange={handleChange}
             sx={{
               color: 'white',
               backgroundColor: '#2d2d2d',
@@ -404,63 +482,73 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
             }}
             placeholder="Enter a name for your event"
           />
-          <Typography
-            color="white"
-            fontSize="16px"
-            fontWeight={500}
-            marginTop={'20px'}
-            fontFamily="Inter"
-            marginBottom="10px"
-          >
-            Ticket Price
-          </Typography>
-          <Box position="relative">
-            <Input
-              sx={{
-                color: 'white',
-                backgroundColor: '#2d2d2d',
-                padding: '12px 10px',
-                borderRadius: '8px',
-                width: '100%',
-                fontSize: '15px',
-                fontFamily: 'Inter',
-                '&::after': {
-                  borderBottom: 'none',
-                },
-                '&::before': {
-                  borderBottom: 'none',
-                },
-                '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                  borderBottom: 'none',
-                },
-              }}
-              placeholder="00.00"
-            />
 
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                height: '28px',
-                padding: '14px',
-                color: 'white',
-                borderRadius: '10px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                position: 'absolute',
-                right: '12px',
-                top: '14px',
-              }}
-            >
-              <USDTIcon />
-              <Typography marginLeft={'10px'}>USDT</Typography>
+          {!isTicketFree && (
+            <Box>
+              <Typography
+                color="white"
+                fontSize="16px"
+                fontWeight={500}
+                marginTop={'20px'}
+                fontFamily="Inter"
+                marginBottom="10px"
+              >
+                Ticket Price
+              </Typography>
+              <Box position="relative">
+                <Input
+                  required
+                  name="ticketPrice"
+                  onChange={handleChange}
+                  sx={{
+                    color: 'white',
+                    backgroundColor: '#2d2d2d',
+                    padding: '12px 10px',
+                    borderRadius: '8px',
+                    width: '100%',
+                    fontSize: '15px',
+                    fontFamily: 'Inter',
+                    '&::after': {
+                      borderBottom: 'none',
+                    },
+                    '&::before': {
+                      borderBottom: 'none',
+                    },
+                    '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                      borderBottom: 'none',
+                    },
+                  }}
+                  placeholder="00.00"
+                />
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: '28px',
+                    padding: '14px',
+                    color: 'white',
+                    borderRadius: '10px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    position: 'absolute',
+                    right: '12px',
+                    top: '14px',
+                  }}
+                >
+                  {selectedToken === 'USDT' ? <USDTIcon /> : <USDCIcon />}
+                  <Typography marginLeft={'10px'}>
+                    {selectedToken === 'USDT' ? 'USDT' : 'USDC'}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
 
         <Box display="flex">
           <ZuSwitch
-            checked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
+            checked={isTicketFree}
+            onChange={() => setIsTicketFree((prev: boolean) => !prev)}
           />
           <Box>
             <Typography
@@ -485,38 +573,46 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
             </Typography>
           </Box>
         </Box>
-        <Box>
+
+        <Box flex={1}>
           <Typography
             color="white"
-            fontSize="16px"
-            fontWeight={500}
+            fontSize="18px"
+            fontWeight={700}
             fontFamily="Inter"
-            marginBottom="10px"
           >
-            Quantity
+            Ticket Mint Deadline
           </Typography>
-          <Input
-            sx={{
-              color: 'white',
-              backgroundColor: '#2d2d2d',
-              padding: '12px 10px',
-              borderRadius: '8px',
-              width: '100%',
-              fontSize: '15px',
-              fontFamily: 'Inter',
-              '&::after': {
-                borderBottom: 'none',
-              },
-              '&::before': {
-                borderBottom: 'none',
-              },
-              '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                borderBottom: 'none',
-              },
-            }}
-            placeholder="00"
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              onChange={(newValue) => setTicketMintDeadline(newValue)}
+              sx={{
+                '& .MuiSvgIcon-root': {
+                  color: 'white',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+              }}
+              slotProps={{
+                popper: {
+                  sx: {
+                    ...{
+                      '& .MuiPickersDay-root': { color: 'black' },
+                      '& .MuiPickersDay-root.Mui-selected': {
+                        backgroundColor: '#D7FFC4',
+                      },
+                      '& .MuiPickersCalendarHeader-root': {
+                        color: 'black',
+                      },
+                    },
+                  },
+                },
+              }}
+            />
+          </LocalizationProvider>
         </Box>
+
         <Box>
           <Typography
             color="white"
@@ -528,6 +624,9 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
             Ticket Description
           </Typography>
           <TextField
+            required
+            name="description"
+            onChange={handleChange}
             multiline
             rows={4}
             sx={{
@@ -580,7 +679,44 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
           >
             Recommend min of 200 * 200px (1:1 Ratio)
           </Typography>
-          <ZuButton>Upload Image</ZuButton>
+
+          <Input
+            id="tb-file-upload"
+            type="file"
+            name="ticketImage"
+            inputProps={{
+              accept: 'image/*',
+            }}
+            ref={fileInputField}
+            onChange={(event: any) => handleFilesChange(event)}
+            sx={{
+              display: 'none',
+              color: 'white',
+              backgroundColor: '#2d2d2d',
+              padding: '12px 10px',
+              borderRadius: '8px',
+              width: '100%',
+              fontSize: '15px',
+              fontFamily: 'Inter',
+              '&::after': {
+                borderBottom: 'none',
+              },
+              '&::before': {
+                borderBottom: 'none',
+              },
+              '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                borderBottom: 'none',
+              },
+            }}
+            placeholder="Enter a name for your event"
+          />
+          <ZuButton>
+            <label htmlFor="tb-file-upload">Upload Image </label>
+            {fileUploaded
+              ? ` - ${fileUploaded?.name.substring(0, 6)}...${fileUploaded?.name.slice(-6)}`
+              : ''}
+          </ZuButton>
+
           <Box
             marginTop={'12px'}
             sx={{
@@ -588,9 +724,22 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
               opacity: '0.6',
               borderRadius: '8px',
               height: '200px',
-              width: '200px',
+              width: '220px',
             }}
-          ></Box>
+          >
+            {imageUrl && (
+              <Image
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+                alt={imageUrl}
+                src={imageUrl}
+                width={100}
+                height={100}
+              />
+            )}
+          </Box>
         </Box>
       </Box>
 
@@ -640,6 +789,8 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
             Select a status for this ticket post-creation
           </Typography>
           <Select
+            name="startingStatus"
+            onChange={handleChange}
             sx={{
               width: '100%',
               '& .MuiOutlinedInput-notchedOutline': {
@@ -647,7 +798,23 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
               },
               backgroundColor: '#2d2d2d',
             }}
-          ></Select>
+            placeholder="Select"
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  backgroundColor: '#222222',
+                },
+              },
+            }}
+          >
+            {STARTING_STATUS.map((status, index) => {
+              return (
+                <MenuItem value={status.key} key={index}>
+                  {status.value}
+                </MenuItem>
+              );
+            })}
+          </Select>
         </Box>
 
         <Box>
@@ -685,6 +852,8 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
             Min per order
           </Typography>
           <Input
+            name="minPerOrder"
+            onChange={handleChange}
             sx={{
               color: 'white',
               backgroundColor: '#2d2d2d',
@@ -727,6 +896,8 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
             Max per order
           </Typography>
           <Input
+            name="maxPerOrder"
+            onChange={handleChange}
             sx={{
               color: 'white',
               backgroundColor: '#2d2d2d',
@@ -760,8 +931,8 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
 
         <Box display="flex" flexDirection="row">
           <ZuSwitch
-            checked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
+            checked={isShowQtyRemaining}
+            onChange={() => setIsShowQtyRemaining((prev: boolean) => !prev)}
           />
           <Box>
             <Typography
@@ -813,8 +984,8 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
 
         <Box display="flex">
           <ZuSwitch
-            checked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
+            checked={isHideUntilSetDate}
+            onChange={() => setIsHideUntilSetDate((prev: boolean) => !prev)}
           />
           <Box>
             <Typography
@@ -843,8 +1014,8 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
 
         <Box display="flex">
           <ZuSwitch
-            checked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
+            checked={isHideAfterSetDate}
+            onChange={() => setIsHideAfterSetDate((prev: boolean) => !prev)}
           />
           <Box>
             <Typography
@@ -872,8 +1043,8 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
 
         <Box display="flex">
           <ZuSwitch
-            checked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
+            checked={isHideWhenSoldOut}
+            onChange={() => setIsHideWhenSoldOut((prev: boolean) => !prev)}
           />
           <Box>
             <Typography
@@ -958,9 +1129,13 @@ export const CreateTicket = ({ setIsConfirm, setGoToSummary }: IProps) => {
 };
 
 export const TicketCreationSummary = ({
+  isTicketFree,
+  selectedToken,
+  ticketInfo,
   setIsConfirm,
   setGoToSummary,
   setPurchasingTicket,
+  handleSubmit,
 }: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
   return (
@@ -1076,7 +1251,7 @@ export const TicketCreationSummary = ({
                 alignItems: 'center',
               }}
             >
-              <USDTIcon />
+              {selectedToken === 'USDT' ? <USDTIcon /> : <USDCIcon />}
               <Typography
                 fontSize="14px"
                 color="white"
@@ -1084,7 +1259,7 @@ export const TicketCreationSummary = ({
                 fontWeight={'600'}
                 lineHeight={'160%'}
               >
-                USDT
+                {selectedToken === 'USDT' ? 'USDT' : 'USDC'}
               </Typography>
             </Box>
           </Box>
@@ -1105,7 +1280,7 @@ export const TicketCreationSummary = ({
               lineHeight={'120%'}
               color="white"
             >
-              TicketName
+              {ticketInfo?.ticketName}
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -1127,7 +1302,7 @@ export const TicketCreationSummary = ({
                   opacity: '0.8',
                 }}
               >
-                120
+                {isTicketFree ? 'Free' : ticketInfo?.ticketPrice}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -1140,30 +1315,7 @@ export const TicketCreationSummary = ({
                   opacity: '0.8',
                 }}
               >
-                USDT
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography
-                fontSize="14px"
-                fontFamily={'Inter'}
-                lineHeight={'160%'}
-                color="white"
-              >
-                Quantity:
-              </Typography>{' '}
-              <Typography
-                fontSize="16px"
-                color="white"
-                fontWeight={'700'}
-                lineHeight={'120%'}
-                marginLeft={'10px'}
-                sx={{
-                  opacity: '0.8',
-                }}
-              >
-                200
+                {isTicketFree ? null : selectedToken}
               </Typography>
             </Box>
 
@@ -1185,8 +1337,7 @@ export const TicketCreationSummary = ({
                 opacity: '0.8',
               }}
             >
-              Get ready to groove at the Summer Music Festival! Join us for a
-              day filled with live music, food trucks, and good vibes.
+              {ticketInfo.description}
             </Typography>
           </Stack>
         </Stack>
@@ -1219,9 +1370,7 @@ export const TicketCreationSummary = ({
           Back
         </Button>
         <Button
-          onClick={() => {
-            setPurchasingTicket(true), setGoToSummary(false);
-          }}
+          onClick={handleSubmit}
           sx={{
             backgroundColor: '#2f474e',
             color: '#67DAFF',
@@ -1247,6 +1396,8 @@ export const TicketCreationSummary = ({
 export const ProcessingTicket = ({
   setPurchasingTicket,
   toggleDrawer,
+  isSubmitLoading,
+  txnHash,
 }: IProps) => {
   let status = false;
   const isMobile = useMediaQuery('(max-width:500px)');
@@ -1262,7 +1413,7 @@ export const ProcessingTicket = ({
         }}
       >
         <Typography fontSize="20px" fontWeight="bold" sx={{ opacity: '0.7' }}>
-          {status ? 'Processing' : 'Complete'}
+          {isSubmitLoading ? 'Processing' : 'Complete'}
         </Typography>
 
         <Box
@@ -1275,7 +1426,7 @@ export const ProcessingTicket = ({
             background: `${status ? 'rgba(255, 255, 255, 0.05)' : 'rgba(125, 255, 209, 0.10)'}`,
           }}
         >
-          {status ? (
+          {isSubmitLoading ? (
             <Typography color="white" fontSize={'14px'} lineHeight={'160%'}>
               Your ticket is being created...
             </Typography>
@@ -1289,30 +1440,32 @@ export const ProcessingTicket = ({
           )}
         </Box>
 
-        <TicketProcessingProgress />
+        <TicketProcessingProgress txnHash={txnHash} />
       </Box>
 
-      <Box paddingX={'30px'}>
-        <Button
-          onClick={() => {
-            setPurchasingTicket(false), toggleDrawer('right', false);
-          }}
-          sx={{
-            backgroundColor: 'rgba(103, 219, 255, 0.10)',
-            color: '#67DBFF',
-            border: '1px solid rgba(103, 219, 255, 0.20)',
-            width: '100%',
-            borderRadius: '10px',
-            fontSize: '14px',
-            fontWeight: 600,
-            fontFamily: 'Inter',
-            textTransform: 'capitalize',
-          }}
-          startIcon={<CircleCloseIcon />}
-        >
-          Close
-        </Button>
-      </Box>
+      {!isSubmitLoading && (
+        <Box paddingX={'30px'}>
+          <Button
+            onClick={() => {
+              setPurchasingTicket(false), toggleDrawer('right', false);
+            }}
+            sx={{
+              backgroundColor: 'rgba(103, 219, 255, 0.10)',
+              color: '#67DBFF',
+              border: '1px solid rgba(103, 219, 255, 0.20)',
+              width: '100%',
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: 600,
+              fontFamily: 'Inter',
+              textTransform: 'capitalize',
+            }}
+            startIcon={<CircleCloseIcon />}
+          >
+            Close
+          </Button>
+        </Box>
+      )}
 
       <Box display="flex" justifyContent={'center'} marginTop={'30px'}>
         <ScrollIcon />
@@ -1321,23 +1474,22 @@ export const ProcessingTicket = ({
   );
 };
 
-const steps = [
-  {
-    label: 'Ticketing Contract Deployed',
-    description: '0x9999...f08E',
-    // description: '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
-  },
-  {
-    label: 'Validating Transaction',
-    description: '0x0184..287d6',
-  },
-  {
-    label: 'Last Step',
-    description: `desc`,
-  },
-];
-
-export const TicketProcessingProgress = () => {
+export const TicketProcessingProgress = ({ txnHash }: any) => {
+  const steps = [
+    // {
+    //   label: 'Ticketing Contract Deployed',
+    //   description: '0x9999...f08E',
+    //   // description: '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+    // },
+    {
+      label: 'Validating Transaction',
+      description: shortenAddress(txnHash),
+    },
+    // {
+    //   label: 'Last Step',
+    //   description: `desc`,
+    // },
+  ];
   const [activeStep, setActiveStep] = React.useState(0);
 
   const handleNext = () => {
@@ -1385,7 +1537,17 @@ export const TicketProcessingProgress = () => {
                 {index === 2 ? null : (
                   <Box display={'flex'} alignItems={'center'}>
                     <CopyIcon cursor="pointer" />
-                    <GoToExplorerIcon cursor="pointer" />
+
+                    <Box
+                      onClick={() =>
+                        window.open(
+                          `${SCROLL_EXPLORER}/tx/${txnHash}`,
+                          '_blank',
+                        )
+                      }
+                    >
+                      <GoToExplorerIcon cursor="pointer" />
+                    </Box>
                   </Box>
                 )}
               </Box>

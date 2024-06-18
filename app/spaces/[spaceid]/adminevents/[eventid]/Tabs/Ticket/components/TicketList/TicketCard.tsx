@@ -7,33 +7,45 @@ import {
   EyeSlashIcon,
 } from 'components/icons';
 import Image from 'next/image';
+import { shortenAddress } from '@/utils/format';
+import { mUSDC_TOKEN } from '@/constant';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export type TicketCardProps = {
-  name: string;
-  price: string;
-  open: string;
-  status: boolean;
-  sold: number;
-  tokenSymbol?: string;
-  address: string;
+  // name: string;
+  // price: string;
+  // open: string;
+  // status: boolean;
+  // sold: number;
+  // tokenSymbol?: string;
+  // address: string;
+  ticket: any;
+  index: number;
+  ticketAddresses: Array<string>;
   setToggleAction?: React.Dispatch<React.SetStateAction<string>>;
+  setVaultIndex?: React.Dispatch<React.SetStateAction<number>>;
   onToggle?: (anchor: Anchor, open: boolean) => void;
 };
 
 const TicketCard: React.FC<TicketCardProps> = ({
-  name,
-  price,
-  open,
-  status,
-  sold,
-  tokenSymbol,
-  address,
+  // name,
+  // price,
+  // open,
+  // status,
+  // sold,
+  // tokenSymbol,
+  // address,
+  ticket,
+  index,
+  ticketAddresses,
+  setVaultIndex,
   setToggleAction,
   onToggle = (anchor: Anchor, open: boolean) => {},
 }) => {
   const isMobile = useMediaQuery('(max-width:500px)');
+  let status = true;
+
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
@@ -45,6 +57,7 @@ const TicketCard: React.FC<TicketCardProps> = ({
       onClick={() => {
         setToggleAction && setToggleAction('ViewVault'),
           onToggle('right', true);
+        setVaultIndex && setVaultIndex(index);
       }}
     >
       <Image
@@ -66,10 +79,11 @@ const TicketCard: React.FC<TicketCardProps> = ({
           alignItems="center"
         >
           <Typography variant="h5" color="white">
-            {name}
+            {ticket[1]?.result}
           </Typography>{' '}
           <Typography classes="subtitle2" color="white">
-            {price} {tokenSymbol}
+            {String(ticket[3]?.result)}{' '}
+            {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
           </Typography>
         </Stack>
         <Stack
@@ -100,12 +114,14 @@ const TicketCard: React.FC<TicketCardProps> = ({
               :
             </Typography>
             <Typography color={status ? '#65C0A0' : '#C09965'}>
-              {open}
+              To All
             </Typography>
           </Stack>
-          <Typography>Sold: {sold}</Typography>
+          <Typography>Sold: {String(ticket[4]?.result)}</Typography>
         </Stack>
-        <Typography variant="caption">ADDRESS: {address}</Typography>
+        <Typography variant="caption">
+          ADDRESS: {shortenAddress(ticketAddresses[index])}
+        </Typography>
       </Stack>
     </Stack>
   );
