@@ -9,7 +9,7 @@ import {
   Stack,
   Select,
   MenuItem,
-  TextField
+  TextField,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -45,15 +45,15 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface EventDocument {
   document: {
-    id: string
-  }
+    id: string;
+  };
 }
 interface CreateEvent {
-  createEvent: EventDocument
+  createEvent: EventDocument;
 }
 
 interface UpdateType {
-  data: CreateEvent
+  data: CreateEvent;
 }
 
 const Home = () => {
@@ -73,11 +73,7 @@ const Home = () => {
   });
 
   const [events, setEvents] = useState<Event[]>([]);
-  const {
-    ceramic,
-    composeClient,
-    profile,
-  } = useCeramicContext();
+  const { ceramic, composeClient, profile } = useCeramicContext();
 
   const getEvents = async () => {
     try {
@@ -147,7 +143,7 @@ const Home = () => {
       participant: 0,
       min_participant: 0,
       max_participant: 0,
-      timezone: ''
+      timezone: '',
     });
     const [description, setDescription] = useState<OutputData>();
     const [avatar, setAvatar] = useState<SelectedFile>();
@@ -157,7 +153,7 @@ const Home = () => {
     const [editor, setEditorInst] = useState<any>();
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
-    const [status, setStatus] = useState<string>('')
+    const [status, setStatus] = useState<string>('');
     const [locations, setLocations] = useState<string[]>(['']);
 
     const profileId = profile?.id || '';
@@ -165,7 +161,11 @@ const Home = () => {
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 
-      if (name === "participant" || name === "max_participant" || name === "min_participant") {
+      if (
+        name === 'participant' ||
+        name === 'max_participant' ||
+        name === 'min_participant'
+      ) {
         setInputs((prevInputs) => ({
           ...prevInputs,
           [name]: Number(value),
@@ -198,12 +198,15 @@ const Home = () => {
     };
 
     const createEvent = async () => {
-      const isNeeded = inputs.name.length === 0 || !startTime || !endTime || !spaceId || !profileId;
+      const isNeeded =
+        inputs.name.length === 0 ||
+        !startTime ||
+        !endTime ||
+        !spaceId ||
+        !profileId;
       if (isNeeded) {
         typeof window !== 'undefined' &&
-          window.alert(
-            'Please input all necessary fields.',
-          );
+          window.alert('Please input all necessary fields.');
       } else {
         let socialLinks = {};
 
@@ -257,6 +260,7 @@ const Home = () => {
                  title
                  links
                }
+               tracks
              }
            }
          }
@@ -273,11 +277,14 @@ const Home = () => {
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                  customLinks: Object.entries(socialLinks).map(([key, value]) => ({ title: key, links: value })),
+                  customLinks: Object.entries(socialLinks).map(
+                    ([key, value]) => ({ title: key, links: value }),
+                  ),
                   participant_count: inputs.participant,
                   max_participant: inputs.max_participant,
                   min_participant: inputs.min_participant,
-                  status: person ? "In-Person" : "Online"
+                  status: person ? 'In-Person' : 'Online',
+                  tracks: 'AI',
                 },
               },
             },
@@ -285,8 +292,8 @@ const Home = () => {
 
           const { data } = await supabase.from('locations').insert({
             name: locations.join(','),
-            eventId: update.data.createEvent.document.id
-          })
+            eventId: update.data.createEvent.document.id,
+          });
 
           typeof window !== 'undefined' &&
             window.alert(
@@ -335,11 +342,7 @@ const Home = () => {
           <Box display="flex" flexDirection="column" gap="20px" padding={3}>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Event Basic
-                </Typography>
+                <Typography variant="subtitleSB">Event Basic</Typography>
               </Box>
               <Box
                 padding="20px"
@@ -348,11 +351,7 @@ const Home = () => {
                 gap="20px"
               >
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Event Name
-                  </Typography>
+                  <Typography variant="subtitleSB">Event Name</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     name="name"
@@ -360,11 +359,7 @@ const Home = () => {
                   />
                 </Stack>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Event Tagline
-                  </Typography>
+                  <Typography variant="subtitleSB">Event Tagline</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     name="tagline"
@@ -441,14 +436,8 @@ const Home = () => {
                     </Typography>
                   </Stack>
                 </Stack>
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Event Avatar
-                </Typography>
-                <Typography
-                  variant="bodyS"
-                >
+                <Typography variant="subtitleSB">Event Avatar</Typography>
+                <Typography variant="bodyS">
                   Recommend min of 200x200px (1:1 Ratio)
                 </Typography>
                 <Box
@@ -495,28 +484,16 @@ const Home = () => {
                   />
                 </Box>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    TimeZone
-                  </Typography>
+                  <Typography variant="subtitleSB">TimeZone</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     name="timezone"
                     placeholder="Type Time Zone"
                   />
                 </Stack>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  gap="20px"
-                >
+                <Box display="flex" justifyContent="space-between" gap="20px">
                   <Box flex={1}>
-                    <Typography
-                      variant="subtitleSB"
-                    >
-                      Start Date
-                    </Typography>
+                    <Typography variant="subtitleSB">Start Date</Typography>
                     <DatePicker
                       onChange={(newValue) => setStartTime(newValue)}
                       sx={{
@@ -545,11 +522,7 @@ const Home = () => {
                     />
                   </Box>
                   <Box flex={1}>
-                    <Typography
-                      variant="subtitleSB"
-                    >
-                      End Date
-                    </Typography>
+                    <Typography variant="subtitleSB">End Date</Typography>
                     <DatePicker
                       onChange={(newValue) => setEndTime(newValue)}
                       sx={{
@@ -579,11 +552,7 @@ const Home = () => {
                   </Box>
                 </Box>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Participant
-                  </Typography>
+                  <Typography variant="subtitleSB">Participant</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     type="number"
@@ -592,11 +561,7 @@ const Home = () => {
                   />
                 </Stack>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Max Participant
-                  </Typography>
+                  <Typography variant="subtitleSB">Max Participant</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     type="number"
@@ -605,11 +570,7 @@ const Home = () => {
                   />
                 </Stack>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Min Participant
-                  </Typography>
+                  <Typography variant="subtitleSB">Min Participant</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     type="number"
@@ -626,11 +587,7 @@ const Home = () => {
                 justifyContent="space-between"
                 borderBottom="1px solid #383838"
               >
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Event Format
-                </Typography>
+                <Typography variant="subtitleSB">Event Format</Typography>
               </Box>
               <Box
                 display="flex"
@@ -656,14 +613,8 @@ const Home = () => {
                       }}
                     />
                     <Stack>
-                      <Typography
-                        variant="bodyBB"
-                      >
-                        In-Person
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                      >
+                      <Typography variant="bodyBB">In-Person</Typography>
+                      <Typography variant="caption">
                         This is a physical event
                       </Typography>
                     </Stack>
@@ -685,37 +636,30 @@ const Home = () => {
                       }}
                     />
                     <Stack>
-                      <Typography
-                        variant="bodyBB"
-                      >
-                        Online
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                      >
+                      <Typography variant="bodyBB">Online</Typography>
+                      <Typography variant="caption">
                         Specially Online Event
                       </Typography>
                     </Stack>
                   </Box>
                 </Box>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Location
-                  </Typography>
+                  <Typography variant="subtitleSB">Location</Typography>
                   {locations.map((location, index) => (
-                    <ZuInput key={`Location_Index${index}`} onChange={(e) => {
-                      let newLocations = locations;
-                      newLocations[index] = e.target.value;
-                      setLocations(newLocations);
-                    }} />
+                    <ZuInput
+                      key={`Location_Index${index}`}
+                      onChange={(e) => {
+                        let newLocations = locations;
+                        newLocations[index] = e.target.value;
+                        setLocations(newLocations);
+                      }}
+                    />
                   ))}
                 </Stack>
                 <ZuButton
                   variant="contained"
                   endIcon={<PlusIcon />}
-                  onClick={() => setLocations(prev => [...prev, ''])}
+                  onClick={() => setLocations((prev) => [...prev, ''])}
                 >
                   Add Address
                 </ZuButton>
@@ -723,11 +667,7 @@ const Home = () => {
             </Box>
             <Box bgcolor="#2d2d2d" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Links
-                </Typography>
+                <Typography variant="subtitleSB">Links</Typography>
               </Box>
               <Box
                 padding={'20px'}
