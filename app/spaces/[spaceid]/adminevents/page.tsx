@@ -1,5 +1,5 @@
 'use client';
-import { useState, ChangeEvent, useEffect, useRef } from 'react';
+import React, { useState, ChangeEvent, useEffect, useRef, KeyboardEvent } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
@@ -9,7 +9,8 @@ import {
   Stack,
   Select,
   MenuItem,
-  TextField
+  TextField,
+  Chip
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -159,6 +160,8 @@ const Home = () => {
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
     const [status, setStatus] = useState<string>('')
     const [locations, setLocations] = useState<string[]>(['']);
+    const [track, setTrack] = useState<string>('');
+    const [tracks, setTracks] = useState<string[]>([]);
 
     const profileId = profile?.id || '';
 
@@ -196,6 +199,17 @@ const Home = () => {
       const temp = socialLinks.filter((item) => item !== index);
       setSocialLinks(temp);
     };
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setTrack(e.target.value)
+    }
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        setTracks([...tracks, track]);
+        setTrack('');
+      }
+    }
 
     const createEvent = async () => {
       const isNeeded = inputs.name.length === 0 || !startTime || !endTime || !spaceId || !profileId;
@@ -257,6 +271,7 @@ const Home = () => {
                  title
                  links
                }
+               tracks
              }
            }
          }
@@ -277,7 +292,8 @@ const Home = () => {
                   participant_count: inputs.participant,
                   max_participant: inputs.max_participant,
                   min_participant: inputs.min_participant,
-                  status: person ? "In-Person" : "Online"
+                  status: person ? "In-Person" : "Online",
+                  tracks: tracks.join(',')
                 },
               },
             },
@@ -333,7 +349,7 @@ const Home = () => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="column" gap="20px" padding={3}>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
                 <Typography
                   variant="subtitleSB"
@@ -373,7 +389,7 @@ const Home = () => {
                 </Stack>
                 <Stack spacing="10px">
                   <Typography variant="subtitleSB">
-                    Space Description
+                    Event Description
                   </Typography>
                   <Typography color="white" variant="caption">
                     This is a description greeting for new members. You can also
@@ -488,25 +504,13 @@ const Home = () => {
                   </Uploader3>
                   <PreviewFile
                     sx={{
-                      width: '150px',
-                      height: '150px',
-                      borderRadius: '75px',
+                      width: '420px',
+                      height: '420px',
+                      borderRadius: '10px',
                     }}
                     file={avatarURL}
                   />
                 </Box>
-                <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    TimeZone
-                  </Typography>
-                  <ZuInput
-                    onChange={handleInputChange}
-                    name="timezone"
-                    placeholder="Type Time Zone"
-                  />
-                </Stack>
                 <Box
                   display="flex"
                   justifyContent="space-between"
@@ -620,7 +624,7 @@ const Home = () => {
                 </Stack>
               </Box>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box
                 padding="20px"
                 display="flex"
@@ -706,11 +710,14 @@ const Home = () => {
                     Location
                   </Typography>
                   {locations.map((location, index) => (
-                    <ZuInput key={`Location_Index${index}`} onChange={(e) => {
-                      let newLocations = locations;
-                      newLocations[index] = e.target.value;
-                      setLocations(newLocations);
-                    }} />
+                    <ZuInput key={`Location_Index${index}`}
+                      placeholder="city, country"
+                      onChange={(e) => {
+                        let newLocations = locations;
+                        newLocations[index] = e.target.value;
+                        setLocations(newLocations);
+                      }}
+                    />
                   ))}
                 </Stack>
                 <ZuButton
@@ -722,7 +729,7 @@ const Home = () => {
                 </ZuButton>
               </Box>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
                 <Typography
                   variant="subtitleSB"
@@ -859,6 +866,45 @@ const Home = () => {
                 </Button>
               </Box>
             </Box>
+            <Stack bgcolor="#262626" borderRadius="10px">
+              <Typography variant="subtitleMB" padding="20px">
+                Event Tracks
+              </Typography>
+              <Stack padding="20px" spacing="30px">
+                <Typography variant="bodyB">
+                  Tracks are the main categories for this event.
+                  This allows sessions to be organized into relevant tracks by attributing to a particular track.
+                </Typography>
+                <Stack spacing="20px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">
+                      Event Tracks
+                    </Typography>
+                    <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                      Create tracks related to your event
+                    </Typography>
+                  </Stack>
+                  <ZuInput placeholder="Add a tag" onKeyDown={handleKeyDown} onChange={handleChange} value={track} />
+                  <Stack direction="row" spacing="10px">
+                    {
+                      tracks.length !== 0 && tracks.map((track, index) => (
+                        <Chip key={`TrackChip-${index}`} label={track} sx={{
+                          borderRadius: '10px',
+                          bgcolor: "#313131"
+                        }}
+                          onDelete={() => {
+                            const newArray = tracks.filter(
+                              (item) => item !== track,
+                            );
+                            setTracks(newArray);
+                          }}
+                        />
+                      ))
+                    }
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
             <Box display="flex" gap="20px">
               <Button
                 sx={{

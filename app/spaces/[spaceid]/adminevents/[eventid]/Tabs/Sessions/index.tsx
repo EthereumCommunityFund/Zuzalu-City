@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import {
   Stack,
   Box,
@@ -9,7 +11,8 @@ import {
   OutlinedInput,
   Select,
   Chip,
-  MenuItem
+  MenuItem,
+  Radio
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -28,12 +31,13 @@ import {
 import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Session, SessionData, Profile, ProfileEdge } from '@/types';
+import { Session, SessionData, Profile, ProfileEdge, Event, EventEdge, Anchor, CeramicResponseType } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
 import { SPACE_CATEGORIES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right'
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -46,6 +50,7 @@ const Sessions = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [people, setPeople] = useState<Profile[]>([]);
+  const [eventData, setEventData] = useState<Event>();
 
   const [state, setState] = React.useState({
     top: false,
@@ -64,7 +69,7 @@ const Sessions = () => {
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
-  const [sessionGated, setSessionGated] = useState<string>('');
+  const [sessionGated, setSessionGated] = useState<boolean>(false);
   const [sessionExperienceLevel, setSessionExperienceLevel] = useState<string>('');
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
@@ -166,12 +171,69 @@ const Sessions = () => {
     }
   }
 
+  const getEventDetailInfo = async () => {
+    try {
+      const response: CeramicResponseType<EventEdge> =
+        (await composeClient.executeQuery(
+          `
+        query MyQuery($id: ID!) {
+          node (id: $id) {
+            ...on Event {
+              createdAt
+              description
+              endTime
+              external_url
+              gated
+              id
+              image_url
+              max_participant
+              meeting_url
+              min_participant
+              participant_count
+              profileId
+              spaceId
+              startTime
+              status
+              tagline
+              timezone
+              title
+              space {
+                id
+                name
+                gated
+                avatar
+                banner
+                description
+              }
+              profile {
+                username  
+                avatar
+              }
+            }
+          }
+        }
+      `,
+          {
+            id: eventId,
+          },
+        )) as CeramicResponseType<EventEdge>;
+      if (response.data) {
+        if (response.data.node) {
+          setEventData(response.data.node);
+        }
+      }
+    } catch (err) {
+      console.log('Failed to fetch event: ', err);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getSessions();
         await getPeople();
         await getLocation();
+        await getEventDetailInfo();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -246,7 +308,7 @@ const Sessions = () => {
               format: "person",
               track: "${sessionTrack}",
               gated: "${sessionGated}",
-              timezone: "${sessionTimezone}",
+              timezone: "${dayjs.tz.guess()}",
             }
           }
         ) {
@@ -286,7 +348,7 @@ const Sessions = () => {
               track: "${sessionTrack}",
               gated: "${sessionGated}",
               video_url: "${sessionVideoURL}",
-              timezone: "${sessionTimezone}",
+              timezone: "${dayjs.tz.guess()}",
             }
           }
         ) {
@@ -376,10 +438,27 @@ const Sessions = () => {
                 <Typography variant="bodyS">
                   Attach a relevant track this session relates to
                 </Typography>
-                <ZuInput
+                <Select
+                  value={sessionTrack}
+                  style={{ width: '100%' }}
                   onChange={(e) => setSessionTrack(e.target.value)}
-                  placeholder="Select"
-                />
+                  input={<OutlinedInput label="Name" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {eventData?.tracks?.split(',').map((i, index) => {
+                    return (
+                      <MenuItem value={i} key={`EventTrack_Index${index}`}>
+                        {i}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Tagline*</Typography>
@@ -525,13 +604,19 @@ const Sessions = () => {
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Gated</Typography>
-                <Typography variant="bodyS">
+                {/* <Typography variant="bodyS">
                   Gated
                 </Typography>
                 <ZuInput
                   onChange={(e) => setSessionGated(e.target.value)}
                   placeholder="Gated"
-                />
+                /> */}
+                <Stack direction="row" alignItems="center">
+                  <BpCheckbox checked={sessionGated} onChange={() => setSessionGated(prev => !prev)} />
+                  <Typography variant="bodyS">
+                    Gated
+                  </Typography>
+                </Stack>
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Experience Level</Typography>
@@ -541,18 +626,6 @@ const Sessions = () => {
                 <ZuInput
                   onChange={(e) => setSessionExperienceLevel(e.target.value)}
                   placeholder="Beginner OR Intermediate OR Advanced"
-                />
-              </Stack>
-              <Stack spacing="10px">
-                <Typography
-                  variant="subtitleSB"
-                >
-                  TimeZone
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionTimezone(e.target.value)}
-                  name="timezone"
-                  placeholder="Type Time Zone"
                 />
               </Stack>
             </Stack>

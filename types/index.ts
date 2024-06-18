@@ -41,7 +41,8 @@ export interface Event {
     username?: string;
     avatar?: string;
   };
-  customLinks?: [Link]
+  customLinks?: [Link],
+  tracks?: string
 }
 
 export interface EventEdge {
