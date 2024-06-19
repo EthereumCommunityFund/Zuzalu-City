@@ -34,7 +34,10 @@ const Home: React.FC = () => {
             timezone
             createdAt
             image_url
-            profileId
+            profile {
+              avatar
+              username
+            }
             startTime
             description
             meeting_url

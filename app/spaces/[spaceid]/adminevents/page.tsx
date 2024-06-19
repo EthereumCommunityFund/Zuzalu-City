@@ -157,7 +157,6 @@ const Home = () => {
     const [avatarURL, setAvatarURL] = useState<string>();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
-    const [editor, setEditorInst] = useState<any>();
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
     const [status, setStatus] = useState<string>('');
@@ -166,6 +165,7 @@ const Home = () => {
     const [tracks, setTracks] = useState<string[]>([]);
 
     const profileId = profile?.id || '';
+    console.log('profileId: ', profileId)
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;

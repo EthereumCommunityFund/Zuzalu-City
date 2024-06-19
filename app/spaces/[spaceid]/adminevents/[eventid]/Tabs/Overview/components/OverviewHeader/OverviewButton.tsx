@@ -17,9 +17,10 @@ const BUTTON_GROUP = [
 
 type OverviewButtonProps = {
   type: number;
+  onClick: () => void
 };
 
-const OverviewButton: React.FC<OverviewButtonProps> = ({ type }) => {
+const OverviewButton: React.FC<OverviewButtonProps> = ({ type, onClick }) => {
   return (
     <Stack
       direction="row"
@@ -29,6 +30,7 @@ const OverviewButton: React.FC<OverviewButtonProps> = ({ type }) => {
       padding="5px 10px"
       spacing={1}
       flex={1}
+      onClick={onClick}
     >
       {BUTTON_GROUP[type].icon}
       <Stack>

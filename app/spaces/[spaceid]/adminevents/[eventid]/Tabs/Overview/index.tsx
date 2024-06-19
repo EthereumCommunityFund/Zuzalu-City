@@ -17,7 +17,7 @@ const Overview = ({ event }: PropTypes) => {
     <Stack direction="column" spacing={4} paddingBottom={5}>
       <OverviewHeader event={event} />
       <OverviewDetail eventData={event} />
-      <OverviewInvite />
+      <OverviewInvite event={event}/>
       {/* <OverviewPosts /> */}
     </Stack>
   );
