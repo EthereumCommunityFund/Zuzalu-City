@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
 import Link from 'next/link';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import TextEditor from '@/components/editor/editor';
 
 interface PropTypes {
   eventData?: Event
@@ -89,9 +90,25 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
         <Typography variant="h5" color="white">
           {eventData.title}
         </Typography>
-        <Typography variant="body1" color="white">
-          {eventData.description}
-        </Typography>
+        <TextEditor
+          holder='space-detail-editor'
+          readonly={true}
+          value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
+          sx={{
+            fontFamily: 'Inter',
+            color: 'white',
+            borderRadius: '10px',
+            height: 'auto',
+            overflow: 'auto',
+            padding: '0px',
+            '& > div > div': {
+              paddingBottom: '0px !important',
+            },
+            '& .ce-block__content': {
+              maxWidth: '100% !important', // Adjust the margin value as needed
+            },
+          }}
+        />
         {eventData.timezone && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <MapIcon size={4} />
