@@ -19,18 +19,10 @@ const speakers = [
 ];
 
 type SessionCardProps = {
-  title?: string;
-  startTime?: string;
-  endTime?: string;
-  location?: string;
   session: Session;
 };
 
 const SessionCard: React.FC<SessionCardProps> = ({
-  title = 'Opening Meetup (some game to get to know the coworking space + hotels)',
-  startTime = '00:00 AM',
-  endTime = '00:00 AM',
-  location = 'GROUND FLOOR THEATER',
   session
 }) => {
   return (
@@ -80,7 +72,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
       </Stack>
       <Stack direction={'row'} alignItems={'center'} spacing={1}>
         <MapIcon size={4} />
-        <Typography variant="caption">{location}</Typography>
+        <Typography variant="caption">{session.meeting_url}</Typography>
       </Stack>
     </Stack>
   );
