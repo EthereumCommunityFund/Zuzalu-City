@@ -296,7 +296,7 @@ const Sessions = () => {
         : e.target.value,
     );
 
-    const speakers = e.target.value.map((speaker: any) => people.filter(i => i.username === speaker)[0].author.id);
+    const speakers = e.target.value.map((speaker: any) => people.filter(i => i.username === speaker)[0].author?.id);
     setSessionSpeakers(speakers);
 
   };
@@ -308,7 +308,7 @@ const Sessions = () => {
         : e.target.value,
     );
 
-    const organizers = e.target.value.map((organizer: any) => people.filter(i => i.username === organizer)[0].author.id);
+    const organizers = e.target.value.map((organizer: any) => people.filter(i => i.username === organizer)[0].author?.id);
     setSessionOrganizers(organizers);
   };
 

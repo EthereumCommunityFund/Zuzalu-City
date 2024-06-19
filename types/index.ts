@@ -147,7 +147,7 @@ export type Profile = {
   id: any;
   username: string;
   avatar?: string;
-  author: {
+  author?: {
     id: string;
   }
 };
