@@ -86,7 +86,7 @@ const Create = () => {
 
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
-
+  console.log("admin", adminId)
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
 

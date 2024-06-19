@@ -2,6 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { Stack, Typography, Box } from '@mui/material';
 import { EditIcon, MapIcon } from 'components/icons';
+import { Session } from '@/types';
 
 const speakers = [
   {
@@ -22,6 +23,7 @@ type SessionCardProps = {
   startTime?: string;
   endTime?: string;
   location?: string;
+  session: Session;
 };
 
 const SessionCard: React.FC<SessionCardProps> = ({
@@ -29,6 +31,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
   startTime = '00:00 AM',
   endTime = '00:00 AM',
   location = 'GROUND FLOOR THEATER',
+  session
 }) => {
   return (
     <Stack
@@ -48,30 +51,30 @@ const SessionCard: React.FC<SessionCardProps> = ({
         justifyContent={'space-between'}
       >
         <Typography variant="bodyB">
-          {dayjs(startTime).format('HH A')} - {dayjs(endTime).format('HH A')}
+          {dayjs(session.startTime).format('HH A')} - {dayjs(session.endTime).format('HH A')}
         </Typography>
         <EditIcon />
       </Stack>
-      <Typography variant="subtitleSB">{title}</Typography>
+      <Typography variant="subtitleSB">{session.title}</Typography>
       <Stack direction={'row'} spacing={1}>
         <Typography variant="bodyS">Speakers:</Typography>
-        {speakers.map((speaker, index) => (
+        {session.speakers !== undefined && session.speakers?.map((speaker, index) => (
           <Stack
             key={`Speaker-${index}`}
             direction={'row'}
             spacing={0.5}
             alignItems={'center'}
           >
-            {speaker.avatar && (
+            {speaker.mvpProfile.avatar && (
               <Box
                 component={'img'}
                 height={20}
                 width={20}
                 borderRadius={10}
-                src={speaker.avatar}
+                src={speaker.mvpProfile.avatar}
               />
             )}
-            <Typography variant="bodyS">{speaker.name}</Typography>
+            <Typography variant="bodyS">{speaker.mvpProfile.username}</Typography>
           </Stack>
         ))}
       </Stack>

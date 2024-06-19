@@ -62,6 +62,7 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [] }) => {
             startTime={session.startTime}
             endTime={session.endTime}
             location={session.meeting_url}
+            session={session}
           />
         ))}
       </Stack>
