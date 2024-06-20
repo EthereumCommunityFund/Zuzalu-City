@@ -16,7 +16,8 @@ interface TextEditorPropTypes extends BoxProps {
   setData?: (value: OutputData) => void,
   holder: string,
   placeholder?: string,
-  readonly?: boolean
+  readonly?: boolean,
+  showMore?: boolean
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
@@ -26,6 +27,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   children,
   readonly = false,
   placeholder = 'Write an Amazing Blog',
+  showMore = false,
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -34,7 +36,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
     if (!ref.current) {
 
       const editor = new EditorJS({
-
         holder: holder,
         tools,
         placeholder: placeholder,
@@ -42,7 +43,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
         readOnly: readonly,
         async onChange(api, event) {
           try {
-            if(!readonly) {
+            if (!readonly) {
               const data = await api.saver.save();
               setData(data);
             }
@@ -50,6 +51,9 @@ const TextEditor: FC<TextEditorPropTypes> = ({
             console.log('EditorJS Error: ', err)
           }
         },
+        onReady: () => {
+          applyCustomStyles(showMore);
+        }
       })
 
       ref.current = editor;
@@ -61,6 +65,17 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       }
     };
   }, []);
+
+  const applyCustomStyles = (isPrimary: boolean) => {
+    const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+    if (editorContent) {
+      editorContent.style.height = isPrimary ? 'fit-content' : '300px';
+    }
+  };
+
+  useEffect(() => {
+    applyCustomStyles(showMore);
+  }, [showMore]);
 
   return (
     <Fragment>
