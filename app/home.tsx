@@ -158,6 +158,9 @@ const Home: React.FC = () => {
                 username
                 avatar
               }
+              space {
+                name
+              }
             }
           }
         }
@@ -184,8 +187,8 @@ const Home: React.FC = () => {
         let currentDate = new Date(selectedDate.format('YYYY-MM-DDTHH:mm:ss[Z]'));
 
         const timeDiff = selectedDate.utcOffset();
-        if(timeDiff < 0) {
-          currentDate = new Date(new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)).getTime() - (24* 60 * 60 * 1000 + timeDiff * 60 * 1000));
+        if (timeDiff < 0) {
+          currentDate = new Date(new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)).getTime() - (24 * 60 * 60 * 1000 + timeDiff * 60 * 1000));
         } else {
           currentDate = new Date(new Date(currentDate.getTime() - (24 * 60 * 60 * 1000)).getTime() - (timeDiff * 60 * 1000))
         }
@@ -496,11 +499,8 @@ const Home: React.FC = () => {
                           <Box>
                             {eventsList.map((event, index) => (
                               <EventCard
-                                id={event.id}
-                                spaceId={event.spaceId}
                                 key={`EventCard-${index}`}
                                 event={event}
-                                by={event.profile?.username}
                               />
                             ))}
                           </Box>

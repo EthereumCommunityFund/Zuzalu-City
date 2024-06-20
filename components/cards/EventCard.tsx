@@ -10,10 +10,7 @@ import * as util from '../../utils/index';
 import { supabase } from '@/utils/supabase/client';
 
 type EventCardProps = {
-  id?: string;
-  spaceId?: string;
   event: Event;
-  by?: string;
 };
 
 export const formatDateToMonth = (timestamp: string | number | Date) => {
@@ -47,7 +44,7 @@ function isValidJSON(str: string): boolean {
   }
 }
 
-const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
+const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const theme = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -125,7 +122,7 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
               fontWeight={300}
               letterSpacing={'0.01em'}
             >
-              {by}
+              {event.space?.name}
             </Typography>
           </Box>
           <Typography
@@ -151,12 +148,12 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
               !isValidJSON(event.description.replaceAll('\\"', '"')) &&
               event.description}
             {event.description === null ||
-            !isValidJSON(event.description.replaceAll('\\"', '"')) ||
-            JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
+              !isValidJSON(event.description.replaceAll('\\"', '"')) ||
+              JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
               undefined
               ? 'JSON ERROR'
               : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0]
-                  .data.text}
+                .data.text}
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="6px" sx={{ opacity: 0.5 }}>
