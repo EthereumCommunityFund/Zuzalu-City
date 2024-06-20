@@ -413,7 +413,7 @@ const Home = () => {
                     }}
                   />
                   <Stack direction="row" justifyContent="space-between">
-                    <Stack
+                    {/* <Stack
                       sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -450,9 +450,11 @@ const Home = () => {
                       <Typography color="white" variant="caption">
                         Markdown Available
                       </Typography>
-                    </Stack>
+                    </Stack> */}
                     <Typography variant="caption" color="white">
-                      1000 Characters Left
+                      {
+                        1000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
+                      } Characters Left
                     </Typography>
                   </Stack>
                 </Stack>

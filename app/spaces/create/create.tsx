@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, ChangeEvent, useRef } from 'react';
+import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
 import {
   Stack,
   Box,
@@ -234,6 +234,12 @@ const Create = () => {
     setCustomLinks(temp);
   };
 
+  useEffect(() => {
+    if(description) {
+      console.log(description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0))
+    }
+  }, [description])
+
   return (
     <Stack>
       <Header />
@@ -341,7 +347,9 @@ const Create = () => {
                     </Typography>
                   </Stack> */}
                   <Typography variant="caption" color="white">
-                    1000 Characters Left
+                    {
+                      1000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
+                    } Characters Left
                   </Typography>
                 </Stack>
               </Stack>
