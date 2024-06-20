@@ -234,12 +234,6 @@ const Create = () => {
     setCustomLinks(temp);
   };
 
-  useEffect(() => {
-    if(description) {
-      console.log(description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0))
-    }
-  }, [description])
-
   return (
     <Stack>
       <Header />
