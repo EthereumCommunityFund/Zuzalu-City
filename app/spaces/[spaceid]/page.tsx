@@ -360,7 +360,7 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     backgroundColor: '#ffffff05',
                     borderRadius: '10px',
-                    height: !showMore ? '157px' :'fit-content',
+                    height: !showMore ? '157px' : 'fit-content',
                     boxSizing: 'border-box',
                     overflow: 'hidden'
                   }}
@@ -527,11 +527,8 @@ export default function SpaceDetailPage() {
                           {value.map((event, index) => {
                             return (
                               <EventCard
-                                id={event.id}
                                 key={`EventCard-${event.id}`}
-                                spaceId={event.spaceId}
                                 event={event}
-                                by={space?.name}
                               />
                             );
                           })}
