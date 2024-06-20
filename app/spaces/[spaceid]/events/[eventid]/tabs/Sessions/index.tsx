@@ -1,7 +1,18 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Grid, Typography, SwipeableDrawer, Divider, Box, Select, OutlinedInput, MenuItem, Chip } from '@mui/material';
+import {
+  Stack,
+  Grid,
+  Typography,
+  SwipeableDrawer,
+  Divider,
+  Box,
+  Select,
+  OutlinedInput,
+  MenuItem,
+  Chip,
+} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -11,7 +22,14 @@ import dayjs, { Dayjs } from 'dayjs';
 import { ZuInput, ZuButton, ZuSwitch } from '@/components/core';
 import TextEditor from '@/components/editor/editor';
 import { OutputData } from '@editorjs/editorjs';
-import { PlusCircleIcon, LockIcon, XMarkIcon, ArchiveBoxIcon, ArrowDownIcon, ChevronDownIcon } from '@/components/icons';
+import {
+  PlusCircleIcon,
+  LockIcon,
+  XMarkIcon,
+  ArchiveBoxIcon,
+  ArrowDownIcon,
+  ChevronDownIcon,
+} from '@/components/icons';
 import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
 import BpCheckbox from '@/components/event/Checkbox';
 import { Anchor, Session, SessionData, ProfileEdge, Profile } from '@/types';
@@ -48,11 +66,14 @@ const Sessions = () => {
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
   const [sessionGated, setSessionGated] = useState<string>('');
-  const [sessionExperienceLevel, setSessionExperienceLevel] = useState<string>('');
+  const [sessionExperienceLevel, setSessionExperienceLevel] =
+    useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
-  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(dayjs());
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
+    dayjs(),
+  );
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
@@ -135,8 +156,7 @@ const Sessions = () => {
     } catch (error) {
       console.error('Failed to fetch sesssions:', error);
     }
-  }
-
+  };
 
   const handleChange = (e: any) => {
     setSessionTags(
@@ -150,15 +170,17 @@ const Sessions = () => {
     setSessionSpeakers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
-  }
+        : e.target.value,
+    );
+  };
 
   const handleOrganizerChange = (e: any) => {
     setSessionOrganizers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
-  }
+        : e.target.value,
+    );
+  };
 
   const createSession = async () => {
     if (!isAuthenticated) {
@@ -169,13 +191,19 @@ const Sessions = () => {
 
     strDesc = strDesc.replaceAll('"', '\\"');
 
-    const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+    const error =
+      !eventId ||
+      !sessionStartTime ||
+      !sessionEndTime ||
+      !sessionName ||
+      !sessoinStatus ||
+      !sessionTags ||
+      !sessionTrack ||
+      !profileId;
 
     if (error) {
       typeof window !== 'undefined' &&
-        window.alert(
-          'Please fill necessary fields!',
-        );
+        window.alert('Please fill necessary fields!');
       return;
     }
 
@@ -253,7 +281,6 @@ const Sessions = () => {
   };
 
   const List = (anchor: Anchor) => {
-
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
@@ -367,9 +394,8 @@ const Sessions = () => {
                     return (
                       <Chip
                         label={
-                          SPACE_CATEGORIES.find(
-                            (item) => item.value === tag,
-                          )?.label
+                          SPACE_CATEGORIES.find((item) => item.value === tag)
+                            ?.label
                         }
                         sx={{
                           borderRadius: '10px',
@@ -462,9 +488,7 @@ const Sessions = () => {
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Gated</Typography>
-                <Typography variant="bodyS">
-                  Gated
-                </Typography>
+                <Typography variant="bodyS">Gated</Typography>
                 <ZuInput
                   onChange={(e) => setSessionGated(e.target.value)}
                   placeholder="Gated"
@@ -580,53 +604,58 @@ const Sessions = () => {
                         },
                       }}
                     >
-                      {
-                        locations.map((location, index) => (
-                          <MenuItem key={`Location-Index${index}`} value={location}>
-                            {location}
-                          </MenuItem>
-                        ))
-                      }
+                      {locations.map((location, index) => (
+                        <MenuItem
+                          key={`Location-Index${index}`}
+                          value={location}
+                        >
+                          {location}
+                        </MenuItem>
+                      ))}
                     </Select>
-                    {sessionLocation && <Stack>
-                      <Stack alignItems="center">
-                        <ArrowDownIcon />
-                      </Stack>
-                      <Stack
-                        borderRadius="10px"
-                        border="1px solid rgba(255, 255, 255, 0.10)"
-                        spacing="10px"
-                        padding="10px"
-                      >
-                        <Typography variant="caption">
-                          Your are booking at:
-                        </Typography>
+                    {sessionLocation && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
                         <Stack
                           borderRadius="10px"
-                          padding="10px"
-                          bgcolor="#313131"
-                          direction="row"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
                           spacing="10px"
+                          padding="10px"
                         >
-                          <Box
-                            component="img"
-                            width="60px"
-                            height="60px"
-                            borderRadius="8px"
-                            src="/20.png"
-                          />
-                          <Stack spacing="4px">
-                            <Typography variant="bodyBB">{sessionLocation}</Typography>
-                            <Typography variant="bodyS">
-                              Sessions booked: 22
-                            </Typography>
-                            <Typography variant="caption">
-                              Capacity: 15
-                            </Typography>
+                          <Typography variant="caption">
+                            Your are booking at:
+                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            direction="row"
+                            spacing="10px"
+                          >
+                            <Box
+                              component="img"
+                              width="60px"
+                              height="60px"
+                              borderRadius="8px"
+                              src="/20.png"
+                            />
+                            <Stack spacing="4px">
+                              <Typography variant="bodyBB">
+                                {sessionLocation}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                Sessions booked: 22
+                              </Typography>
+                              <Typography variant="caption">
+                                Capacity: 15
+                              </Typography>
+                            </Stack>
                           </Stack>
                         </Stack>
                       </Stack>
-                    </Stack>}
+                    )}
                   </Stack>
                   <Stack spacing="20px">
                     <Stack spacing="10px">
@@ -732,37 +761,47 @@ const Sessions = () => {
                         />
                       </Stack>
                     </Stack>
-                    {sessionDate && sessionStartTime && sessionEndTime && <Stack spacing="10px">
-                      <Stack alignItems="center">
-                        <ArrowDownIcon />
-                      </Stack>
-                      <Stack
-                        spacing="10px"
-                        padding="10px"
-                        border="1px solid rgba(255, 255, 255, 0.10)"
-                        borderRadius="10px"
-                      >
-                        <Typography variant="caption">
-                          Date & times your are booking:
-                        </Typography>
+                    {sessionDate && sessionStartTime && sessionEndTime && (
+                      <Stack spacing="10px">
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
                         <Stack
-                          borderRadius="10px"
-                          padding="10px"
-                          bgcolor="#313131"
                           spacing="10px"
+                          padding="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          borderRadius="10px"
                         >
-                          <Typography variant="bodyBB">
-                            {`${sessionDate.format("MMMM")}` + " " + `${sessionDate.format("DD")}` + ", " + `${sessionDate.format("YYYY")}`}
+                          <Typography variant="caption">
+                            Date & times your are booking:
                           </Typography>
-                          <Typography variant="bodyS">
-                            Start Time: {`${sessionStartTime.format("HH")}` + `${sessionStartTime.format("A")}`}
-                          </Typography>
-                          <Typography variant="bodyS">
-                            End Time: : {`${sessionEndTime.format("HH")}` + `${sessionEndTime.format("A")}`}
-                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            spacing="10px"
+                          >
+                            <Typography variant="bodyBB">
+                              {`${sessionDate.format('MMMM')}` +
+                                ' ' +
+                                `${sessionDate.format('DD')}` +
+                                ', ' +
+                                `${sessionDate.format('YYYY')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              Start Time:{' '}
+                              {`${sessionStartTime.format('HH')}` +
+                                `${sessionStartTime.format('A')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              End Time: :{' '}
+                              {`${sessionEndTime.format('HH')}` +
+                                `${sessionEndTime.format('A')}`}
+                            </Typography>
+                          </Stack>
                         </Stack>
                       </Stack>
-                    </Stack>}
+                    )}
                   </Stack>
                 </Stack>
               )}
@@ -917,7 +956,10 @@ const Sessions = () => {
                   >
                     {people.map((i, index) => {
                       return (
-                        <MenuItem value={i.username} key={`Organizer_Index${index}`}>
+                        <MenuItem
+                          value={i.username}
+                          key={`Organizer_Index${index}`}
+                        >
                           {i.username}
                         </MenuItem>
                       );
@@ -938,9 +980,9 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people.filter(
-                            (item) => item.username !== i,
-                          ).map(item => item.username);
+                          const newArray = people
+                            .filter((item) => item.username !== i)
+                            .map((item) => item.username);
                           setSessionOrganizers(newArray);
                         }}
                         key={`Selected_Organizerr${index}`}
@@ -1039,7 +1081,10 @@ const Sessions = () => {
                   >
                     {people.map((i, index) => {
                       return (
-                        <MenuItem value={i.username} key={`Speaker_Index${index}`}>
+                        <MenuItem
+                          value={i.username}
+                          key={`Speaker_Index${index}`}
+                        >
                           {i.username}
                         </MenuItem>
                       );
@@ -1060,9 +1105,9 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people.filter(
-                            (item) => item.username !== i,
-                          ).map(item => item.username);
+                          const newArray = people
+                            .filter((item) => item.username !== i)
+                            .map((item) => item.username);
                           setSessionSpeakers(newArray);
                         }}
                         key={`Selected_Speaker${index}`}
@@ -1134,7 +1179,7 @@ const Sessions = () => {
             </Box>
           </Box>
         </Box>
-      </LocalizationProvider >
+      </LocalizationProvider>
     );
   };
 
@@ -1142,22 +1187,33 @@ const Sessions = () => {
     const fetchData = async () => {
       await getSessions();
       await getPeople();
-    }
+    };
 
     fetchData();
-  })
+  });
 
   return (
     <Stack padding="20px 80px" bgcolor="#222222" height="100vh">
       <Grid container spacing="30px">
         <Grid item xs={12} md={8}>
-          <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>
+          <Stack
+            borderRadius="10px"
+            border="1px solid #383838"
+            bgcolor="#262626"
+            flex={8}
+          >
             <Stack spacing="10px" padding="10px">
-              <Typography textAlign="center" padding="10px" variant="bodyBB" bgcolor="#2c2c2c" borderRadius="10px">
+              <Typography
+                textAlign="center"
+                padding="10px"
+                variant="bodyBB"
+                bgcolor="#2c2c2c"
+                borderRadius="10px"
+              >
                 Monday, October 30
               </Typography>
-              {
-                sessions.length !== 0 ? sessions.map((session, index) => (
+              {sessions.length !== 0 ? (
+                sessions.map((session, index) => (
                   <SessionCard
                     key={`SessionCard-${index}`}
                     title={session.title}
@@ -1165,35 +1221,45 @@ const Sessions = () => {
                     endTime={session.endTime}
                     location={session.meeting_url}
                   />
-                )) : (
-                  <Stack
-                    direction="column"
-                    alignItems="center"
-                    bgcolor="#2d2d2d"
-                    padding="20px"
-                    borderRadius="10px"
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <PlusCircleIcon color="#6c6c6c" size={15} />
-                    <Typography variant="subtitle2">No Sessions</Typography>
-                    <Typography variant="body2">Create a Session</Typography>
-                  </Stack>
-                )
-              }
+                ))
+              ) : (
+                <Stack
+                  direction="column"
+                  alignItems="center"
+                  bgcolor="#2d2d2d"
+                  padding="20px"
+                  borderRadius="10px"
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <PlusCircleIcon color="#6c6c6c" size={15} />
+                  <Typography variant="subtitle2">No Sessions</Typography>
+                  <Typography variant="body2">Create a Session</Typography>
+                </Stack>
+              )}
             </Stack>
           </Stack>
-
         </Grid>
         <Grid item xs={12} md={4}>
-          <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" padding="10px" flex={4}>
+          <Stack
+            borderRadius="10px"
+            border="1px solid #383838"
+            bgcolor="#262626"
+            padding="10px"
+            flex={4}
+          >
             <Stack paddingY="10px">
-              <ZuButton startIcon={<LockIcon />} sx={{ width: "100%" }}
+              <ZuButton
+                startIcon={<LockIcon />}
+                sx={{ width: '100%' }}
                 onClick={() => toggleDrawer('right', true)}
               >
                 Add a Session
               </ZuButton>
             </Stack>
-            <Stack spacing="10px" divider={<Divider sx={{ border: "1px solid #383838" }} />}>
+            <Stack
+              spacing="10px"
+              divider={<Divider sx={{ border: '1px solid #383838' }} />}
+            >
               <Typography variant="subtitleSB">
                 Sessions: Sort & Filter
               </Typography>
@@ -1203,19 +1269,11 @@ const Sessions = () => {
                 <ZuInput placeholder="Location" />
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyMB">
-                  Gated For:
-                </Typography>
+                <Typography variant="bodyMB">Gated For:</Typography>
                 <Stack direction="row" flexWrap="wrap" gap="10px">
-                  <ZuButton>
-                    ZuConnect Resident
-                  </ZuButton>
-                  <ZuButton>
-                    DevConnect Attendee
-                  </ZuButton>
-                  <ZuButton>
-                    Zuzalu Resident
-                  </ZuButton>
+                  <ZuButton>ZuConnect Resident</ZuButton>
+                  <ZuButton>DevConnect Attendee</ZuButton>
+                  <ZuButton>Zuzalu Resident</ZuButton>
                 </Stack>
               </Stack>
             </Stack>
@@ -1239,7 +1297,7 @@ const Sessions = () => {
         {List('right')}
       </SwipeableDrawer>
     </Stack>
-  )
-}
+  );
+};
 
 export default Sessions;

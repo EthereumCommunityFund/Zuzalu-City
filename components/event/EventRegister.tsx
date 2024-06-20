@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Stack, Typography, Box, Divider } from '@mui/material';
 import { ZuButton } from 'components/core';
-import { CheckCircleIcon, ChevronDownIcon, RightArrowCircleIcon, ScrollIcon } from 'components/icons';
+import {
+  CheckCircleIcon,
+  ChevronDownIcon,
+  RightArrowCircleIcon,
+  ScrollIcon,
+} from 'components/icons';
 import { ChevronUpIcon } from '../icons/ChevronUp';
 import BpCheckbox from './Checkbox';
 import { Anchor } from '@/types';
@@ -42,98 +47,108 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
         </Stack>
         <Stack spacing="10px">
           <Stack
-            onClick={() => setIsOne(prev => !prev)}
-            sx={{ cursor: "pointer" }}
-            spacing="10px" padding="10px" direction="row" borderRadius="10px" bgcolor="#2a2a2a">
-            {isOne ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />}
+            onClick={() => setIsOne((prev) => !prev)}
+            sx={{ cursor: 'pointer' }}
+            spacing="10px"
+            padding="10px"
+            direction="row"
+            borderRadius="10px"
+            bgcolor="#2a2a2a"
+          >
+            {isOne ? (
+              <ChevronUpIcon size={12} />
+            ) : (
+              <ChevronDownIcon size={12} />
+            )}
             <Stack spacing="5px">
-              <Stack alignItems="center" justifyContent="space-between" direction="row">
-                <Typography variant="bodyMB">
-                  Pass One
-                </Typography>
+              <Stack
+                alignItems="center"
+                justifyContent="space-between"
+                direction="row"
+              >
+                <Typography variant="bodyMB">Pass One</Typography>
                 <Stack direction="row" alignItems="end" spacing="5px">
-                  <Typography variant="bodyMB">
-                    1000
-                  </Typography>
-                  <Typography variant="caption">
-                    USDT
-                  </Typography>
+                  <Typography variant="bodyMB">1000</Typography>
+                  <Typography variant="caption">USDT</Typography>
                 </Stack>
               </Stack>
               <Typography variant="bodyS">
-                Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
-                food trucks, and good vibes.
+                Get ready to groove at the Summer Music Festival! Join us for a
+                day filled with live music, food trucks, and good vibes.
               </Typography>
             </Stack>
           </Stack>
-          {isOne && <Stack>
-            <Typography variant="bodyS" textAlign="center">
-              Select Accommodation Type:
-            </Typography>
-            <Stack divider={<Divider sx={{ border: "1px solid #383838" }} />}>
-              <Stack spacing="10px" padding="10px" direction="row">
-                <BpCheckbox />
-                <Stack spacing="5px">
-                  <Stack alignItems="center" justifyContent="space-between" direction="row">
-                    <Typography variant="bodyMB">
-                      Accom One
-                    </Typography>
-                    <Stack direction="row" alignItems="end" spacing="5px">
-                      <Typography variant="bodyMB">
-                        +100
-                      </Typography>
-                      <Typography variant="caption">
-                        USDT
-                      </Typography>
+          {isOne && (
+            <Stack>
+              <Typography variant="bodyS" textAlign="center">
+                Select Accommodation Type:
+              </Typography>
+              <Stack divider={<Divider sx={{ border: '1px solid #383838' }} />}>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
                     </Stack>
+                    <Typography variant="bodyS">
+                      Get ready to groove at the Summer Music Festival! Join us
+                      for a day filled with live music, food trucks, and good
+                      vibes.
+                    </Typography>
                   </Stack>
-                  <Typography variant="bodyS">
-                    Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
-                    food trucks, and good vibes.
-                  </Typography>
                 </Stack>
-              </Stack>
-              <Stack spacing="10px" padding="10px" direction="row">
-                <BpCheckbox />
-                <Stack spacing="5px">
-                  <Stack alignItems="center" justifyContent="space-between" direction="row">
-                    <Typography variant="bodyMB">
-                      Accom One
-                    </Typography>
-                    <Stack direction="row" alignItems="end" spacing="5px">
-                      <Typography variant="bodyMB">
-                        +100
-                      </Typography>
-                      <Typography variant="caption">
-                        USDT
-                      </Typography>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
                     </Stack>
+                    <Typography variant="bodyS">
+                      Get ready to groove at the Summer Music Festival! Join us
+                      for a day filled with live music, food trucks, and good
+                      vibes.
+                    </Typography>
                   </Stack>
-                  <Typography variant="bodyS">
-                    Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
-                    food trucks, and good vibes.
-                  </Typography>
                 </Stack>
               </Stack>
             </Stack>
-          </Stack>}
+          )}
           <Stack
-            onClick={() => setIsTwo(prev => !prev)}
-            sx={{ cursor: "pointer" }}
-            spacing="10px" padding="10px" direction="row" borderRadius="10px" bgcolor="#2a2a2a">
+            onClick={() => setIsTwo((prev) => !prev)}
+            sx={{ cursor: 'pointer' }}
+            spacing="10px"
+            padding="10px"
+            direction="row"
+            borderRadius="10px"
+            bgcolor="#2a2a2a"
+          >
             {isTwo ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />}
             <Stack spacing="5px">
-              <Stack alignItems="center" justifyContent="space-between" direction="row">
-                <Typography variant="bodyMB">
-                  Pass Two
-                </Typography>
+              <Stack
+                alignItems="center"
+                justifyContent="space-between"
+                direction="row"
+              >
+                <Typography variant="bodyMB">Pass Two</Typography>
                 <Stack direction="row" alignItems="end" spacing="5px">
-                  <Typography variant="bodyMB">
-                    1000
-                  </Typography>
-                  <Typography variant="caption">
-                    USDT
-                  </Typography>
+                  <Typography variant="bodyMB">1000</Typography>
+                  <Typography variant="caption">USDT</Typography>
                 </Stack>
               </Stack>
               <Typography variant="bodyS">
@@ -141,57 +156,57 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
               </Typography>
             </Stack>
           </Stack>
-          {isTwo && <Stack>
-            <Typography variant="bodyS" textAlign="center">
-              Select Accommodation Type:
-            </Typography>
-            <Stack divider={<Divider sx={{ border: "1px solid #383838" }} />}>
-              <Stack spacing="10px" padding="10px" direction="row">
-                <BpCheckbox />
-                <Stack spacing="5px">
-                  <Stack alignItems="center" justifyContent="space-between" direction="row">
-                    <Typography variant="bodyMB">
-                      Accom One
-                    </Typography>
-                    <Stack direction="row" alignItems="end" spacing="5px">
-                      <Typography variant="bodyMB">
-                        +100
-                      </Typography>
-                      <Typography variant="caption">
-                        USDT
-                      </Typography>
+          {isTwo && (
+            <Stack>
+              <Typography variant="bodyS" textAlign="center">
+                Select Accommodation Type:
+              </Typography>
+              <Stack divider={<Divider sx={{ border: '1px solid #383838' }} />}>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
                     </Stack>
+                    <Typography variant="bodyS">
+                      Get ready to groove at the Summer Music Festival! Join us
+                      for a day filled with live music, food trucks, and good
+                      vibes.
+                    </Typography>
                   </Stack>
-                  <Typography variant="bodyS">
-                    Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
-                    food trucks, and good vibes.
-                  </Typography>
                 </Stack>
-              </Stack>
-              <Stack spacing="10px" padding="10px" direction="row">
-                <BpCheckbox />
-                <Stack spacing="5px">
-                  <Stack alignItems="center" justifyContent="space-between" direction="row">
-                    <Typography variant="bodyMB">
-                      Accom One
-                    </Typography>
-                    <Stack direction="row" alignItems="end" spacing="5px">
-                      <Typography variant="bodyMB">
-                        +100
-                      </Typography>
-                      <Typography variant="caption">
-                        USDT
-                      </Typography>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
                     </Stack>
+                    <Typography variant="bodyS">
+                      Get ready to groove at the Summer Music Festival! Join us
+                      for a day filled with live music, food trucks, and good
+                      vibes.
+                    </Typography>
                   </Stack>
-                  <Typography variant="bodyS">
-                    Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
-                    food trucks, and good vibes.
-                  </Typography>
                 </Stack>
               </Stack>
             </Stack>
-          </Stack>}
+          )}
         </Stack>
         <Stack spacing="10px">
           <ZuButton
@@ -210,15 +225,18 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
           </Typography>
           <ZuButton
             sx={{
-              width: "100%"
+              width: '100%',
             }}
           >
             Register as Sponsor
           </ZuButton>
-          <Stack direction="row" alignItems="center" justifyContent="center" spacing="10px">
-            <Typography variant="caption">
-              TICKETING PROTOCOL BY:
-            </Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            spacing="10px"
+          >
+            <Typography variant="caption">TICKETING PROTOCOL BY:</Typography>
             <ScrollIcon />
           </Stack>
         </Stack>

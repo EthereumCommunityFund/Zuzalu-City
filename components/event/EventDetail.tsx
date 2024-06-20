@@ -6,15 +6,18 @@ import { RightArrowIcon } from 'components/icons';
 import { SOCIAL_TYPES } from '@/constant';
 
 type UserLink = {
-  title: string,
-  links: string
-}
+  title: string;
+  links: string;
+};
 interface IEventDetail {
-  status?: string
-  links?: [UserLink]
+  status?: string;
+  links?: [UserLink];
 }
 
-const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [] }) => {
+const EventDetail: React.FC<IEventDetail> = ({
+  status = 'In-Person',
+  links = [],
+}) => {
   const router = useRouter();
 
   return (
@@ -39,32 +42,35 @@ const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [] 
         <Typography color="white" variant="bodyBB" paddingBottom="20px">
           Links
         </Typography>
-        {
-          links?.length !== 0 && (
-            <>
-              {
-                links?.map((link, index) => (
-                  <Link href={link.links} target="_blank" key={`UserLink-${index}`} style={{ textDecoration: "none" }}>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      bgcolor="#2a2a2a"
-                      padding="10px 14px"
-                      borderRadius="10px"
-                      sx={{ cursor: "pointer" }}
-                    >
-                      <Typography color="white" variant="bodyB">
-                        {SOCIAL_TYPES.filter(item => item.key === link.title)[0].value}
-                      </Typography>
-                      <RightArrowIcon />
-                    </Stack>
-                  </Link>
-                ))
-              }
-            </>
-          )
-        }
-
+        {links?.length !== 0 && (
+          <>
+            {links?.map((link, index) => (
+              <Link
+                href={link.links}
+                target="_blank"
+                key={`UserLink-${index}`}
+                style={{ textDecoration: 'none' }}
+              >
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  bgcolor="#2a2a2a"
+                  padding="10px 14px"
+                  borderRadius="10px"
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <Typography color="white" variant="bodyB">
+                    {
+                      SOCIAL_TYPES.filter((item) => item.key === link.title)[0]
+                        .value
+                    }
+                  </Typography>
+                  <RightArrowIcon />
+                </Stack>
+              </Link>
+            ))}
+          </>
+        )}
       </Stack>
       <Stack spacing="5px">
         <Typography color="white" variant="bodyBB" paddingY="20px">

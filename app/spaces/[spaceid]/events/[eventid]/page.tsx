@@ -18,22 +18,35 @@ const Home = () => {
   return (
     <Stack direction="row" width="100%">
       {!isDesktop && <IconSidebar />}
-      {!isDesktop && <Sidebar spaceId={params.spaceid.toString()} title={eventData?.space?.name} avatar={eventData?.space?.avatar} banner={eventData?.space?.banner} />}
+      {!isDesktop && (
+        <Stack
+          sx={{
+            minWidth: '280px',
+            width: '280px',
+            backgroundColor: '#222',
+            display: 'none',
+            [theme.breakpoints.up('lg')]: {
+              display: 'block',
+            },
+          }}
+        >
+          <Sidebar
+            spaceId={params.spaceid.toString()}
+            title={eventData?.space?.name}
+            avatar={eventData?.space?.avatar}
+            banner={eventData?.space?.banner}
+          />
+        </Stack>
+      )}
       <Stack flex={1} borderLeft="1px solid #383838">
         <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb tabName={tabName} setTabName={setTabName} />
-        {
-          tabName === "About" && (
-            <About eventData={eventData} setEventData={setEventData} />
-          )
-        }
-        {
-          tabName === "Sessions" && (
-            <Sessions />
-          )
-        }
+        {tabName === 'About' && (
+          <About eventData={eventData} setEventData={setEventData} />
+        )}
+        {tabName === 'Sessions' && <Sessions />}
       </Stack>
-    </Stack >
+    </Stack>
   );
 };
 

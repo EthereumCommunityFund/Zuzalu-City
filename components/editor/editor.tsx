@@ -4,7 +4,7 @@ import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
 import EditorJS from '@editorjs/editorjs';
-import { MDImporter, MDParser } from './markdownParser'
+import { MDImporter, MDParser } from './markdownParser';
 
 import './editor.css';
 
@@ -12,17 +12,19 @@ import './editor.css';
 // const EditorJS = dynamic(() => import('@editorjs/editorjs'), { ssr: false })
 
 interface TextEditorPropTypes extends BoxProps {
-  value?: OutputData,
-  setData?: (value: OutputData) => void,
-  holder: string,
-  placeholder?: string,
-  readonly?: boolean
+  value?: OutputData;
+  setData?: (value: OutputData) => void;
+  holder: string;
+  placeholder?: string;
+  readonly?: boolean;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
   value = { blocks: [] },
-  setData = (value: OutputData) => { console.log(value) },
-  holder = "editorjs",
+  setData = (value: OutputData) => {
+    console.log(value);
+  },
+  holder = 'editorjs',
   children,
   readonly = false,
   placeholder = 'Write an Amazing Blog',
@@ -32,9 +34,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
 
   useEffect(() => {
     if (!ref.current) {
-
       const editor = new EditorJS({
-
         holder: holder,
         tools,
         placeholder: placeholder,
@@ -42,15 +42,15 @@ const TextEditor: FC<TextEditorPropTypes> = ({
         readOnly: readonly,
         async onChange(api, event) {
           try {
-            if(!readonly) {
+            if (!readonly) {
               const data = await api.saver.save();
               setData(data);
             }
           } catch (err) {
-            console.log('EditorJS Error: ', err)
+            console.log('EditorJS Error: ', err);
           }
         },
-      })
+      });
 
       ref.current = editor;
     }
@@ -64,17 +64,9 @@ const TextEditor: FC<TextEditorPropTypes> = ({
 
   return (
     <Fragment>
-      {
-        children ? children : <Box
-          id={holder}
-          {
-          ...props
-          }
-        >
-        </Box>
-      }
+      {children ? children : <Box id={holder} {...props}></Box>}
     </Fragment>
-  )
-}
+  );
+};
 
 export default TextEditor;

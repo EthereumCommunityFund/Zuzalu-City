@@ -84,7 +84,13 @@ const TicketVault = () => {
           spacing={2.5}
           marginTop={'10px'}
         >
-          <Box component="img" width="100px" height="100px" borderRadius="8px" src="/24.webp" />
+          <Box
+            component="img"
+            width="100px"
+            height="100px"
+            borderRadius="8px"
+            src="/24.webp"
+          />
           <Stack direction="column" spacing={0.9}>
             <Typography
               variant="h5"
@@ -458,13 +464,23 @@ const TicketVault = () => {
           </Typography>
         </Box>
 
-        {action === 'Withdraw' ? <WithdrawToken /> : action === 'SendTicket' ? <SendNFTTicket /> : <Whitelist />}
+        {action === 'Withdraw' ? (
+          <WithdrawToken />
+        ) : action === 'SendTicket' ? (
+          <SendNFTTicket />
+        ) : (
+          <Whitelist />
+        )}
       </Stack>
 
-      <Stack direction="row" marginTop={'20px'} justifyContent="center" spacing="10px" alignItems="center">
-        <Typography variant="caption">
-          POWERED BY
-        </Typography>
+      <Stack
+        direction="row"
+        marginTop={'20px'}
+        justifyContent="center"
+        spacing="10px"
+        alignItems="center"
+      >
+        <Typography variant="caption">POWERED BY</Typography>
         <ScrollIcon />
       </Stack>
     </Stack>

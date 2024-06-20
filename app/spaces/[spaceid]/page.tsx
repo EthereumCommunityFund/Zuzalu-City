@@ -25,15 +25,17 @@ import { RightArrowCircleSmallIcon } from 'components/icons/RightArrowCircleSmal
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { MOCK_DATA } from 'mock';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, Event, SpaceEventData } from '@/types';
-import { Sidebar } from '@/components/layout';
+// import { Sidebar } from '@/components/layout';
 import { groupEventsByMonth } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import TextEditor from '@/components/editor/editor';
 // import { SubSidebar } from '@/components/layout';
+
+import { IconSidebar } from './events/components';
 
 export default function SpaceDetailPage() {
   const params = useParams();
@@ -44,6 +46,7 @@ export default function SpaceDetailPage() {
   const [space, setSpace] = useState<Space>();
   const [showCopyToast, setShowCopyToast] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
+  const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
   const [currentHref, setCurrentHref] = useState('');
   useEffect(() => {
     setCurrentHref(window.location.href);
@@ -147,12 +150,26 @@ export default function SpaceDetailPage() {
         width: '100%',
       }}
     >
-      <SubSidebar
-        title={space?.name}
-        spaceId={params.spaceid.toString()}
-        avatar={space?.avatar}
-        banner={space?.banner}
-      />
+      {!isDesktop && <IconSidebar />}
+      <Stack
+        sx={{
+          minWidth: '280px',
+          width: '280px',
+          backgroundColor: '#222',
+          display: 'none',
+          [theme.breakpoints.up('lg')]: {
+            display: 'block',
+          },
+        }}
+      >
+        <SubSidebar
+          title={space?.name}
+          spaceId={params.spaceid.toString()}
+          avatar={space?.avatar}
+          banner={space?.banner}
+        />
+      </Stack>
+
       <Box
         sx={{
           width: 'calc(100% - 280px)',
@@ -360,9 +377,9 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     backgroundColor: '#ffffff05',
                     borderRadius: '10px',
-                    height: !showMore ? '157px' :'fit-content',
+                    height: !showMore ? '157px' : 'fit-content',
                     boxSizing: 'border-box',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
                   }}
                 >
                   <Box
@@ -377,7 +394,7 @@ export default function SpaceDetailPage() {
                     {space.name}
                   </Box>
                   <TextEditor
-                    holder='space-detail-editor'
+                    holder="space-detail-editor"
                     readonly={true}
                     value={JSON.parse(space.description.replaceAll('\\"', '"'))}
                     sx={{
@@ -423,9 +440,11 @@ export default function SpaceDetailPage() {
                 }}
               >
                 <Stack direction="row" spacing={'10px'} alignItems={'center'}>
-                  {showMore ? <ChevronDownIcon
-                    size={4}
-                  /> : <ChevronUpIcon size={4} />}
+                  {showMore ? (
+                    <ChevronDownIcon size={4} />
+                  ) : (
+                    <ChevronUpIcon size={4} />
+                  )}
                   <span>{showMore ? 'Show Less' : 'Show More'}</span>
                 </Stack>
               </SidebarButton>

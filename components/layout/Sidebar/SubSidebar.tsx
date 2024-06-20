@@ -73,15 +73,15 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-
   return (
     <Stack
       sx={{
         minWidth: '280px',
-        width: '280px',
-        backgroundColor: '#222',
         borderRight: '1px solid #ffffff1a',
-        display: 'none',
+        width: '100%',
+        backgroundColor: '#222',
+        position: 'sticky',
+        top: '50px',
         [theme.breakpoints.up('lg')]: {
           display: 'block',
         },
@@ -224,7 +224,12 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
             boxSizing: 'border-box',
           }}
         >
-          <SidebarButton icon={<HomeIcon />} onClick={() => router.push("/spaces")} content="Home" isActive={false} />
+          <SidebarButton
+            icon={<HomeIcon />}
+            onClick={() => router.push('/spaces')}
+            content="Home"
+            isActive={false}
+          />
           {/*<SidebarButton*/}
           {/*  icon={<AnnouncementsIcon />}*/}
           {/*  content="Announcements"*/}

@@ -98,7 +98,7 @@ const Create = () => {
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
-    console.log('strDesc: ', strDesc)
+    console.log('strDesc: ', strDesc);
 
     let socialLinks = {};
     let customLinks = [];

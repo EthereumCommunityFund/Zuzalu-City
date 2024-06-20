@@ -28,16 +28,17 @@ const EventAbout = ({ tagline, description }: EventAboutTypes) => {
             {tagline}
           </Typography>
           <Typography color="white" variant="bodyB">
-            {
-              (description === null) && "NULL"
-            }
-            {
-              (description !== null && !isValidJSON(description.replaceAll('\\"', '"'))) && description
-            }
-            {
-              (description === null || !isValidJSON(description.replaceAll('\\"', '"')) || JSON.parse(description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
-                "JSON ERROR" : JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data.text
-            }
+            {description === null && 'NULL'}
+            {description !== null &&
+              !isValidJSON(description.replaceAll('\\"', '"')) &&
+              description}
+            {description === null ||
+            !isValidJSON(description.replaceAll('\\"', '"')) ||
+            JSON.parse(description.replaceAll('\\"', '"')).blocks[0] ===
+              undefined
+              ? 'JSON ERROR'
+              : JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
+                  .text}
           </Typography>
         </Stack>
       </Stack>

@@ -100,7 +100,12 @@ const Ticket = () => {
         borderBottom="1px solid #383838"
         paddingX={3}
       >
-        <ZuButton onClick={() => toggleDrawer('right', false)} startIcon={<XMarkIcon />}>Close</ZuButton>
+        <ZuButton
+          onClick={() => toggleDrawer('right', false)}
+          startIcon={<XMarkIcon />}
+        >
+          Close
+        </ZuButton>
         <Typography marginLeft={'14px'} fontSize="18px" fontWeight="bold">
           View Ticket
         </Typography>

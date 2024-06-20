@@ -1,18 +1,13 @@
-
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken';
-import {
-  SUPABASE_KEY,
-  JWT_SECRET,
-} from '@/constant';
+import { SUPABASE_KEY, JWT_SECRET } from '@/constant';
 
 const supabaseUrl = 'https://lbkpbqembtbdupidkbcy.supabase.co';
 const supabase = createClient(supabaseUrl, SUPABASE_KEY);
 
-
 export async function POST(request: Request) {
-  const formData = await request.formData()
-  const name = formData.get('name')
+  const formData = await request.formData();
+  const name = formData.get('name');
   // try {
   // const authHeader = request.headers['authorization'];
   // const token = authHeader && authHeader.split(' ')[1];

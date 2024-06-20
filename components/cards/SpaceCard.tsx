@@ -17,6 +17,7 @@ export type SpaceCardProps = {
     id: string;
   }[];
   categories?: string;
+  tagline?: string;
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
@@ -24,19 +25,20 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   bgImage = '/5.webp',
   logoImage = '/1.webp',
   title,
-  description,
+  // description,
   joined = false,
   members = [],
   categories = '',
+  tagline = '',
 }) => {
-  function isValidJSON(str: string): boolean {
-    try {
-      JSON.parse(str);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
+  // function isValidJSON(str: string): boolean {
+  //   try {
+  //     JSON.parse(str);
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
   return (
     <Link href={`/spaces/${id}`} style={{ textDecoration: 'none' }}>
       <Stack
@@ -78,7 +80,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           </Typography>
           <Stack
             sx={{
-              maxHeight: '44px',
+              maxHeight: '40px',
               overflow: 'auto',
             }}
           >
@@ -87,9 +89,10 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               color="white"
               sx={{ wordWrap: 'break-word' }}
             >
-              {description &&
-                JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
-                  .text}
+              {/*{description &&*/}
+              {/*  JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data*/}
+              {/*    .text}*/}
+              {tagline}
             </Typography>
           </Stack>
           <Stack direction="row">

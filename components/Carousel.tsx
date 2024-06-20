@@ -71,10 +71,9 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
               ? item.banner
               : '/5.webp'
           }
+          tagline={item.tagline}
           title={item.name}
-          description={
-            item.description
-          }
+          description={item.description}
           members={item.members}
           categories={item.category}
         />

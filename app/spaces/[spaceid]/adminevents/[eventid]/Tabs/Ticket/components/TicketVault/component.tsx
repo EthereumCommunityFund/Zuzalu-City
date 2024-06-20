@@ -13,9 +13,20 @@ import {
   CheckIcon,
   CircleCloseIcon,
   CopyIcon,
-  GoToExplorerIcon
+  GoToExplorerIcon,
 } from '@/components/icons';
-import { Box, Button, Input, Stack, TextField, Typography, Step, Stepper, StepLabel, Modal } from '@mui/material';
+import {
+  Box,
+  Button,
+  Input,
+  Stack,
+  TextField,
+  Typography,
+  Step,
+  Stepper,
+  StepLabel,
+  Modal,
+} from '@mui/material';
 
 export const WithdrawToken = () => {
   const [showWithdrawalModal, setShowWithdrawalModal] = React.useState(false);
@@ -380,7 +391,12 @@ const TicketProcessingProgress = () => {
               >
                 {step.label}
               </Typography>
-              <Stack direction="row" display={'flex'} alignItems='center' spacing="10px">
+              <Stack
+                direction="row"
+                display={'flex'}
+                alignItems="center"
+                spacing="10px"
+              >
                 <Typography
                   fontSize={'14px'}
                   fontWeight={'400'}
@@ -390,7 +406,7 @@ const TicketProcessingProgress = () => {
                 >
                   {step.description}
                 </Typography>
-                {(index === 2 || index === 3) ? null : (
+                {index === 2 || index === 3 ? null : (
                   <>
                     <CopyIcon cursor="pointer" />
                     <GoToExplorerIcon cursor="pointer" />
@@ -417,75 +433,71 @@ export const Whitelist = () => {
       <Stack spacing="10px">
         <Stack direction="row" spacing="10px" alignItems="center">
           <ArrowDownSquare />
-          <Typography variant="subtitleMB">
-            Whitelist
-          </Typography>
+          <Typography variant="subtitleMB">Whitelist</Typography>
         </Stack>
         <Stack direction="row" spacing="10px" alignItems="center">
-          <Typography variant="bodyS">
-            Total Invites Sent:
-          </Typography>
-          <Typography variant="bodyMB">
-            00
-          </Typography>
+          <Typography variant="bodyS">Total Invites Sent:</Typography>
+          <Typography variant="bodyMB">00</Typography>
         </Stack>
       </Stack>
       {!initial && !email && !process && (
         <>
           <Stack spacing="20px">
-            {addresses.length === 0 ? <Stack spacing="10px">
-              <Typography variant="bodyBB">
-                Input Approved Addresses
-              </Typography>
-              <Typography variant="bodyM">
-                Upload addresses of individuals to directly gain access to mint this ticket.
-                These users will interact and pay the set contributing amount of the ticket.
-              </Typography>
-            </Stack> :
+            {addresses.length === 0 ? (
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">
+                  Input Approved Addresses
+                </Typography>
+                <Typography variant="bodyM">
+                  Upload addresses of individuals to directly gain access to
+                  mint this ticket. These users will interact and pay the set
+                  contributing amount of the ticket.
+                </Typography>
+              </Stack>
+            ) : (
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">
-                    Approved Addresses
-                  </Typography>
+                  <Typography variant="bodyBB">Approved Addresses</Typography>
                   <Typography variant="bodyM">
-                    Upload addresses of individuals to directly gain access to mint this ticket.
-                    These users will interact and pay the set contributing amount of the ticket.
+                    Upload addresses of individuals to directly gain access to
+                    mint this ticket. These users will interact and pay the set
+                    contributing amount of the ticket.
                   </Typography>
                 </Stack>
                 <Stack spacing="20px">
-                  {
-                    addresses.map((item, index) => (
-                      <Stack spacing="10px" key={`InviteAddressIndex-${index}`}>
-                        <Typography variant="bodyBB">Address (eth)</Typography>
-                        <Stack direction="row" spacing="10px" alignItems="center">
-                          <ZuInput
-                            value={item}
-                            onChange={(e) =>
-                              setAddresses((prev) =>
-                                prev.map((item, i) =>
-                                  i === index ? e.target.value : item,
-                                ),
-                              )
-                            }
-                          />
-                          <Box
-                            padding="8px 10px 6px 10px"
-                            bgcolor="#373737"
-                            borderRadius="10px"
-                            sx={{ cursor: 'pointer' }}
-                            onClick={() =>
-                              setAddresses((prev) => prev.filter((_, i) => i !== index))
-                            }
-                          >
-                            <XCricleIcon />
-                          </Box>
-                        </Stack>
+                  {addresses.map((item, index) => (
+                    <Stack spacing="10px" key={`InviteAddressIndex-${index}`}>
+                      <Typography variant="bodyBB">Address (eth)</Typography>
+                      <Stack direction="row" spacing="10px" alignItems="center">
+                        <ZuInput
+                          value={item}
+                          onChange={(e) =>
+                            setAddresses((prev) =>
+                              prev.map((item, i) =>
+                                i === index ? e.target.value : item,
+                              ),
+                            )
+                          }
+                        />
+                        <Box
+                          padding="8px 10px 6px 10px"
+                          bgcolor="#373737"
+                          borderRadius="10px"
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() =>
+                            setAddresses((prev) =>
+                              prev.filter((_, i) => i !== index),
+                            )
+                          }
+                        >
+                          <XCricleIcon />
+                        </Box>
                       </Stack>
-                    ))
-                  }
+                    </Stack>
+                  ))}
                 </Stack>
               </Stack>
-            }
+            )}
             <Stack
               onClick={() => {
                 setAddresses((prev) => {
@@ -493,17 +505,26 @@ export const Whitelist = () => {
                   return newState;
                 });
               }}
-              sx={{ cursor: "pointer" }}
-              direction="row" spacing="10px" padding="8px 14px" justifyContent="center" borderRadius="10px" bgcolor="#313131" alignItems="center"
+              sx={{ cursor: 'pointer' }}
+              direction="row"
+              spacing="10px"
+              padding="8px 14px"
+              justifyContent="center"
+              borderRadius="10px"
+              bgcolor="#313131"
+              alignItems="center"
             >
               <PlusCircleIcon />
-              <Typography variant="bodyM">
-                Add Address
-              </Typography>
+              <Typography variant="bodyM">Add Address</Typography>
             </Stack>
             <Stack
-              sx={{ cursor: "pointer" }}
-              direction="row" spacing="10px" padding="10px 20px" justifyContent="center" borderRadius="10px" border="1px solid #383838"
+              sx={{ cursor: 'pointer' }}
+              direction="row"
+              spacing="10px"
+              padding="10px 20px"
+              justifyContent="center"
+              borderRadius="10px"
+              border="1px solid #383838"
             >
               <Typography variant="bodyM">
                 View existing list of addresses added
@@ -518,107 +539,135 @@ export const Whitelist = () => {
               width: '100%',
             }}
             startIcon={<RightArrowIcon color="#67DAFF" />}
-            onClick={() => { setEmail(true) }}
+            onClick={() => {
+              setEmail(true);
+            }}
           >
             Next Step
           </ZuButton>
         </>
       )}
-      {
-        !initial && email && !process && (
-          <>
-            <Stack spacing="10px">
-              <Typography variant="bodyBB">
-                Send email invitations (optional)
-              </Typography>
-              <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
-                Input corresponding emails of the eth addresses to be sent a notification link to mint this ticket.
-              </Typography>
-              <TextField
-                multiline
-                rows={4}
-                placeholder="simon@ecf.network, reno@ecf.network"
-                sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderRadius: '10px',
+      {!initial && email && !process && (
+        <>
+          <Stack spacing="10px">
+            <Typography variant="bodyBB">
+              Send email invitations (optional)
+            </Typography>
+            <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+              Input corresponding emails of the eth addresses to be sent a
+              notification link to mint this ticket.
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              placeholder="simon@ecf.network, reno@ecf.network"
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '10px',
+                border: 'none',
+                '& .MuiOutlinedInput-notchedOutline': {
                   border: 'none',
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    border: "none"
-                  }
-                }}
-              />
-              <Stack
-                sx={{ cursor: "pointer" }}
-                direction="row" spacing="10px" padding="10px 20px" justifyContent="center" borderRadius="10px" border="1px solid #383838"
-              >
-                <Typography variant="bodyM">
-                  View existing list of addresses added
-                </Typography>
-                <ChevronDownIcon size={4.5} />
-              </Stack>
+                },
+              }}
+            />
+            <Stack
+              sx={{ cursor: 'pointer' }}
+              direction="row"
+              spacing="10px"
+              padding="10px 20px"
+              justifyContent="center"
+              borderRadius="10px"
+              border="1px solid #383838"
+            >
+              <Typography variant="bodyM">
+                View existing list of addresses added
+              </Typography>
+              <ChevronDownIcon size={4.5} />
             </Stack>
-            <Stack direction="row" spacing="20px">
-              <ZuButton
-                sx={{
-                  width: '100%',
-                }}
-                startIcon={<LeftArrowIcon />}
-                onClick={() => setEmail(false)}
-              >
-                Back
-              </ZuButton>
-              <ZuButton
-                sx={{
-                  backgroundColor: '#2f474e',
-                  color: '#67DAFF',
-                  width: '100%',
-                }}
-                startIcon={<RightArrowIcon color="#67DAFF" />}
-                onClick={() => { setProcess(true); setEmail(false); }}
-              >
-                Upload & Send
-              </ZuButton>
-            </Stack>
-          </>
-        )
-      }
-      {
-        !initial && !email && process && (
-          <>
-            {!updated ? <Stack padding="10px" borderRadius="10px" bgcolor="#313131">
+          </Stack>
+          <Stack direction="row" spacing="20px">
+            <ZuButton
+              sx={{
+                width: '100%',
+              }}
+              startIcon={<LeftArrowIcon />}
+              onClick={() => setEmail(false)}
+            >
+              Back
+            </ZuButton>
+            <ZuButton
+              sx={{
+                backgroundColor: '#2f474e',
+                color: '#67DAFF',
+                width: '100%',
+              }}
+              startIcon={<RightArrowIcon color="#67DAFF" />}
+              onClick={() => {
+                setProcess(true);
+                setEmail(false);
+              }}
+            >
+              Upload & Send
+            </ZuButton>
+          </Stack>
+        </>
+      )}
+      {!initial && !email && process && (
+        <>
+          {!updated ? (
+            <Stack padding="10px" borderRadius="10px" bgcolor="#313131">
               <Typography variant="bodyM" textAlign="center">
                 Contract being updated...
               </Typography>
-            </Stack> :
-              <Stack direction="row" padding="10px" borderRadius="10px" bgcolor="rgba(125, 255, 209, 0.10)" justifyContent="center" spacing="10px">
-                <CheckIcon />
-                <Typography variant="bodyM" textAlign="center" color="#7DFFD1">
-                  Contract Updated
-                </Typography>
-              </Stack>}
-            <TicketProcessingProgress />
-            <ZuButton sx={{
+            </Stack>
+          ) : (
+            <Stack
+              direction="row"
+              padding="10px"
+              borderRadius="10px"
+              bgcolor="rgba(125, 255, 209, 0.10)"
+              justifyContent="center"
+              spacing="10px"
+            >
+              <CheckIcon />
+              <Typography variant="bodyM" textAlign="center" color="#7DFFD1">
+                Contract Updated
+              </Typography>
+            </Stack>
+          )}
+          <TicketProcessingProgress />
+          <ZuButton
+            sx={{
               backgroundColor: '#2f474e',
               color: '#67DAFF',
               width: '100%',
-            }} startIcon={<XCricleIcon color="#67DAFF" />}>
-              Close
-            </ZuButton>
-          </>
-        )
-      }
+            }}
+            startIcon={<XCricleIcon color="#67DAFF" />}
+          >
+            Close
+          </ZuButton>
+        </>
+      )}
     </Stack>
-  )
-}
+  );
+};
 
 export const ConfirmSendNFTTicketTransaction = ({
   showNFTTicketModal,
   setShowNFTTicketModal,
 }: any) => {
   return (
-    <Modal open={showNFTTicketModal} onClose={() => setShowNFTTicketModal(false)}>
-      <Stack padding="20px" border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
-        spacing="20px" color="white" width="535px" borderRadius="10px"
+    <Modal
+      open={showNFTTicketModal}
+      onClose={() => setShowNFTTicketModal(false)}
+    >
+      <Stack
+        padding="20px"
+        border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+        spacing="20px"
+        color="white"
+        width="535px"
+        borderRadius="10px"
         sx={{
           position: 'absolute',
           background: 'rgba(52, 52, 52, 0.80)',
@@ -630,51 +679,47 @@ export const ConfirmSendNFTTicketTransaction = ({
         <Stack direction="row" alignItems={'center'} spacing="24px">
           <Stack direction="row" alignItems={'center'} spacing="10px" flex={1}>
             <SendIcon />
-            <Typography
-              variant="subtitleSB"
-            >
-              Confirm Transaction
-            </Typography>
+            <Typography variant="subtitleSB">Confirm Transaction</Typography>
           </Stack>
           <Stack
             onClick={() => setShowNFTTicketModal(false)}
-            padding="10px" borderRadius="10px" bgcolor="#3f3f3f"
-            sx={{ cursor: "pointer" }}
+            padding="10px"
+            borderRadius="10px"
+            bgcolor="#3f3f3f"
+            sx={{ cursor: 'pointer' }}
           >
             <CloseIcon />
           </Stack>
         </Stack>
-        <Stack padding="10px" borderRadius="10px" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))" bgcolor="#3f3f3f" spacing="20px">
+        <Stack
+          padding="10px"
+          borderRadius="10px"
+          border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+          bgcolor="#3f3f3f"
+          spacing="20px"
+        >
           <Stack spacing="14px">
             <Stack direction="row" alignItems="center" spacing="10px">
-              <Typography variant="bodyMB">
-                To Address:
-              </Typography>
+              <Typography variant="bodyMB">To Address:</Typography>
               <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E
               </Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing="10px">
-              <Typography variant="bodyMB">
-                Token_ID:
-              </Typography>
+              <Typography variant="bodyMB">Token_ID:</Typography>
               <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                 ...
               </Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing="10px">
-              <Typography variant="bodyMB">
-                Amount:
-              </Typography>
+              <Typography variant="bodyMB">Amount:</Typography>
               <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                 1
               </Typography>
             </Stack>
           </Stack>
           <Stack direction="row" spacing="10px" alignItems="center">
-            <Typography variant="bodyMB">
-              Contract execution fee(?)
-            </Typography>
+            <Typography variant="bodyMB">Contract execution fee(?)</Typography>
             <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
               0.00000
             </Typography>
@@ -701,7 +746,7 @@ export const ConfirmSendNFTTicketTransaction = ({
         </Stack>
       </Stack>
     </Modal>
-  )
+  );
 };
 
 export const ConfirmWithdrawalTransaction = ({
@@ -709,9 +754,17 @@ export const ConfirmWithdrawalTransaction = ({
   setShowWithdrawalModal,
 }: any) => {
   return (
-    <Modal open={showWithdrawalModal} onClose={() => setShowWithdrawalModal(false)}>
-      <Stack padding="20px" border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
-        spacing="20px" color="white" width="535px" borderRadius="10px"
+    <Modal
+      open={showWithdrawalModal}
+      onClose={() => setShowWithdrawalModal(false)}
+    >
+      <Stack
+        padding="20px"
+        border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+        spacing="20px"
+        color="white"
+        width="535px"
+        borderRadius="10px"
         sx={{
           position: 'absolute',
           background: 'rgba(52, 52, 52, 0.80)',
@@ -723,51 +776,47 @@ export const ConfirmWithdrawalTransaction = ({
         <Stack direction="row" alignItems={'center'} spacing="24px">
           <Stack direction="row" alignItems={'center'} spacing="10px" flex={1}>
             <SendIcon />
-            <Typography
-              variant="subtitleSB"
-            >
-              Confirm Transaction
-            </Typography>
+            <Typography variant="subtitleSB">Confirm Transaction</Typography>
           </Stack>
           <Stack
             onClick={() => setShowWithdrawalModal(false)}
-            padding="10px" borderRadius="10px" bgcolor="#3f3f3f"
-            sx={{ cursor: "pointer" }}
+            padding="10px"
+            borderRadius="10px"
+            bgcolor="#3f3f3f"
+            sx={{ cursor: 'pointer' }}
           >
             <CloseIcon />
           </Stack>
         </Stack>
-        <Stack padding="10px" borderRadius="10px" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))" bgcolor="#3f3f3f" spacing="20px">
+        <Stack
+          padding="10px"
+          borderRadius="10px"
+          border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+          bgcolor="#3f3f3f"
+          spacing="20px"
+        >
           <Stack spacing="14px">
             <Stack direction="row" alignItems="center" spacing="10px">
-              <Typography variant="bodyMB">
-                To Address:
-              </Typography>
+              <Typography variant="bodyMB">To Address:</Typography>
               <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E
               </Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing="10px">
-              <Typography variant="bodyMB">
-                Token:
-              </Typography>
+              <Typography variant="bodyMB">Token:</Typography>
               <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                 USDT
               </Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing="10px">
-              <Typography variant="bodyMB">
-                Amount:
-              </Typography>
+              <Typography variant="bodyMB">Amount:</Typography>
               <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                 000.00
               </Typography>
             </Stack>
           </Stack>
           <Stack direction="row" spacing="10px" alignItems="center">
-            <Typography variant="bodyMB">
-              Contract execution fee(?)
-            </Typography>
+            <Typography variant="bodyMB">Contract execution fee(?)</Typography>
             <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
               0.00000
             </Typography>

@@ -14,16 +14,10 @@ const Home = () => {
     <Stack color="white">
       <Thumbnail />
       <Subbar tabName={tabName} setTabName={setTabName} />
-      {
-        tabName === "About" && (
-          <About eventData={eventData} setEventData={setEventData} />
-        )
-      }
-      {
-        tabName === "Sessions" && (
-          <Sessions />
-        )
-      }
+      {tabName === 'About' && (
+        <About eventData={eventData} setEventData={setEventData} />
+      )}
+      {tabName === 'Sessions' && <Sessions />}
     </Stack>
   );
 };

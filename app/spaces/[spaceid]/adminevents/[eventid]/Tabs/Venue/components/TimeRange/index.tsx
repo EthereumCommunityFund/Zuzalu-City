@@ -3,9 +3,9 @@ import { Stack } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 type AvailableType = {
-  startTime: string,
-  endTime: string
-}
+  startTime: string;
+  endTime: string;
+};
 interface ITimeRange {
   values: AvailableType[];
   id: number;
@@ -23,8 +23,8 @@ const TimeRange: React.FC<ITimeRange> = ({ id, setValues, values }) => {
                 return item;
               }
               return item;
-            })
-            setValues(newValue)
+            });
+            setValues(newValue);
           }
         }}
         sx={{
@@ -67,8 +67,8 @@ const TimeRange: React.FC<ITimeRange> = ({ id, setValues, values }) => {
                 return item;
               }
               return item;
-            })
-            setValues(newValue)
+            });
+            setValues(newValue);
           }
         }}
         sx={{
@@ -103,8 +103,7 @@ const TimeRange: React.FC<ITimeRange> = ({ id, setValues, values }) => {
         }}
       />
     </Stack>
-  )
-}
+  );
+};
 
 export default TimeRange;
-

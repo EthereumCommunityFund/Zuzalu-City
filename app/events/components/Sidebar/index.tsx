@@ -9,16 +9,36 @@ import {
   Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import React from 'react';
-import dayjs from 'dayjs';
+import React, { useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import SlotDates from '@/components/calendar/SlotDate';
+
+const InitalDate = dayjs(
+  new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }),
+);
 
 interface SidebarLeftProps {
   onSearch: () => void;
   onTextChange: (text: string) => void;
+  handleMonthChange: (date: Dayjs) => void;
+  handleDateChange: (date: Dayjs | null) => void;
+  selectedDate: Dayjs | null;
+  events: Event[] | any[];
 }
 
 export default function SidebarLeft(props: SidebarLeftProps) {
-  const { onSearch, onTextChange } = props;
+  const {
+    onSearch,
+    onTextChange,
+    events,
+    handleMonthChange,
+    selectedDate,
+    handleDateChange,
+  } = props;
   const { breakpoints } = useTheme();
 
   return (
@@ -76,21 +96,21 @@ export default function SidebarLeft(props: SidebarLeftProps) {
             </InputAdornment>
           }
         />
-        {/*<Stack*/}
-        {/*  sx={{*/}
-        {/*    padding: '20px 10px',*/}
-        {/*    borderBottom: '1px solid rgba(255, 255, 255, 0.10)',*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  <Typography*/}
-        {/*    fontSize={'18px'}*/}
-        {/*    fontWeight={'700'}*/}
-        {/*    lineHeight={'120%'}*/}
-        {/*    color={'white'}*/}
-        {/*  >*/}
-        {/*    Sort & Filter Events*/}
-        {/*  </Typography>*/}
-        {/*</Stack>*/}
+        <Stack
+          sx={{
+            padding: '20px 10px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
+          }}
+        >
+          <Typography
+            fontSize={'18px'}
+            fontWeight={'700'}
+            lineHeight={'120%'}
+            color={'white'}
+          >
+            Sort & Filter Events
+          </Typography>
+        </Stack>
         {/*<Box*/}
         {/*  display="flex"*/}
         {/*  gap="4px"*/}
@@ -121,9 +141,26 @@ export default function SidebarLeft(props: SidebarLeftProps) {
         {/*    Past*/}
         {/*  </Button>*/}
         {/*</Box>*/}
-        {/*<Box>*/}
-        {/*  <ZuCalendar defaultValue={dayjs('2022-04-17')} />*/}
-        {/*</Box>*/}
+        <Box>
+          <ZuCalendar
+            value={selectedDate ?? InitalDate}
+            onChange={(val) => {
+              console.log('val: ', val);
+              handleDateChange(val);
+            }}
+            slots={{
+              day: SlotDates,
+            }}
+            slotProps={{
+              day: {
+                highlightedDays: events.map((ev) => {
+                  return new Date(ev.startTime).getDate();
+                }),
+              } as any,
+            }}
+            onMonthChange={(val) => handleMonthChange(val)}
+          />
+        </Box>
       </Stack>
     </Stack>
   );

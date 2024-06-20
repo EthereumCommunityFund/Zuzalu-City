@@ -186,20 +186,21 @@ const Home = () => {
                 id={item.id}
                 logoImage={
                   item.avatar !== 'undefined' &&
-                    item.avatar &&
-                    !item.avatar.includes('blob')
+                  item.avatar &&
+                  !item.avatar.includes('blob')
                     ? item.avatar
                     : '/1.webp'
                 }
                 bgImage={
                   item.banner !== 'undefined' &&
-                    item.banner &&
-                    !item.banner.includes('blob')
+                  item.banner &&
+                  !item.banner.includes('blob')
                     ? item.banner
                     : '/5.webp'
                 }
                 title={item.name}
                 description={item.description}
+                tagline={item.tagline}
                 members={item.members}
                 categories={item.category}
               />
