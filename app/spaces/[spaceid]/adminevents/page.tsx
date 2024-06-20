@@ -453,7 +453,7 @@ const Home = () => {
                     </Stack> */}
                     <Typography variant="caption" color="white">
                       {
-                        1000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
+                        5000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
                       } Characters Left
                     </Typography>
                   </Stack>
