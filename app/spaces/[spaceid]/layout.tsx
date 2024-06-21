@@ -17,7 +17,7 @@ export default function SpacePageLayout({
   return (
     <Box
       sx={{ color: 'white', display: 'flex', flexDirection: 'row' }}
-      minHeight={'100vh'}
+      minHeight={'calc(100vh - 50px)'}
     >
       {children}
     </Box>

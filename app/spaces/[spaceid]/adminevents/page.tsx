@@ -229,7 +229,6 @@ const Home = () => {
     const [avatarURL, setAvatarURL] = useState<string>();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
-    const [editor, setEditorInst] = useState<any>();
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
     const [status, setStatus] = useState<string>('');
@@ -238,6 +237,7 @@ const Home = () => {
     const [tracks, setTracks] = useState<string[]>([]);
 
     const profileId = profile?.id || '';
+    console.log('profileId: ', profileId)
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -485,7 +485,7 @@ const Home = () => {
                     }}
                   />
                   <Stack direction="row" justifyContent="space-between">
-                    <Stack
+                    {/* <Stack
                       sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -522,9 +522,11 @@ const Home = () => {
                       <Typography color="white" variant="caption">
                         Markdown Available
                       </Typography>
-                    </Stack>
+                    </Stack> */}
                     <Typography variant="caption" color="white">
-                      1000 Characters Left
+                      {
+                        5000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
+                      } Characters Left
                     </Typography>
                   </Stack>
                 </Stack>

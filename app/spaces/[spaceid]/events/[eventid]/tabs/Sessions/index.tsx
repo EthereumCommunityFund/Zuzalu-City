@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useParams } from 'next/navigation';
 import { Stack, Grid, Typography, SwipeableDrawer, Divider, Box, Select, OutlinedInput, MenuItem, Chip } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -21,6 +21,970 @@ import { useCeramicContext } from '@/context/CeramicContext';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
+};
+
+interface ListPropTypes {
+  anchor: Anchor
+  toggleDrawer: (anchor: Anchor, open: boolean) => void
+  setSessionName: (val: string) => void
+  sessionTags: string[]
+  setSessionTrack: (val: string) => void
+  handleChange: (val: any) => void
+  setSessionTags: (val: string[]) => void
+  sessionDescription?: OutputData
+  setSessionDescription: (val?: OutputData) => void
+  setSessionType: (val: string) => void
+  setSessionStatus: (val: string) => void
+  setSessionGated: (val: string) => void
+  setSessionExperienceLevel: (val: string) => void
+  person: boolean
+  setPerson: Dispatch<SetStateAction<boolean>>
+  online: boolean, 
+  setOnline: Dispatch<SetStateAction<boolean>>,
+  sessionLocation?: string, 
+  setSessionLocation: Dispatch<SetStateAction<string | undefined>>,
+  locations: string[], 
+  setLocations: Dispatch<SetStateAction<string[]>>,
+  sessionDate: Dayjs | null, 
+  setSessionDate: Dispatch<SetStateAction<Dayjs | null>>,
+  sessionStartTime: Dayjs | null, 
+  setSessionStartTime: Dispatch<SetStateAction<Dayjs | null>>,
+  sessionEndTime: Dayjs | null, 
+  setSessionEndTime: Dispatch<SetStateAction<Dayjs | null>>,
+  sessionVideoURL: string, 
+  setSessionVideoURL: Dispatch<SetStateAction<string>>,
+  sessionOrganizers: string[],
+  handleOrganizerChange: (e: any) => void,
+  people: Profile[],
+  setSessionOrganizers: Dispatch<SetStateAction<string[]>>,
+  sessionSpeakers: string[],
+  setSessionSpeakers: Dispatch<SetStateAction<string[]>>,
+  handleSpeakerChange: (e: any) => void
+  createSession: () => Promise<void>
+}
+
+export const List = ({
+  anchor,
+  toggleDrawer,
+  setSessionName,
+  sessionTags,
+  setSessionTrack,
+  handleChange,
+  setSessionTags,
+  setSessionDescription,
+  sessionDescription,
+  setSessionType,
+  setSessionStatus,
+  setSessionGated,
+  setSessionExperienceLevel,
+  person,
+  setPerson,
+  online,
+  setOnline,
+  sessionLocation, 
+  setSessionLocation,
+  locations, 
+  setLocations,
+  sessionDate, 
+  setSessionDate,
+  sessionStartTime,
+  setSessionStartTime,
+  sessionEndTime,
+  setSessionEndTime,
+  sessionVideoURL, 
+  setSessionVideoURL,
+  sessionOrganizers,
+  handleOrganizerChange,
+  people,
+  setSessionOrganizers,
+  sessionSpeakers,
+  setSessionSpeakers,
+  handleSpeakerChange,
+  createSession
+}: ListPropTypes) => {
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box
+        sx={{
+          width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+          backgroundColor: '#222222',
+        }}
+        role="presentation"
+        zIndex="100"
+        borderLeft="1px solid #383838"
+      >
+        <Box
+          display="flex"
+          alignItems="center"
+          height="50px"
+          borderBottom="1px solid #383838"
+          paddingX={3}
+          gap={2}
+        >
+          <ZuButton
+            startIcon={<XMarkIcon />}
+            onClick={() => toggleDrawer('right', false)}
+            sx={{
+              backgroundColor: 'transparent',
+            }}
+          >
+            Close
+          </ZuButton>
+          <Typography variant="subtitleSB">Create Session</Typography>
+        </Box>
+        <Box display="flex" flexDirection="column" gap="20px" padding={3}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography variant="subtitleMB">Create a Session</Typography>
+            <ZuButton
+              startIcon={<ArchiveBoxIcon size={5} />}
+              sx={{
+                fontSize: '14px',
+                fontWeight: 600,
+              }}
+            >
+              Save Draft
+            </ZuButton>
+          </Stack>
+          <Stack
+            direction={'column'}
+            spacing="30px"
+            bgcolor="#262626"
+            padding="20px"
+            borderRadius="10px"
+          >
+            <Typography variant="subtitleMB">Session Details</Typography>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Session Name*</Typography>
+              <ZuInput
+                onChange={(e) => setSessionName(e.target.value)}
+                placeholder="Standard Pass"
+              />
+            </Stack>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Select a Track*</Typography>
+              <Typography variant="bodyS">
+                Attach a relevant track this session relates to
+              </Typography>
+              <ZuInput
+                onChange={(e) => setSessionTrack(e.target.value)}
+                placeholder="Select"
+              />
+            </Stack>
+            <Stack spacing="20px">
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Session Tags</Typography>
+                <Typography variant="bodyS">
+                  Search or create categories related to your space
+                </Typography>
+              </Stack>
+              <Box>
+                <Select
+                  multiple
+                  value={sessionTags}
+                  style={{ width: '100%' }}
+                  onChange={handleChange}
+                  input={<OutlinedInput label="Name" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {SPACE_CATEGORIES.map((tag, index) => {
+                    return (
+                      <MenuItem value={tag.value} key={index}>
+                        {tag.label}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </Box>
+              <Box
+                display={'flex'}
+                flexDirection={'row'}
+                gap={'10px'}
+                flexWrap={'wrap'}
+              >
+                {sessionTags.map((tag, index) => {
+                  return (
+                    <Chip
+                      label={
+                        SPACE_CATEGORIES.find(
+                          (item) => item.value === tag,
+                        )?.label
+                      }
+                      sx={{
+                        borderRadius: '10px',
+                      }}
+                      onDelete={() => {
+                        const newArray = sessionTags.filter(
+                          (item) => item !== tag,
+                        );
+                        setSessionTags(newArray);
+                      }}
+                      key={index}
+                    />
+                  );
+                })}
+              </Box>
+            </Stack>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Session Description*</Typography>
+              <Typography variant="bodyS">
+                Write an introduction for this session
+              </Typography>
+              <TextEditor
+                holder="session_description"
+                sx={{
+                  backgroundColor: '#ffffff0d',
+                  fontFamily: 'Inter',
+                  color: 'white',
+                  padding: '12px 12px 12px 80px',
+                  borderRadius: '10px',
+                }}
+                value={sessionDescription}
+                setData={setSessionDescription}
+              />
+              <Stack
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '6px',
+                  alignItems: 'center',
+                }}
+              >
+                <svg
+                  width="20"
+                  height="15"
+                  viewBox="0 0 20 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clipPath="url(#clip0_4575_7884)">
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.80085 4.06177H2.83984V11.506H4.88327V7.3727L6.82879 10.0394L8.68199 7.3727V11.506H10.6226V4.06177H8.68199L6.82879 6.81714L4.80085 4.06177ZM1.55636 0.794922H18.4436C19.3028 0.794922 20 1.59076 20 2.57247V13.0174C20 13.9989 19.3032 14.7949 18.4436 14.7949H1.55636C0.697166 14.7949 0 13.9991 0 13.0174V2.57247C0 1.59091 0.696805 0.794922 1.55636 0.794922ZM14.0078 4.10603H13.9884V7.92826H12.1206L15 11.506L17.8795 7.90628H15.9347V4.10603H14.0078Z"
+                      fill="white"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_4575_7884">
+                      <rect
+                        width="20"
+                        height="14"
+                        fill="white"
+                        transform="translate(0 0.794922)"
+                      />
+                    </clipPath>
+                  </defs>
+                </svg>
+                <Typography variant="bodyS">Markdown Available</Typography>
+              </Stack>
+            </Stack>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Session Type</Typography>
+              <Typography variant="bodyS">
+                Choose a type for your session to relay its nature to guests
+              </Typography>
+              <ZuInput
+                onChange={(e) => setSessionType(e.target.value)}
+                placeholder="Meetup, Activity, Party, etc.."
+              />
+            </Stack>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Session Status</Typography>
+              <Typography variant="bodyS">
+                Choose a status for your session to relay its nature to guests
+              </Typography>
+              <ZuInput
+                onChange={(e) => setSessionStatus(e.target.value)}
+                placeholder="Type Session Status"
+              />
+            </Stack>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Session Gated</Typography>
+              <Typography variant="bodyS">
+                Gated
+              </Typography>
+              <ZuInput
+                onChange={(e) => setSessionGated(e.target.value)}
+                placeholder="Gated"
+              />
+            </Stack>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Experience Level</Typography>
+              <Typography variant="bodyS">
+                Select a level experience may be needed for this session
+              </Typography>
+              <ZuInput
+                onChange={(e) => setSessionExperienceLevel(e.target.value)}
+                placeholder="Beginner OR Intermediate OR Advanced"
+              />
+            </Stack>
+          </Stack>
+          <Stack
+            direction={'column'}
+            spacing="30px"
+            bgcolor="#262626"
+            padding="20px"
+            borderRadius="10px"
+          >
+            <Typography variant="subtitleMB">Location & Booking</Typography>
+            <Stack spacing="10px">
+              <Typography variant="bodyBB">Session Format*</Typography>
+              <Box display="flex" justifyContent="space-between" gap="20px">
+                <Box
+                  bgcolor={person ? '#484E45' : '#373737'}
+                  borderRadius="10px"
+                  padding="10px"
+                  display="flex"
+                  alignItems="center"
+                  gap="10px"
+                  flex={1}
+                >
+                  <BpCheckbox
+                    checked={person}
+                    onChange={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
+                  />
+                  <Stack>
+                    <Typography
+                      color="white"
+                      fontSize="16px"
+                      fontWeight={600}
+                      fontFamily="Inter"
+                    >
+                      In-Person
+                    </Typography>
+                    <Typography
+                      color="white"
+                      fontSize="10px"
+                      fontFamily="Inter"
+                    >
+                      This is a physical event
+                    </Typography>
+                  </Stack>
+                </Box>
+                <Box
+                  bgcolor={online ? '#484E45' : '#373737'}
+                  borderRadius="10px"
+                  padding="10px"
+                  display="flex"
+                  alignItems="center"
+                  gap="10px"
+                  flex={1}
+                >
+                  <BpCheckbox
+                    checked={online}
+                    onChange={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
+                  />
+                  <Stack>
+                    <Typography
+                      color="white"
+                      fontSize="16px"
+                      fontWeight={600}
+                      fontFamily="Inter"
+                    >
+                      Online
+                    </Typography>
+                    <Typography
+                      color="white"
+                      fontSize="10px"
+                      fontFamily="Inter"
+                    >
+                      Specially Online Event
+                    </Typography>
+                  </Stack>
+                </Box>
+              </Box>
+            </Stack>
+            {person && (
+              <Stack spacing="30px">
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">Select Location*</Typography>
+                  <Typography variant="bodyS">
+                    Book a location to host this session
+                  </Typography>
+                  <Select
+                    value={sessionLocation}
+                    onChange={(e) => setSessionLocation(e.target.value)}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222',
+                        },
+                      },
+                    }}
+                  >
+                    {
+                      locations.map((location, index) => (
+                        <MenuItem key={`Location-Index${index}`} value={location}>
+                          {location}
+                        </MenuItem>
+                      ))
+                    }
+                  </Select>
+                  {sessionLocation && <Stack>
+                    <Stack alignItems="center">
+                      <ArrowDownIcon />
+                    </Stack>
+                    <Stack
+                      borderRadius="10px"
+                      border="1px solid rgba(255, 255, 255, 0.10)"
+                      spacing="10px"
+                      padding="10px"
+                    >
+                      <Typography variant="caption">
+                        Your are booking at:
+                      </Typography>
+                      <Stack
+                        borderRadius="10px"
+                        padding="10px"
+                        bgcolor="#313131"
+                        direction="row"
+                        spacing="10px"
+                      >
+                        <Box
+                          component="img"
+                          width="60px"
+                          height="60px"
+                          borderRadius="8px"
+                          src="/20.png"
+                        />
+                        <Stack spacing="4px">
+                          <Typography variant="bodyBB">{sessionLocation}</Typography>
+                          <Typography variant="bodyS">
+                            Sessions booked: 22
+                          </Typography>
+                          <Typography variant="caption">
+                            Capacity: 15
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </Stack>
+                  </Stack>}
+                </Stack>
+                <Stack spacing="20px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Book a Date*</Typography>
+                    <Typography variant="bodyS">
+                      View and select the available dates and times for this
+                      location
+                    </Typography>
+                    <DatePicker
+                      onChange={(newValue) => setSessionDate(newValue)}
+                      sx={{
+                        '& .MuiSvgIcon-root': {
+                          color: 'white',
+                        },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          border: 'none',
+                        },
+                      }}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            ...{
+                              '& .MuiPickersDay-root': { color: 'black' },
+                              '& .MuiPickersDay-root.Mui-selected': {
+                                backgroundColor: '#D7FFC4',
+                              },
+                              '& .MuiPickersCalendarHeader-root': {
+                                color: 'black',
+                              },
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </Stack>
+                  <Stack direction="row" spacing="20px">
+                    <Stack spacing="10px" flex={1}>
+                      <Typography variant="bodyBB">Start Time</Typography>
+                      <DateTimePicker
+                        onChange={(newValue) => setSessionStartTime(newValue)}
+                        views={['hours', 'minutes']}
+                        timeSteps={Custom_Option}
+                        sx={{
+                          '& .MuiSvgIcon-root': {
+                            color: 'white',
+                          },
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            border: 'none',
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              ...{
+                                '& .MuiPickersDay-root': { color: 'black' },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                  backgroundColor: '#D7FFC4',
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                  color: 'black',
+                                },
+                                '& .MuiMultiSectionDigitalClock-root': {
+                                  color: 'black',
+                                },
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Stack>
+                    <Stack spacing="10px" flex={1}>
+                      <Typography variant="bodyBB">End Time</Typography>
+                      <DateTimePicker
+                        onChange={(newValue) => setSessionEndTime(newValue)}
+                        views={['hours', 'minutes']}
+                        timeSteps={Custom_Option}
+                        sx={{
+                          '& .MuiSvgIcon-root': {
+                            color: 'white',
+                          },
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            border: 'none',
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              ...{
+                                '& .MuiPickersDay-root': { color: 'black' },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                  backgroundColor: '#D7FFC4',
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                  color: 'black',
+                                },
+                                '& .MuiMultiSectionDigitalClock-root': {
+                                  color: 'black',
+                                },
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+                  {sessionDate && sessionStartTime && sessionEndTime && <Stack spacing="10px">
+                    <Stack alignItems="center">
+                      <ArrowDownIcon />
+                    </Stack>
+                    <Stack
+                      spacing="10px"
+                      padding="10px"
+                      border="1px solid rgba(255, 255, 255, 0.10)"
+                      borderRadius="10px"
+                    >
+                      <Typography variant="caption">
+                        Date & times your are booking:
+                      </Typography>
+                      <Stack
+                        borderRadius="10px"
+                        padding="10px"
+                        bgcolor="#313131"
+                        spacing="10px"
+                      >
+                        <Typography variant="bodyBB">
+                          {`${sessionDate.format("MMMM")}` + " " + `${sessionDate.format("DD")}` + ", " + `${sessionDate.format("YYYY")}`}
+                        </Typography>
+                        <Typography variant="bodyS">
+                          Start Time: {`${sessionStartTime.format("HH")}` + `${sessionStartTime.format("A")}`}
+                        </Typography>
+                        <Typography variant="bodyS">
+                          End Time: : {`${sessionEndTime.format("HH")}` + `${sessionEndTime.format("A")}`}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </Stack>}
+                </Stack>
+              </Stack>
+            )}
+            {online && (
+              <Stack spacing="30px">
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">Virtual Location</Typography>
+                  <Typography variant="bodyS">
+                    Provide a URL where this session will be hosted
+                  </Typography>
+                  <ZuInput
+                    onChange={(e) => setSessionVideoURL(e.target.value)}
+                    placeholder="https://"
+                  />
+                </Stack>
+                <Stack spacing="20px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Select a Date</Typography>
+                    <Typography variant="bodyS">
+                      Pick a date for this session
+                    </Typography>
+                    <DatePicker
+                      onChange={(newValue) => setSessionStartTime(newValue)}
+                      sx={{
+                        '& .MuiSvgIcon-root': {
+                          color: 'white',
+                        },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          border: 'none',
+                        },
+                      }}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            ...{
+                              '& .MuiPickersDay-root': { color: 'black' },
+                              '& .MuiPickersDay-root.Mui-selected': {
+                                backgroundColor: '#D7FFC4',
+                              },
+                              '& .MuiPickersCalendarHeader-root': {
+                                color: 'black',
+                              },
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </Stack>
+                  <Stack direction="row" spacing="20px">
+                    <Stack spacing="10px" flex={1}>
+                      <Typography variant="bodyBB">Start Time</Typography>
+                      <DateTimePicker
+                        onChange={(newValue) => setSessionStartTime(newValue)}
+                        views={['hours', 'minutes']}
+                        timeSteps={Custom_Option}
+                        sx={{
+                          '& .MuiSvgIcon-root': {
+                            color: 'white',
+                          },
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            border: 'none',
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              ...{
+                                '& .MuiPickersDay-root': { color: 'black' },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                  backgroundColor: '#D7FFC4',
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                  color: 'black',
+                                },
+                                '& .MuiMultiSectionDigitalClock-root': {
+                                  color: 'black',
+                                },
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Stack>
+                    <Stack spacing="10px" flex={1}>
+                      <Typography variant="bodyBB">End Time</Typography>
+                      <DateTimePicker
+                        onChange={(newValue) => setSessionEndTime(newValue)}
+                        views={['hours', 'minutes']}
+                        timeSteps={Custom_Option}
+                        sx={{
+                          '& .MuiSvgIcon-root': {
+                            color: 'white',
+                          },
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            border: 'none',
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              ...{
+                                '& .MuiPickersDay-root': { color: 'black' },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                  backgroundColor: '#D7FFC4',
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                  color: 'black',
+                                },
+                                '& .MuiMultiSectionDigitalClock-root': {
+                                  color: 'black',
+                                },
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
+            )}
+          </Stack>
+          <Stack
+            direction={'column'}
+            spacing="30px"
+            bgcolor="#262626"
+            padding="20px"
+            borderRadius="10px"
+          >
+            <Typography variant="subtitleMB">Session Participants</Typography>
+            <Stack spacing="20px">
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Organizers*</Typography>
+                <Typography variant="bodyS">
+                  Type or search a person
+                </Typography>
+              </Stack>
+              <Box>
+                <Select
+                  multiple
+                  value={sessionOrganizers}
+                  style={{ width: '100%' }}
+                  onChange={handleOrganizerChange}
+                  input={<OutlinedInput label="Name" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {people.map((i, index) => {
+                    return (
+                      <MenuItem value={i.username} key={`Organizer_Index${index}`}>
+                        {i.username}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </Box>
+              <Box
+                display={'flex'}
+                flexDirection={'row'}
+                gap={'10px'}
+                flexWrap={'wrap'}
+              >
+                {sessionOrganizers.map((i, index) => {
+                  return (
+                    <Chip
+                      label={i}
+                      sx={{
+                        borderRadius: '10px',
+                      }}
+                      onDelete={() => {
+                        const newArray = people.filter(
+                          (item) => item.username !== i,
+                        ).map(item => item.username);
+                        setSessionOrganizers(newArray);
+                      }}
+                      key={`Selected_Organizerr${index}`}
+                    />
+                  );
+                })}
+              </Box>
+              {/* <Stack direction="row" spacing="10px">
+                <Stack
+                  direction="row"
+                  spacing="10px"
+                  alignItems="center"
+                  bgcolor="#313131"
+                  borderRadius="10px"
+                  padding="4px 10px"
+                >
+                  <Box
+                    component="img"
+                    width="26px"
+                    height="26px"
+                    borderRadius="100px"
+                    src="/21.jpg"
+                  />
+                  <Typography variant="bodyMB">QJ</Typography>
+                  <XMarkIcon size={4} />
+                </Stack>
+                <Stack
+                  direction="row"
+                  spacing="10px"
+                  alignItems="center"
+                  bgcolor="#313131"
+                  borderRadius="10px"
+                  padding="4px 10px"
+                >
+                  <Box
+                    component="img"
+                    width="26px"
+                    height="26px"
+                    borderRadius="100px"
+                    src="/drivenfast.webp"
+                  />
+                  <Typography variant="bodyMB">drivenfast</Typography>
+                  <XMarkIcon size={4} />
+                </Stack>
+              </Stack> */}
+            </Stack>
+            <Stack spacing="20px">
+              <Stack
+                pt="20px"
+                borderTop="1px solid rgba(255, 255, 255, 0.10)"
+              >
+                <ZuButton
+                  sx={{
+                    fontSize: '13px',
+                    fontWeight: 700,
+                  }}
+                  endIcon={<ChevronDownIcon size={4} />}
+                >
+                  Hide Advanced Settings
+                </ZuButton>
+              </Stack>
+              <Stack direction="row" spacing="10px">
+                <ZuSwitch />
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">
+                    Hide yourself as an organizer for this session
+                  </Typography>
+                  <Typography variant="bodyS">
+                    By default the creator of a session is listed as an
+                    organizer of it
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Stack>
+            <Stack spacing="20px">
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Speakers</Typography>
+                <Typography variant="bodyS">
+                  Type or search a person
+                </Typography>
+              </Stack>
+              <Box>
+                <Select
+                  multiple
+                  value={sessionSpeakers}
+                  style={{ width: '100%' }}
+                  onChange={handleSpeakerChange}
+                  input={<OutlinedInput label="Name" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {people.map((i, index) => {
+                    return (
+                      <MenuItem value={i.username} key={`Speaker_Index${index}`}>
+                        {i.username}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </Box>
+              <Box
+                display={'flex'}
+                flexDirection={'row'}
+                gap={'10px'}
+                flexWrap={'wrap'}
+              >
+                {sessionSpeakers.map((i, index) => {
+                  return (
+                    <Chip
+                      label={i}
+                      sx={{
+                        borderRadius: '10px',
+                      }}
+                      onDelete={() => {
+                        const newArray = people.filter(
+                          (item) => item.username !== i,
+                        ).map(item => item.username);
+                        setSessionSpeakers(newArray);
+                      }}
+                      key={`Selected_Speaker${index}`}
+                    />
+                  );
+                })}
+              </Box>
+              {/* <Stack direction="row" spacing="10px">
+                <Stack
+                  direction="row"
+                  spacing="10px"
+                  alignItems="center"
+                  bgcolor="#313131"
+                  borderRadius="10px"
+                  padding="4px 10px"
+                >
+                  <Box
+                    component="img"
+                    width="26px"
+                    height="26px"
+                    borderRadius="100px"
+                    src="/21.jpg"
+                  />
+                  <Typography variant="bodyMB">QJ</Typography>
+                  <XMarkIcon size={4} />
+                </Stack>
+                <Stack
+                  direction="row"
+                  spacing="10px"
+                  alignItems="center"
+                  bgcolor="#313131"
+                  borderRadius="10px"
+                  padding="4px 10px"
+                >
+                  <Box
+                    component="img"
+                    width="26px"
+                    height="26px"
+                    borderRadius="100px"
+                    src="/drivenfast.webp"
+                  />
+                  <Typography variant="bodyMB">drivenfast</Typography>
+                  <XMarkIcon size={4} />
+                </Stack>
+              </Stack> */}
+            </Stack>
+          </Stack>
+          <Box display="flex" gap="20px">
+            <ZuButton
+              sx={{
+                flex: 1,
+              }}
+              startIcon={<XMarkIcon />}
+              onClick={() => toggleDrawer('right', false)}
+            >
+              Discard
+            </ZuButton>
+            <ZuButton
+              sx={{
+                color: '#67DBFF',
+                backgroundColor: 'rgba(103, 219, 255, 0.10)',
+                flex: 1,
+              }}
+              startIcon={<PlusCircleIcon color="#67DBFF" />}
+              onClick={createSession}
+            >
+              Add Session
+            </ZuButton>
+          </Box>
+        </Box>
+      </Box>
+    </LocalizationProvider >
+  );
 };
 
 const Sessions = () => {
@@ -252,891 +1216,7 @@ const Sessions = () => {
     }
   };
 
-  const List = (anchor: Anchor) => {
 
-    return (
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Box
-          sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
-            backgroundColor: '#222222',
-          }}
-          role="presentation"
-          zIndex="100"
-          borderLeft="1px solid #383838"
-        >
-          <Box
-            display="flex"
-            alignItems="center"
-            height="50px"
-            borderBottom="1px solid #383838"
-            paddingX={3}
-            gap={2}
-          >
-            <ZuButton
-              startIcon={<XMarkIcon />}
-              onClick={() => toggleDrawer('right', false)}
-              sx={{
-                backgroundColor: 'transparent',
-              }}
-            >
-              Close
-            </ZuButton>
-            <Typography variant="subtitleSB">Create Session</Typography>
-          </Box>
-          <Box display="flex" flexDirection="column" gap="20px" padding={3}>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Typography variant="subtitleMB">Create a Session</Typography>
-              <ZuButton
-                startIcon={<ArchiveBoxIcon size={5} />}
-                sx={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-              >
-                Save Draft
-              </ZuButton>
-            </Stack>
-            <Stack
-              direction={'column'}
-              spacing="30px"
-              bgcolor="#262626"
-              padding="20px"
-              borderRadius="10px"
-            >
-              <Typography variant="subtitleMB">Session Details</Typography>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Name*</Typography>
-                <ZuInput
-                  onChange={(e) => setSessionName(e.target.value)}
-                  placeholder="Standard Pass"
-                />
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Select a Track*</Typography>
-                <Typography variant="bodyS">
-                  Attach a relevant track this session relates to
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionTrack(e.target.value)}
-                  placeholder="Select"
-                />
-              </Stack>
-              <Stack spacing="20px">
-                <Stack spacing="10px">
-                  <Typography variant="bodyBB">Session Tags</Typography>
-                  <Typography variant="bodyS">
-                    Search or create categories related to your space
-                  </Typography>
-                </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={sessionTags}
-                    style={{ width: '100%' }}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {SPACE_CATEGORIES.map((tag, index) => {
-                      return (
-                        <MenuItem value={tag.value} key={index}>
-                          {tag.label}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {sessionTags.map((tag, index) => {
-                    return (
-                      <Chip
-                        label={
-                          SPACE_CATEGORIES.find(
-                            (item) => item.value === tag,
-                          )?.label
-                        }
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = sessionTags.filter(
-                            (item) => item !== tag,
-                          );
-                          setSessionTags(newArray);
-                        }}
-                        key={index}
-                      />
-                    );
-                  })}
-                </Box>
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Description*</Typography>
-                <Typography variant="bodyS">
-                  Write an introduction for this session
-                </Typography>
-                <TextEditor
-                  holder="session_description"
-                  sx={{
-                    backgroundColor: '#ffffff0d',
-                    fontFamily: 'Inter',
-                    color: 'white',
-                    padding: '12px 12px 12px 80px',
-                    borderRadius: '10px',
-                  }}
-                  value={sessionDescription}
-                  setData={setSessionDescription}
-                />
-                <Stack
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '6px',
-                    alignItems: 'center',
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="15"
-                    viewBox="0 0 20 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clipPath="url(#clip0_4575_7884)">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4.80085 4.06177H2.83984V11.506H4.88327V7.3727L6.82879 10.0394L8.68199 7.3727V11.506H10.6226V4.06177H8.68199L6.82879 6.81714L4.80085 4.06177ZM1.55636 0.794922H18.4436C19.3028 0.794922 20 1.59076 20 2.57247V13.0174C20 13.9989 19.3032 14.7949 18.4436 14.7949H1.55636C0.697166 14.7949 0 13.9991 0 13.0174V2.57247C0 1.59091 0.696805 0.794922 1.55636 0.794922ZM14.0078 4.10603H13.9884V7.92826H12.1206L15 11.506L17.8795 7.90628H15.9347V4.10603H14.0078Z"
-                        fill="white"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_4575_7884">
-                        <rect
-                          width="20"
-                          height="14"
-                          fill="white"
-                          transform="translate(0 0.794922)"
-                        />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                  <Typography variant="bodyS">Markdown Available</Typography>
-                </Stack>
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Type</Typography>
-                <Typography variant="bodyS">
-                  Choose a type for your session to relay its nature to guests
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionType(e.target.value)}
-                  placeholder="Meetup, Activity, Party, etc.."
-                />
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Status</Typography>
-                <Typography variant="bodyS">
-                  Choose a status for your session to relay its nature to guests
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionStatus(e.target.value)}
-                  placeholder="Type Session Status"
-                />
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Gated</Typography>
-                <Typography variant="bodyS">
-                  Gated
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionGated(e.target.value)}
-                  placeholder="Gated"
-                />
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Experience Level</Typography>
-                <Typography variant="bodyS">
-                  Select a level experience may be needed for this session
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionExperienceLevel(e.target.value)}
-                  placeholder="Beginner OR Intermediate OR Advanced"
-                />
-              </Stack>
-            </Stack>
-            <Stack
-              direction={'column'}
-              spacing="30px"
-              bgcolor="#262626"
-              padding="20px"
-              borderRadius="10px"
-            >
-              <Typography variant="subtitleMB">Location & Booking</Typography>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Format*</Typography>
-                <Box display="flex" justifyContent="space-between" gap="20px">
-                  <Box
-                    bgcolor={person ? '#484E45' : '#373737'}
-                    borderRadius="10px"
-                    padding="10px"
-                    display="flex"
-                    alignItems="center"
-                    gap="10px"
-                    flex={1}
-                  >
-                    <BpCheckbox
-                      checked={person}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
-                    <Stack>
-                      <Typography
-                        color="white"
-                        fontSize="16px"
-                        fontWeight={600}
-                        fontFamily="Inter"
-                      >
-                        In-Person
-                      </Typography>
-                      <Typography
-                        color="white"
-                        fontSize="10px"
-                        fontFamily="Inter"
-                      >
-                        This is a physical event
-                      </Typography>
-                    </Stack>
-                  </Box>
-                  <Box
-                    bgcolor={online ? '#484E45' : '#373737'}
-                    borderRadius="10px"
-                    padding="10px"
-                    display="flex"
-                    alignItems="center"
-                    gap="10px"
-                    flex={1}
-                  >
-                    <BpCheckbox
-                      checked={online}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
-                    <Stack>
-                      <Typography
-                        color="white"
-                        fontSize="16px"
-                        fontWeight={600}
-                        fontFamily="Inter"
-                      >
-                        Online
-                      </Typography>
-                      <Typography
-                        color="white"
-                        fontSize="10px"
-                        fontFamily="Inter"
-                      >
-                        Specially Online Event
-                      </Typography>
-                    </Stack>
-                  </Box>
-                </Box>
-              </Stack>
-              {person && (
-                <Stack spacing="30px">
-                  <Stack spacing="10px">
-                    <Typography variant="bodyBB">Select Location*</Typography>
-                    <Typography variant="bodyS">
-                      Book a location to host this session
-                    </Typography>
-                    <Select
-                      value={sessionLocation}
-                      onChange={(e) => setSessionLocation(e.target.value)}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            backgroundColor: '#222222',
-                          },
-                        },
-                      }}
-                    >
-                      {
-                        locations.map((location, index) => (
-                          <MenuItem key={`Location-Index${index}`} value={location}>
-                            {location}
-                          </MenuItem>
-                        ))
-                      }
-                    </Select>
-                    {sessionLocation && <Stack>
-                      <Stack alignItems="center">
-                        <ArrowDownIcon />
-                      </Stack>
-                      <Stack
-                        borderRadius="10px"
-                        border="1px solid rgba(255, 255, 255, 0.10)"
-                        spacing="10px"
-                        padding="10px"
-                      >
-                        <Typography variant="caption">
-                          Your are booking at:
-                        </Typography>
-                        <Stack
-                          borderRadius="10px"
-                          padding="10px"
-                          bgcolor="#313131"
-                          direction="row"
-                          spacing="10px"
-                        >
-                          <Box
-                            component="img"
-                            width="60px"
-                            height="60px"
-                            borderRadius="8px"
-                            src="/20.png"
-                          />
-                          <Stack spacing="4px">
-                            <Typography variant="bodyBB">{sessionLocation}</Typography>
-                            <Typography variant="bodyS">
-                              Sessions booked: 22
-                            </Typography>
-                            <Typography variant="caption">
-                              Capacity: 15
-                            </Typography>
-                          </Stack>
-                        </Stack>
-                      </Stack>
-                    </Stack>}
-                  </Stack>
-                  <Stack spacing="20px">
-                    <Stack spacing="10px">
-                      <Typography variant="bodyBB">Book a Date*</Typography>
-                      <Typography variant="bodyS">
-                        View and select the available dates and times for this
-                        location
-                      </Typography>
-                      <DatePicker
-                        onChange={(newValue) => setSessionDate(newValue)}
-                        sx={{
-                          '& .MuiSvgIcon-root': {
-                            color: 'white',
-                          },
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            border: 'none',
-                          },
-                        }}
-                        slotProps={{
-                          popper: {
-                            sx: {
-                              ...{
-                                '& .MuiPickersDay-root': { color: 'black' },
-                                '& .MuiPickersDay-root.Mui-selected': {
-                                  backgroundColor: '#D7FFC4',
-                                },
-                                '& .MuiPickersCalendarHeader-root': {
-                                  color: 'black',
-                                },
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Stack>
-                    <Stack direction="row" spacing="20px">
-                      <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">Start Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionStartTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
-                          sx={{
-                            '& .MuiSvgIcon-root': {
-                              color: 'white',
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                              border: 'none',
-                            },
-                          }}
-                          slotProps={{
-                            popper: {
-                              sx: {
-                                ...{
-                                  '& .MuiPickersDay-root': { color: 'black' },
-                                  '& .MuiPickersDay-root.Mui-selected': {
-                                    backgroundColor: '#D7FFC4',
-                                  },
-                                  '& .MuiPickersCalendarHeader-root': {
-                                    color: 'black',
-                                  },
-                                  '& .MuiMultiSectionDigitalClock-root': {
-                                    color: 'black',
-                                  },
-                                },
-                              },
-                            },
-                          }}
-                        />
-                      </Stack>
-                      <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">End Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionEndTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
-                          sx={{
-                            '& .MuiSvgIcon-root': {
-                              color: 'white',
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                              border: 'none',
-                            },
-                          }}
-                          slotProps={{
-                            popper: {
-                              sx: {
-                                ...{
-                                  '& .MuiPickersDay-root': { color: 'black' },
-                                  '& .MuiPickersDay-root.Mui-selected': {
-                                    backgroundColor: '#D7FFC4',
-                                  },
-                                  '& .MuiPickersCalendarHeader-root': {
-                                    color: 'black',
-                                  },
-                                  '& .MuiMultiSectionDigitalClock-root': {
-                                    color: 'black',
-                                  },
-                                },
-                              },
-                            },
-                          }}
-                        />
-                      </Stack>
-                    </Stack>
-                    {sessionDate && sessionStartTime && sessionEndTime && <Stack spacing="10px">
-                      <Stack alignItems="center">
-                        <ArrowDownIcon />
-                      </Stack>
-                      <Stack
-                        spacing="10px"
-                        padding="10px"
-                        border="1px solid rgba(255, 255, 255, 0.10)"
-                        borderRadius="10px"
-                      >
-                        <Typography variant="caption">
-                          Date & times your are booking:
-                        </Typography>
-                        <Stack
-                          borderRadius="10px"
-                          padding="10px"
-                          bgcolor="#313131"
-                          spacing="10px"
-                        >
-                          <Typography variant="bodyBB">
-                            {`${sessionDate.format("MMMM")}` + " " + `${sessionDate.format("DD")}` + ", " + `${sessionDate.format("YYYY")}`}
-                          </Typography>
-                          <Typography variant="bodyS">
-                            Start Time: {`${sessionStartTime.format("HH")}` + `${sessionStartTime.format("A")}`}
-                          </Typography>
-                          <Typography variant="bodyS">
-                            End Time: : {`${sessionEndTime.format("HH")}` + `${sessionEndTime.format("A")}`}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-                    </Stack>}
-                  </Stack>
-                </Stack>
-              )}
-              {online && (
-                <Stack spacing="30px">
-                  <Stack spacing="10px">
-                    <Typography variant="bodyBB">Virtual Location</Typography>
-                    <Typography variant="bodyS">
-                      Provide a URL where this session will be hosted
-                    </Typography>
-                    <ZuInput
-                      onChange={(e) => setSessionVideoURL(e.target.value)}
-                      placeholder="https://"
-                    />
-                  </Stack>
-                  <Stack spacing="20px">
-                    <Stack spacing="10px">
-                      <Typography variant="bodyBB">Select a Date</Typography>
-                      <Typography variant="bodyS">
-                        Pick a date for this session
-                      </Typography>
-                      <DatePicker
-                        onChange={(newValue) => setSessionStartTime(newValue)}
-                        sx={{
-                          '& .MuiSvgIcon-root': {
-                            color: 'white',
-                          },
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            border: 'none',
-                          },
-                        }}
-                        slotProps={{
-                          popper: {
-                            sx: {
-                              ...{
-                                '& .MuiPickersDay-root': { color: 'black' },
-                                '& .MuiPickersDay-root.Mui-selected': {
-                                  backgroundColor: '#D7FFC4',
-                                },
-                                '& .MuiPickersCalendarHeader-root': {
-                                  color: 'black',
-                                },
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Stack>
-                    <Stack direction="row" spacing="20px">
-                      <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">Start Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionStartTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
-                          sx={{
-                            '& .MuiSvgIcon-root': {
-                              color: 'white',
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                              border: 'none',
-                            },
-                          }}
-                          slotProps={{
-                            popper: {
-                              sx: {
-                                ...{
-                                  '& .MuiPickersDay-root': { color: 'black' },
-                                  '& .MuiPickersDay-root.Mui-selected': {
-                                    backgroundColor: '#D7FFC4',
-                                  },
-                                  '& .MuiPickersCalendarHeader-root': {
-                                    color: 'black',
-                                  },
-                                  '& .MuiMultiSectionDigitalClock-root': {
-                                    color: 'black',
-                                  },
-                                },
-                              },
-                            },
-                          }}
-                        />
-                      </Stack>
-                      <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">End Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionEndTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
-                          sx={{
-                            '& .MuiSvgIcon-root': {
-                              color: 'white',
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                              border: 'none',
-                            },
-                          }}
-                          slotProps={{
-                            popper: {
-                              sx: {
-                                ...{
-                                  '& .MuiPickersDay-root': { color: 'black' },
-                                  '& .MuiPickersDay-root.Mui-selected': {
-                                    backgroundColor: '#D7FFC4',
-                                  },
-                                  '& .MuiPickersCalendarHeader-root': {
-                                    color: 'black',
-                                  },
-                                  '& .MuiMultiSectionDigitalClock-root': {
-                                    color: 'black',
-                                  },
-                                },
-                              },
-                            },
-                          }}
-                        />
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              )}
-            </Stack>
-            <Stack
-              direction={'column'}
-              spacing="30px"
-              bgcolor="#262626"
-              padding="20px"
-              borderRadius="10px"
-            >
-              <Typography variant="subtitleMB">Session Participants</Typography>
-              <Stack spacing="20px">
-                <Stack spacing="10px">
-                  <Typography variant="bodyBB">Organizers*</Typography>
-                  <Typography variant="bodyS">
-                    Type or search a person
-                  </Typography>
-                </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={sessionOrganizers}
-                    style={{ width: '100%' }}
-                    onChange={handleOrganizerChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem value={i.username} key={`Organizer_Index${index}`}>
-                          {i.username}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {sessionOrganizers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = people.filter(
-                            (item) => item.username !== i,
-                          ).map(item => item.username);
-                          setSessionOrganizers(newArray);
-                        }}
-                        key={`Selected_Organizerr${index}`}
-                      />
-                    );
-                  })}
-                </Box>
-                {/* <Stack direction="row" spacing="10px">
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/21.jpg"
-                    />
-                    <Typography variant="bodyMB">QJ</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/drivenfast.webp"
-                    />
-                    <Typography variant="bodyMB">drivenfast</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                </Stack> */}
-              </Stack>
-              <Stack spacing="20px">
-                <Stack
-                  pt="20px"
-                  borderTop="1px solid rgba(255, 255, 255, 0.10)"
-                >
-                  <ZuButton
-                    sx={{
-                      fontSize: '13px',
-                      fontWeight: 700,
-                    }}
-                    endIcon={<ChevronDownIcon size={4} />}
-                  >
-                    Hide Advanced Settings
-                  </ZuButton>
-                </Stack>
-                <Stack direction="row" spacing="10px">
-                  <ZuSwitch />
-                  <Stack spacing="10px">
-                    <Typography variant="bodyBB">
-                      Hide yourself as an organizer for this session
-                    </Typography>
-                    <Typography variant="bodyS">
-                      By default the creator of a session is listed as an
-                      organizer of it
-                    </Typography>
-                  </Stack>
-                </Stack>
-              </Stack>
-              <Stack spacing="20px">
-                <Stack spacing="10px">
-                  <Typography variant="bodyBB">Speakers</Typography>
-                  <Typography variant="bodyS">
-                    Type or search a person
-                  </Typography>
-                </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={sessionSpeakers}
-                    style={{ width: '100%' }}
-                    onChange={handleSpeakerChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem value={i.username} key={`Speaker_Index${index}`}>
-                          {i.username}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {sessionSpeakers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = people.filter(
-                            (item) => item.username !== i,
-                          ).map(item => item.username);
-                          setSessionSpeakers(newArray);
-                        }}
-                        key={`Selected_Speaker${index}`}
-                      />
-                    );
-                  })}
-                </Box>
-                {/* <Stack direction="row" spacing="10px">
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/21.jpg"
-                    />
-                    <Typography variant="bodyMB">QJ</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/drivenfast.webp"
-                    />
-                    <Typography variant="bodyMB">drivenfast</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                </Stack> */}
-              </Stack>
-            </Stack>
-            <Box display="flex" gap="20px">
-              <ZuButton
-                sx={{
-                  flex: 1,
-                }}
-                startIcon={<XMarkIcon />}
-                onClick={() => toggleDrawer('right', false)}
-              >
-                Discard
-              </ZuButton>
-              <ZuButton
-                sx={{
-                  color: '#67DBFF',
-                  backgroundColor: 'rgba(103, 219, 255, 0.10)',
-                  flex: 1,
-                }}
-                startIcon={<PlusCircleIcon color="#67DBFF" />}
-                onClick={createSession}
-              >
-                Add Session
-              </ZuButton>
-            </Box>
-          </Box>
-        </Box>
-      </LocalizationProvider >
-    );
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1236,7 +1316,47 @@ const Sessions = () => {
         onClose={() => toggleDrawer('right', false)}
         onOpen={() => toggleDrawer('right', true)}
       >
-        {List('right')}
+        {
+          <List 
+            anchor={'right'}
+            createSession={createSession}
+            handleChange={handleChange}
+            handleOrganizerChange={handleOrganizerChange}
+            handleSpeakerChange={handleSpeakerChange}
+            locations={locations}
+            online={online}
+            people={people}
+            person={person}
+            sessionDate={sessionDate}
+            sessionDescription={sessionDescription}
+            sessionEndTime={sessionEndTime}
+            sessionLocation={sessionLocation}
+            sessionOrganizers={sessionOrganizers}
+            sessionSpeakers={sessionSpeakers}
+            sessionStartTime={sessionStartTime}
+            sessionTags={sessionTags}
+            sessionVideoURL={sessionVideoURL}
+            setLocations={setLocations}
+            setOnline={setOnline}
+            setPerson={setPerson}
+            setSessionDate={setSessionDate}
+            setSessionDescription={setSessionDescription}
+            setSessionEndTime={setSessionEndTime}
+            setSessionExperienceLevel={setSessionExperienceLevel}
+            setSessionGated={setSessionGated}
+            setSessionLocation={setSessionLocation}
+            setSessionName={setSessionName}
+            setSessionOrganizers={setSessionOrganizers}
+            setSessionSpeakers={setSessionSpeakers}
+            setSessionStartTime={setSessionStartTime}
+            setSessionStatus={setSessionStatus}
+            setSessionTags={setSessionTags}
+            setSessionTrack={setSessionTrack}
+            setSessionType={setSessionType}
+            setSessionVideoURL={setSessionVideoURL}
+            toggleDrawer={toggleDrawer}
+          />
+        }
       </SwipeableDrawer>
     </Stack>
   )
