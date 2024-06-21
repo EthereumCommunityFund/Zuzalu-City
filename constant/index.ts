@@ -14,76 +14,94 @@ export const SPACE_CATEGORIES: {
   value: string;
   label: string;
 }[] = [
-  {
-    value: 'network_states',
-    label: 'Network States',
-  },
-  {
-    value: 'charter_cities',
-    label: 'Charter Cities',
-  },
-  {
-    value: 'coordinations',
-    label: 'Coordinations',
-  },
-  {
-    value: 'zk_tech',
-    label: 'ZK Tech',
-  },
-  {
-    value: 'core_eth_development',
-    label: 'Core Ethereum Development',
-  },
-  {
-    value: 'l2_projects',
-    label: 'Layer2 Projects',
-  },
-  {
-    value: 'decentralized_social',
-    label: 'Decentralized Social',
-  },
-];
+    {
+      value: 'network_states',
+      label: 'Network States',
+    },
+    {
+      value: 'charter_cities',
+      label: 'Charter Cities',
+    },
+    {
+      value: 'coordinations',
+      label: 'Coordinations',
+    },
+    {
+      value: 'zk_tech',
+      label: 'ZK Tech',
+    },
+    {
+      value: 'core_eth_development',
+      label: 'Core Ethereum Development',
+    },
+    {
+      value: 'l2_projects',
+      label: 'Layer2 Projects',
+    },
+    {
+      value: 'decentralized_social',
+      label: 'Decentralized Social',
+    },
+  ];
 
 export const VENUE_TAGS: {
   value: string;
   label: string;
 }[] = [
-  {
-    value: 'live_stream_available',
-    label: 'Live-stream Available',
-  },
-  {
-    value: 'external_venue',
-    label: 'External Venue',
-  },
-];
+    {
+      value: 'live_stream_available',
+      label: 'Live-stream Available',
+    },
+    {
+      value: 'external_venue',
+      label: 'External Venue',
+    },
+  ];
 
 export const SOCIAL_TYPES: {
   key: string;
   value: string;
 }[] = [
-  {
-    key: 'github',
-    value: 'Github',
-  },
-  {
-    key: 'discord',
-    value: 'Discord',
-  },
-  {
-    key: 'twitter',
-    value: 'Twitter',
-  },
-  {
-    key: 'telegram',
-    value: 'Telegram',
-  },
-  {
-    key: 'lens',
-    value: 'Lens',
-  },
-  {
-    key: 'nostr',
-    value: 'Nostr',
-  },
-];
+    {
+      key: 'github',
+      value: 'Github',
+    },
+    {
+      key: 'discord',
+      value: 'Discord',
+    },
+    {
+      key: 'twitter',
+      value: 'Twitter',
+    },
+    {
+      key: 'telegram',
+      value: 'Telegram',
+    },
+    {
+      key: 'lens',
+      value: 'Lens',
+    },
+    {
+      key: 'nostr',
+      value: 'Nostr',
+    },
+  ];
+
+export const EXPREIENCE_LEVEL_TYPES: {
+  key: string;
+  value: string;
+}[] = [
+    {
+      key: 'beginner',
+      value: 'Beginner',
+    },
+    {
+      key: 'intermediate',
+      value: 'Intermediate',
+    },
+    {
+      key: 'advanced',
+      value: 'Advanced',
+    },
+  ];

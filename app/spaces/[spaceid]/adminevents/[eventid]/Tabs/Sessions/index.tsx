@@ -42,7 +42,7 @@ import {
   CeramicResponseType,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { SPACE_CATEGORIES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 
 dayjs.extend(utc);
@@ -662,7 +662,7 @@ const Sessions = () => {
                   placeholder="Meetup, Activity, Party, etc.."
                 />
               </Stack>
-              <Stack spacing="10px">
+              {/* <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Status</Typography>
                 <Typography variant="bodyS">
                   Choose a status for your session to relay its nature to guests
@@ -671,16 +671,9 @@ const Sessions = () => {
                   onChange={(e) => setSessionStatus(e.target.value)}
                   placeholder="Type Session Status"
                 />
-              </Stack>
-              <Stack spacing="10px">
+              </Stack> */}
+              {/* <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Gated</Typography>
-                {/* <Typography variant="bodyS">
-                  Gated
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionGated(e.target.value)}
-                  placeholder="Gated"
-                /> */}
                 <Stack direction="row" alignItems="center">
                   <BpCheckbox
                     checked={sessionGated}
@@ -688,16 +681,36 @@ const Sessions = () => {
                   />
                   <Typography variant="bodyS">Gated</Typography>
                 </Stack>
-              </Stack>
+              </Stack> */}
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Experience Level</Typography>
                 <Typography variant="bodyS">
                   Select a level experience may be needed for this session
                 </Typography>
-                <ZuInput
+                <Select
+                  value={sessionExperienceLevel}
+                  style={{ width: '100%' }}
                   onChange={(e) => setSessionExperienceLevel(e.target.value)}
-                  placeholder="Beginner OR Intermediate OR Advanced"
-                />
+                  input={<OutlinedInput label="Experience_Level" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {EXPREIENCE_LEVEL_TYPES.map((i, index) => {
+                    return (
+                      <MenuItem
+                        value={i.key}
+                        key={`Speaker_Index${index}`}
+                      >
+                        {i.value}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
               </Stack>
             </Stack>
             <Stack
