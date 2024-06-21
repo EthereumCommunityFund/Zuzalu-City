@@ -172,7 +172,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           </Typography>
         </Box>
       </Box>
-      <Box>
+      {/* <Box>
         <Box
           padding={isMobile ? '4px 4px' : '4px 10px'}
           flex="display"
@@ -194,7 +194,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             </Typography>
           )}
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
