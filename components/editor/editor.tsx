@@ -17,7 +17,8 @@ interface TextEditorPropTypes extends BoxProps {
   holder: string,
   placeholder?: string,
   readonly?: boolean,
-  showMore?: boolean
+  showMore?: boolean,
+  limit?: number;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
