@@ -6,6 +6,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, Event, EventEdge } from '@/types';
 import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
+import TextEditor from '@/components/editor/editor';
 
 const OverviewDetail = () => {
   const {
@@ -54,6 +55,7 @@ const OverviewDetail = () => {
               space {
                 name
                 gated
+                avatar
               }
             }
           }
@@ -110,24 +112,41 @@ const OverviewDetail = () => {
           <Typography variant="caption" color="white">
             BY:
           </Typography>
-          <Box component="img" src="/1.webp" height={20} width={20} />
-          <Typography variant="body2" color="white">
+          <Box component="img" src={eventData.space?.avatar} height={18} width={18} borderRadius={40} />
+          <Typography variant="bodyS" color="white">
             {eventData.space && eventData.space.name}
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <EventIcon />
-          <Typography variant="body1" color="white">
+          {/* <EventIcon /> */}
+          <Typography variant="bodyM" color="white">
             {convertDateStringFormat(eventData.startTime)} -{' '}
             {convertDateStringFormat(eventData.endTime)}
           </Typography>
         </Stack>
-        <Typography variant="h5" color="white">
+        <Typography variant="subtitleLB" color="white">
           {eventData.title}
         </Typography>
-        <Typography variant="body1" color="white">
-          {eventData.description}
-        </Typography>
+        <TextEditor
+          holder='event-detail-editor'
+          readonly={true}
+          value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
+          sx={{
+            fontFamily: 'Inter',
+            color: 'white',
+            fontSize: '14px',
+            borderRadius: '10px',
+            height: 'auto',
+            overflow: 'auto',
+            padding: '0px',
+            '& > div > div': {
+              paddingBottom: '0px !important',
+            },
+            '& .ce-block__content': {
+              maxWidth: '100% !important', // Adjust the margin value as needed
+            },
+          }}
+        />
         {eventData.timezone && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <MapIcon size={4} />
