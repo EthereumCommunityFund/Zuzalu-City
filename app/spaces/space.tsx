@@ -49,6 +49,10 @@ const Home = () => {
                 github
                 discord
                 ens
+                category
+                members{
+                  id
+                }
               }
             }
           }
@@ -195,12 +199,9 @@ const Home = () => {
                     : '/5.webp'
                 }
                 title={item.name}
-                description={
-                  isValidJSON(item.description.replaceAll('\\"', '"'))
-                    ? JSON.parse(item.description.replaceAll('\\"', '"'))
-                      .blocks[0].data.text
-                    : item.description
-                }
+                description={item.description}
+                members={item.members}
+                categories={item.category}
               />
             </Grid>
           ))}

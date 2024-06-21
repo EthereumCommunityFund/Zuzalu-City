@@ -7,6 +7,7 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
 import * as util from '../../utils/index';
+import { supabase } from '@/utils/supabase/client';
 
 type EventCardProps = {
   id?: string;
@@ -15,24 +16,14 @@ type EventCardProps = {
   by?: string;
 };
 
-const MonthKeys = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
+export const formatDateToMonth = (timestamp: string | number | Date) => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+};
 
-export const formatDateToMonth = (t: string) => {
-  const date = new Date(t);
-  return MonthKeys[date.getMonth()] + ' ' + date.getFullYear();
+const formatTimestamp = (timestamp: string | number | Date) => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 };
 
 export const groupEventsByMonth = (events: Event[]) => {
@@ -61,18 +52,36 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [eventLocation, setEventLocation] = useState<string>('Loading...');
+
+  const getLocation = async () => {
+    try {
+      const { data } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('eventId', event.id);
+
+      if (data !== null) {
+        setEventLocation(data[0].name || 'Not Available');
+      } else {
+        setEventLocation('Not Available');
+      }
+    } catch (err) {
+      setEventLocation('Not Available');
+    }
+  };
 
   useEffect(() => {
+    getLocation().catch((err) => console.log(err));
     const isMobileEnv: boolean = util.isMobile();
     setIsMobile(isMobileEnv);
   }, []);
 
   const handleNavigation = () => {
-    if (pathname !== "/")
+    if (pathname !== '/')
       router.push(`/spaces/${event.spaceId}/events/${event.id}`);
-    else
-      router.push(`/events/${event.id}`);
-  }
+    else router.push(`/events/${event.id}`);
+  };
 
   return (
     <Box
@@ -114,7 +123,6 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
               color="white"
               variant="bodyS"
               fontWeight={300}
-              fontSize={'13px'}
               letterSpacing={'0.01em'}
             >
               {by}
@@ -124,10 +132,10 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
             color="rgba(225, 225, 225, 0.6)"
             variant="bodyS"
             fontWeight={300}
-            fontSize={'16px'}
+            fontSize={'14px'}
           >
-            {formatDateToMonth(event.startTime)} -{' '}
-            {formatDateToMonth(event.endTime)}
+            {formatTimestamp(event.startTime)} -{' '}
+            {formatTimestamp(event.endTime)}
           </Typography>
         </Box>
         <Box display="flex" flexDirection="column">
@@ -137,28 +145,33 @@ const EventCard: React.FC<EventCardProps> = ({ id, spaceId, event, by }) => {
           >
             {event.title}
           </Typography>
-          <Typography color="white" variant="bodyM">
-            {
-              (event.description === null) && "NULL"
-            }
-            {
-              (event.description !== null && !isValidJSON(event.description.replaceAll('\\"', '"'))) && event.description
-            }
-            {
-              (event.description === null || !isValidJSON(event.description.replaceAll('\\"', '"')) || JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
-                "JSON ERROR" : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0].data.text
-            }
+          <Typography color="rgba(255,255,255,0.6)" variant="bodyM">
+            {event.description === null && 'NULL'}
+            {event.description !== null &&
+              !isValidJSON(event.description.replaceAll('\\"', '"')) &&
+              event.description}
+            {event.description === null ||
+            !isValidJSON(event.description.replaceAll('\\"', '"')) ||
+            JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
+              undefined
+              ? 'JSON ERROR'
+              : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0]
+                  .data.text}
           </Typography>
         </Box>
-        <Box
-          display="flex"
-          alignItems="center"
-          gap="6px"
-          sx={{ opacity: '0.7' }}
-        >
+        <Box display="flex" alignItems="center" gap="6px" sx={{ opacity: 0.5 }}>
           <MapIcon size={4} />
-          <Typography color="white" variant="caption">
-            ISTANBUL, TURKEY
+          <Typography
+            variant={'caption'}
+            sx={{
+              color: 'white',
+              textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)',
+              fontSize: '10px',
+              letterSpacing: '0.2px',
+              textTransform: 'uppercase',
+            }}
+          >
+            {eventLocation}
           </Typography>
         </Box>
       </Box>

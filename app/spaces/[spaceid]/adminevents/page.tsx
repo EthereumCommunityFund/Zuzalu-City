@@ -1,5 +1,11 @@
 'use client';
-import { useState, ChangeEvent, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  ChangeEvent,
+  useEffect,
+  useRef,
+  KeyboardEvent,
+} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
@@ -9,7 +15,8 @@ import {
   Stack,
   Select,
   MenuItem,
-  TextField
+  TextField,
+  Chip,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -45,15 +52,15 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface EventDocument {
   document: {
-    id: string
-  }
+    id: string;
+  };
 }
 interface CreateEvent {
-  createEvent: EventDocument
+  createEvent: EventDocument;
 }
 
 interface UpdateType {
-  data: CreateEvent
+  data: CreateEvent;
 }
 
 const Home = () => {
@@ -73,11 +80,7 @@ const Home = () => {
   });
 
   const [events, setEvents] = useState<Event[]>([]);
-  const {
-    ceramic,
-    composeClient,
-    profile,
-  } = useCeramicContext();
+  const { ceramic, composeClient, profile } = useCeramicContext();
 
   const getEvents = async () => {
     try {
@@ -147,25 +150,31 @@ const Home = () => {
       participant: 0,
       min_participant: 0,
       max_participant: 0,
-      timezone: ''
+      timezone: '',
     });
     const [description, setDescription] = useState<OutputData>();
     const [avatar, setAvatar] = useState<SelectedFile>();
     const [avatarURL, setAvatarURL] = useState<string>();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
-    const [editor, setEditorInst] = useState<any>();
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
-    const [status, setStatus] = useState<string>('')
+    const [status, setStatus] = useState<string>('');
     const [locations, setLocations] = useState<string[]>(['']);
+    const [track, setTrack] = useState<string>('');
+    const [tracks, setTracks] = useState<string[]>([]);
 
     const profileId = profile?.id || '';
+    console.log('profileId: ', profileId)
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 
-      if (name === "participant" || name === "max_participant" || name === "min_participant") {
+      if (
+        name === 'participant' ||
+        name === 'max_participant' ||
+        name === 'min_participant'
+      ) {
         setInputs((prevInputs) => ({
           ...prevInputs,
           [name]: Number(value),
@@ -197,13 +206,27 @@ const Home = () => {
       setSocialLinks(temp);
     };
 
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setTrack(e.target.value);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        setTracks([...tracks, track]);
+        setTrack('');
+      }
+    };
+
     const createEvent = async () => {
-      const isNeeded = inputs.name.length === 0 || !startTime || !endTime || !spaceId || !profileId;
+      const isNeeded =
+        inputs.name.length === 0 ||
+        !startTime ||
+        !endTime ||
+        !spaceId ||
+        !profileId;
       if (isNeeded) {
         typeof window !== 'undefined' &&
-          window.alert(
-            'Please input all necessary fields.',
-          );
+          window.alert('Please input all necessary fields.');
       } else {
         let socialLinks = {};
 
@@ -226,8 +249,8 @@ const Home = () => {
             }
           }
         }
-        const output = await editor.save();
-        let strDesc: any = JSON.stringify(output);
+        // const output = await editor.save();
+        let strDesc: any = JSON.stringify(description);
 
         strDesc = strDesc.replaceAll('"', '\\"');
 
@@ -257,6 +280,7 @@ const Home = () => {
                  title
                  links
                }
+               tracks
              }
            }
          }
@@ -273,11 +297,14 @@ const Home = () => {
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                  customLinks: Object.entries(socialLinks).map(([key, value]) => ({ title: key, links: value })),
+                  customLinks: Object.entries(socialLinks).map(
+                    ([key, value]) => ({ title: key, links: value }),
+                  ),
                   participant_count: inputs.participant,
                   max_participant: inputs.max_participant,
                   min_participant: inputs.min_participant,
-                  status: person ? "In-Person" : "Online"
+                  status: person ? 'In-Person' : 'Online',
+                  tracks: tracks.join(','),
                 },
               },
             },
@@ -285,8 +312,8 @@ const Home = () => {
 
           const { data } = await supabase.from('locations').insert({
             name: locations.join(','),
-            eventId: update.data.createEvent.document.id
-          })
+            eventId: update.data.createEvent.document.id,
+          });
 
           typeof window !== 'undefined' &&
             window.alert(
@@ -333,13 +360,9 @@ const Home = () => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="column" gap="20px" padding={3}>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Event Basic
-                </Typography>
+                <Typography variant="subtitleSB">Event Basic</Typography>
               </Box>
               <Box
                 padding="20px"
@@ -348,11 +371,7 @@ const Home = () => {
                 gap="20px"
               >
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Event Name
-                  </Typography>
+                  <Typography variant="subtitleSB">Event Name</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     name="name"
@@ -360,11 +379,7 @@ const Home = () => {
                   />
                 </Stack>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Event Tagline
-                  </Typography>
+                  <Typography variant="subtitleSB">Event Tagline</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     name="tagline"
@@ -373,7 +388,7 @@ const Home = () => {
                 </Stack>
                 <Stack spacing="10px">
                   <Typography variant="subtitleSB">
-                    Space Description
+                    Event Description
                   </Typography>
                   <Typography color="white" variant="caption">
                     This is a description greeting for new members. You can also
@@ -398,7 +413,7 @@ const Home = () => {
                     }}
                   />
                   <Stack direction="row" justifyContent="space-between">
-                    <Stack
+                    {/* <Stack
                       sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -435,20 +450,16 @@ const Home = () => {
                       <Typography color="white" variant="caption">
                         Markdown Available
                       </Typography>
-                    </Stack>
+                    </Stack> */}
                     <Typography variant="caption" color="white">
-                      1000 Characters Left
+                      {
+                        5000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
+                      } Characters Left
                     </Typography>
                   </Stack>
                 </Stack>
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Event Avatar
-                </Typography>
-                <Typography
-                  variant="bodyS"
-                >
+                <Typography variant="subtitleSB">Event Avatar</Typography>
+                <Typography variant="bodyS">
                   Recommend min of 200x200px (1:1 Ratio)
                 </Typography>
                 <Box
@@ -487,36 +498,16 @@ const Home = () => {
                   </Uploader3>
                   <PreviewFile
                     sx={{
-                      width: '150px',
-                      height: '150px',
-                      borderRadius: '75px',
+                      width: '420px',
+                      height: '420px',
+                      borderRadius: '10px',
                     }}
                     file={avatarURL}
                   />
                 </Box>
-                <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    TimeZone
-                  </Typography>
-                  <ZuInput
-                    onChange={handleInputChange}
-                    name="timezone"
-                    placeholder="Type Time Zone"
-                  />
-                </Stack>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  gap="20px"
-                >
+                <Box display="flex" justifyContent="space-between" gap="20px">
                   <Box flex={1}>
-                    <Typography
-                      variant="subtitleSB"
-                    >
-                      Start Date
-                    </Typography>
+                    <Typography variant="subtitleSB">Start Date</Typography>
                     <DatePicker
                       onChange={(newValue) => setStartTime(newValue)}
                       sx={{
@@ -545,11 +536,7 @@ const Home = () => {
                     />
                   </Box>
                   <Box flex={1}>
-                    <Typography
-                      variant="subtitleSB"
-                    >
-                      End Date
-                    </Typography>
+                    <Typography variant="subtitleSB">End Date</Typography>
                     <DatePicker
                       onChange={(newValue) => setEndTime(newValue)}
                       sx={{
@@ -579,24 +566,16 @@ const Home = () => {
                   </Box>
                 </Box>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Participant
-                  </Typography>
+                  <Typography variant="subtitleSB">Participant</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     type="number"
                     name="participant"
-                    placeholder="Type Time Zone"
+                    placeholder="Type Participant"
                   />
                 </Stack>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Max Participant
-                  </Typography>
+                  <Typography variant="subtitleSB">Max Participant</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     type="number"
@@ -605,11 +584,7 @@ const Home = () => {
                   />
                 </Stack>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Min Participant
-                  </Typography>
+                  <Typography variant="subtitleSB">Min Participant</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     type="number"
@@ -619,18 +594,14 @@ const Home = () => {
                 </Stack>
               </Box>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box
                 padding="20px"
                 display="flex"
                 justifyContent="space-between"
                 borderBottom="1px solid #383838"
               >
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Event Format
-                </Typography>
+                <Typography variant="subtitleSB">Event Format</Typography>
               </Box>
               <Box
                 display="flex"
@@ -656,14 +627,8 @@ const Home = () => {
                       }}
                     />
                     <Stack>
-                      <Typography
-                        variant="bodyBB"
-                      >
-                        In-Person
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                      >
+                      <Typography variant="bodyBB">In-Person</Typography>
+                      <Typography variant="caption">
                         This is a physical event
                       </Typography>
                     </Stack>
@@ -685,49 +650,39 @@ const Home = () => {
                       }}
                     />
                     <Stack>
-                      <Typography
-                        variant="bodyBB"
-                      >
-                        Online
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                      >
+                      <Typography variant="bodyBB">Online</Typography>
+                      <Typography variant="caption">
                         Specially Online Event
                       </Typography>
                     </Stack>
                   </Box>
                 </Box>
                 <Stack spacing="10px">
-                  <Typography
-                    variant="subtitleSB"
-                  >
-                    Location
-                  </Typography>
+                  <Typography variant="subtitleSB">Location</Typography>
                   {locations.map((location, index) => (
-                    <ZuInput key={`Location_Index${index}`} onChange={(e) => {
-                      let newLocations = locations;
-                      newLocations[index] = e.target.value;
-                      setLocations(newLocations);
-                    }} />
+                    <ZuInput
+                      key={`Location_Index${index}`}
+                      placeholder="city, country"
+                      onChange={(e) => {
+                        let newLocations = locations;
+                        newLocations[index] = e.target.value;
+                        setLocations(newLocations);
+                      }}
+                    />
                   ))}
                 </Stack>
                 <ZuButton
                   variant="contained"
                   endIcon={<PlusIcon />}
-                  onClick={() => setLocations(prev => [...prev, ''])}
+                  onClick={() => setLocations((prev) => [...prev, ''])}
                 >
                   Add Address
                 </ZuButton>
               </Box>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
-                <Typography
-                  variant="subtitleSB"
-                >
-                  Links
-                </Typography>
+                <Typography variant="subtitleSB">Links</Typography>
               </Box>
               <Box
                 padding={'20px'}
@@ -858,6 +813,51 @@ const Home = () => {
                 </Button>
               </Box>
             </Box>
+            <Stack bgcolor="#262626" borderRadius="10px">
+              <Typography variant="subtitleMB" padding="20px">
+                Event Tracks
+              </Typography>
+              <Stack padding="20px" spacing="30px">
+                <Typography variant="bodyB">
+                  Tracks are the main categories for this event. This allows
+                  sessions to be organized into relevant tracks by attributing
+                  to a particular track.
+                </Typography>
+                <Stack spacing="20px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Event Tracks</Typography>
+                    <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                      Create tracks related to your event
+                    </Typography>
+                  </Stack>
+                  <ZuInput
+                    placeholder="Add a tag"
+                    onKeyDown={handleKeyDown}
+                    onChange={handleChange}
+                    value={track}
+                  />
+                  <Stack direction="row" spacing="10px">
+                    {tracks.length !== 0 &&
+                      tracks.map((track, index) => (
+                        <Chip
+                          key={`TrackChip-${index}`}
+                          label={track}
+                          sx={{
+                            borderRadius: '10px',
+                            bgcolor: '#313131',
+                          }}
+                          onDelete={() => {
+                            const newArray = tracks.filter(
+                              (item) => item !== track,
+                            );
+                            setTracks(newArray);
+                          }}
+                        />
+                      ))}
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
             <Box display="flex" gap="20px">
               <Button
                 sx={{

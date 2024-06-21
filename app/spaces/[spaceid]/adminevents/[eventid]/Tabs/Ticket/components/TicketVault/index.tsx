@@ -6,7 +6,7 @@ import {
 } from '@/components/icons';
 import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
-import { SendNFTTicket, WithdrawToken } from './component';
+import { SendNFTTicket, WithdrawToken, Whitelist } from './component';
 import * as React from 'react';
 import { ethers } from 'ethers';
 import ContractAbi from '@/contracts/ticektContract.json';
@@ -84,17 +84,7 @@ const TicketVault = () => {
           spacing={2.5}
           marginTop={'10px'}
         >
-          <Image
-            style={{
-              width: '100%',
-              height: 'auto',
-            }}
-            alt={'/24.webp'}
-            src={'/24.webp'}
-            width={100}
-            height={100}
-          />
-
+          <Box component="img" width="100px" height="100px" borderRadius="8px" src="/24.webp" />
           <Stack direction="column" spacing={0.9}>
             <Typography
               variant="h5"
@@ -187,8 +177,8 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                0x9999...f08E
-                {/* 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E */}
+                {/* 0x9999...f08E */}
+                0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E
               </Typography>
 
               <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
@@ -407,8 +397,9 @@ const TicketVault = () => {
         </Box>
       </Stack>
 
-      <Box
-        padding={3}
+      <Stack
+        padding="20px"
+        spacing="30px"
         marginX={isMobile ? undefined : 3}
         sx={{
           background: 'rgba(255, 255, 255, 0.02)',
@@ -424,18 +415,18 @@ const TicketVault = () => {
           }}
         >
           <Typography
-            onClick={() => setAction('Withdraw')}
+            onClick={() => setAction('Whitelist')}
             textAlign={'center'}
-            paddingY={'8px'}
             width={'100%'}
+            paddingY={'8px'}
             sx={{
               cursor: 'pointer',
-              borderRadius: `${action === 'Withdraw' ? '8px' : null}`,
-              border: `${action === 'Withdraw' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
-              background: `${action === 'Withdraw' ? 'rgba(255, 255, 255, 0.10)' : null}`,
+              borderRadius: `${action === 'Whitelist' ? '8px' : null}`,
+              border: `${action === 'Whitelist' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
+              background: `${action === 'Whitelist' ? 'rgba(255, 255, 255, 0.10)' : null}`,
             }}
           >
-            Withdraw Token
+            Whitelist
           </Typography>
           <Typography
             onClick={() => setAction('SendTicket')}
@@ -451,14 +442,31 @@ const TicketVault = () => {
           >
             Send Ticket
           </Typography>
+          <Typography
+            onClick={() => setAction('Withdraw')}
+            textAlign={'center'}
+            paddingY={'8px'}
+            width={'100%'}
+            sx={{
+              cursor: 'pointer',
+              borderRadius: `${action === 'Withdraw' ? '8px' : null}`,
+              border: `${action === 'Withdraw' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
+              background: `${action === 'Withdraw' ? 'rgba(255, 255, 255, 0.10)' : null}`,
+            }}
+          >
+            Withdraw Token
+          </Typography>
         </Box>
 
-        {action === 'Withdraw' ? <WithdrawToken /> : <SendNFTTicket />}
-      </Box>
+        {action === 'Withdraw' ? <WithdrawToken /> : action === 'SendTicket' ? <SendNFTTicket /> : <Whitelist />}
+      </Stack>
 
-      <Box display="flex" marginTop={'20px'} justifyContent={'center'}>
+      <Stack direction="row" marginTop={'20px'} justifyContent="center" spacing="10px" alignItems="center">
+        <Typography variant="caption">
+          POWERED BY
+        </Typography>
         <ScrollIcon />
-      </Box>
+      </Stack>
     </Stack>
   );
 };

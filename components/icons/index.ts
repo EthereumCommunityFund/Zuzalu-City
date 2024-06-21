@@ -71,6 +71,7 @@ import { ChevronUpIcon } from './ChevronUp';
 import { RefreshIcon } from './RefreshIcon';
 import { Square2StackIcon } from './Square2Stack';
 import { ArrowTopRightSquareIcon } from './ArrowTopRightSquare';
+import { ArrowDownSquare } from './ArrowDownSquare';
 
 export {
   HomeIcon,
@@ -145,5 +146,6 @@ export {
   ChevronUpIcon,
   RefreshIcon,
   Square2StackIcon,
-  ArrowTopRightSquareIcon
+  ArrowTopRightSquareIcon,
+  ArrowDownSquare
 };
