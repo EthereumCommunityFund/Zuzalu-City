@@ -90,6 +90,10 @@ export default function SpaceDetailPage() {
                   tagline
                   timezone
                   title
+                  space {
+                    avatar
+                    name
+                  }
                 }
               }
             }
@@ -532,11 +536,8 @@ export default function SpaceDetailPage() {
                           {value.map((event, index) => {
                             return (
                               <EventCard
-                                id={event.id}
                                 key={`EventCard-${event.id}`}
-                                spaceId={event.spaceId}
                                 event={event}
-                                by={space?.name}
                               />
                             );
                           })}

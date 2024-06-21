@@ -17,7 +17,8 @@ interface TextEditorPropTypes extends BoxProps {
   holder: string,
   placeholder?: string,
   readonly?: boolean,
-  limit?: number
+  showMore?: boolean,
+  limit?: number;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
@@ -28,6 +29,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   limit = 5000,
   readonly = false,
   placeholder = 'Write an Amazing Blog',
+  showMore = false,
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -36,7 +38,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
     if (!ref.current) {
 
       const editor = new EditorJS({
-
         holder: holder,
         tools,
         placeholder: placeholder,
@@ -53,14 +54,14 @@ const TextEditor: FC<TextEditorPropTypes> = ({
                 return;
               }
 
-              if(event.detail) {
+              if (event.detail) {
                 const workingBlock = event.detail.target;
                 const workingBlockIndex = event.detail.index
                 const workingBlockSaved = data.blocks.filter(block => block.id === workingBlock.id).pop()
                 const otherBlocks = data.blocks.filter(block => block.id !== workingBlock.id)
                 const otherBlocksLen = otherBlocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0)
                 const workingBlockLimit = limit - otherBlocksLen
-                if(workingBlockSaved) {
+                if (workingBlockSaved) {
                   await api.blocks.update(workingBlock.id, {
                     text: workingBlockSaved.data.text.substr(0, workingBlockLimit)
                   });
@@ -73,6 +74,9 @@ const TextEditor: FC<TextEditorPropTypes> = ({
             console.log('EditorJS Error: ', err)
           }
         },
+        onReady: () => {
+          applyCustomStyles(showMore);
+        }
       })
 
       ref.current = editor;
@@ -84,6 +88,17 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       }
     };
   }, []);
+
+  const applyCustomStyles = (isPrimary: boolean) => {
+    const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+    if (editorContent) {
+      editorContent.style.height = isPrimary ? 'fit-content' : '300px';
+    }
+  };
+
+  useEffect(() => {
+    applyCustomStyles(showMore);
+  }, [showMore]);
 
   return (
     <Fragment>

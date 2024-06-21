@@ -26,8 +26,7 @@ interface IAbout {
 }
 
 const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
-  console.log("here", eventData)
-  const [eventLocation, setEventLocation] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
 
   const [isInitial, setIsInitial] = useState<boolean>(false);
   const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
@@ -45,17 +44,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     bottom: false,
     right: false,
   });
-
-  const getLocation = async () => {
-    try {
-      const { data } = await supabase.from("locations").select("*").eq('eventId', eventId);
-      if (data !== null) {
-        setEventLocation(data[0].name)
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  }
 
   const getEventDetailInfo = async () => {
     try {
@@ -92,8 +80,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 description
               }
               profile {
-                username  
+                username
                 avatar
+              }
+              customLinks {
+                title
+                links
               }
             }
           }
@@ -113,6 +105,20 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     }
   };
 
+  const getLocation = async () => {
+    try {
+      const { data } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('eventId', eventId);
+      if (data !== null) {
+        setLocation(data[0].name.split(','));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
@@ -121,7 +127,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     const fetchData = async () => {
       try {
         await getEventDetailInfo();
-        // await getLocation();
+        await getLocation();
       } catch (err) {
         console.log(err);
       }
@@ -187,17 +193,18 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                     </Stack> */}
 
             <EventName
+              avatar={eventData.space?.avatar}
               tagline={eventData.tagline}
               endTime={eventData.endTime}
               startTime={eventData.startTime}
               eventDescription={eventData.description}
               spaceName={eventData.space?.name}
               eventName={eventData.title}
-              location={eventLocation}
+              location={location}
               organizer={eventData.profile?.username as string}
               image_url={eventData.image_url}
             />
-            <EventAbout tagline={eventData.tagline} description={eventData.description} />
+            <EventAbout description={eventData.description} />
             <Stack
               bgcolor="#292929"
               padding="20px"

@@ -31,13 +31,13 @@ import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
-import { Event, EventData } from '@/types';
+import { Event, EventData, Space, SpaceEventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';
-import { Sidebar } from 'components/layout';
 import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { supabase } from '@/utils/supabase/client';
+import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 
 interface Inputs {
   name: string;
@@ -79,8 +79,76 @@ const Home = () => {
     right: false,
   });
 
+  const [space, setSpace] = useState<Space>();
+
   const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
+
+  const getSpaceByID = async () => {
+    try {
+      const GET_SPACE_QUERY = `
+      query GetSpace($id: ID!) {
+        node(id: $id) {
+          ...on Space {
+            avatar
+            banner
+            description
+            name
+            profileId
+            tagline
+            website
+            twitter
+            telegram
+            nostr
+            lens
+            github
+            discord
+            ens
+            events(first: 10) {
+              edges {
+                node {
+                  createdAt
+                  description
+                  endTime
+                  external_url
+                  gated
+                  id
+                  image_url
+                  max_participant
+                  meeting_url
+                  min_participant
+                  participant_count
+                  profileId
+                  spaceId
+                  startTime
+                  status
+                  tagline
+                  timezone
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const spaceId = params.spaceid.toString();
+
+      const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+        id: spaceId,
+      });
+      const spaceData: Space = response.data.node as Space;
+      setSpace(spaceData);
+
+      const eventData: SpaceEventData = response.data.node
+        .events as SpaceEventData;
+      const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
+      setEvents(fetchedEvents);
+      return spaceData;
+    } catch (error) {
+      console.error('Failed to fetch space:', error);
+    }
+  };
 
   const getEvents = async () => {
     try {
@@ -106,6 +174,9 @@ const Home = () => {
               min_participant
               max_participant
               createdAt
+              space {
+                avatar
+              }
             }
           }
         }
@@ -130,6 +201,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         await getEvents();
+        await getSpaceByID();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -896,6 +968,12 @@ const Home = () => {
   };
   return (
     <Stack direction="row" width={'100%'}>
+      <SubSidebar
+        title={space?.name}
+        spaceId={params.spaceid.toString()}
+        avatar={space?.avatar}
+        banner={space?.banner}
+      />
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
         <CurrentEvents events={events} onToggle={toggleDrawer} />
