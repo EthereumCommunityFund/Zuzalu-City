@@ -90,6 +90,10 @@ export default function SpaceDetailPage() {
                   tagline
                   timezone
                   title
+                  space {
+                    avatar
+                    name
+                  }
                 }
               }
             }

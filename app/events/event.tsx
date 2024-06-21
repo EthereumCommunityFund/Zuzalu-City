@@ -58,6 +58,7 @@ const EventsPage: React.FC = () => {
               createdAt
               space {
                 name
+                avatar
               }
             }
           }

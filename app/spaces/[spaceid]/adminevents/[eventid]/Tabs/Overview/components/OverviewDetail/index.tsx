@@ -6,6 +6,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, Event, EventEdge } from '@/types';
 import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
+import TextEditor from '@/components/editor/editor';
 
 const OverviewDetail = () => {
   const {
@@ -125,9 +126,24 @@ const OverviewDetail = () => {
         <Typography variant="h5" color="white">
           {eventData.title}
         </Typography>
-        <Typography variant="body1" color="white">
-          {eventData.description}
-        </Typography>
+        <TextEditor
+          holder="event_description"
+          value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
+          sx={{
+            fontFamily: 'Inter',
+            color: 'white',
+            borderRadius: '10px',
+            height: 'auto',
+            overflow: 'auto',
+            padding: '0px',
+            '& > div > div': {
+              paddingBottom: '0px !important',
+            },
+            '& .ce-block__content': {
+              maxWidth: '100% !important', // Adjust the margin value as needed
+            },
+          }}
+        />
         {eventData.timezone && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <MapIcon size={4} />

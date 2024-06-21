@@ -113,7 +113,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               component="img"
               width="18px"
               height="18px"
-              src="/0.webp"
+              src={event.space?.avatar}
               borderRadius="40px"
             />
             <Typography

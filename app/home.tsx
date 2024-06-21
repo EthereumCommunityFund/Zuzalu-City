@@ -160,6 +160,7 @@ const Home: React.FC = () => {
               }
               space {
                 name
+                avatar
               }
             }
           }
