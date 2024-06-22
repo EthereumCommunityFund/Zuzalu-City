@@ -1,16 +1,10 @@
 import * as React from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import { LotteryIcon, RightArrowIcon } from '../icons';
-import { useEffect, useState } from 'react';
-import * as util from '@/utils';
 
 const LotteryCard: React.FC = () => {
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  useEffect(() => {
-    const isMobileEnv: boolean = util.isMobile();
-    setIsMobile(isMobileEnv);
-  }, []);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Box

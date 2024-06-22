@@ -6,7 +6,6 @@ import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
-import * as util from '../../utils/index';
 import { supabase } from '@/utils/supabase/client';
 
 type EventCardProps = {
@@ -48,7 +47,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const theme = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [eventLocation, setEventLocation] = useState<string>('Loading...');
 
   const getLocation = async () => {
@@ -70,8 +69,6 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
   useEffect(() => {
     getLocation().catch((err) => console.log(err));
-    const isMobileEnv: boolean = util.isMobile();
-    setIsMobile(isMobileEnv);
   }, []);
 
   const handleNavigation = () => {
@@ -148,12 +145,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               !isValidJSON(event.description.replaceAll('\\"', '"')) &&
               event.description}
             {event.description === null ||
-              !isValidJSON(event.description.replaceAll('\\"', '"')) ||
-              JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
+            !isValidJSON(event.description.replaceAll('\\"', '"')) ||
+            JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
               undefined
               ? 'JSON ERROR'
               : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0]
-                .data.text}
+                  .data.text}
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="6px" sx={{ opacity: 0.5 }}>
