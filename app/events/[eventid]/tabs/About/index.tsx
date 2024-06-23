@@ -13,6 +13,7 @@ import {
   Payment
 } from 'components/event';
 import { Verify, Agree, Mint, Complete, Transaction } from '@/components/event/Whitelist';
+import { SponsorAgree, SponsorMint, SponsorTransaction, SponsorComplete } from '@/components/event/Sponsor';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -29,6 +30,9 @@ interface IAbout {
 const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [location, setLocation] = useState<string>('');
 
+  const [whitelist, setWhitelist] = useState<boolean>(false);
+  const [sponsor, setSponsor] = useState<boolean>(false);
+
   const [isInitial, setIsInitial] = useState<boolean>(false);
   const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
   const [isEmail, setIsEmail] = useState<boolean>(false);
@@ -39,6 +43,11 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isMint, setIsMint] = useState<boolean>(false);
   const [isTransaction, setIsTransaction] = useState<boolean>(false);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+
+  const [isSponsorAgree, setIsSponsorAgree] = useState<boolean>(false);
+  const [isSponsorMint, setIsSponsorMint] = useState<boolean>(false);
+  const [isSponsorTransaction, setIsSponsorTransaction] = useState<boolean>(false);
+  const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
 
   const params = useParams();
   const eventId = params.eventid.toString();
@@ -181,11 +190,23 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
         {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
-        {!isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Verify setIsVerify={setIsVerify} />}
-        {isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />}
-        {!isVerify && isAgree && !isMint && !isTransaction && !isComplete && <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />}
-        {!isVerify && !isAgree && isMint && !isTransaction && !isComplete && <Transaction setIsMint={setIsMint} setIsTransaction={setIsTransaction} handleClose={handleClose} />}
-        {!isVerify && !isAgree && !isMint && isTransaction && !isComplete && <Complete setIsTransaction={setIsTransaction} setIsComplete={setIsComplete} handleClose={handleClose} />}
+        {
+          whitelist &&
+          <>
+            {!isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Verify setIsVerify={setIsVerify} />}
+            {isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />}
+            {!isVerify && isAgree && !isMint && !isTransaction && !isComplete && <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />}
+            {!isVerify && !isAgree && isMint && !isTransaction && !isComplete && <Transaction setIsMint={setIsMint} setIsTransaction={setIsTransaction} handleClose={handleClose} />}
+            {!isVerify && !isAgree && !isMint && isTransaction && !isComplete && <Complete setIsTransaction={setIsTransaction} setIsComplete={setIsComplete} handleClose={handleClose} />}
+          </>}
+        {sponsor &&
+          <>
+            {!isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorAgree setIsAgree={setIsSponsorAgree} />}
+            {isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorMint setIsAgree={setIsSponsorAgree} setIsMint={setIsSponsorMint} />}
+            {!isSponsorAgree && isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorTransaction setIsMint={setIsSponsorMint} setIsTransaction={setIsSponsorTransaction} handleClose={handleClose} />}
+            {!isSponsorAgree && !isSponsorMint && isSponsorTransaction && !isSponsorComplete && <SponsorComplete setIsTransaction={setIsSponsorTransaction} setIsComplete={setIsSponsorComplete} handleClose={handleClose} />}
+          </>
+        }
       </Box>
     );
   };
@@ -291,7 +312,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             </Stack>
           </Stack>
           <Stack spacing="20px" flex="1">
-            <EventRegister onToggle={toggleDrawer} />
+            <EventRegister onToggle={toggleDrawer} setWhitelist={setWhitelist} setSponsor={setSponsor} />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">

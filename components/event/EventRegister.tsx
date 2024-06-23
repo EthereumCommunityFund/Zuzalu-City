@@ -8,9 +8,11 @@ import { Anchor } from '@/types';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
+  setWhitelist?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setSponsor?: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
-const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
+const EventRegister: React.FC<EventRegisterProps> = ({ onToggle, setWhitelist, setSponsor }) => {
   const [isOne, setIsOne] = useState<boolean>(false);
   const [isTwo, setIsTwo] = useState<boolean>(false);
 
@@ -207,7 +209,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
             OR
           </Typography>
           <ZuButton
-            onClick={() => onToggle('right', true)}
+            onClick={() => { setSponsor(false); setWhitelist(true); onToggle('right', true) }}
             sx={{
               width: "100%"
             }}
@@ -218,6 +220,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
             sx={{
               width: "100%"
             }}
+            onClick={() => { setSponsor(true); setWhitelist(false); onToggle('right', true); }}
           >
             Register as Sponsor
           </ZuButton>
