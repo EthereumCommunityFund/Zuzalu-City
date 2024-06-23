@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Stack, Typography, Box, Divider } from '@mui/material';
-import { ZuButton, ZuInput } from '@/components/core';
-import { ArrowUpLeftIcon, ArrowUpRightIcon, LeftArrowIcon, RightArrowIcon, ScrollIcon, ChevronDownIcon, ChevronUpIcon, HeartIcon } from '@/components/icons';
-import BpCheckbox from '@/components/event/Checkbox';
-import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
+import { ZuButton } from '@/components/core';
+import { ArrowUpLeftIcon, RightArrowIcon, ScrollIcon, ChevronDownIcon, ChevronUpIcon, HeartIcon } from '@/components/icons';
 
 interface IProps {
   setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -16,7 +14,8 @@ interface IProps {
 
 export const Verify: React.FC<IProps> = ({ setIsVerify }) => {
   const [isConnect, setIsConnect] = useState<boolean>(true);
-  const [validate, setValidate] = useState<boolean>(false);
+  const [validate, setValidate] = useState<boolean>(true);
+  const [verifying, SetVerifying] = useState<boolean>(false);
 
   return (
     <Stack>
@@ -47,24 +46,37 @@ export const Verify: React.FC<IProps> = ({ setIsVerify }) => {
                 Connect
               </ZuButton>
             </Stack> :
-              validate ?
+              verifying ?
                 <Stack paddingY="20px" bgcolor="#FFFFFF0D" borderRadius="10px">
                   <Typography variant="subtitleS" textAlign="center">
                     Verifying address
                   </Typography>
                 </Stack> :
-                <>
-                  <Stack paddingY="20px" bgcolor="#7DFFD10D" borderRadius="10px">
-                    <Typography variant="subtitleS" textAlign="center" color="#7DFFD1" sx={{ opacity: 0.7 }}>
-                      Validated!
-                    </Typography>
+                validate ?
+                  <>
+                    <Stack paddingY="20px" bgcolor="#7DFFD10D" borderRadius="10px">
+                      <Typography variant="subtitleS" textAlign="center" color="#7DFFD1" sx={{ opacity: 0.7 }}>
+                        Validated!
+                      </Typography>
+                    </Stack>
+                    <ZuButton startIcon={<RightArrowIcon color="#67DBFF" />}
+                      onClick={() => setIsVerify(true)}
+                      sx={{ width: "100%", color: "#67DBFF", backgroundColor: "#67DBFF33", border: "border: 1px solid rgba(103, 219, 255, 0.20)" }}>
+                      Next
+                    </ZuButton>
+                  </> :
+                  <Stack spacing="10px">
+                    <Stack paddingY="20px" bgcolor="#FFFFFF0D" borderRadius="10px">
+                      <Typography variant="subtitleS" textAlign="center" color="#FF5E5E">
+                        Address invalid. Please connect a valid address.
+                      </Typography>
+                    </Stack>
+                    <ZuButton startIcon={<RightArrowIcon color="#67DBFF" />}
+                      onClick={() => setIsConnect(false)}
+                      sx={{ width: "100%", color: "#67DBFF", backgroundColor: "#67DBFF33", border: "border: 1px solid rgba(103, 219, 255, 0.20)" }}>
+                      Connect
+                    </ZuButton>
                   </Stack>
-                  <ZuButton startIcon={<RightArrowIcon color="#67DBFF" />}
-                    onClick={() => setIsVerify(true)}
-                    sx={{ width: "100%", color: "#67DBFF", backgroundColor: "#67DBFF33", border: "border: 1px solid rgba(103, 219, 255, 0.20)" }}>
-                    Next
-                  </ZuButton>
-                </>
           }
           <Stack direction="row" spacing="10px" justifyContent="center">
             <Typography variant="caption" sx={{ opacity: 0.6 }}>
@@ -260,6 +272,7 @@ export const Transaction: React.FC<IProps> = ({ setIsMint, setIsTransaction, han
             </Typography>
             <Stack paddingY="20px" bgcolor="#FFFFFF0D" borderRadius="10px"
               onClick={() => { setIsMint(false); setIsTransaction(true); }}
+              sx={{ cursor: "pointer" }}
             >
               <Typography variant="subtitleS" textAlign="center">
                 Transaction Complete!

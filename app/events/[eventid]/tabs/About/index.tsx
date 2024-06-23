@@ -12,6 +12,7 @@ import {
   Email,
   Payment
 } from 'components/event';
+import { Verify, Agree, Mint, Complete, Transaction } from '@/components/event/Whitelist';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -32,6 +33,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
   const [isEmail, setIsEmail] = useState<boolean>(false);
   const [isPayment, setIsPayment] = useState<boolean>(false);
+
+  const [isVerify, setIsVerify] = useState<boolean>(false);
+  const [isAgree, setIsAgree] = useState<boolean>(false);
+  const [isMint, setIsMint] = useState<boolean>(false);
+  const [isTransaction, setIsTransaction] = useState<boolean>(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const params = useParams();
   const eventId = params.eventid.toString();
@@ -152,7 +159,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         role="presentation"
         zIndex="10"
         borderLeft="1px solid #383838"
-        height="100%"
       >
         <Stack
           direction="row"
@@ -171,10 +177,15 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             Register for Event
           </Typography>
         </Stack>
-        {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
+        {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
-        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />}
+        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
+        {!isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Verify setIsVerify={setIsVerify} />}
+        {isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />}
+        {!isVerify && isAgree && !isMint && !isTransaction && !isComplete && <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />}
+        {!isVerify && !isAgree && isMint && !isTransaction && !isComplete && <Transaction setIsMint={setIsMint} setIsTransaction={setIsTransaction} handleClose={handleClose} />}
+        {!isVerify && !isAgree && !isMint && isTransaction && !isComplete && <Complete setIsTransaction={setIsTransaction} setIsComplete={setIsComplete} handleClose={handleClose} />}
       </Box>
     );
   };
@@ -296,8 +307,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             hideBackdrop={true}
             sx={{
               '& .MuiDrawer-paper': {
-                marginTop: '50px',
-                height: 'calc(100% - 50px)',
                 boxShadow: 'none',
               },
             }}
