@@ -17,8 +17,13 @@ const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
       height="45px"
       alignItems="center"
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
+      sx={{
+        position: 'sticky',
+        top: '61px',
+        zIndex: 1,
+      }}
     >
-      <Stack direction="row" spacing={2} height="100%">
+      <Stack direction="row" spacing={2} height="45px">
         <Stack
           direction="row"
           spacing={1}
@@ -55,11 +60,8 @@ const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
       </Stack>
       <Stack
         direction="row"
-        height="100%"
         paddingLeft={3}
         borderLeft="1px solid #383838"
-        spacing={1}
-        alignItems="center"
         sx={{ cursor: 'pointer' }}
       >
         <Typography

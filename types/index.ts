@@ -42,6 +42,7 @@ export interface Event {
     avatar?: string;
   };
   customLinks?: [Link];
+  tracks?: string;
 }
 
 export interface EventEdge {
@@ -82,8 +83,8 @@ export interface Space {
   ens?: string;
   category?: string;
   members?: {
-    id: string
-  }[]
+    id: string;
+  }[];
 }
 
 export interface SpaceEdge {
@@ -109,7 +110,6 @@ export interface Session {
   track?: string;
   format?: string;
   status?: string;
-  tagline?: string;
   timezone?: string;
   video_url?: string;
   description?: string;

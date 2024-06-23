@@ -3,26 +3,34 @@
     "Event": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
-      "accountRelation": { "type": "list" }
+      "id": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
+      "accountRelation": {
+        "type": "list"
+      }
     },
     "MVPProfile": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
-      "accountRelation": { "type": "single" }
+      "id": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
+      "accountRelation": {
+        "type": "single"
+      }
     },
     "Session": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c7ewjpxosco52wl788r7vc63tipn2qkctx7nok2jddtdk9t73ea",
-      "accountRelation": { "type": "list" }
+      "id": "kjzl6hvfrbw6c9xul06zd90s122b6wjztz8gafrcokpzj9r5m4mzjeeem4du9op",
+      "accountRelation": {
+        "type": "list"
+      }
     },
     "Space": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c5mn0am5lubnrorokmxxdghap3dzorrvjdv27goq2y426zka2iv",
-      "accountRelation": { "type": "list" }
+      "id": "kjzl6hvfrbw6c84tttp6ntn4ngagd1fiff3ggh1fm75dvgiqsxstrozt7m578da",
+      "accountRelation": {
+        "type": "list"
+      }
     }
   },
   "objects": {
@@ -45,6 +53,11 @@
         "immutable": false,
         "indexed": true
       },
+      "tracks": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "update": {
         "type": "list",
         "required": false,
@@ -63,9 +76,21 @@
         "immutable": false,
         "indexed": true
       },
-      "spaceId": { "type": "streamid", "required": true, "immutable": false },
-      "tagline": { "type": "string", "required": false, "immutable": false },
-      "timezone": { "type": "string", "required": false, "immutable": false },
+      "spaceId": {
+        "type": "streamid",
+        "required": true,
+        "immutable": false
+      },
+      "tagline": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "timezone": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "contracts": {
         "type": "list",
         "required": false,
@@ -84,13 +109,26 @@
         "immutable": false,
         "indexed": true
       },
-      "image_url": { "type": "string", "required": false, "immutable": false },
-      "profileId": { "type": "streamid", "required": true, "immutable": false },
+      "image_url": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "profileId": {
+        "type": "streamid",
+        "required": true,
+        "immutable": false
+      },
       "startTime": {
         "type": "datetime",
         "required": true,
         "immutable": false,
         "indexed": true
+      },
+      "contractID": {
+        "type": "integer",
+        "required": false,
+        "immutable": false
       },
       "customLinks": {
         "type": "list",
@@ -139,17 +177,20 @@
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c5mn0am5lubnrorokmxxdghap3dzorrvjdv27goq2y426zka2iv",
+          "model": "kjzl6hvfrbw6c84tttp6ntn4ngagd1fiff3ggh1fm75dvgiqsxstrozt7m578da",
           "property": "spaceId"
         }
       },
-      "author": { "type": "view", "viewType": "documentAccount" },
+      "author": {
+        "type": "view",
+        "viewType": "documentAccount"
+      },
       "profile": {
         "type": "view",
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
+          "model": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
           "property": "profileId"
         }
       },
@@ -158,23 +199,51 @@
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c7ewjpxosco52wl788r7vc63tipn2qkctx7nok2jddtdk9t73ea",
+          "model": "kjzl6hvfrbw6c9xul06zd90s122b6wjztz8gafrcokpzj9r5m4mzjeeem4du9op",
           "property": "eventId"
         }
       }
     },
     "EventLink": {
-      "links": { "type": "string", "required": true, "immutable": false },
-      "title": { "type": "string", "required": true, "immutable": false }
+      "links": {
+        "type": "string",
+        "required": true,
+        "immutable": false
+      },
+      "title": {
+        "type": "string",
+        "required": true,
+        "immutable": false
+      }
     },
     "EventOrganizerUpdate": {
-      "title": { "type": "string", "required": true, "immutable": false },
-      "content": { "type": "string", "required": false, "immutable": false },
-      "createdAt": { "type": "datetime", "required": true, "immutable": false },
-      "organizer": { "type": "did", "required": true, "immutable": false }
+      "title": {
+        "type": "string",
+        "required": true,
+        "immutable": false
+      },
+      "content": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "createdAt": {
+        "type": "datetime",
+        "required": true,
+        "immutable": false
+      },
+      "organizer": {
+        "type": "did",
+        "required": true,
+        "immutable": false
+      }
     },
     "EventTicket": {
-      "title": { "type": "string", "required": true, "immutable": false },
+      "title": {
+        "type": "string",
+        "required": true,
+        "immutable": false
+      },
       "contractAddress": {
         "type": "string",
         "required": true,
@@ -182,20 +251,27 @@
       }
     },
     "MVPProfile": {
-      "avatar": { "type": "string", "required": false, "immutable": false },
+      "avatar": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "username": {
         "type": "string",
         "required": true,
         "immutable": false,
         "indexed": true
       },
-      "author": { "type": "view", "viewType": "documentAccount" },
+      "author": {
+        "type": "view",
+        "viewType": "documentAccount"
+      },
       "events": {
         "type": "view",
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
+          "model": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
           "property": "profileId"
         }
       },
@@ -204,7 +280,7 @@
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c5mn0am5lubnrorokmxxdghap3dzorrvjdv27goq2y426zka2iv",
+          "model": "kjzl6hvfrbw6c84tttp6ntn4ngagd1fiff3ggh1fm75dvgiqsxstrozt7m578da",
           "property": "profileId"
         }
       }
@@ -216,7 +292,11 @@
         "immutable": false,
         "indexed": true
       },
-      "type": { "type": "string", "required": false, "immutable": false },
+      "type": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "gated": {
         "type": "string",
         "required": true,
@@ -253,38 +333,61 @@
         "immutable": false,
         "indexed": true
       },
-      "eventId": { "type": "streamid", "required": true, "immutable": false },
-      "tagline": { "type": "string", "required": false, "immutable": false },
+      "eventId": {
+        "type": "streamid",
+        "required": true,
+        "immutable": false
+      },
       "speakers": {
         "type": "list",
         "required": false,
         "immutable": false,
-        "item": { "type": "did", "required": false, "immutable": false }
+        "item": {
+          "type": "did",
+          "required": false,
+          "immutable": false
+        }
       },
-      "timezone": { "type": "string", "required": false, "immutable": false },
+      "timezone": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "createdAt": {
         "type": "datetime",
         "required": true,
         "immutable": false,
         "indexed": true
       },
-      "profileId": { "type": "streamid", "required": true, "immutable": false },
+      "profileId": {
+        "type": "streamid",
+        "required": true,
+        "immutable": false
+      },
       "startTime": {
         "type": "datetime",
         "required": true,
         "immutable": false,
         "indexed": true
       },
-      "video_url": { "type": "string", "required": false, "immutable": false },
+      "video_url": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "organizers": {
         "type": "list",
         "required": false,
         "immutable": false,
-        "item": { "type": "did", "required": false, "immutable": false }
+        "item": {
+          "type": "did",
+          "required": false,
+          "immutable": false
+        }
       },
       "description": {
         "type": "string",
-        "required": false,
+        "required": true,
         "immutable": false
       },
       "meeting_url": {
@@ -302,24 +405,35 @@
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
+          "model": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
           "property": "eventId"
         }
       },
-      "author": { "type": "view", "viewType": "documentAccount" },
+      "author": {
+        "type": "view",
+        "viewType": "documentAccount"
+      },
       "profile": {
         "type": "view",
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
+          "model": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
           "property": "profileId"
         }
       }
     },
     "Space": {
-      "ens": { "type": "string", "required": false, "immutable": false },
-      "lens": { "type": "string", "required": false, "immutable": false },
+      "ens": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "lens": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "name": {
         "type": "string",
         "required": true,
@@ -330,7 +444,11 @@
         "type": "list",
         "required": true,
         "immutable": false,
-        "item": { "type": "did", "required": true, "immutable": false }
+        "item": {
+          "type": "did",
+          "required": true,
+          "immutable": false
+        }
       },
       "gated": {
         "type": "string",
@@ -338,16 +456,40 @@
         "immutable": false,
         "indexed": true
       },
-      "nostr": { "type": "string", "required": false, "immutable": false },
-      "avatar": { "type": "string", "required": false, "immutable": false },
-      "banner": { "type": "string", "required": false, "immutable": false },
-      "github": { "type": "string", "required": false, "immutable": false },
-      "discord": { "type": "string", "required": false, "immutable": false },
+      "nostr": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "avatar": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "banner": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "github": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "discord": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "members": {
         "type": "list",
         "required": false,
         "immutable": false,
-        "item": { "type": "did", "required": false, "immutable": false }
+        "item": {
+          "type": "did",
+          "required": false,
+          "immutable": false
+        }
       },
       "tagline": {
         "type": "string",
@@ -355,16 +497,32 @@
         "immutable": false,
         "indexed": true
       },
-      "twitter": { "type": "string", "required": false, "immutable": false },
-      "website": { "type": "string", "required": false, "immutable": false },
+      "twitter": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "website": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
       "category": {
         "type": "string",
         "required": false,
         "immutable": false,
         "indexed": true
       },
-      "telegram": { "type": "string", "required": false, "immutable": false },
-      "profileId": { "type": "streamid", "required": true, "immutable": false },
+      "telegram": {
+        "type": "string",
+        "required": false,
+        "immutable": false
+      },
+      "profileId": {
+        "type": "streamid",
+        "required": true,
+        "immutable": false
+      },
       "customLinks": {
         "type": "list",
         "required": false,
@@ -377,14 +535,21 @@
           "immutable": false
         }
       },
-      "description": { "type": "string", "required": true, "immutable": false },
-      "author": { "type": "view", "viewType": "documentAccount" },
+      "description": {
+        "type": "string",
+        "required": true,
+        "immutable": false
+      },
+      "author": {
+        "type": "view",
+        "viewType": "documentAccount"
+      },
       "profile": {
         "type": "view",
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
+          "model": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
           "property": "profileId"
         }
       },
@@ -393,21 +558,41 @@
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
+          "model": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
           "property": "spaceId"
         }
       }
     },
     "SpaceLink": {
-      "links": { "type": "string", "required": true, "immutable": false },
-      "title": { "type": "string", "required": true, "immutable": false }
+      "links": {
+        "type": "string",
+        "required": true,
+        "immutable": false
+      },
+      "title": {
+        "type": "string",
+        "required": true,
+        "immutable": false
+      }
     }
   },
   "enums": {},
   "accountData": {
-    "eventList": { "type": "connection", "name": "Event" },
-    "mvpProfile": { "type": "node", "name": "MVPProfile" },
-    "sessionList": { "type": "connection", "name": "Session" },
-    "spaceList": { "type": "connection", "name": "Space" }
+    "eventList": {
+      "type": "connection",
+      "name": "Event"
+    },
+    "mvpProfile": {
+      "type": "node",
+      "name": "MVPProfile"
+    },
+    "sessionList": {
+      "type": "connection",
+      "name": "Session"
+    },
+    "spaceList": {
+      "type": "connection",
+      "name": "Space"
+    }
   }
 }

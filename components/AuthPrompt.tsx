@@ -129,12 +129,27 @@ const AuthPrompt: React.FC<{}> = () => {
   ]);
 
   useEffect(() => {
-    if (isConnected && isAuthPromptVisible && !authenticateCalled.current) {
+    const existingUsername = localStorage.getItem('username');
+    const authenticateLoggedUser = async () => {
+      if (existingUsername && isAuthPromptVisible) {
+        await authenticate();
+        setAuthState('Logged_In');
+      }
+    };
+    authenticateLoggedUser();
+  }, [isAuthPromptVisible]);
+
+  useEffect(() => {
+    if (
+      isConnected &&
+      isAuthPromptVisible &&
+      !authenticateCalled.current &&
+      !localStorage.getItem('username')
+    ) {
       const authenticateUser = async () => {
         try {
           authenticateCalled.current = true;
           await authenticate();
-          setAuthState(username ? 'Logged_In' : 'NEW_USER');
         } catch (error) {
           console.error('Authentication failed:', error);
           setAuthState('CONNECT_WALLET');
@@ -143,6 +158,10 @@ const AuthPrompt: React.FC<{}> = () => {
       authenticateUser();
     }
   }, [isConnected]);
+
+  useEffect(() => {
+    setAuthState(newUser ? 'NEW_USER' : 'Logged_In');
+  }, [newUser]);
 
   useEffect(() => {
     if (isAuthPromptVisible && !isConnected) {

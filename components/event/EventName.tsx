@@ -13,6 +13,7 @@ interface PropTypes {
   image_url?: string;
   organizer: string;
   tagline?: string;
+  avatar?: string;
 }
 
 const EventName = ({
@@ -25,6 +26,7 @@ const EventName = ({
   image_url,
   organizer,
   tagline,
+  avatar,
 }: PropTypes) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -67,7 +69,7 @@ const EventName = ({
       <Typography color="white" variant="subtitleLB">
         {eventName}
       </Typography>
-      <Typography color="white" variant="bodyM">
+      <Typography color="white" variant="bodyM" sx={{ opacity: 0.8 }}>
         {tagline}
         {/* {
           (eventDescription === null) && "NULL"
@@ -84,9 +86,15 @@ const EventName = ({
       </Typography>
       <Stack direction="row" spacing="5px" alignItems="center">
         <Typography color="white" variant="caption">
-          BY:{organizer}
+          BY:
         </Typography>
-        <Box component="img" width={20} height={20} src="/0.webp" />
+        <Box
+          component="img"
+          width={20}
+          height={20}
+          src={avatar}
+          borderRadius="10px"
+        />
         <Typography color="white" variant="bodyS">
           {spaceName}
         </Typography>

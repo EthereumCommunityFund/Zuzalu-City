@@ -10,6 +10,7 @@ import {
   EyeSlashIcon,
   ArchiveIcon,
 } from '../icons';
+import { Event } from '@/types';
 
 const EVENT_TYPE = [
   {
@@ -38,20 +39,47 @@ const EVENT_TYPE = [
   },
 ];
 
+const MonthKeys = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+export const formatDateToMonth = (t: string) => {
+  const date = new Date(t);
+  return MonthKeys[date.getMonth()] + ' ' + date.getFullYear();
+};
+
+function isValidJSON(str: string): boolean {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 interface EventMCardProps extends BoxProps {
-  id: string;
+  event: Event;
   type?: number;
   applicants?: number;
   isSideEventActive?: boolean;
-  name: string;
 }
 
 const EventMCard: React.FC<EventMCardProps> = ({
-  id,
+  event,
   type = 0,
   applicants = 0,
   isSideEventActive = false,
-  name,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -66,7 +94,7 @@ const EventMCard: React.FC<EventMCardProps> = ({
       border="1px solid #383838"
       bgcolor="#2D2D2D"
       sx={{ cursor: 'pointer' }}
-      onClick={() => router.push(`${pathname}/${id}`)}
+      onClick={() => router.push(`${pathname}/${event.id}`)}
     >
       <Box display="flex" justifyContent="space-between">
         <Box display="flex" alignItems="center" gap="10px">
@@ -76,7 +104,7 @@ const EventMCard: React.FC<EventMCardProps> = ({
             color="white"
             fontWeight={700}
           >
-            {name}
+            {event.title}
           </Typography>
           <Typography
             fontFamily="Inter"
@@ -84,7 +112,8 @@ const EventMCard: React.FC<EventMCardProps> = ({
             color="white"
             sx={{ opacity: 0.5 }}
           >
-            October 28 - November 12
+            {formatDateToMonth(event.startTime)} -{' '}
+            {formatDateToMonth(event.endTime)}
           </Typography>
         </Box>
         <Button
@@ -108,7 +137,17 @@ const EventMCard: React.FC<EventMCardProps> = ({
         color="white"
         sx={{ opacity: 0.7 }}
       >
-        A Popup Village of Innovation in the Heart of Istanbul
+        {/* {event.description} */}
+        {
+          (event.description === null) && "NULL"
+        }
+        {
+          (event.description !== null && !isValidJSON(event.description.replaceAll('\\"', '"'))) && event.description
+        }
+        {
+          (event.description === null || !isValidJSON(event.description.replaceAll('\\"', '"')) || JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
+            "JSON ERROR" : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0].data.text
+        }
       </Typography>
       <Box display="flex" alignItems="center" gap="10px">
         <Button

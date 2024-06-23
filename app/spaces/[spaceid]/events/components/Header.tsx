@@ -11,6 +11,11 @@ const Header = () => {
       padding="10px 14px"
       borderBottom="1px solid #383838"
       bgcolor="#2d2d2d"
+      sx={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+      }}
     >
       <Typography variant="h6" color="white" lineHeight="40px">
         Events

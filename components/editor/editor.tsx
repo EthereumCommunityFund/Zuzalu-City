@@ -17,6 +17,8 @@ interface TextEditorPropTypes extends BoxProps {
   holder: string;
   placeholder?: string;
   readonly?: boolean;
+  showMore?: boolean;
+  limit?: number;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
@@ -26,8 +28,10 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   },
   holder = 'editorjs',
   children,
+  limit = 5000,
   readonly = false,
   placeholder = 'Write an Amazing Blog',
+  showMore = false,
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -40,15 +44,50 @@ const TextEditor: FC<TextEditorPropTypes> = ({
         placeholder: placeholder,
         data: value,
         readOnly: readonly,
-        async onChange(api, event) {
+        async onChange(api, event: any) {
           try {
             if (!readonly) {
               const data = await api.saver.save();
               setData(data);
+              const contentLen = data.blocks
+                .map((item) => item.data.text.length)
+                .reduce((prev, current) => prev + current, 0);
+
+              if (contentLen <= limit) {
+                return;
+              }
+
+              if (event.detail) {
+                const workingBlock = event.detail.target;
+                const workingBlockIndex = event.detail.index;
+                const workingBlockSaved = data.blocks
+                  .filter((block) => block.id === workingBlock.id)
+                  .pop();
+                const otherBlocks = data.blocks.filter(
+                  (block) => block.id !== workingBlock.id,
+                );
+                const otherBlocksLen = otherBlocks
+                  .map((item) => item.data.text.length)
+                  .reduce((prev, current) => prev + current, 0);
+                const workingBlockLimit = limit - otherBlocksLen;
+                if (workingBlockSaved) {
+                  await api.blocks.update(workingBlock.id, {
+                    text: workingBlockSaved.data.text.substr(
+                      0,
+                      workingBlockLimit,
+                    ),
+                  });
+                  api.caret.setToBlock(workingBlockIndex, 'end');
+                }
+              }
+              await api.saver.save();
             }
           } catch (err) {
             console.log('EditorJS Error: ', err);
           }
+        },
+        onReady: () => {
+          applyCustomStyles(showMore);
         },
       });
 
@@ -61,6 +100,19 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       }
     };
   }, []);
+
+  const applyCustomStyles = (isPrimary: boolean) => {
+    const editorContent = document.querySelector(
+      '.codex-editor__redactor',
+    ) as HTMLElement;
+    if (editorContent) {
+      editorContent.style.height = isPrimary ? 'fit-content' : '300px';
+    }
+  };
+
+  useEffect(() => {
+    applyCustomStyles(showMore);
+  }, [showMore]);
 
   return (
     <Fragment>

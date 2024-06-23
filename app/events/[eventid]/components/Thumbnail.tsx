@@ -5,7 +5,11 @@ import { Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { LeftArrowIcon, ShareIcon, HomeIcon } from 'components/icons';
 
-const Thumbnail = () => {
+interface IThumbnail {
+  name?: string;
+}
+
+const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
   const router = useRouter();
 
   return (
@@ -25,7 +29,7 @@ const Thumbnail = () => {
           Back
         </ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">
-          HackZuzalu
+          {name}
         </Typography>
       </Stack>
       <Stack direction="row" gap={1}>

@@ -8,6 +8,8 @@ import { XMarkIcon } from '@/components/icons';
 import { CeramicResponseType, Event, EventEdge, Anchor } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
+import { Verify, Agree, Mint, Complete, Transaction } from '@/components/event/Whitelist';
+import { SponsorAgree, SponsorMint, SponsorTransaction, SponsorComplete } from '@/components/event/Sponsor';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -29,10 +31,24 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
   const [eventLocation, setEventLocation] = useState<string>('');
 
+  const [whitelist, setWhitelist] = useState<boolean>(false);
+  const [sponsor, setSponsor] = useState<boolean>(false);
+
   const [isInitial, setIsInitial] = useState<boolean>(false);
   const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
   const [isEmail, setIsEmail] = useState<boolean>(false);
   const [isPayment, setIsPayment] = useState<boolean>(false);
+
+  const [isVerify, setIsVerify] = useState<boolean>(false);
+  const [isAgree, setIsAgree] = useState<boolean>(false);
+  const [isMint, setIsMint] = useState<boolean>(false);
+  const [isTransaction, setIsTransaction] = useState<boolean>(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
+
+  const [isSponsorAgree, setIsSponsorAgree] = useState<boolean>(false);
+  const [isSponsorMint, setIsSponsorMint] = useState<boolean>(false);
+  const [isSponsorTransaction, setIsSponsorTransaction] = useState<boolean>(false);
+  const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
 
   const getEventDetailInfo = async () => {
     try {
@@ -135,9 +151,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
           backgroundColor: '#222222',
         }}
         role="presentation"
-        zIndex="10"
+        zIndex="100"
         borderLeft="1px solid #383838"
-        height="100%"
       >
         <Stack
           direction="row"
@@ -156,10 +171,28 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             Register for Event
           </Typography>
         </Stack>
-        {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
+        {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
-        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />}
+        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
+        {
+          whitelist &&
+          <>
+            {!isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Verify setIsVerify={setIsVerify} />}
+            {isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />}
+            {!isVerify && isAgree && !isMint && !isTransaction && !isComplete && <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />}
+            {!isVerify && !isAgree && isMint && !isTransaction && !isComplete && <Transaction setIsMint={setIsMint} setIsTransaction={setIsTransaction} handleClose={handleClose} />}
+            {!isVerify && !isAgree && !isMint && isTransaction && !isComplete && <Complete setIsTransaction={setIsTransaction} setIsComplete={setIsComplete} handleClose={handleClose} />}
+          </>}
+        {sponsor &&
+          <>
+            {!isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorAgree setIsAgree={setIsSponsorAgree} />}
+            {isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorMint setIsAgree={setIsSponsorAgree} setIsMint={setIsSponsorMint} />}
+            {!isSponsorAgree && isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorTransaction setIsMint={setIsSponsorMint} setIsTransaction={setIsSponsorTransaction} handleClose={handleClose} />}
+            {!isSponsorAgree && !isSponsorMint && isSponsorTransaction && !isSponsorComplete && <SponsorComplete setIsTransaction={setIsSponsorTransaction} setIsComplete={setIsSponsorComplete} handleClose={handleClose} />}
+          </>
+        }
+
       </Box>
     );
   };
@@ -187,7 +220,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               organizer={eventData.profile?.username as string}
               image_url={eventData.image_url}
             />
-            <EventAbout tagline={eventData.tagline} description={eventData.description} />
+            <EventAbout description={eventData.description} />
             <Stack
               bgcolor="#292929"
               padding="20px"
@@ -263,8 +296,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             </Stack>
           </Stack>
           <Stack spacing="20px" flex="1">
-            <EventRegister onToggle={toggleDrawer} />
-            {/* <Stack spacing="4px">
+            <EventRegister onToggle={toggleDrawer} setWhitelist={setWhitelist} setSponsor={setSponsor} />
+            {/* <Stack spacing="4px">List
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
@@ -279,8 +312,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             hideBackdrop={true}
             sx={{
               '& .MuiDrawer-paper': {
-                marginTop: '50px',
-                height: 'calc(100% - 50px)',
                 boxShadow: 'none',
               },
             }}

@@ -12,7 +12,7 @@ const Home = () => {
 
   return (
     <Stack color="white">
-      <Thumbnail />
+      <Thumbnail name={eventData?.title} />
       <Subbar tabName={tabName} setTabName={setTabName} />
       {
         tabName === "About" && (

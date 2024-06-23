@@ -34,6 +34,8 @@ import {
   formatDateToMonth,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
+import SlotDates from '@/components/calendar/SlotDate';
+
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -45,10 +47,11 @@ const Home: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [eventsForCalendar, setEventsForCalendar] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(
-      new Date().toLocaleDateString('en-CA', {
+      new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -56,7 +59,15 @@ const Home: React.FC = () => {
     ),
   );
 
-  const [expand, setExpand] = useState<boolean>(false);
+  const [dateForCalendar, setDateForCalendar] = useState<Dayjs | null>(
+    dayjs(
+      new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
+    ),
+  )
 
   const {
     ceramic,
@@ -147,6 +158,10 @@ const Home: React.FC = () => {
                 username
                 avatar
               }
+              space {
+                name
+                avatar
+              }
             }
           }
         }
@@ -169,17 +184,92 @@ const Home: React.FC = () => {
 
   const getEventsByDate = async () => {
     try {
+      if (selectedDate) {
+        let currentDate = new Date(selectedDate.format('YYYY-MM-DDTHH:mm:ss[Z]'));
+
+        const timeDiff = selectedDate.utcOffset();
+        if (timeDiff < 0) {
+          currentDate = new Date(new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)).getTime() - (24 * 60 * 60 * 1000 + timeDiff * 60 * 1000));
+        } else {
+          currentDate = new Date(new Date(currentDate.getTime() - (24 * 60 * 60 * 1000)).getTime() - (timeDiff * 60 * 1000))
+        }
+        const utcYear = currentDate.getFullYear();
+        const uctMM = String(currentDate.getMonth() + 1).length === 1 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
+        const utcDD = String(currentDate.getDate() + 1).length === 1 ? `0${currentDate.getDate() + 1}` : currentDate.getDate() + 1;
+        const utcHH = String(currentDate.getHours()).length === 1 ? `0${currentDate.getHours()}` : currentDate.getHours();
+        const utcMM = String(currentDate.getMinutes()).length === 1 ? `0${currentDate.getMinutes()}` : currentDate.getMinutes();
+        const utcSS = String(currentDate.getSeconds()).length === 1 ? `0${currentDate.getSeconds()}` : currentDate.getSeconds();
+        console.log('selectedDate: ', selectedDate.format('YYYY-MM-DDTHH:mm:ss[Z]'), `${utcYear}-${uctMM}-${utcDD}T${utcHH}:${utcMM}:${utcSS}Z`)
+        const getEventsByDate_QUERY = `
+          query ($input:EventFiltersInput!) {
+          eventIndex(filters:$input, first: 20){
+            edges {
+              node {
+                createdAt
+                description
+                endTime
+                external_url
+                gated
+                id
+                image_url
+                max_participant
+                meeting_url
+                min_participant
+                participant_count
+                profileId
+                spaceId
+                startTime
+                status
+                tagline
+                timezone
+                title
+                profile {
+                  username
+                  avatar
+                }
+              }
+            }
+          }
+        }
+      `;
+        const response: any = await composeClient.executeQuery(
+          getEventsByDate_QUERY,
+          {
+            input: {
+              where: {
+                startTime: {
+                  equalTo: `${utcYear}-${uctMM}-${utcDD}T${utcHH}:${utcMM}:${utcSS}Z`,
+                },
+              },
+            },
+          },
+        );
+        if (response && response.data && 'eventIndex' in response.data) {
+          const eventData: EventData = response.data as EventData;
+          const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+            (edge) => edge.node,
+          );
+          console.log('fetchEvents: ', fetchedEvents)
+          setEvents(fetchedEvents);
+        } else {
+          console.error('Invalid data structure:', response.data);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
+
+  const getEventsInMonth = async () => {
+    try {
       const getEventsByDate_QUERY = `
         query ($input:EventFiltersInput!) {
         eventIndex(filters:$input, first: 20){
           edges {
             node {
-              createdAt
               description
-              endTime
               external_url
               gated
-              id
               image_url
               max_participant
               meeting_url
@@ -187,7 +277,6 @@ const Home: React.FC = () => {
               participant_count
               profileId
               spaceId
-              startTime
               status
               tagline
               timezone
@@ -196,6 +285,10 @@ const Home: React.FC = () => {
                 username
                 avatar
               }
+              createdAt
+              endTime
+              id
+              startTime
             }
           }
         }
@@ -207,7 +300,8 @@ const Home: React.FC = () => {
           input: {
             where: {
               startTime: {
-                equalTo: selectedDate?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+                lessThanOrEqualTo: dateForCalendar?.endOf('month').format('YYYY-MM-DDTHH:mm:ss[Z]'),
+                greaterThanOrEqualTo: dateForCalendar?.startOf('month').format('YYYY-MM-DDTHH:mm:ss[Z]')
               },
             },
           },
@@ -218,14 +312,20 @@ const Home: React.FC = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        setEvents(fetchedEvents);
+        setEventsForCalendar(fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
       }
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
+  }
+
+  const handleMonthChange = (date: Dayjs) => {
+    console.log('date: ', date.endOf('month').toISOString());
+    setDateForCalendar(date);
   };
+
   useEffect(() => {
     document.title = 'Zuzalu City';
     const fetchData = async () => {
@@ -250,15 +350,18 @@ const Home: React.FC = () => {
     fetchData();
   }, [selectedDate]);
 
+  useEffect(() => {
+    getEventsInMonth();
+  }, [dateForCalendar])
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box width={'100vw'} minHeight={'100vh'}>
-        <AuthPrompt />
+      <Box width={'100vw'} minHeight={'calc(100vh - 50px)'}>
         <Box
           display="grid"
           gridTemplateColumns={'auto 1fr'}
           sx={{ backgroundColor: '#222222' }}
-          minHeight={'100vh'}
+          height={'calc(100vh - 50px)'}
         >
           {!isTablet && <Sidebar selected="Home" />}
           <Box
@@ -266,6 +369,11 @@ const Home: React.FC = () => {
             flex={1}
             padding={isMobile ? '10px' : '30px'}
             width={isTablet ? '100vw' : 'calc(100vw - 260px)'}
+            height={'100%'}
+            sx={{
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}
           >
             <Box
               display="flex"
@@ -273,7 +381,7 @@ const Home: React.FC = () => {
               borderRadius="10px"
               padding="40px 40px"
               sx={{
-                backgroundImage: 'url("/4.webp")',
+                backgroundImage: 'url("/27.jpg")',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
@@ -397,11 +505,8 @@ const Home: React.FC = () => {
                           <Box>
                             {eventsList.map((event, index) => (
                               <EventCard
-                                id={event.id}
-                                spaceId={event.spaceId}
                                 key={`EventCard-${index}`}
                                 event={event}
-                                by={event.profile?.username}
                               />
                             ))}
                           </Box>
@@ -466,7 +571,21 @@ const Home: React.FC = () => {
                       <Box>
                         <ZuCalendar
                           value={selectedDate}
-                          onChange={(val) => setSelectedDate(val)}
+                          onChange={(val) => {
+                            console.log('val: ', val);
+                            setSelectedDate(val)
+                          }}
+                          slots={{
+                            day: SlotDates
+                          }}
+                          slotProps={{
+                            day: {
+                              highlightedDays: eventsForCalendar.map((event) => {
+                                return (new Date(event.startTime).getDate())
+                              })
+                            } as any
+                          }}
+                          onMonthChange={(val) => handleMonthChange(val)}
                         />
                       </Box>
                     </Box>

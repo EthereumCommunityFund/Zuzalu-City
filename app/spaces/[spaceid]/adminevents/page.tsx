@@ -1,5 +1,11 @@
 'use client';
-import { useState, ChangeEvent, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  ChangeEvent,
+  useEffect,
+  useRef,
+  KeyboardEvent,
+} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
@@ -10,6 +16,7 @@ import {
   Select,
   MenuItem,
   TextField,
+  Chip,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -23,11 +30,11 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
-import { Event, EventData } from '@/types';
+import { OutputData } from '@editorjs/editorjs';
+import { Event, EventData, Space, SpaceEventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Address } from 'viem';
 import { config } from '@/context/WalletContext';
-import { OutputData } from '@editorjs/editorjs';
 import {
   TICKET_FACTORY_ADDRESS,
   ticketFactoryGetContract,
@@ -43,6 +50,7 @@ import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { useAccount } from 'wagmi';
 import { convertDateToEpoch } from '@/utils/format';
 import Input from '@/components/core/Input';
+import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 
 interface Inputs {
   name: string;
@@ -93,8 +101,76 @@ const Home = () => {
     right: false,
   });
 
+  const [space, setSpace] = useState<Space>();
+
   const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
+
+  const getSpaceByID = async () => {
+    try {
+      const GET_SPACE_QUERY = `
+      query GetSpace($id: ID!) {
+        node(id: $id) {
+          ...on Space {
+            avatar
+            banner
+            description
+            name
+            profileId
+            tagline
+            website
+            twitter
+            telegram
+            nostr
+            lens
+            github
+            discord
+            ens
+            events(first: 10) {
+              edges {
+                node {
+                  createdAt
+                  description
+                  endTime
+                  external_url
+                  gated
+                  id
+                  image_url
+                  max_participant
+                  meeting_url
+                  min_participant
+                  participant_count
+                  profileId
+                  spaceId
+                  startTime
+                  status
+                  tagline
+                  timezone
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const spaceId = params.spaceid.toString();
+
+      const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+        id: spaceId,
+      });
+      const spaceData: Space = response.data.node as Space;
+      setSpace(spaceData);
+
+      const eventData: SpaceEventData = response.data.node
+        .events as SpaceEventData;
+      const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
+      setEvents(fetchedEvents);
+      return spaceData;
+    } catch (error) {
+      console.error('Failed to fetch space:', error);
+    }
+  };
 
   const getEvents = async () => {
     try {
@@ -120,6 +196,9 @@ const Home = () => {
               min_participant
               max_participant
               createdAt
+              space {
+                avatar
+              }
             }
           }
         }
@@ -144,6 +223,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         await getEvents();
+        await getSpaceByID();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -174,17 +254,20 @@ const Home = () => {
     const [avatarURL, setAvatarURL] = useState<string>();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
-    const [editor, setEditorInst] = useState<any>();
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
     const [status, setStatus] = useState<string>('');
     const [locations, setLocations] = useState<string[]>(['']);
+    const [track, setTrack] = useState<string>('');
+    const [tracks, setTracks] = useState<string[]>([]);
     const [error, setError] = useState(false);
 
     const profileId = profile?.id || '';
+    console.log('profileId: ', profileId);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
+
       if (
         name === 'participant' ||
         name === 'max_participant' ||
@@ -221,6 +304,17 @@ const Home = () => {
       setSocialLinks(temp);
     };
 
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setTrack(e.target.value);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        setTracks([...tracks, track]);
+        setTrack('');
+      }
+    };
+
     const createEvent = async () => {
       const isNeeded =
         inputs.name.length === 0 ||
@@ -231,7 +325,6 @@ const Home = () => {
       if (isNeeded) {
         typeof window !== 'undefined' &&
           window.alert('Please input all necessary fields.');
-        console.log(inputs, startTime, endTime, spaceId, profileId);
       } else {
         let socialLinks = {};
 
@@ -254,6 +347,7 @@ const Home = () => {
             }
           }
         }
+        // const output = await editor.save();
         let strDesc: any = JSON.stringify(description);
 
         if (
@@ -327,6 +421,7 @@ const Home = () => {
                  title
                  links
                }
+               tracks
              }
            }
          }
@@ -350,6 +445,7 @@ const Home = () => {
                   max_participant: inputs.max_participant,
                   min_participant: inputs.min_participant,
                   status: person ? 'In-Person' : 'Online',
+                  tracks: tracks.join(','),
                 },
               },
             },
@@ -410,7 +506,7 @@ const Home = () => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="column" gap="20px" padding={3}>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
                 <Typography variant="subtitleSB">Event Basic</Typography>
               </Box>
@@ -429,74 +525,41 @@ const Home = () => {
                   />
                 </Stack>
                 <Stack spacing="10px">
-                  <Typography variant="subtitleSB">Event Symbol</Typography>
-                  <Input
-                    onChange={handleInputChange}
-                    name="symbol"
-                    sx={{
-                      color: 'white',
-                      backgroundColor: '#373737',
-                      padding: '5px 10px',
-                      borderRadius: '8px',
-                      width: '100%',
-                      fontSize: '15px',
-                      fontFamily: 'Inter',
-                      '&::after': {
-                        borderBottom: 'none',
-                      },
-                      '&::before': {
-                        borderBottom: 'none',
-                      },
-                      '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                        borderBottom: 'none',
-                      },
-                    }}
-                    placeholder="Type an awesome symbol"
-                  />
-                </Stack>
-                <Box>
-                  <Typography
-                    color="white"
-                    fontSize="18px"
-                    fontWeight={700}
-                    fontFamily="Inter"
-                  >
-                    Event Tagline
-                  </Typography>
+                  <Typography variant="subtitleSB">Event Tagline</Typography>
                   <ZuInput
                     onChange={handleInputChange}
                     name="tagline"
                     placeholder="Write a short, one-sentence tagline for your event"
                   />
-                </Box>
-                <Stack spacing="10px">
-                  <Typography variant="subtitleSB">
-                    Event Description
-                  </Typography>
-                  <Typography color="white" variant="caption">
-                    This is a description greeting for new members. You can also
-                    update descriptions.
-                  </Typography>
-                  <TextEditor
-                    holder="event_description"
-                    value={description}
-                    setData={setDescription}
-                    sx={{
-                      backgroundColor: '#ffffff0d',
-                      fontFamily: 'Inter',
-                      color: 'white',
-                      padding: '12px 12px 12px 80px',
-                      borderRadius: '10px',
-                      height: 'auto',
-                      minHeight: '270px',
-                      overflow: 'auto',
-                      '& > div > div': {
-                        paddingBottom: '0px !important',
-                      },
-                    }}
-                  />
-                  <Stack direction="row" justifyContent="space-between">
-                    <Stack
+                </Stack>
+              </Box>
+
+              <Stack spacing="10px">
+                <Typography variant="subtitleSB">Event Description</Typography>
+                <Typography color="white" variant="caption">
+                  This is a description greeting for new members. You can also
+                  update descriptions.
+                </Typography>
+                <TextEditor
+                  holder="event_description"
+                  value={description}
+                  setData={setDescription}
+                  sx={{
+                    backgroundColor: '#ffffff0d',
+                    fontFamily: 'Inter',
+                    color: 'white',
+                    padding: '12px 12px 12px 80px',
+                    borderRadius: '10px',
+                    height: 'auto',
+                    minHeight: '270px',
+                    overflow: 'auto',
+                    '& > div > div': {
+                      paddingBottom: '0px !important',
+                    },
+                  }}
+                />
+                <Stack direction="row" justifyContent="space-between">
+                  {/* <Stack
                       sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -533,405 +596,448 @@ const Home = () => {
                       <Typography color="white" variant="caption">
                         Markdown Available
                       </Typography>
-                    </Stack>
-                    <Typography variant="caption" color="white">
-                      1000 Characters Left
+                    </Stack> */}
+                  <Typography variant="caption" color="white">
+                    {5000 -
+                      (description
+                        ? description.blocks
+                            .map((item) => item.data.text.length)
+                            .reduce((prev, current) => prev + current, 0)
+                        : 0)}{' '}
+                    Characters Left
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Typography variant="subtitleSB">Event Avatar</Typography>
+              <Typography variant="bodyS">
+                Recommend min of 200x200px (1:1 Ratio)
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <Uploader3
+                  accept={['.gif', '.jpeg', '.gif']}
+                  connector={connector}
+                  multiple={false}
+                  crop={false} // must be false when accept is svg
+                  onChange={(files: any) => {
+                    setAvatar(files[0]);
+                  }}
+                  onUpload={(file: any) => {
+                    setAvatar(file);
+                  }}
+                  onComplete={(result: any) => {
+                    setAvatarURL(result?.url);
+                  }}
+                >
+                  <Button
+                    component="span"
+                    sx={{
+                      color: 'white',
+                      borderRadius: '10px',
+                      backgroundColor: '#373737',
+                      border: '1px solid #383838',
+                    }}
+                  >
+                    Upload
+                  </Button>
+                </Uploader3>
+                <PreviewFile
+                  sx={{
+                    width: '420px',
+                    height: '420px',
+                    borderRadius: '10px',
+                  }}
+                  file={avatarURL}
+                />
+              </Box>
+              <Box display="flex" justifyContent="space-between" gap="20px">
+                <Box flex={1}>
+                  <Typography variant="subtitleSB">Start Date</Typography>
+                  <DatePicker
+                    onChange={(newValue) => setStartTime(newValue)}
+                    sx={{
+                      '& .MuiSvgIcon-root': {
+                        color: 'white',
+                      },
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                      },
+                    }}
+                    slotProps={{
+                      popper: {
+                        sx: {
+                          ...{
+                            '& .MuiPickersDay-root': { color: 'black' },
+                            '& .MuiPickersDay-root.Mui-selected': {
+                              backgroundColor: '#D7FFC4',
+                            },
+                            '& .MuiPickersCalendarHeader-root': {
+                              color: 'black',
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </Box>
+                <Box flex={1}>
+                  <Typography variant="subtitleSB">End Date</Typography>
+                  <DatePicker
+                    onChange={(newValue) => setEndTime(newValue)}
+                    sx={{
+                      '& .MuiSvgIcon-root': {
+                        color: 'white',
+                      },
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                      },
+                    }}
+                    slotProps={{
+                      popper: {
+                        sx: {
+                          ...{
+                            '& .MuiPickersDay-root': { color: 'black' },
+                            '& .MuiPickersDay-root.Mui-selected': {
+                              backgroundColor: '#D7FFC4',
+                            },
+                            '& .MuiPickersCalendarHeader-root': {
+                              color: 'black',
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+              <Stack spacing="10px">
+                <Typography variant="subtitleSB">Participant</Typography>
+                <ZuInput
+                  onChange={handleInputChange}
+                  type="number"
+                  name="participant"
+                  placeholder="Type Participant"
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="subtitleSB">Max Participant</Typography>
+                <ZuInput
+                  onChange={handleInputChange}
+                  type="number"
+                  name="max_participant"
+                  placeholder="Type Max Participant"
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="subtitleSB">Min Participant</Typography>
+                <ZuInput
+                  onChange={handleInputChange}
+                  type="number"
+                  name="min_participant"
+                  placeholder="Type Min Participant"
+                />
+              </Stack>
+            </Box>
+          </Box>
+          <Box bgcolor="#262626" borderRadius="10px">
+            <Box
+              padding="20px"
+              display="flex"
+              justifyContent="space-between"
+              borderBottom="1px solid #383838"
+            >
+              <Typography variant="subtitleSB">Event Format</Typography>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap="20px"
+              padding="20px"
+            >
+              <Box display="flex" justifyContent="space-between" gap="20px">
+                <Box
+                  bgcolor={person ? '#484E45' : '#373737'}
+                  borderRadius="10px"
+                  padding="10px"
+                  display="flex"
+                  alignItems="center"
+                  gap="10px"
+                  flex={1}
+                >
+                  <BpCheckbox
+                    checked={person}
+                    onChange={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
+                  />
+                  <Stack>
+                    <Typography variant="bodyBB">In-Person</Typography>
+                    <Typography variant="caption">
+                      This is a physical event
                     </Typography>
                   </Stack>
-                </Stack>
-                <Typography variant="subtitleSB">Event Avatar</Typography>
-                <Typography variant="bodyS">
-                  Recommend min of 200x200px (1:1 Ratio)
-                </Typography>
+                </Box>
                 <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                  }}
+                  bgcolor={online ? '#484E45' : '#373737'}
+                  borderRadius="10px"
+                  padding="10px"
+                  display="flex"
+                  alignItems="center"
+                  gap="10px"
+                  flex={1}
                 >
-                  <Uploader3
-                    accept={['.gif', '.jpeg', '.gif']}
-                    connector={connector}
-                    multiple={false}
-                    crop={false} // must be false when accept is svg
-                    onChange={(files: any) => {
-                      setAvatar(files[0]);
+                  <BpCheckbox
+                    checked={online}
+                    onChange={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
                     }}
-                    onUpload={(file: any) => {
-                      setAvatar(file);
-                    }}
-                    onComplete={(result: any) => {
-                      setAvatarURL(result?.url);
-                    }}
-                  >
-                    <Button
-                      component="span"
-                      sx={{
-                        color: 'white',
-                        borderRadius: '10px',
-                        backgroundColor: '#373737',
-                        border: '1px solid #383838',
-                      }}
-                    >
-                      Upload
-                    </Button>
-                  </Uploader3>
-                  <PreviewFile
-                    sx={{
-                      width: '150px',
-                      height: '150px',
-                      borderRadius: '75px',
-                    }}
-                    file={avatarURL}
                   />
+                  <Stack>
+                    <Typography variant="bodyBB">Online</Typography>
+                    <Typography variant="caption">
+                      Specially Online Event
+                    </Typography>
+                  </Stack>
                 </Box>
-                <Stack spacing="10px">
-                  <Typography variant="subtitleSB">TimeZone</Typography>
-                  <ZuInput
-                    onChange={handleInputChange}
-                    name="timezone"
-                    placeholder="Type Time Zone"
-                  />
-                </Stack>
-                <Box display="flex" justifyContent="space-between" gap="20px">
-                  <Box flex={1}>
-                    <Typography variant="subtitleSB">Start Date</Typography>
-                    <DatePicker
-                      onChange={(newValue) => setStartTime(newValue)}
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  </Box>
-                  <Box flex={1}>
-                    <Typography variant="subtitleSB">End Date</Typography>
-                    <DatePicker
-                      onChange={(newValue) => setEndTime(newValue)}
-                      sx={{
-                        '& .MuiSvgIcon-root': {
-                          color: 'white',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            ...{
-                              '& .MuiPickersDay-root': { color: 'black' },
-                              '& .MuiPickersDay-root.Mui-selected': {
-                                backgroundColor: '#D7FFC4',
-                              },
-                              '& .MuiPickersCalendarHeader-root': {
-                                color: 'black',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  </Box>
-                </Box>
-                <Stack spacing="10px">
-                  <Typography variant="subtitleSB">Participant</Typography>
-                  <ZuInput
-                    onChange={handleInputChange}
-                    type="number"
-                    name="participant"
-                    placeholder="Type Time Zone"
-                  />
-                </Stack>
-                <Stack spacing="10px">
-                  <Typography variant="subtitleSB">Max Participant</Typography>
-                  <ZuInput
-                    onChange={handleInputChange}
-                    type="number"
-                    name="max_participant"
-                    placeholder="Type Max Participant"
-                  />
-                </Stack>
-                <Stack spacing="10px">
-                  <Typography variant="subtitleSB">Min Participant</Typography>
-                  <ZuInput
-                    onChange={handleInputChange}
-                    type="number"
-                    name="min_participant"
-                    placeholder="Type Min Participant"
-                  />
-                </Stack>
               </Box>
+              <Stack spacing="10px">
+                <Typography variant="subtitleSB">Location</Typography>
+                {locations.map((location, index) => (
+                  <ZuInput
+                    key={`Location_Index${index}`}
+                    placeholder="city, country"
+                    onChange={(e) => {
+                      let newLocations = locations;
+                      newLocations[index] = e.target.value;
+                      setLocations(newLocations);
+                    }}
+                  />
+                ))}
+              </Stack>
+              <ZuButton
+                variant="contained"
+                endIcon={<PlusIcon />}
+                onClick={() => setLocations((prev) => [...prev, ''])}
+              >
+                Add Address
+              </ZuButton>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
-              <Box
-                padding="20px"
-                display="flex"
-                justifyContent="space-between"
-                borderBottom="1px solid #383838"
-              >
-                <Typography variant="subtitleSB">Event Format</Typography>
-              </Box>
-              <Box
-                display="flex"
-                flexDirection="column"
-                gap="20px"
-                padding="20px"
-              >
-                <Box display="flex" justifyContent="space-between" gap="20px">
-                  <Box
-                    bgcolor={person ? '#484E45' : '#373737'}
-                    borderRadius="10px"
-                    padding="10px"
-                    display="flex"
-                    alignItems="center"
-                    gap="10px"
-                    flex={1}
-                  >
-                    <BpCheckbox
-                      checked={person}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
-                    <Stack>
-                      <Typography variant="bodyBB">In-Person</Typography>
-                      <Typography variant="caption">
-                        This is a physical event
-                      </Typography>
-                    </Stack>
-                  </Box>
-                  <Box
-                    bgcolor={online ? '#484E45' : '#373737'}
-                    borderRadius="10px"
-                    padding="10px"
-                    display="flex"
-                    alignItems="center"
-                    gap="10px"
-                    flex={1}
-                  >
-                    <BpCheckbox
-                      checked={online}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
-                    <Stack>
-                      <Typography variant="bodyBB">Online</Typography>
-                      <Typography variant="caption">
-                        Specially Online Event
-                      </Typography>
-                    </Stack>
-                  </Box>
-                </Box>
-                <Stack spacing="10px">
-                  <Typography variant="subtitleSB">Location</Typography>
-                  {locations.map((location, index) => (
-                    <ZuInput
-                      key={`Location_Index${index}`}
-                      onChange={(e) => {
-                        let newLocations = locations;
-                        newLocations[index] = e.target.value;
-                        setLocations(newLocations);
-                      }}
-                    />
-                  ))}
-                </Stack>
-                <ZuButton
-                  variant="contained"
-                  endIcon={<PlusIcon />}
-                  onClick={() => setLocations((prev) => [...prev, ''])}
-                >
-                  Add Address
-                </ZuButton>
-              </Box>
+          </Box>
+          <Box bgcolor="#262626" borderRadius="10px">
+            <Box padding="20px" display="flex" justifyContent="space-between">
+              <Typography variant="subtitleSB">Links</Typography>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
-              <Box padding="20px" display="flex" justifyContent="space-between">
-                <Typography variant="subtitleSB">Links</Typography>
-              </Box>
-              <Box
-                padding={'20px'}
-                display={'flex'}
-                flexDirection={'column'}
-                gap={'30px'}
-                ref={socialLinksRef}
+            <Box
+              padding={'20px'}
+              display={'flex'}
+              flexDirection={'column'}
+              gap={'30px'}
+              ref={socialLinksRef}
+            >
+              <Typography
+                fontSize={'18px'}
+                fontWeight={700}
+                lineHeight={'120%'}
+                color={'white'}
               >
-                <Typography
-                  fontSize={'18px'}
-                  fontWeight={700}
-                  lineHeight={'120%'}
-                  color={'white'}
-                >
-                  Social Links
-                </Typography>
-                {socialLinks.map((item, index) => {
-                  return (
+                Social Links
+              </Typography>
+              {socialLinks.map((item, index) => {
+                return (
+                  <Box
+                    display={'flex'}
+                    flexDirection={'row'}
+                    gap={'20px'}
+                    key={index}
+                  >
                     <Box
                       display={'flex'}
-                      flexDirection={'row'}
-                      gap={'20px'}
-                      key={index}
+                      flexDirection={'column'}
+                      gap={'10px'}
+                      flex={1}
+                    >
+                      <Typography
+                        fontSize={'16px'}
+                        fontWeight={700}
+                        color={'white'}
+                      >
+                        Select Social
+                      </Typography>
+                      <Select
+                        placeholder="Select"
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              backgroundColor: '#222222',
+                            },
+                          },
+                        }}
+                        sx={{
+                          '& > div': {
+                            padding: '8.5px 12px',
+                            borderRadius: '10px',
+                          },
+                        }}
+                      >
+                        {SOCIAL_TYPES.map((social, index) => {
+                          return (
+                            <MenuItem value={social.key} key={index}>
+                              {social.value}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </Box>
+                    <Box
+                      display={'flex'}
+                      flexDirection={'column'}
+                      gap={'10px'}
+                      flex={1}
+                    >
+                      <Typography
+                        fontSize={'16px'}
+                        fontWeight={700}
+                        color={'white'}
+                      >
+                        URL
+                      </Typography>
+                      <TextField
+                        variant="outlined"
+                        placeholder="https://"
+                        sx={{
+                          opacity: '0.6',
+                          '& > div > input': {
+                            padding: '8.5px 12px',
+                          },
+                        }}
+                      />
+                    </Box>
+                    <Box
+                      display={'flex'}
+                      flexDirection={'column'}
+                      justifyContent={'flex-end'}
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => handleRemoveSociaLink(item)}
                     >
                       <Box
-                        display={'flex'}
-                        flexDirection={'column'}
-                        gap={'10px'}
-                        flex={1}
+                        sx={{
+                          borderRadius: '10px',
+                          width: '40px',
+                          height: '40px',
+                          padding: '10px 14px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                        }}
                       >
-                        <Typography
-                          fontSize={'16px'}
-                          fontWeight={700}
-                          color={'white'}
-                        >
-                          Select Social
-                        </Typography>
-                        <Select
-                          placeholder="Select"
-                          MenuProps={{
-                            PaperProps: {
-                              style: {
-                                backgroundColor: '#222222',
-                              },
-                            },
-                          }}
-                          sx={{
-                            '& > div': {
-                              padding: '8.5px 12px',
-                              borderRadius: '10px',
-                            },
-                          }}
-                        >
-                          {SOCIAL_TYPES.map((social, index) => {
-                            return (
-                              <MenuItem value={social.key} key={index}>
-                                {social.value}
-                              </MenuItem>
-                            );
-                          })}
-                        </Select>
-                      </Box>
-                      <Box
-                        display={'flex'}
-                        flexDirection={'column'}
-                        gap={'10px'}
-                        flex={1}
-                      >
-                        <Typography
-                          fontSize={'16px'}
-                          fontWeight={700}
-                          color={'white'}
-                        >
-                          URL
-                        </Typography>
-                        <TextField
-                          variant="outlined"
-                          placeholder="https://"
-                          sx={{
-                            opacity: '0.6',
-                            '& > div > input': {
-                              padding: '8.5px 12px',
-                            },
-                          }}
-                        />
-                      </Box>
-                      <Box
-                        display={'flex'}
-                        flexDirection={'column'}
-                        justifyContent={'flex-end'}
-                        sx={{ cursor: 'pointer' }}
-                        onClick={() => handleRemoveSociaLink(item)}
-                      >
-                        <Box
-                          sx={{
-                            borderRadius: '10px',
-                            width: '40px',
-                            height: '40px',
-                            padding: '10px 14px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                          }}
-                        >
-                          <CancelIcon />
-                        </Box>
+                        <CancelIcon />
                       </Box>
                     </Box>
-                  );
-                })}
-                <Button
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                    padding: '8px 14px',
-                    borderRadius: '10px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    textTransform: 'unset',
-                    color: 'white',
-                  }}
-                  onClick={handleAddSocialLink}
-                >
-                  <AddCircleIcon />
-                  <Typography color="white">Add Social Link</Typography>
-                </Button>
-              </Box>
-            </Box>
-            <Box display="flex" gap="20px">
+                  </Box>
+                );
+              })}
               <Button
                 sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '10px',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  textTransform: 'unset',
                   color: 'white',
-                  borderRadius: '10px',
-                  backgroundColor: '#373737',
-                  fontSize: '14px',
-                  padding: '6px 16px',
-                  border: '1px solid #383838',
-                  flex: 1,
                 }}
-                startIcon={<XMarkIcon />}
+                onClick={handleAddSocialLink}
               >
-                Discard
-              </Button>
-              <Button
-                sx={{
-                  color: '#67DBFF',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(103, 219, 255, 0.10)',
-                  fontSize: '14px',
-                  padding: '6px 16px',
-                  flex: 1,
-                  border: '1px solid rgba(103, 219, 255, 0.20)',
-                }}
-                startIcon={<PlusCircleIcon color="#67DBFF" />}
-                onClick={createEvent}
-              >
-                Create Event
+                <AddCircleIcon />
+                <Typography color="white">Add Social Link</Typography>
               </Button>
             </Box>
+          </Box>
+          <Stack bgcolor="#262626" borderRadius="10px">
+            <Typography variant="subtitleMB" padding="20px">
+              Event Tracks
+            </Typography>
+            <Stack padding="20px" spacing="30px">
+              <Typography variant="bodyB">
+                Tracks are the main categories for this event. This allows
+                sessions to be organized into relevant tracks by attributing to
+                a particular track.
+              </Typography>
+              <Stack spacing="20px">
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">Event Tracks</Typography>
+                  <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                    Create tracks related to your event
+                  </Typography>
+                </Stack>
+                <ZuInput
+                  placeholder="Add a tag"
+                  onKeyDown={handleKeyDown}
+                  onChange={handleChange}
+                  value={track}
+                />
+                <Stack direction="row" spacing="10px">
+                  {tracks.length !== 0 &&
+                    tracks.map((track, index) => (
+                      <Chip
+                        key={`TrackChip-${index}`}
+                        label={track}
+                        sx={{
+                          borderRadius: '10px',
+                          bgcolor: '#313131',
+                        }}
+                        onDelete={() => {
+                          const newArray = tracks.filter(
+                            (item) => item !== track,
+                          );
+                          setTracks(newArray);
+                        }}
+                      />
+                    ))}
+                </Stack>
+              </Stack>
+            </Stack>
+          </Stack>
+          <Box display="flex" gap="20px">
+            <Button
+              sx={{
+                color: 'white',
+                borderRadius: '10px',
+                backgroundColor: '#373737',
+                fontSize: '14px',
+                padding: '6px 16px',
+                border: '1px solid #383838',
+                flex: 1,
+              }}
+              startIcon={<XMarkIcon />}
+            >
+              Discard
+            </Button>
+            <Button
+              sx={{
+                color: '#67DBFF',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(103, 219, 255, 0.10)',
+                fontSize: '14px',
+                padding: '6px 16px',
+                flex: 1,
+                border: '1px solid rgba(103, 219, 255, 0.20)',
+              }}
+              startIcon={<PlusCircleIcon color="#67DBFF" />}
+              onClick={createEvent}
+            >
+              Create Event
+            </Button>
           </Box>
         </Box>
       </LocalizationProvider>
@@ -939,6 +1045,12 @@ const Home = () => {
   };
   return (
     <Stack direction="row" width={'100%'}>
+      <SubSidebar
+        title={space?.name}
+        spaceId={params.spaceid.toString()}
+        avatar={space?.avatar}
+        banner={space?.banner}
+      />
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
         <CurrentEvents events={events} onToggle={toggleDrawer} />

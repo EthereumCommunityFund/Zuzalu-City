@@ -86,6 +86,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
         },
         boxSizing: 'border-box',
         fontFamily: 'Inter',
+        overflowY: 'auto',
       }}
     >
       <Stack
