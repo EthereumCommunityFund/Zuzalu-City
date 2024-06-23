@@ -8,6 +8,7 @@ import { XMarkIcon } from '@/components/icons';
 import { CeramicResponseType, Event, EventEdge, Anchor } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
+import { Verify, Agree, Mint, Complete, Transaction } from '@/components/event/Whitelist';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -33,6 +34,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
   const [isEmail, setIsEmail] = useState<boolean>(false);
   const [isPayment, setIsPayment] = useState<boolean>(false);
+
+  const [isVerify, setIsVerify] = useState<boolean>(false);
+  const [isAgree, setIsAgree] = useState<boolean>(false);
+  const [isMint, setIsMint] = useState<boolean>(false);
+  const [isTransaction, setIsTransaction] = useState<boolean>(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const getEventDetailInfo = async () => {
     try {
@@ -137,7 +144,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         role="presentation"
         zIndex="10"
         borderLeft="1px solid #383838"
-        height="100%"
       >
         <Stack
           direction="row"
@@ -156,10 +162,15 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             Register for Event
           </Typography>
         </Stack>
-        {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
+        {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
-        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />}
+        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
+        {!isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Verify setIsVerify={setIsVerify} />}
+        {isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />}
+        {!isVerify && isAgree && !isMint && !isTransaction && !isComplete && <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />}
+        {!isVerify && !isAgree && isMint && !isTransaction && !isComplete && <Transaction setIsMint={setIsMint} setIsTransaction={setIsTransaction} handleClose={handleClose} />}
+        {!isVerify && !isAgree && !isMint && isTransaction && !isComplete && <Complete setIsTransaction={setIsTransaction} setIsComplete={setIsComplete} handleClose={handleClose} />}
       </Box>
     );
   };

@@ -1,11 +1,15 @@
-export const RightArrowIcon = ({ color }: { color?: string }) => {
+import React from 'react';
+import { IconProps } from 'types';
+
+export const RightArrowIcon: React.FC<IconProps> = ({ color, size = 6 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
       color={color ? color : 'rgb(255, 255, 255)'}
-      className="w-6 h-6"
+      width={`${size * 4}px`}
+      height={`${size * 4}px`}
     >
       <path
         fillRule="evenodd"
