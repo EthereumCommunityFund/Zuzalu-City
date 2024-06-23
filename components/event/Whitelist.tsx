@@ -31,7 +31,7 @@ export const Verify: React.FC<IProps> = ({ setIsVerify }) => {
           Disclaimer: the ticketing system is in beta, please take caution moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px">
+      <Stack padding="20px" height="100vh">
         <Stack padding="20px" border="1px solid #383838" bgcolor="#262626" spacing="20px" borderRadius="10px">
           <Typography variant="subtitleLB">
             Connect Wallet
@@ -93,7 +93,7 @@ export const Agree: React.FC<IProps> = ({ setIsVerify, setIsAgree }) => {
           Disclaimer: the ticketing system is in beta, please take caution moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px">
+      <Stack padding="20px" height="100vh">
         <Stack padding="20px" border="1px solid #383838" bgcolor="#262626" spacing="20px" borderRadius="10px">
           <Typography variant="subtitleLB">
             Attendees Must Know,
@@ -151,7 +151,7 @@ export const Mint: React.FC<IProps> = ({ setIsAgree, setIsMint }) => {
           Disclaimer: the ticketing system is in beta, please take caution moving forward
         </Typography>
       </Stack>
-      <Stack spacing="10px" padding="20px">
+      <Stack spacing="10px" padding="20px" height="100vh">
         <Stack spacing="20px">
           <Typography variant="subtitleLB">
             Your Ticket
@@ -234,7 +234,7 @@ export const Transaction: React.FC<IProps> = ({ setIsMint, setIsTransaction, han
           Disclaimer: the ticketing system is in beta, please take caution moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px">
+      <Stack padding="20px" height="100vh">
         {isWait ?
           <Stack padding="20px" spacing="30px" border="1px solid #383838" bgcolor="#262626" borderRadius="10px">
             <Typography variant="subtitleLB">
@@ -293,7 +293,7 @@ export const Complete: React.FC<IProps> = ({ setIsTransaction, setIsComplete, ha
           Disclaimer: the ticketing system is in beta, please take caution moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px" spacing="30px" alignItems="center">
+      <Stack padding="20px" spacing="30px" alignItems="center" height="100vh">
         <Typography variant="subtitleLB">
           Congrats, you received
         </Typography>

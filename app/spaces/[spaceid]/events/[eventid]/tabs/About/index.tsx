@@ -142,7 +142,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
           backgroundColor: '#222222',
         }}
         role="presentation"
-        zIndex="10"
+        zIndex="100"
         borderLeft="1px solid #383838"
       >
         <Stack
@@ -290,8 +290,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             hideBackdrop={true}
             sx={{
               '& .MuiDrawer-paper': {
-                marginTop: '50px',
-                height: 'calc(100% - 50px)',
                 boxShadow: 'none',
               },
             }}
