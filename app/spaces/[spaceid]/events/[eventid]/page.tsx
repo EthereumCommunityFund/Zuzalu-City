@@ -32,9 +32,6 @@ const Home = () => {
           banner={eventData?.space?.banner}
         />
       )}
-<<<<<<< HEAD
-      <Stack flex={1} borderLeft="1px solid #383838">
-=======
       <Stack
         flex={1}
         borderLeft="1px solid #383838"
@@ -43,7 +40,6 @@ const Home = () => {
           overflowY: 'auto',
         }}
       >
->>>>>>> a65bc4e823b584dd6d1319bc210d0ff33368e0f0
         <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb tabName={tabName} setTabName={setTabName} />
         {tabName === 'About' && (

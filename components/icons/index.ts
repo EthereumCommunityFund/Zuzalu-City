@@ -149,8 +149,5 @@ export {
   Square2StackIcon,
   ArrowTopRightSquareIcon,
   ArrowDownSquare,
-<<<<<<< HEAD
-=======
-  HeartIcon
->>>>>>> a65bc4e823b584dd6d1319bc210d0ff33368e0f0
+  HeartIcon,
 };
