@@ -55,7 +55,7 @@ const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
           </Typography>
         </Stack>
       </Stack>
-      <Stack
+      {/* <Stack
         direction="row"
         height="100%"
         paddingLeft={3}
@@ -67,7 +67,7 @@ const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
         <ZuButton startIcon={<HomeIcon />} sx={{ backgroundColor: '#383838' }}>
           Event Feed
         </ZuButton>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 };
