@@ -542,7 +542,7 @@ const Home = () => {
                   }}
                 >
                   <Uploader3
-                    accept={['.gif', '.jpeg', '.gif']}
+                    accept={['.gif', '.jpeg', '.gif', '.png']}
                     connector={connector}
                     multiple={false}
                     crop={false} // must be false when accept is svg
