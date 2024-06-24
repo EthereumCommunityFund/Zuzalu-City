@@ -21,6 +21,8 @@ import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { SpaceCard } from '@/components/cards';
 import { Anchor } from '@/types';
+import { LatLngLiteral } from 'leaflet';
+import getLatLngFromAddress from '@/utils/osm';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -60,6 +62,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     bottom: false,
     right: false,
   });
+
+  const [osm, setOsm] = useState<LatLngLiteral | undefined>({
+    lat: 0,
+    lng: 0
+  })
+
 
   const getEventDetailInfo = async () => {
     try {
@@ -128,7 +136,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         .select('*')
         .eq('eventId', eventId);
       if (data !== null) {
-        setLocation(data[0].name.split(','));
+        setLocation(data[0].name);
       }
     } catch (err) {
       console.log(err);
@@ -151,6 +159,15 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getLatLngFromAddress(location);
+      console.log("eventlocatino", location, res)
+      setOsm(res);
+    }
+    fetchData();
+  }, [location])
 
   const List = (anchor: Anchor) => {
 
@@ -319,7 +336,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-            <EventDetail status={eventData.status} links={eventData.customLinks} />
+            <EventDetail status={eventData.status} links={eventData.customLinks} address={location} location={osm} />
             {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}

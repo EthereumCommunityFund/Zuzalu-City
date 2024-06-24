@@ -5,11 +5,13 @@ import { Stack, Typography, Box, SwipeableDrawer } from '@mui/material';
 import { EventName, EventAbout, EventRegister, EventDetail, Initial, Disclaimer, Email, Payment } from '@/components/event';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
-import { CeramicResponseType, Event, EventEdge, Anchor } from '@/types';
+import { CeramicResponseType, Event, EventEdge, Anchor, Coordinates } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
 import { Verify, Agree, Mint, Complete, Transaction } from '@/components/event/Whitelist';
 import { SponsorAgree, SponsorMint, SponsorTransaction, SponsorComplete } from '@/components/event/Sponsor';
+import getLatLngFromAddress from '@/utils/osm';
+import { LatLngLiteral } from 'leaflet';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -30,6 +32,10 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   });
 
   const [eventLocation, setEventLocation] = useState<string>('');
+  const [osm, setOsm] = useState<LatLngLiteral | undefined>({
+    lat: 0,
+    lng: 0
+  })
 
   const [whitelist, setWhitelist] = useState<boolean>(false);
   const [sponsor, setSponsor] = useState<boolean>(false);
@@ -132,6 +138,17 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     }
     fetchData();
   }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getLatLngFromAddress(eventLocation);
+      console.log("eventlocatino", eventLocation, res)
+      setOsm(res);
+    }
+    fetchData();
+  }, [eventLocation])
+
+  console.log("out", eventLocation)
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -303,7 +320,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-            <EventDetail status={eventData.status} links={eventData.customLinks} />
+            <EventDetail status={eventData.status} links={eventData.customLinks} location={osm} address={eventLocation} />
             {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}
