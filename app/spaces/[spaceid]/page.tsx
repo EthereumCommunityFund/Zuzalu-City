@@ -229,10 +229,6 @@ export default function SpaceDetailPage() {
             >
               {space ? (
                 <Image
-                  loader={() =>
-                    space?.avatar ||
-                    'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
-                  }
                   src={
                     space?.avatar ||
                     'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
