@@ -1,5 +1,11 @@
 'use client';
-import { useState, ChangeEvent, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  ChangeEvent,
+  useEffect,
+  useRef,
+  KeyboardEvent,
+} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
@@ -10,6 +16,7 @@ import {
   Select,
   MenuItem,
   TextField,
+  Chip,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -93,8 +100,76 @@ const Home = () => {
     right: false,
   });
 
+  const [space, setSpace] = useState<Space>();
+
   const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
+
+  const getSpaceByID = async () => {
+    try {
+      const GET_SPACE_QUERY = `
+      query GetSpace($id: ID!) {
+        node(id: $id) {
+          ...on Space {
+            avatar
+            banner
+            description
+            name
+            profileId
+            tagline
+            website
+            twitter
+            telegram
+            nostr
+            lens
+            github
+            discord
+            ens
+            events(first: 10) {
+              edges {
+                node {
+                  createdAt
+                  description
+                  endTime
+                  external_url
+                  gated
+                  id
+                  image_url
+                  max_participant
+                  meeting_url
+                  min_participant
+                  participant_count
+                  profileId
+                  spaceId
+                  startTime
+                  status
+                  tagline
+                  timezone
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const spaceId = params.spaceid.toString();
+
+      const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+        id: spaceId,
+      });
+      const spaceData: Space = response.data.node as Space;
+      setSpace(spaceData);
+
+      const eventData: SpaceEventData = response.data.node
+        .events as SpaceEventData;
+      const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
+      setEvents(fetchedEvents);
+      return spaceData;
+    } catch (error) {
+      console.error('Failed to fetch space:', error);
+    }
+  };
 
   const getEvents = async () => {
     try {
@@ -120,6 +195,9 @@ const Home = () => {
               min_participant
               max_participant
               createdAt
+              space {
+                avatar
+              }
             }
           }
         }
@@ -144,6 +222,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         await getEvents();
+        await getSpaceByID();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -174,17 +253,20 @@ const Home = () => {
     const [avatarURL, setAvatarURL] = useState<string>();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
-    const [editor, setEditorInst] = useState<any>();
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
     const [status, setStatus] = useState<string>('');
     const [locations, setLocations] = useState<string[]>(['']);
     const [error, setError] = useState(false);
+    const [track, setTrack] = useState<string>('');
+    const [tracks, setTracks] = useState<string[]>([]);
 
     const profileId = profile?.id || '';
+    console.log('profileId: ', profileId)
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
+
       if (
         name === 'participant' ||
         name === 'max_participant' ||
@@ -221,6 +303,17 @@ const Home = () => {
       setSocialLinks(temp);
     };
 
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setTrack(e.target.value);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        setTracks([...tracks, track]);
+        setTrack('');
+      }
+    };
+
     const createEvent = async () => {
       const isNeeded =
         inputs.name.length === 0 ||
@@ -254,6 +347,7 @@ const Home = () => {
             }
           }
         }
+        // const output = await editor.save();
         let strDesc: any = JSON.stringify(description);
 
         if (
@@ -327,6 +421,7 @@ const Home = () => {
                  title
                  links
                }
+               tracks
              }
            }
          }
@@ -350,6 +445,7 @@ const Home = () => {
                   max_participant: inputs.max_participant,
                   min_participant: inputs.min_participant,
                   status: person ? 'In-Person' : 'Online',
+                  tracks: tracks.join(','),
                 },
               },
             },
@@ -410,7 +506,7 @@ const Home = () => {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="column" gap="20px" padding={3}>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
                 <Typography variant="subtitleSB">Event Basic</Typography>
               </Box>
@@ -496,7 +592,7 @@ const Home = () => {
                     }}
                   />
                   <Stack direction="row" justifyContent="space-between">
-                    <Stack
+                    {/* <Stack
                       sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -533,9 +629,11 @@ const Home = () => {
                       <Typography color="white" variant="caption">
                         Markdown Available
                       </Typography>
-                    </Stack>
+                    </Stack> */}
                     <Typography variant="caption" color="white">
-                      1000 Characters Left
+                      {
+                        5000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
+                      } Characters Left
                     </Typography>
                   </Stack>
                 </Stack>
@@ -579,21 +677,13 @@ const Home = () => {
                   </Uploader3>
                   <PreviewFile
                     sx={{
-                      width: '150px',
-                      height: '150px',
-                      borderRadius: '75px',
+                      width: '420px',
+                      height: '420px',
+                      borderRadius: '10px',
                     }}
                     file={avatarURL}
                   />
                 </Box>
-                <Stack spacing="10px">
-                  <Typography variant="subtitleSB">TimeZone</Typography>
-                  <ZuInput
-                    onChange={handleInputChange}
-                    name="timezone"
-                    placeholder="Type Time Zone"
-                  />
-                </Stack>
                 <Box display="flex" justifyContent="space-between" gap="20px">
                   <Box flex={1}>
                     <Typography variant="subtitleSB">Start Date</Typography>
@@ -660,7 +750,7 @@ const Home = () => {
                     onChange={handleInputChange}
                     type="number"
                     name="participant"
-                    placeholder="Type Time Zone"
+                    placeholder="Type Participant"
                   />
                 </Stack>
                 <Stack spacing="10px">
@@ -683,7 +773,7 @@ const Home = () => {
                 </Stack>
               </Box>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box
                 padding="20px"
                 display="flex"
@@ -751,6 +841,7 @@ const Home = () => {
                   {locations.map((location, index) => (
                     <ZuInput
                       key={`Location_Index${index}`}
+                      placeholder="city, country"
                       onChange={(e) => {
                         let newLocations = locations;
                         newLocations[index] = e.target.value;
@@ -768,7 +859,7 @@ const Home = () => {
                 </ZuButton>
               </Box>
             </Box>
-            <Box bgcolor="#2d2d2d" borderRadius="10px">
+            <Box bgcolor="#262626" borderRadius="10px">
               <Box padding="20px" display="flex" justifyContent="space-between">
                 <Typography variant="subtitleSB">Links</Typography>
               </Box>
@@ -901,6 +992,51 @@ const Home = () => {
                 </Button>
               </Box>
             </Box>
+            <Stack bgcolor="#262626" borderRadius="10px">
+              <Typography variant="subtitleMB" padding="20px">
+                Event Tracks
+              </Typography>
+              <Stack padding="20px" spacing="30px">
+                <Typography variant="bodyB">
+                  Tracks are the main categories for this event. This allows
+                  sessions to be organized into relevant tracks by attributing
+                  to a particular track.
+                </Typography>
+                <Stack spacing="20px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Event Tracks</Typography>
+                    <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                      Create tracks related to your event
+                    </Typography>
+                  </Stack>
+                  <ZuInput
+                    placeholder="Add a tag"
+                    onKeyDown={handleKeyDown}
+                    onChange={handleChange}
+                    value={track}
+                  />
+                  <Stack direction="row" spacing="10px">
+                    {tracks.length !== 0 &&
+                      tracks.map((track, index) => (
+                        <Chip
+                          key={`TrackChip-${index}`}
+                          label={track}
+                          sx={{
+                            borderRadius: '10px',
+                            bgcolor: '#313131',
+                          }}
+                          onDelete={() => {
+                            const newArray = tracks.filter(
+                              (item) => item !== track,
+                            );
+                            setTracks(newArray);
+                          }}
+                        />
+                      ))}
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
             <Box display="flex" gap="20px">
               <Button
                 sx={{
@@ -939,6 +1075,12 @@ const Home = () => {
   };
   return (
     <Stack direction="row" width={'100%'}>
+      <SubSidebar
+        title={space?.name}
+        spaceId={params.spaceid.toString()}
+        avatar={space?.avatar}
+        banner={space?.banner}
+      />
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
         <CurrentEvents events={events} onToggle={toggleDrawer} />

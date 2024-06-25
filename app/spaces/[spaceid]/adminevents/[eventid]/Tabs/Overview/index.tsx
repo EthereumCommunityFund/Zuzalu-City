@@ -6,13 +6,18 @@ import {
   OverviewInvite,
   OverviewPosts,
 } from './components';
+import { Event } from '@/types';
 
-const Overview = () => {
+interface PropTypes {
+  event?: Event
+}
+
+const Overview = ({ event }: PropTypes) => {
   return (
     <Stack direction="column" spacing={4} paddingBottom={5}>
-      <OverviewHeader />
-      <OverviewDetail />
-      <OverviewInvite />
+      <OverviewHeader event={event} />
+      <OverviewDetail eventData={event} />
+      <OverviewInvite event={event}/>
       {/* <OverviewPosts /> */}
     </Stack>
   );

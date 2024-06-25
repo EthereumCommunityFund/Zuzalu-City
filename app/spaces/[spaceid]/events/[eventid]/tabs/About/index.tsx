@@ -187,7 +187,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               organizer={eventData.profile?.username as string}
               image_url={eventData.image_url}
             />
-            <EventAbout tagline={eventData.tagline} description={eventData.description} />
+            <EventAbout description={eventData.description} />
             <Stack
               bgcolor="#292929"
               padding="20px"

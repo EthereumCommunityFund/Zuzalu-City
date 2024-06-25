@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, ChangeEvent, useRef } from 'react';
+import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
 import {
   Stack,
   Box,
@@ -340,7 +340,9 @@ const Create = () => {
                     </Typography>
                   </Stack> */}
                   <Typography variant="caption" color="white">
-                    1000 Characters Left
+                    {
+                      5000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
+                    } Characters Left
                   </Typography>
                 </Stack>
               </Stack>

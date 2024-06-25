@@ -16,7 +16,13 @@ const Home = () => {
   const [eventData, setEventData] = useState<Event>();
 
   return (
-    <Stack direction="row" width="100%">
+    <Stack
+      direction="row"
+      sx={{
+        width: '100%',
+        height: 'calc(100vh - 50px)',
+      }}
+    >
       {!isDesktop && <IconSidebar />}
       {!isDesktop && (
         <Sidebar
@@ -26,7 +32,14 @@ const Home = () => {
           banner={eventData?.space?.banner}
         />
       )}
-      <Stack flex={1} borderLeft="1px solid #383838">
+      <Stack
+        flex={1}
+        borderLeft="1px solid #383838"
+        sx={{
+          height: '100%',
+          overflowY: 'auto',
+        }}
+      >
         <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb tabName={tabName} setTabName={setTabName} />
         {tabName === 'About' && (
