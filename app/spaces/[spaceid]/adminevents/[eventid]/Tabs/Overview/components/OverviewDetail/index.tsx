@@ -18,59 +18,60 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
   const params = useParams();
   const eventId = params.eventid.toString();
 
-  const [eventData, setEventData] = React.useState<Event>();
+  // const [eventData, setEventData] = React.useState<Event>();
+  // const { composeClient } = useCeramicContext();
 
-  const getEventDetailInfo = async () => {
-    try {
-      const response: CeramicResponseType<EventEdge> =
-        (await composeClient.executeQuery(
-          `
-        query MyQuery ($id: ID!) {
-          node (id: $id) {
-            ...on Event {
-              id
-              title
-              description
-              status
-              endTime
-              spaceId
-              tagline
-              timezone
-              createdAt
-              image_url
-              profileId
-              startTime
-              description
-              meeting_url
-              external_url
-              max_participant
-              space {
-                name
-                gated
-                avatar
-              }
-            }
-          }
-        }
-      `,
-          {
-            id: eventId,
-          },
-        )) as CeramicResponseType<EventEdge>;
+  // const getEventDetailInfo = async () => {
+  //   try {
+  //     const response: CeramicResponseType<EventEdge> =
+  //       (await composeClient.executeQuery(
+  //         `
+  //       query MyQuery ($id: ID!) {
+  //         node (id: $id) {
+  //           ...on Event {
+  //             id
+  //             title
+  //             description
+  //             status
+  //             endTime
+  //             spaceId
+  //             tagline
+  //             timezone
+  //             createdAt
+  //             image_url
+  //             profileId
+  //             startTime
+  //             description
+  //             meeting_url
+  //             external_url
+  //             max_participant
+  //             space {
+  //               name
+  //               gated
+  //               avatar
+  //             }
+  //           }
+  //         }
+  //       }
+  //     `,
+  //         {
+  //           id: eventId,
+  //         },
+  //       )) as CeramicResponseType<EventEdge>;
 
-      if (response.data) {
-        if (response.data.node) {
-          setEventData(response.data.node);
-        }
-      }
-    } catch (err) {
-      console.log('Failed to fetch event: ', err);
-    }
-  };
+  //     if (response.data) {
+  //       if (response.data.node) {
+  //         setEventData(response.data.node);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log('Failed to fetch event: ', err);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    getEventDetailInfo();
-  }, []);
+  // React.useEffect(() => {
+  //   getEventDetailInfo();
+  // }, []);
   const [showCopyToast, setShowCopyToast] = React.useState(false);
 
   return eventData ? (
