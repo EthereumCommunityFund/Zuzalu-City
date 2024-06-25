@@ -35,9 +35,13 @@ const TicketVault = ({
   let ticket = tickets[vaultIndex];
 
   const getInfoFromContract = async () => {
-    const ensName = await client.getEnsName({
+    //Apparently scroll sepolia doesn't support ens
+    {
+      /*const ensName = await client.getEnsName({
       address: ticket[7].result,
     });
+        //setController(ensName);*/
+    }
 
     const balance = (await client.readContract({
       address: ticket[2]?.result as Address,
@@ -46,7 +50,6 @@ const TicketVault = ({
       args: [ticketAddress],
     })) as number;
 
-    setController(ensName);
     setBalance(balance);
   };
 
@@ -60,7 +63,7 @@ const TicketVault = ({
     <Stack
       sx={{
         background: '#222',
-        width: '700px'
+        width: '700px',
       }}
     >
       <Box
@@ -74,7 +77,13 @@ const TicketVault = ({
           spacing={2.5}
           marginTop={'10px'}
         >
-          <Box component="img" width="100px" height="100px" borderRadius="8px" src="/24.webp" />
+          <Box
+            component="img"
+            width="100px"
+            height="100px"
+            borderRadius="8px"
+            src="/24.webp"
+          />
           <Stack direction="column" spacing={0.9}>
             <Typography
               variant="h5"
@@ -83,7 +92,7 @@ const TicketVault = ({
               lineHeight={'120%'}
               color="white"
             >
-              {ticket[1]?.result}
+              {ticket[0]?.result}
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -327,15 +336,6 @@ const TicketVault = ({
             borderTop={'1px solid rgba(255, 255, 255, 0.10)'}
           >
             <Typography
-              fontSize="14px"
-              fontFamily={'Inter'}
-              lineHeight={'160%'}
-              color="white"
-              sx={{ opacity: '0.6' }}
-            >
-              Quantity:
-            </Typography>
-            <Typography
               fontSize="16px"
               color="white"
               fontWeight={'700'}
@@ -491,7 +491,11 @@ const TicketVault = ({
         ) : action === 'SendTicket' ? (
           <SendNFTTicket ticketAddress={ticketAddress} ticket={ticket} />
         ) : (
-          <Whitelist />
+          <Whitelist
+            vaultIndex={vaultIndex}
+            ticketAddresses={ticketAddresses}
+            tickets={tickets}
+          />
         )}
 
         <Stack

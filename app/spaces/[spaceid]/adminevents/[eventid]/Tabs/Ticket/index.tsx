@@ -28,13 +28,17 @@ import { Address } from 'viem';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertDateToEpoch } from '@/utils/format';
 import { TICKET_ABI } from '@/utils/ticket_abi';
+import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import { useEffect } from 'react';
 import { IEventArg } from '@/app/spaces/[spaceid]/adminevents/page';
-
+import { Event } from '@/types';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { Abi, AbiItem } from 'viem';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
-const Ticket = () => {
-  const { address } = useAccount();
+interface PropTypes {
+  event?: Event;
+}
+const Ticket = ({ event }: PropTypes) => {
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -82,7 +86,8 @@ const Ticket = () => {
   const [ticketMintDeadline, setTicketMintDeadline] =
     React.useState<Dayjs | null>(dayjs());
   const [vaultIndex, setVaultIndex] = React.useState<number>(0);
-
+  const [selectedWhiteListTicket, setSelectedWhiteListTicket] =
+    React.useState<boolean>(false);
   const handleFileChange = (event: { target: { files: any[] } }) => {
     const file = event.target.files[0];
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
@@ -100,7 +105,6 @@ const Ticket = () => {
   };
 
   // the event ticket ID here will be retrieved from ceramic
-  let eventId = 0;
 
   const [isSubmitLoading, setIsSubmitLoading] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -108,7 +112,8 @@ const Ticket = () => {
   const [ticketAddresses, setTicketAddresses] = React.useState<Array<string>>(
     [],
   );
-  const initialWhitelist = [address];
+  const initialWhitelist = ['0x0000000000000000000000000000000000000000'];
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -116,21 +121,30 @@ const Ticket = () => {
       setIsSubmitLoading(true);
       setPurchasingTicket(true);
       setGoToSummary(false);
-
       const createTicketHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI,
         functionName: 'createNewTicket',
-        args: [
-          eventId,
-          ticketInfo?.ticketName,
-          selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
-          convertDateToEpoch(ticketMintDeadline),
-          ticketInfo?.ticketPrice,
-          1000,
-          initialWhitelist,
-        ],
+        args: selectedWhiteListTicket
+          ? [
+              event?.contractID,
+              ticketInfo?.ticketName,
+              selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
+              convertDateToEpoch(ticketMintDeadline),
+              ticketInfo?.ticketPrice,
+              true,
+              initialWhitelist,
+            ]
+          : [
+              event?.contractID,
+              ticketInfo?.ticketName,
+              selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
+              convertDateToEpoch(ticketMintDeadline),
+              ticketInfo?.ticketPrice,
+              false,
+              [],
+            ],
       });
       setTxnHash(createTicketHash);
 
@@ -140,12 +154,6 @@ const Ticket = () => {
           hash: createTicketHash,
         },
       );
-
-      const events = await ticketFactoryGetContract.getEvents.TicketCreated({});
-      const eventTicketId = String(
-        (events[0] as unknown as IEventArg)?.args?.eventId,
-      );
-      console.log({ eventTicketId });
 
       if (createTicketStatus === 'success') {
         // setPurchasingTicket(true);
@@ -165,9 +173,9 @@ const Ticket = () => {
 
       const getTicketAddresses = (await client.readContract({
         address: TICKET_FACTORY_ADDRESS as Address,
-        abi: TICKET_FACTORY_ABI,
+        abi: TICKET_FACTORY_ABI as Abi,
         functionName: 'getTickets',
-        args: ['0'],
+        args: [event?.contractID],
       })) as Array<string>;
 
       console.log({ getTicketAddresses });
@@ -175,55 +183,80 @@ const Ticket = () => {
 
       if (getTicketAddresses?.length > 0) {
         let results = [];
-        for (let i = 0; i < getTicketAddresses?.length; i++) {
+        for (let i = 0; i < getTicketAddresses.length; i++) {
+          const ticketAddress = getTicketAddresses[i] as Address;
+          let isWhitelistTicket = false;
+
+          try {
+            await client.readContract({
+              address: ticketAddress,
+              abi: TICKET_WITH_WHITELIST_ABI as Abi,
+              functionName: 'whitelist',
+              args: ['0x0000000000000000000000000000000000000000'],
+            });
+            isWhitelistTicket = true;
+          } catch (e) {
+            isWhitelistTicket = false;
+          }
+
+          const ticketABI: AbiItem[] = isWhitelistTicket
+            ? (TICKET_WITH_WHITELIST_ABI as AbiItem[])
+            : (TICKET_ABI as AbiItem[]);
+
           const ticketContract = {
-            address: getTicketAddresses[i] as Address,
-            abi: TICKET_ABI,
+            address: ticketAddress,
+            abi: ticketABI,
           } as const;
-          console.log({ ticketContract });
+
+          const multicallContracts = [
+            {
+              ...ticketContract,
+              functionName: 'name',
+            },
+            {
+              ...ticketContract,
+              functionName: 'symbol',
+            },
+            {
+              ...ticketContract,
+              functionName: 'paymentToken',
+            },
+            {
+              ...ticketContract,
+              functionName: 'ticketPrice',
+            },
+            {
+              ...ticketContract,
+              functionName: 'totalTicketsMinted',
+            },
+            {
+              ...ticketContract,
+              functionName: 'eventTime',
+            },
+            {
+              ...ticketContract,
+              functionName: 'ticketMintCloseTime',
+            },
+            {
+              ...ticketContract,
+              functionName: 'owner',
+            },
+          ];
+
+          if (isWhitelistTicket) {
+            multicallContracts.push({
+              ...ticketContract,
+              functionName: 'whitelist',
+              args: ['0x0000000000000000000000000000000000000000'] as const,
+            } as any);
+          }
 
           const result = await client.multicall({
-            contracts: [
-              {
-                ...ticketContract,
-                functionName: 'name',
-              },
-              {
-                ...ticketContract,
-                functionName: 'symbol',
-              },
-              {
-                ...ticketContract,
-                functionName: 'paymentToken',
-              },
-              {
-                ...ticketContract,
-                functionName: 'ticketPrice',
-              },
-              {
-                ...ticketContract,
-                functionName: 'totalTicketsMinted',
-              },
-              {
-                ...ticketContract,
-                functionName: 'eventTime',
-              },
-              {
-                ...ticketContract,
-                functionName: 'ticketMintCloseTime',
-              },
-              {
-                ...ticketContract,
-                functionName: 'owner',
-              },
-              {
-                ...ticketContract,
-                functionName: 'ticketCap',
-              },
-            ],
+            contracts: multicallContracts,
           });
           results.push(result);
         }
+
         setTickets(results);
       }
       setIsLoading(false);
@@ -232,7 +265,6 @@ const Ticket = () => {
       console.log(error);
     }
   };
-
   useEffect(() => {
     readFromContract();
   }, []);
@@ -278,6 +310,8 @@ const Ticket = () => {
           setIsConfirm={setIsConfirm}
           setSelectedToken={setSelectedToken}
           selectedToken={selectedToken}
+          selectedWhiteListTicket={selectedWhiteListTicket}
+          setSelectedWhiteListTicket={setSelectedWhiteListTicket}
         />
       )}
       {isConfirm && !purchasingTicket && !goToSummary && !isNext && (
@@ -358,7 +392,7 @@ const Ticket = () => {
 
   return (
     <Stack spacing={2}>
-      <TicketHeader />
+      <TicketHeader event={event} visible={!event?.contractID} />
       {isLoading ? (
         <Box>
           <Typography>Loading...</Typography>
@@ -372,7 +406,11 @@ const Ticket = () => {
           onToggle={toggleDrawer}
         />
       ) : (
-        <TicketAdd onToggle={toggleDrawer} setToggleAction={setToggleAction} />
+        <TicketAdd
+          onToggle={toggleDrawer}
+          setToggleAction={setToggleAction}
+          visible={!!event?.contractID}
+        />
       )}
       <TicketAccess />
       <SwipeableDrawer

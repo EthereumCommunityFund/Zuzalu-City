@@ -21,6 +21,7 @@ import {
   Input,
   MenuItem,
   Select,
+  Switch,
   Stack,
   Step,
   StepLabel,
@@ -56,7 +57,11 @@ interface IProps {
   isHideWhenSoldOut?: boolean;
   setIsHideWhenSoldOut?: React.Dispatch<React.SetStateAction<boolean>> | any;
   selectedToken?: string;
-  setSelectedToken?: React.Dispatch<React.SetStateAction<string>> | any;
+  setSelectedToken?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  selectedWhiteListTicket?: boolean;
+  setSelectedWhiteListTicket?:
+    | React.Dispatch<React.SetStateAction<string>>
+    | any;
   ticketInfo?: any;
   handleSubmit?: any;
   selectedFile?: string | null;
@@ -183,8 +188,14 @@ export const TicketSetup = ({
   setIsConfirm,
   selectedToken,
   setSelectedToken,
+  selectedWhiteListTicket,
+  setSelectedWhiteListTicket,
 }: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
+
+  const handleToggle = () => {
+    setSelectedWhiteListTicket(!selectedWhiteListTicket);
+  };
 
   return (
     <Stack
@@ -328,6 +339,24 @@ export const TicketSetup = ({
                   )}
                 </Stack>
               </Stack>
+            </Stack>
+            <Stack
+              direction="row"
+              alignItems="center"
+              gap="10px"
+              marginTop={'30px'}
+            >
+              <Switch
+                checked={selectedWhiteListTicket}
+                onChange={handleToggle}
+              />
+              {selectedWhiteListTicket ? (
+                <Typography style={{ marginLeft: '8px' }}>Whitelist</Typography>
+              ) : (
+                <Typography style={{ marginLeft: '8px' }}>
+                  Permissionless
+                </Typography>
+              )}
             </Stack>
           </Box>
           <Box marginTop={'30px'}>

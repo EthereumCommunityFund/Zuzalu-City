@@ -79,7 +79,7 @@ const TicketCard: React.FC<TicketCardProps> = ({
           alignItems="center"
         >
           <Typography variant="h5" color="white">
-            {ticket[1]?.result}
+            {ticket[0]?.result}
           </Typography>{' '}
           <Typography classes="subtitle2" color="white">
             {String(ticket[3]?.result)}{' '}

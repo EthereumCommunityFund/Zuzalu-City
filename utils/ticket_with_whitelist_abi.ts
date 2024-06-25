@@ -1,4 +1,4 @@
-export const TICKET_ABI = [
+export const TICKET_WITH_WHITELIST_ABI = [
   {
     inputs: [
       {
@@ -40,6 +40,11 @@ export const TICKET_ABI = [
         internalType: 'uint256',
         name: '_ticketPrice',
         type: 'uint256',
+      },
+      {
+        internalType: 'address[]',
+        name: '_whitelist',
+        type: 'address[]',
       },
     ],
     stateMutability: 'nonpayable',
@@ -405,6 +410,19 @@ export const TICKET_ABI = [
       },
     ],
     name: 'adminMint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address[]',
+        name: '_addresses',
+        type: 'address[]',
+      },
+    ],
+    name: 'appendToWhitelist',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -896,6 +914,25 @@ export const TICKET_ABI = [
       },
     ],
     name: 'usedTickets',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'whitelist',
     outputs: [
       {
         internalType: 'bool',

@@ -133,7 +133,7 @@ export const TICKET_FACTORY_ABI = [
       { internalType: 'address', name: '_paymentToken', type: 'address' },
       { internalType: 'uint40', name: '_ticketMintCloseTime', type: 'uint40' },
       { internalType: 'uint256', name: '_ticketPrice', type: 'uint256' },
-      { internalType: 'uint256', name: '_ticketCap', type: 'uint256' },
+      { internalType: 'bool', name: 'withWithlist', type: 'bool' },
       { internalType: 'address[]', name: '_whitelist', type: 'address[]' },
     ],
     name: 'createNewTicket',

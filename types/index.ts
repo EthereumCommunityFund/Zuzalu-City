@@ -43,6 +43,7 @@ export interface Event {
   };
   customLinks?: [Link];
   tracks?: string;
+  contractID?: string;
 }
 
 export interface EventEdge {

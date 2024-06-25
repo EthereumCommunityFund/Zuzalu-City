@@ -33,22 +33,15 @@ import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData, Space, SpaceEventData } from '@/types';
 import { createConnector } from '@lxdao/uploader3-connector';
-import { Address } from 'viem';
-import { config } from '@/context/WalletContext';
 import {
   TICKET_FACTORY_ADDRESS,
   ticketFactoryGetContract,
   SOCIAL_TYPES,
 } from '@/constant';
-import { scrollSepolia } from 'viem/chains';
-import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
-import { Sidebar } from 'components/layout';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { supabase } from '@/utils/supabase/client';
-import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { useAccount } from 'wagmi';
-import { convertDateToEpoch } from '@/utils/format';
 import Input from '@/components/core/Input';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 
@@ -361,41 +354,6 @@ const Home = () => {
         strDesc = strDesc.replaceAll('"', '\\"');
 
         try {
-          /// SMART CONTRACT INTEGRATION STARTS HERE
-          const createEventHash = await writeContract(config, {
-            chainId: scrollSepolia.id,
-            address: TICKET_FACTORY_ADDRESS as Address,
-            abi: TICKET_FACTORY_ABI,
-            functionName: 'createEvent',
-            args: [
-              address,
-              inputs?.name,
-              inputs?.symbol,
-              convertDateToEpoch(startTime),
-            ],
-          });
-
-          const { status: createEventStatus } = await waitForTransactionReceipt(
-            config,
-            {
-              hash: createEventHash,
-            },
-          );
-
-          const events = await ticketFactoryGetContract.getEvents.EventCreated(
-            {},
-          );
-          // the event ticket ID here will be sent into ceramic
-          const eventTicketId = String(
-            (events[0] as unknown as IEventArg)?.args?.eventId,
-          );
-          console.log({ eventTicketId });
-
-          if (createEventStatus === 'success') {
-            /// this is the point where data can be sent to ceramic after successful in SC
-          }
-          /// SMART CONTRACT INTEGRATION ENDS HERE
-
           const update: any = await composeClient.executeQuery(
             `
          mutation CreateEventMutation($input: CreateEventInput!) {

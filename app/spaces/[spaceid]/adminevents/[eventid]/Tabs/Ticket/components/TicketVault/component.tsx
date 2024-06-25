@@ -68,7 +68,11 @@ interface ISendNFTTicket {
   ticketAddress: string;
   ticket: Array<any>;
 }
-
+interface ITicketVault {
+  vaultIndex: number;
+  ticketAddresses: Array<string>;
+  tickets: Array<any>;
+}
 export const WithdrawToken = ({
   tokenSymbol,
   balance,
@@ -498,9 +502,17 @@ export const ConfirmSendNFTTicketTransaction = ({
 }: IConfirmSendNFTTicketTransaction) => {
   return (
     <>
-      <Modal open={showNFTTicketModal} onClose={() => setShowNFTTicketModal(false)}>
-        <Stack padding="20px" border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
-          spacing="20px" color="white" width="535px" borderRadius="10px"
+      <Modal
+        open={showNFTTicketModal}
+        onClose={() => setShowNFTTicketModal(false)}
+      >
+        <Stack
+          padding="20px"
+          border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+          spacing="20px"
+          color="white"
+          width="535px"
+          borderRadius="10px"
           sx={{
             position: 'absolute',
             background: 'rgba(52, 52, 52, 0.80)',
@@ -510,44 +522,47 @@ export const ConfirmSendNFTTicketTransaction = ({
           }}
         >
           <Stack direction="row" alignItems={'center'} spacing="24px">
-            <Stack direction="row" alignItems={'center'} spacing="10px" flex={1}>
+            <Stack
+              direction="row"
+              alignItems={'center'}
+              spacing="10px"
+              flex={1}
+            >
               <SendIcon />
-              <Typography
-                variant="subtitleSB"
-              >
-                Confirm Transaction
-              </Typography>
+              <Typography variant="subtitleSB">Confirm Transaction</Typography>
             </Stack>
             <Stack
               onClick={() => setShowNFTTicketModal(false)}
-              padding="10px" borderRadius="10px" bgcolor="#3f3f3f"
-              sx={{ cursor: "pointer" }}
+              padding="10px"
+              borderRadius="10px"
+              bgcolor="#3f3f3f"
+              sx={{ cursor: 'pointer' }}
             >
               <CloseIcon />
             </Stack>
           </Stack>
-          <Stack padding="10px" borderRadius="10px" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))" bgcolor="#3f3f3f" spacing="20px">
+          <Stack
+            padding="10px"
+            borderRadius="10px"
+            border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+            bgcolor="#3f3f3f"
+            spacing="20px"
+          >
             <Stack spacing="14px">
               <Stack direction="row" alignItems="center" spacing="10px">
-                <Typography variant="bodyMB">
-                  To Address:
-                </Typography>
+                <Typography variant="bodyMB">To Address:</Typography>
                 <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   {recipient}
                 </Typography>
               </Stack>
               <Stack direction="row" alignItems="center" spacing="10px">
-                <Typography variant="bodyMB">
-                  Token_ID:
-                </Typography>
+                <Typography variant="bodyMB">Token_ID:</Typography>
                 <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   {tokenId}
                 </Typography>
               </Stack>
               <Stack direction="row" alignItems="center" spacing="10px">
-                <Typography variant="bodyMB">
-                  Amount:
-                </Typography>
+                <Typography variant="bodyMB">Amount:</Typography>
                 <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   1
                 </Typography>
@@ -598,9 +613,17 @@ export const ConfirmWithdrawalTransaction = ({
 }: IConfirmWithdrawalTransaction) => {
   return (
     <>
-      <Modal open={showWithdrawalModal} onClose={() => setShowWithdrawalModal(false)}>
-        <Stack padding="20px" border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
-          spacing="20px" color="white" width="535px" borderRadius="10px"
+      <Modal
+        open={showWithdrawalModal}
+        onClose={() => setShowWithdrawalModal(false)}
+      >
+        <Stack
+          padding="20px"
+          border="2px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+          spacing="20px"
+          color="white"
+          width="535px"
+          borderRadius="10px"
           sx={{
             position: 'absolute',
             background: 'rgba(52, 52, 52, 0.80)',
@@ -610,44 +633,47 @@ export const ConfirmWithdrawalTransaction = ({
           }}
         >
           <Stack direction="row" alignItems={'center'} spacing="24px">
-            <Stack direction="row" alignItems={'center'} spacing="10px" flex={1}>
+            <Stack
+              direction="row"
+              alignItems={'center'}
+              spacing="10px"
+              flex={1}
+            >
               <SendIcon />
-              <Typography
-                variant="subtitleSB"
-              >
-                Confirm Transaction
-              </Typography>
+              <Typography variant="subtitleSB">Confirm Transaction</Typography>
             </Stack>
             <Stack
               onClick={() => setShowWithdrawalModal(false)}
-              padding="10px" borderRadius="10px" bgcolor="#3f3f3f"
-              sx={{ cursor: "pointer" }}
+              padding="10px"
+              borderRadius="10px"
+              bgcolor="#3f3f3f"
+              sx={{ cursor: 'pointer' }}
             >
               <CloseIcon />
             </Stack>
           </Stack>
-          <Stack padding="10px" borderRadius="10px" border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))" bgcolor="#3f3f3f" spacing="20px">
+          <Stack
+            padding="10px"
+            borderRadius="10px"
+            border="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+            bgcolor="#3f3f3f"
+            spacing="20px"
+          >
             <Stack spacing="14px">
               <Stack direction="row" alignItems="center" spacing="10px">
-                <Typography variant="bodyMB">
-                  To Address:
-                </Typography>
+                <Typography variant="bodyMB">To Address:</Typography>
                 <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   {recipient}
                 </Typography>
               </Stack>
               <Stack direction="row" alignItems="center" spacing="10px">
-                <Typography variant="bodyMB">
-                  Token:
-                </Typography>
+                <Typography variant="bodyMB">Token:</Typography>
                 <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   USDT
                 </Typography>
               </Stack>
               <Stack direction="row" alignItems="center" spacing="10px">
-                <Typography variant="bodyMB">
-                  Amount:
-                </Typography>
+                <Typography variant="bodyMB">Amount:</Typography>
                 <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
                   {amount}
                 </Typography>
@@ -772,13 +798,18 @@ const TicketProcessingProgress = () => {
     </Box>
   );
 };
-export const Whitelist = () => {
+export const Whitelist = ({
+  vaultIndex,
+  ticketAddresses,
+  tickets,
+}: ITicketVault) => {
   const [addresses, setAddresses] = useState<string[]>([]);
   const [initial, setInitial] = useState<boolean>(false);
   const [email, setEmail] = useState<boolean>(false);
   const [process, setProcess] = useState<boolean>(false);
   const [updated, setUpdated] = useState<boolean>(false);
-
+  let ticketAddress = ticketAddresses[vaultIndex];
+  let ticket = tickets[vaultIndex];
   return (
     <Stack spacing="30px">
       <Stack spacing="10px">
@@ -880,8 +911,28 @@ export const Whitelist = () => {
               <Typography variant="bodyM">
                 View existing list of addresses added
               </Typography>
+
               <ChevronDownIcon size={4.5} />
             </Stack>
+          </Stack>
+          <Stack
+            sx={{ cursor: 'pointer' }}
+            direction="row"
+            spacing="10px"
+            padding="10px 20px"
+            justifyContent="center"
+            borderRadius="10px"
+            border="1px solid #383838"
+          >
+            <Typography
+              variant="h5"
+              fontSize="24px"
+              fontFamily={'Inter'}
+              lineHeight={'120%'}
+              color="white"
+            >
+              {ticket[0]?.result}
+            </Typography>
           </Stack>
           <ZuButton
             sx={{
