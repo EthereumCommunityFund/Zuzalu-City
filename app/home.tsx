@@ -158,6 +158,10 @@ const Home: React.FC = () => {
                 username
                 avatar
               }
+              space {
+                name
+                avatar
+              }
             }
           }
         }
@@ -184,8 +188,8 @@ const Home: React.FC = () => {
         let currentDate = new Date(selectedDate.format('YYYY-MM-DDTHH:mm:ss[Z]'));
 
         const timeDiff = selectedDate.utcOffset();
-        if(timeDiff < 0) {
-          currentDate = new Date(new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)).getTime() - (24* 60 * 60 * 1000 + timeDiff * 60 * 1000));
+        if (timeDiff < 0) {
+          currentDate = new Date(new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)).getTime() - (24 * 60 * 60 * 1000 + timeDiff * 60 * 1000));
         } else {
           currentDate = new Date(new Date(currentDate.getTime() - (24 * 60 * 60 * 1000)).getTime() - (timeDiff * 60 * 1000))
         }
@@ -352,12 +356,12 @@ const Home: React.FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box width={'100vw'} minHeight={'100vh'}>
+      <Box width={'100vw'} minHeight={'calc(100vh - 50px)'}>
         <Box
           display="grid"
           gridTemplateColumns={'auto 1fr'}
           sx={{ backgroundColor: '#222222' }}
-          minHeight={'100vh'}
+          height={'calc(100vh - 50px)'}
         >
           {!isTablet && <Sidebar selected="Home" />}
           <Box
@@ -365,6 +369,11 @@ const Home: React.FC = () => {
             flex={1}
             padding={isMobile ? '10px' : '30px'}
             width={isTablet ? '100vw' : 'calc(100vw - 260px)'}
+            height={'100%'}
+            sx={{
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}
           >
             <Box
               display="flex"
@@ -496,11 +505,8 @@ const Home: React.FC = () => {
                           <Box>
                             {eventsList.map((event, index) => (
                               <EventCard
-                                id={event.id}
-                                spaceId={event.spaceId}
                                 key={`EventCard-${index}`}
                                 event={event}
-                                by={event.profile?.username}
                               />
                             ))}
                           </Box>

@@ -15,8 +15,6 @@ interface IEventDetail {
 }
 
 const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [] }) => {
-  const router = useRouter();
-
   return (
     <Stack spacing="20px">
       <Typography
@@ -27,14 +25,9 @@ const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [] 
       >
         Event Details
       </Typography>
-      <Stack spacing="5px">
-        <Typography color="white" variant="bodyB">
-          Format: {status}
-        </Typography>
-        <Typography color="white" variant="bodyB">
-          Type: Meet-up
-        </Typography>
-      </Stack>
+      <Typography color="white" variant="bodyB">
+        Format: {status}
+      </Typography>
       <Stack spacing="10px">
         <Typography color="white" variant="bodyBB" paddingBottom="20px">
           Links

@@ -1,28 +1,20 @@
 import * as React from 'react';
-import { Box, Stack, Typography } from '@mui/material';
+import { Alert, Box, Snackbar, Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { EventIcon, LockIcon, MapIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, Event, EventEdge } from '@/types';
 import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
+import Link from 'next/link';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import TextEditor from '@/components/editor/editor';
 
-const OverviewDetail = () => {
-  const {
-    ceramic,
-    composeClient,
-    isAuthenticated,
-    authenticate,
-    logout,
-    showAuthPrompt,
-    hideAuthPrompt,
-    isAuthPromptVisible,
-    newUser,
-    profile,
-    username,
-    createProfile,
-  } = useCeramicContext();
+interface PropTypes {
+  eventData?: Event
+}
+
+const OverviewDetail = ({ eventData }: PropTypes) => {
   const params = useParams();
   const eventId = params.eventid.toString();
 
@@ -79,6 +71,7 @@ const OverviewDetail = () => {
   React.useEffect(() => {
     getEventDetailInfo();
   }, []);
+  const [showCopyToast, setShowCopyToast] = React.useState(false);
 
   return eventData ? (
     <Stack
@@ -101,12 +94,35 @@ const OverviewDetail = () => {
           <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
             Edit Event Details
           </ZuButton>
-          <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
-            View Event
-          </ZuButton>
-          <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
-            Share Event
-          </ZuButton>
+          <Link
+            href={'/events/' + eventId}
+          >
+            <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
+              View Event
+            </ZuButton>
+          </Link>
+          <CopyToClipboard
+            text={`${window.origin}/events/${eventId}`}
+            onCopy={() => {
+              setShowCopyToast(true);
+            }}
+          >
+            <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
+              Share Event
+              <Snackbar
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                open={showCopyToast}
+                autoHideDuration={800}
+                onClose={() => {
+                  setShowCopyToast(false);
+                }}
+              >
+                <Alert severity="success" variant="filled">
+                  Copy share link to clipboard
+                </Alert>
+              </Snackbar>
+            </ZuButton>
+          </CopyToClipboard>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={1}>
           <Typography variant="caption" color="white">
@@ -172,7 +188,7 @@ const OverviewDetail = () => {
           </ZuButton>
         )}
       </Stack>
-    </Stack>
+    </Stack >
   ) : (
     <></>
   );

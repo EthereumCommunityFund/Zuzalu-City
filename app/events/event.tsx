@@ -56,6 +56,10 @@ const EventsPage: React.FC = () => {
               min_participant
               max_participant
               createdAt
+              space {
+                name
+                avatar
+              }
             }
           }
         }
