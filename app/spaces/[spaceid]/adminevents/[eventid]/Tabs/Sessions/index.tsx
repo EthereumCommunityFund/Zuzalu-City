@@ -27,6 +27,8 @@ import {
   ArchiveBoxIcon,
   ArrowDownIcon,
   ChevronDownIcon,
+  PlusIcon,
+  MinusIcon,
 } from 'components/icons';
 import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
@@ -92,6 +94,10 @@ const Sessions = () => {
   const [sessionTimezone, setSessionTimezone] = useState<string>('');
 
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
+
+  const [directions, setDirections] = useState<string>('');
+  const [customLocation, setCustomLocation] = useState<string>('');
+  const [isDirections, setIsDirections] = useState<boolean>(false);
 
   const profileId = profile?.id || '';
   const eventId = params.eventid.toString();
@@ -193,13 +199,15 @@ const Sessions = () => {
   };
 
   const getLocation = async () => {
+    console.log("eventid", eventId)
     try {
       const { data } = await supabase
-        .from('locations')
+        .from('venue')
         .select('*')
-        .eq('eventId', eventId);
+        .eq('eventid', eventId);
       if (data !== null) {
-        setLocations(data[0].name.split(','));
+        setLocations(data.map(item => item.name));
+        console.log("data", data)
       }
     } catch (err) {
       console.log(err);
@@ -820,8 +828,11 @@ const Sessions = () => {
                           {location}
                         </MenuItem>
                       ))}
+                      <MenuItem key="custom_location" value="Custom">
+                        Custom
+                      </MenuItem>
                     </Select>
-                    {sessionLocation && (
+                    {sessionLocation && sessionLocation !== "Custom" && (
                       <Stack>
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -861,6 +872,41 @@ const Sessions = () => {
                               </Typography>
                             </Stack>
                           </Stack>
+                        </Stack>
+                      </Stack>
+                    )}
+                    {sessionLocation && sessionLocation === "Custom" && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack spacing="10px">
+                          <Typography variant="bodyBB">
+                            Custom Location
+                          </Typography>
+                          <Typography variant="bodyS">
+                            Write name of the location
+                          </Typography>
+                          <ZuInput placeholder="Type location name" onChange={(e) => setCustomLocation(e.target.value)} />
+                          <ZuButton endIcon={!isDirections ? <PlusIcon size={5} /> : <MinusIcon size={5} />} onClick={() => setIsDirections(prev => !prev)}>
+                            {!isDirections ? "Add Directions" : "Remove Directions"}
+                          </ZuButton>
+                          {
+                            isDirections && <ZuInput placeholder="Directions description" onChange={(e) => setDirections(e.target.value)} />
+                          }
+                          {customLocation && <Stack borderRadius="10px" border="1px solid #383838" padding="10px" spacing="10px">
+                            <Typography variant="caption">
+                              CUSTOM LOCATIONS:
+                            </Typography>
+                            <Stack borderRadius="10px" bgcolor="#373737" padding="10px">
+                              <Typography variant="bodyBB">
+                                {customLocation}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                {directions}
+                              </Typography>
+                            </Stack>
+                          </Stack>}
                         </Stack>
                       </Stack>
                     )}
