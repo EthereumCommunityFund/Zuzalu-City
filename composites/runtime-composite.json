@@ -3,7 +3,7 @@
     "Event": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
+      "id": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
       "accountRelation": {
         "type": "list"
       }
@@ -11,7 +11,7 @@
     "MVPProfile": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
+      "id": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
       "accountRelation": {
         "type": "single"
       }
@@ -19,7 +19,7 @@
     "Session": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c7ewjpxosco52wl788r7vc63tipn2qkctx7nok2jddtdk9t73ea",
+      "id": "kjzl6hvfrbw6c9xul06zd90s122b6wjztz8gafrcokpzj9r5m4mzjeeem4du9op",
       "accountRelation": {
         "type": "list"
       }
@@ -27,7 +27,7 @@
     "Space": {
       "interface": false,
       "implements": [],
-      "id": "kjzl6hvfrbw6c5mn0am5lubnrorokmxxdghap3dzorrvjdv27goq2y426zka2iv",
+      "id": "kjzl6hvfrbw6c84tttp6ntn4ngagd1fiff3ggh1fm75dvgiqsxstrozt7m578da",
       "accountRelation": {
         "type": "list"
       }
@@ -52,6 +52,11 @@
         "required": false,
         "immutable": false,
         "indexed": true
+      },
+      "tracks": {
+        "type": "string",
+        "required": false,
+        "immutable": false
       },
       "update": {
         "type": "list",
@@ -120,6 +125,11 @@
         "immutable": false,
         "indexed": true
       },
+      "contractID": {
+        "type": "integer",
+        "required": false,
+        "immutable": false
+      },
       "customLinks": {
         "type": "list",
         "required": false,
@@ -167,7 +177,7 @@
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c5mn0am5lubnrorokmxxdghap3dzorrvjdv27goq2y426zka2iv",
+          "model": "kjzl6hvfrbw6c84tttp6ntn4ngagd1fiff3ggh1fm75dvgiqsxstrozt7m578da",
           "property": "spaceId"
         }
       },
@@ -180,7 +190,7 @@
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
+          "model": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
           "property": "profileId"
         }
       },
@@ -189,7 +199,7 @@
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c7ewjpxosco52wl788r7vc63tipn2qkctx7nok2jddtdk9t73ea",
+          "model": "kjzl6hvfrbw6c9xul06zd90s122b6wjztz8gafrcokpzj9r5m4mzjeeem4du9op",
           "property": "eventId"
         }
       }
@@ -261,7 +271,7 @@
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
+          "model": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
           "property": "profileId"
         }
       },
@@ -270,7 +280,7 @@
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c5mn0am5lubnrorokmxxdghap3dzorrvjdv27goq2y426zka2iv",
+          "model": "kjzl6hvfrbw6c84tttp6ntn4ngagd1fiff3ggh1fm75dvgiqsxstrozt7m578da",
           "property": "profileId"
         }
       }
@@ -328,11 +338,6 @@
         "required": true,
         "immutable": false
       },
-      "tagline": {
-        "type": "string",
-        "required": false,
-        "immutable": false
-      },
       "speakers": {
         "type": "list",
         "required": false,
@@ -382,7 +387,7 @@
       },
       "description": {
         "type": "string",
-        "required": false,
+        "required": true,
         "immutable": false
       },
       "meeting_url": {
@@ -400,7 +405,7 @@
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
+          "model": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
           "property": "eventId"
         }
       },
@@ -413,7 +418,7 @@
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
+          "model": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
           "property": "profileId"
         }
       }
@@ -544,7 +549,7 @@
         "viewType": "relation",
         "relation": {
           "source": "document",
-          "model": "kjzl6hvfrbw6c58c5ggdlqz67vfel6yr2kcwutdj9ckx3g8jbkmdi27jwp3zwra",
+          "model": "kjzl6hvfrbw6c66uig1mk220cq51ciqgxvcug0ydpoxthbh8qxmo6l47vvh35jm",
           "property": "profileId"
         }
       },
@@ -553,7 +558,7 @@
         "viewType": "relation",
         "relation": {
           "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c7ps9pqwv0xgm1rs4ty2943ej77uhj0bjau4fskax5xx0opx0hu",
+          "model": "kjzl6hvfrbw6c605bddzowy40pq6vnxodvrfj1ntyy9bqzfbcuvvykw2suu0i3z",
           "property": "spaceId"
         }
       }
