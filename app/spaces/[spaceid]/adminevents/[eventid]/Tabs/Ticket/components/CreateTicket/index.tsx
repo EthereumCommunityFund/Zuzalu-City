@@ -82,6 +82,9 @@ interface IProps {
   setEndDate?: React.Dispatch<React.SetStateAction<Dayjs>> | any;
   endTime?: Dayjs;
   setEndTime?: React.Dispatch<React.SetStateAction<Dayjs>> | any;
+  setIsTicket?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setSelectedType?: React.Dispatch<React.SetStateAction<string>> | any;
+  selectedType?: string;
 }
 
 export const InitialSetup = ({ setIsNext }: IProps) => {
@@ -92,83 +95,79 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
         background: '#222',
         height: isMobile ? '100%' : 'calc(100vh - 6.2rem)',
       }}
+      padding="20px 30px" spacing="30px"
     >
-      <Box margin={3}>
-        <Box>
-          <Typography fontSize="20px" fontWeight="bold" sx={{ opacity: '0.7' }}>
-            Ticket Setup
-          </Typography>
+      <Stack spacing="20px">
+        <Typography variant="subtitleMB" sx={{ opacity: '0.7' }}>
+          Ticket Setup
+        </Typography>
+        <Typography
+          variant="bodyB"
+          sx={{ opacity: '0.6' }}
+        >
+          Ticketing Method cannnot be changed for this event once created.
+        </Typography>
+      </Stack>
+
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing="10px"
+        alignItems={'center'}
+        padding={'20px'}
+        sx={{
+          borderRadius: '10px',
+          border: '2px solid rgba(255, 255, 255, 0.10)',
+          background:
+            'linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.00) 100%), rgba(255, 255, 255, 0.05))',
+        }}
+      >
+        <Stack justifyContent="space-between" height="140px">
           <Typography
-            marginTop={'20px'}
-            fontSize="16px"
+            variant="subtitleSB"
+            sx={{ opacity: '0.7' }}
+          >
+            Create Tickets Individually
+          </Typography>
+
+          <Typography
+            variant="bodyM"
             sx={{ opacity: '0.6' }}
           >
-            Ticketing Method cannnot be changed for this event once created.
+            <strong>One ticket equals one contract.</strong>
+            A parent contract is deployed and subsequent tickets created are individual child contracts.
+            This allows for more control of each ticket type created.
           </Typography>
-        </Box>
-
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing="10px"
-          alignItems={'center'}
-          padding={'20px'}
-          marginTop={'30px'}
-          sx={{
-            borderRadius: '10px',
-            border: '2px solid rgba(255, 255, 255, 0.10)',
-            background:
-              'linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.00) 100%), rgba(255, 255, 255, 0.05))',
-          }}
-        >
-          <Stack justifyContent="space-between" height="140px">
-            <Typography
-              variant="subtitleSB"
-              sx={{ opacity: '0.7' }}
-            >
-              Create Tickets Individually
+          <Stack padding="4px 10px" borderRadius="6px" direction="row" spacing="10px" bgcolor="#3e3e3e" alignItems="center">
+            <Typography variant="caption">
+              TICKETING PROTOCOL:
             </Typography>
-
-            <Typography
-              variant="bodyM"
-              sx={{ opacity: '0.6' }}
-            >
-              <strong>One ticket equals one contract.</strong>
-              A parent contract is deployed and subsequent tickets created are individual child contracts.
-              This allows for more control of each ticket type created.
-            </Typography>
-            <Stack padding="4px 10px" borderRadius="6px" direction="row" spacing="10px" bgcolor="#3e3e3e" alignItems="center">
-              <Typography variant="caption">
-                TICKETING PROTOCOL:
-              </Typography>
-              <ScrollIcon />
-            </Stack>
+            <ScrollIcon />
           </Stack>
-
-          <Image
-            alt={'25.webp'}
-            src={'/25.webp'}
-            width={160}
-            height={140}
-            objectFit="cover"
-            style={{
-              paddingTop: isMobile ? '30px' : undefined,
-              width: isMobile ? '100%' : undefined,
-              height: isMobile ? '100%' : undefined,
-            }}
-          />
         </Stack>
-      </Box>
+
+        <Image
+          alt={'25.webp'}
+          src={'/25.webp'}
+          width={160}
+          height={140}
+          objectFit="cover"
+          style={{
+            paddingTop: isMobile ? '30px' : undefined,
+            width: isMobile ? '100%' : undefined,
+            height: isMobile ? '100%' : undefined,
+          }}
+        />
+      </Stack>
 
       <Typography
         textAlign={'center'}
-        marginY={'30px'}
-        fontSize="16px"
+        variant="bodyB"
         sx={{ opacity: '0.8' }}
       >
         You are <strong>Creating Tickets Individually</strong>
       </Typography>
 
-      <Box paddingX={3} marginTop={'10px'}>
+      <Box>
         <Button
           onClick={() => setIsNext(true)}
           // onClick={() => alert("OKKAAAYYYY")}
@@ -187,9 +186,12 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
           Next
         </Button>
 
-        {/* <Box display="flex" justifyContent={'center'} marginTop={'30px'}>
-          <ScrollIcon />
-        </Box> */}
+      </Box>
+      <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
+        <Typography variant="caption">
+          TICKETING PROTOCOL:
+        </Typography>
+        <ScrollIcon />
       </Box>
     </Stack>
   );
@@ -202,6 +204,7 @@ export const TicketSetup = ({
   setSelectedToken,
   selectedWhiteListTicket,
   setSelectedWhiteListTicket,
+  setIsTicket
 }: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
 
@@ -213,7 +216,6 @@ export const TicketSetup = ({
     <Stack
       sx={{
         background: '#222',
-        height: isMobile ? '100%' : 'calc(100vh - 6.2rem)',
       }}
     >
       <Stack spacing="30px" padding="20px 30px">
@@ -395,7 +397,7 @@ export const TicketSetup = ({
           </Button>
           <Button
             onClick={() => {
-              setIsNext(false), setIsConfirm(true);
+              setIsNext(false), setIsTicket(true);
             }}
             sx={{
               backgroundColor: '#2f474e',
@@ -412,10 +414,136 @@ export const TicketSetup = ({
             Confirm
           </Button>
         </Box>
-        <Box display="flex" justifyContent={'center'} marginTop={'30px'}>
+        <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
+          <Typography variant="caption">
+            TICKETING PROTOCOL:
+          </Typography>
           <ScrollIcon />
         </Box>
       </Box>
+    </Stack >
+  );
+};
+
+export const TicketType = ({
+  setIsTicket,
+  setIsConfirm,
+  selectedType,
+  setSelectedType
+}: IProps) => {
+  const isMobile = useMediaQuery('(max-width:500px)');
+
+  return (
+    <Stack
+      sx={{
+        background: '#222',
+        height: isMobile ? '100%' : 'calc(100vh - 6.2rem)',
+      }}
+    >
+      <Stack spacing="30px" padding="20px 30px">
+        <Stack spacing="20px">
+          <Typography variant="subtitleMB" sx={{ opacity: '0.7' }}>
+            Ticket Setup
+          </Typography>
+          <Typography
+            variant="bodyB"
+            sx={{ opacity: '0.6' }}
+          >
+            Set the receiving token and address for ticket purchases via crypto payments.
+            These settings cannot be changed once the contract is deployed.
+          </Typography>
+        </Stack>
+        <Stack padding="20px" spacing="30px" bgcolor="#2d2d2d" borderRadius="10px">
+          <Typography variant="subtitleMB">
+            Select Type
+          </Typography>
+          <Stack spacing="10px">
+            <Stack
+              onClick={() => setSelectedType('Attendee')}
+              direction="row" justifyContent="space-between" padding="10px 20px" alignItems="center"
+              bgcolor={selectedType === 'Attendee' ? 'rgba(125, 255, 209, 0.10)' : 'rgba(255, 255, 255, 0.05)'} borderRadius="10px">
+              <Stack spacing="10px">
+                <Typography variant="bodyMB">
+                  Attendee Ticket
+                </Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
+                  These are tickets for those who will attend this event
+                </Typography>
+              </Stack>
+              {selectedType === 'Attendee' ? <CheckCircleIcon /> : <UncheckCircleIcon />}
+            </Stack>
+            <Stack
+              onClick={() => setSelectedType('Sponsor')}
+              direction="row" justifyContent="space-between" padding="10px 20px" alignItems="center"
+              bgcolor={selectedType === 'Sponsor' ? 'rgba(125, 255, 209, 0.10)' : 'rgba(255, 255, 255, 0.05)'} borderRadius="10px">
+              <Stack spacing="10px">
+                <Typography variant="bodyMB">
+                  Sponsor Package
+                </Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
+                  These are tickets for those who will attend this event
+                </Typography>
+              </Stack>
+              {selectedType === 'Sponsor' ? <CheckCircleIcon /> : <UncheckCircleIcon />}
+            </Stack>
+          </Stack>
+          <Typography variant="bodyB" sx={{ opacity: 0.6 }}>
+            description - let the user know that the proceeds of this ticket purchases are held in the contract
+          </Typography>
+        </Stack>
+        <Box>
+          <Box
+            display={'flex'}
+            justifyContent={'space-between'}
+            alignItems={'center'}
+            gap={'20px'}
+          >
+            <Button
+              onClick={() => {
+                setIsTicket(false);
+              }}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                color: 'white',
+                width: '100%',
+                borderRadius: '10px',
+                fontSize: '18px',
+                fontWeight: 600,
+                fontFamily: 'Inter',
+                textTransform: 'capitalize',
+              }}
+              startIcon={<LeftArrowIcon />}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={() => {
+                setIsTicket(false), setIsConfirm(true);
+              }}
+              sx={{
+                backgroundColor: '#2f474e',
+                color: '#67DAFF',
+                width: '100%',
+                borderRadius: '10px',
+                fontSize: '18px',
+                fontWeight: 600,
+                fontFamily: 'Inter',
+                textTransform: 'capitalize',
+              }}
+              startIcon={<RightArrowIcon color="#67DAFF" />}
+            >
+              Confirm
+            </Button>
+          </Box>
+        </Box>
+        <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
+          <Typography variant="caption">
+            TICKETING PROTOCOL:
+          </Typography>
+          <ScrollIcon />
+        </Box>
+      </Stack>
+
     </Stack >
   );
 };

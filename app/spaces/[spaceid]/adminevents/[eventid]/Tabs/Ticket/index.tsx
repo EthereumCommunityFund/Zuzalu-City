@@ -34,6 +34,7 @@ import { IEventArg } from '@/app/spaces/[spaceid]/adminevents/page';
 import { Event } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Abi, AbiItem } from 'viem';
+import { TicketType } from './components/CreateTicket';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface PropTypes {
   event?: Event;
@@ -60,6 +61,7 @@ const Ticket = ({ event }: PropTypes) => {
   const [endTime, setEndTime] = React.useState<Dayjs>(dayjs());
   const [isHideWhenSoldOut, setIsHideWhenSoldOut] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState('USDT');
+  const [selectedType, setSelectedType] = React.useState('Attendee');
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -80,6 +82,7 @@ const Ticket = ({ event }: PropTypes) => {
 
   const [isConfirm, setIsConfirm] = React.useState(false);
   const [isNext, setIsNext] = React.useState(false);
+  const [isTicket, setIsTicket] = React.useState(false);
   const [goToSummary, setGoToSummary] = React.useState(false);
   const [purchasingTicket, setPurchasingTicket] = React.useState(false);
   const [toggleAction, setToggleAction] = React.useState('CreateTicket');
@@ -304,10 +307,10 @@ const Ticket = ({ event }: PropTypes) => {
         </Typography>
       </Box>
 
-      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && (
+      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && !isTicket && (
         <InitialSetup setIsNext={setIsNext} />
       )}
-      {!goToSummary && !isConfirm && !purchasingTicket && isNext && (
+      {!goToSummary && !isConfirm && !purchasingTicket && isNext && !isTicket && (
         <TicketSetup
           setIsNext={setIsNext}
           setIsConfirm={setIsConfirm}
@@ -315,9 +318,23 @@ const Ticket = ({ event }: PropTypes) => {
           selectedToken={selectedToken}
           selectedWhiteListTicket={selectedWhiteListTicket}
           setSelectedWhiteListTicket={setSelectedWhiteListTicket}
+          setIsTicket={setIsTicket}
         />
       )}
-      {isConfirm && !purchasingTicket && !goToSummary && !isNext && (
+      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && isTicket && (
+        <TicketType
+          setIsTicket={setIsTicket}
+          setIsNext={setIsNext}
+          setIsConfirm={setIsConfirm}
+          setSelectedToken={setSelectedToken}
+          selectedToken={selectedToken}
+          selectedWhiteListTicket={selectedWhiteListTicket}
+          setSelectedWhiteListTicket={setSelectedWhiteListTicket}
+          selectedType={selectedType}
+          setSelectedType={setSelectedType}
+        />
+      )}
+      {isConfirm && !purchasingTicket && !goToSummary && !isNext && !isTicket && (
         <CreateTicket
           selectedToken={selectedToken}
           isTicketFree={isTicketFree}
@@ -348,7 +365,7 @@ const Ticket = ({ event }: PropTypes) => {
           setEndTime={setEndTime}
         />
       )}
-      {!purchasingTicket && !isConfirm && goToSummary && !isNext && (
+      {!purchasingTicket && !isConfirm && goToSummary && !isNext && !isTicket && (
         <TicketCreationSummary
           handleSubmit={handleSubmit}
           isTicketFree={isTicketFree}
@@ -359,7 +376,7 @@ const Ticket = ({ event }: PropTypes) => {
           setGoToSummary={setGoToSummary}
         />
       )}
-      {purchasingTicket && !goToSummary && !isConfirm && !isNext && (
+      {purchasingTicket && !goToSummary && !isConfirm && !isNext && !isTicket && (
         <ProcessingTicket
           setPurchasingTicket={setPurchasingTicket}
           toggleDrawer={toggleDrawer}
