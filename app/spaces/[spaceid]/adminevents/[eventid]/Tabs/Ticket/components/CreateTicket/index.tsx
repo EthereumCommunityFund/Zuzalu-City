@@ -216,6 +216,7 @@ export const TicketSetup = ({
     <Stack
       sx={{
         background: '#222',
+        height: isMobile ? '100%' : 'calc(100vh - 6.2rem)',
       }}
     >
       <Stack spacing="30px" padding="20px 30px">
@@ -368,9 +369,6 @@ export const TicketSetup = ({
             </Typography>
           </Box>
         </Stack>
-      </Stack>
-
-      <Box paddingX={3} marginTop={'10px'}>
         <Box
           display={'flex'}
           justifyContent={'space-between'}
@@ -420,7 +418,8 @@ export const TicketSetup = ({
           </Typography>
           <ScrollIcon />
         </Box>
-      </Box>
+      </Stack>
+
     </Stack >
   );
 };
