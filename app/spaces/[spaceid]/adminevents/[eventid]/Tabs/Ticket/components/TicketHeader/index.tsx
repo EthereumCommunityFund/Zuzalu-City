@@ -107,48 +107,44 @@ const TicketHeader = ({ event, visible }: PropTypes) => {
           Total Sold: 18
         </Typography>
       </Stack>
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
-        <div className="col-span-1 gap-x-4 cursor-pointer p-[10px] flex items-center rounded-[10px] bg-[rgba(255,255,255,0.05)]">
+      <Stack direction="row" spacing="20px">
+        <Stack direction="row" spacing="10px" bgcolor="#2d2d2d" borderRadius="10px" padding="10px" flex={1}>
           <ZuSwitch
             checked={isChecked}
             onChange={() => setIsChecked((prev) => !prev)}
           />
           <Stack direction="column">
-            <Typography variant="subtitle2" color="white">
+            <Typography variant="subtitleSB">
               Registration Status
             </Typography>
-            <Typography variant="body2" color="white">
+            <Typography variant="caption">
               CLOSED
             </Typography>
           </Stack>
-        </div>
-        <div className="col-span-1 p-[10px] flex items-center rounded-[10px] bg-[rgba(255,255,255,0.05)]">
-          <div className="mr-[10px]">
-            <GroupIcon />
-          </div>
-          <div className="">
-            <div className="mb-[4px] text-white opacity-50 text-[18px] leading-[120%] font-[700]">
+        </Stack>
+        <Stack direction="row" spacing="10px" bgcolor="#2d2d2d" borderRadius="10px" padding="10px" flex={1}>
+          <GroupIcon size={8} />
+          <Stack direction="column">
+            <Typography variant="subtitleSB">
               Event Capacity
-            </div>
-            <div className="text-[10px] text-white opacity-50">
+            </Typography>
+            <Typography variant="caption">
               SETTING COMING SOON
-            </div>
-          </div>
-        </div>
-        <div className="col-span-1 cursor-pointer p-[10px] flex items-center rounded-[10px] bg-[rgba(255,255,255,0.05)]">
-          <div className="mr-[10px]">
-            <QRCodeIcon />
-          </div>
-          <div className="">
-            <div className="mb-[4px] text-white text-[18px] leading-[120%] font-[700]">
+            </Typography>
+          </Stack>
+        </Stack>
+        <Stack direction="row" spacing="10px" bgcolor="#2d2d2d" borderRadius="10px" padding="10px" flex={1}>
+          <QRCodeIcon />
+          <Stack direction="column">
+            <Typography variant="subtitleSB">
               Scan QR Code
-            </div>
-            <div className="text-[10px] leading-[120%] text-[rgba(255,255,255,0.7)]">
+            </Typography>
+            <Typography variant="caption">
               No tracks
-            </div>
-          </div>
-        </div>
-      </div>
+            </Typography>
+          </Stack>
+        </Stack>
+      </Stack>
       {visible ? (
         <ZuButton
           onClick={() => {
