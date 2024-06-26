@@ -151,3 +151,8 @@ export interface CreateProfileResult {
   profile?: Profile;
   error?: string;
 }
+
+export interface Coordinates {
+  lat: number | undefined;
+  lng: number | undefined;
+}

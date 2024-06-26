@@ -8,9 +8,11 @@ import { Anchor } from '@/types';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
+  setWhitelist?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setSponsor?: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
-const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
+const EventRegister: React.FC<EventRegisterProps> = ({ onToggle, setWhitelist, setSponsor }) => {
   const [isOne, setIsOne] = useState<boolean>(false);
   const [isTwo, setIsTwo] = useState<boolean>(false);
 
@@ -45,11 +47,11 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
             onClick={() => setIsOne(prev => !prev)}
             sx={{ cursor: "pointer" }}
             spacing="10px" padding="10px" direction="row" borderRadius="10px" bgcolor="#2a2a2a">
-            {isOne ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />}
+            {isOne ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />}
             <Stack spacing="5px">
               <Stack alignItems="center" justifyContent="space-between" direction="row">
                 <Typography variant="bodyMB">
-                  Pass One
+                  Full Pass
                 </Typography>
                 <Stack direction="row" alignItems="end" spacing="5px">
                   <Typography variant="bodyMB">
@@ -61,8 +63,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
                 </Stack>
               </Stack>
               <Typography variant="bodyS">
-                Get ready to groove at the Summer Music Festival! Join us for a day filled with live music,
-                food trucks, and good vibes.
+                This pass does not include accomodation.
               </Typography>
             </Stack>
           </Stack>
@@ -125,7 +126,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
             <Stack spacing="5px">
               <Stack alignItems="center" justifyContent="space-between" direction="row">
                 <Typography variant="bodyMB">
-                  Pass Two
+                  Week Pass
                 </Typography>
                 <Stack direction="row" alignItems="end" spacing="5px">
                   <Typography variant="bodyMB">
@@ -195,7 +196,6 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
         </Stack>
         <Stack spacing="10px">
           <ZuButton
-            onClick={() => onToggle('right', true)}
             sx={{
               backgroundColor: '#373b36',
               color: '#D7FFC4',
@@ -209,9 +209,18 @@ const EventRegister: React.FC<EventRegisterProps> = ({ onToggle }) => {
             OR
           </Typography>
           <ZuButton
+            onClick={() => { setSponsor(false); setWhitelist(true); onToggle('right', true) }}
             sx={{
               width: "100%"
             }}
+          >
+            Whitelisted Users
+          </ZuButton>
+          <ZuButton
+            sx={{
+              width: "100%"
+            }}
+            onClick={() => { setSponsor(true); setWhitelist(false); onToggle('right', true); }}
           >
             Register as Sponsor
           </ZuButton>

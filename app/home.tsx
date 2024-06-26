@@ -412,7 +412,7 @@ const Home: React.FC = () => {
               borderRadius="10px"
               padding="40px 40px"
               sx={{
-                backgroundImage: 'url("/4.webp")',
+                backgroundImage: 'url("/27.jpg")',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',

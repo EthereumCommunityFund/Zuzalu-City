@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
@@ -106,12 +107,20 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             <Typography color="white" variant="caption">
               BY:
             </Typography>
-            <Box
+            {/* <Box
               component="img"
               width="18px"
               height="18px"
               src={event.space?.avatar}
               borderRadius="40px"
+            /> */}
+            <Image
+              src={event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
+              loader={() => event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
+              width={18}
+              height={18}
+              alt={event.title}
+              style={{ borderRadius: "100%" }}
             />
             <Typography
               color="white"

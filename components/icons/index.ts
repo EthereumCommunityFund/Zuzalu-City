@@ -72,6 +72,7 @@ import { RefreshIcon } from './RefreshIcon';
 import { Square2StackIcon } from './Square2Stack';
 import { ArrowTopRightSquareIcon } from './ArrowTopRightSquare';
 import { ArrowDownSquare } from './ArrowDownSquare';
+import { HeartIcon } from './Heart';
 
 export {
   HomeIcon,
@@ -147,5 +148,6 @@ export {
   RefreshIcon,
   Square2StackIcon,
   ArrowTopRightSquareIcon,
-  ArrowDownSquare
+  ArrowDownSquare,
+  HeartIcon
 };

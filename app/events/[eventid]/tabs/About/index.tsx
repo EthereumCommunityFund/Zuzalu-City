@@ -12,6 +12,8 @@ import {
   Email,
   Payment
 } from 'components/event';
+import { Verify, Agree, Mint, Complete, Transaction } from '@/components/event/Whitelist';
+import { SponsorAgree, SponsorMint, SponsorTransaction, SponsorComplete } from '@/components/event/Sponsor';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -19,6 +21,8 @@ import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { SpaceCard } from '@/components/cards';
 import { Anchor } from '@/types';
+import { LatLngLiteral } from 'leaflet';
+import getLatLngFromAddress from '@/utils/osm';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -28,10 +32,24 @@ interface IAbout {
 const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [location, setLocation] = useState<string>('');
 
+  const [whitelist, setWhitelist] = useState<boolean>(false);
+  const [sponsor, setSponsor] = useState<boolean>(false);
+
   const [isInitial, setIsInitial] = useState<boolean>(false);
   const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
   const [isEmail, setIsEmail] = useState<boolean>(false);
   const [isPayment, setIsPayment] = useState<boolean>(false);
+
+  const [isVerify, setIsVerify] = useState<boolean>(false);
+  const [isAgree, setIsAgree] = useState<boolean>(false);
+  const [isMint, setIsMint] = useState<boolean>(false);
+  const [isTransaction, setIsTransaction] = useState<boolean>(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
+
+  const [isSponsorAgree, setIsSponsorAgree] = useState<boolean>(false);
+  const [isSponsorMint, setIsSponsorMint] = useState<boolean>(false);
+  const [isSponsorTransaction, setIsSponsorTransaction] = useState<boolean>(false);
+  const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
 
   const params = useParams();
   const eventId = params.eventid.toString();
@@ -44,6 +62,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     bottom: false,
     right: false,
   });
+
+  const [osm, setOsm] = useState<LatLngLiteral | undefined>({
+    lat: 0,
+    lng: 0
+  })
+
 
   const getEventDetailInfo = async () => {
     try {
@@ -112,7 +136,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         .select('*')
         .eq('eventId', eventId);
       if (data !== null) {
-        setLocation(data[0].name.split(','));
+        setLocation(data[0].name);
       }
     } catch (err) {
       console.log(err);
@@ -136,6 +160,15 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getLatLngFromAddress(location);
+      console.log("eventlocatino", location, res)
+      setOsm(res);
+    }
+    fetchData();
+  }, [location])
+
   const List = (anchor: Anchor) => {
 
     const handleClose = () => {
@@ -152,7 +185,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         role="presentation"
         zIndex="10"
         borderLeft="1px solid #383838"
-        height="100%"
       >
         <Stack
           direction="row"
@@ -171,10 +203,27 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             Register for Event
           </Typography>
         </Stack>
-        {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
+        {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
-        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />}
+        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
+        {
+          whitelist &&
+          <>
+            {!isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Verify setIsVerify={setIsVerify} />}
+            {isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />}
+            {!isVerify && isAgree && !isMint && !isTransaction && !isComplete && <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />}
+            {!isVerify && !isAgree && isMint && !isTransaction && !isComplete && <Transaction setIsMint={setIsMint} setIsTransaction={setIsTransaction} handleClose={handleClose} />}
+            {!isVerify && !isAgree && !isMint && isTransaction && !isComplete && <Complete setIsTransaction={setIsTransaction} setIsComplete={setIsComplete} handleClose={handleClose} />}
+          </>}
+        {sponsor &&
+          <>
+            {!isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorAgree setIsAgree={setIsSponsorAgree} />}
+            {isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorMint setIsAgree={setIsSponsorAgree} setIsMint={setIsSponsorMint} />}
+            {!isSponsorAgree && isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorTransaction setIsMint={setIsSponsorMint} setIsTransaction={setIsSponsorTransaction} handleClose={handleClose} />}
+            {!isSponsorAgree && !isSponsorMint && isSponsorTransaction && !isSponsorComplete && <SponsorComplete setIsTransaction={setIsSponsorTransaction} setIsComplete={setIsSponsorComplete} handleClose={handleClose} />}
+          </>
+        }
       </Box>
     );
   };
@@ -280,14 +329,14 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             </Stack>
           </Stack>
           <Stack spacing="20px" flex="1">
-            <EventRegister onToggle={toggleDrawer} />
+            <EventRegister onToggle={toggleDrawer} setWhitelist={setWhitelist} setSponsor={setSponsor} />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-            <EventDetail status={eventData.status} links={eventData.customLinks} />
+            <EventDetail status={eventData.status} links={eventData.customLinks} address={location} location={osm} />
             {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}
@@ -296,8 +345,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             hideBackdrop={true}
             sx={{
               '& .MuiDrawer-paper': {
-                marginTop: '50px',
-                height: 'calc(100% - 50px)',
                 boxShadow: 'none',
               },
             }}
