@@ -6,13 +6,7 @@ import { PlusIcon, PlusCircleIcon } from 'components/icons';
 const SessionAdd = () => {
   return (
     <Stack direction="column" spacing={0.5}>
-      <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h6">Session List</Typography>
-        <ZuButton startIcon={<PlusIcon />}>Add a Session</ZuButton>
-      </Stack>
-      <Typography variant="body2">
-        Sessions makeup the schedule of an event
-      </Typography>
+      
       <Stack
         direction="column"
         alignItems="center"
@@ -21,8 +15,7 @@ const SessionAdd = () => {
         borderRadius={2}
       >
         <PlusCircleIcon color="#6c6c6c" size={15} />
-        <Typography variant="subtitle2">No Sessions</Typography>
-        <Typography variant="body2">Create a Session</Typography>
+        <Typography variant="body2">Add your First Session</Typography>
       </Stack>
     </Stack>
   );

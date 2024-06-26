@@ -108,7 +108,7 @@ const VenueList: React.FC<VenueListProps> = ({
             />
           </Stack>
           {venues?.map((venue, index) => (
-            <VenueCard key={`VenueCard-${index}`} venue={venue} />
+            <VenueCard key={`VenueCard-${index}`} {...venue} />
           ))}
         </Stack>
       )}

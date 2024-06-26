@@ -40,6 +40,7 @@ import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import MiniDashboard from './components/MiniDashboard';
+import { formatUTCTimezone } from '@/utils';
 
 const queryClient = new QueryClient();
 
@@ -195,6 +196,7 @@ const Home: React.FC = () => {
     try {
       // TODO: clean selectedDate
       if (selectedDate) {
+        const convertedDate = formatUTCTimezone(selectedDate);
         const getEventsByDate_QUERY = `
           query ($input:EventFiltersInput!) {
           eventIndex(filters:$input, first: 20){
@@ -235,7 +237,7 @@ const Home: React.FC = () => {
             input: {
               where: {
                 startTime: {
-                  equalTo: selectedDate.format('YYYY-MM-DD') + 'T00:00:00Z',
+                  equalTo: convertedDate,
                 },
               },
             },

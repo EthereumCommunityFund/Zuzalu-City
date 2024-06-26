@@ -1,38 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { ThreeVerticalIcon } from '@/components/icons';
-import { Venue } from '@/types';
-import { supabase } from '@/utils/supabase/client';
-import { Session } from '@/types';
+import { VENUE_TAGS } from '@/constant';
+import { formatAmount } from '@/utils';
 
 type VenueCardProps = {
-  venue: Venue;
+  name: string;
+  avatar: string;
+  bookings: string;
+  tags: string;
 };
 
-const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const getSession = async () => {
-    try {
-      const { data } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('location', venue.name);
-      if (data) {
-        setSessions(data);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await getSession();
-    };
-
-    fetchData();
-  }, []);
-
+const VenueCard: React.FC<VenueCardProps> = ({ name, avatar, bookings, tags }) => {
   return (
     <Stack
       direction="row"
@@ -52,25 +31,25 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
         width="40px"
         height="40px"
         borderRadius="6px"
-        src={venue.avatar || '/7.jpg'}
+        src={avatar ? avatar : "/7.jpg"}
       />
       <Stack spacing="10px" flex="1">
-        <Typography variant="bodyBB">{venue.name}</Typography>
+        <Typography variant="bodyBB">{name}</Typography>
         <Stack direction="row" spacing="10px">
-          {venue.tags.split(',').map((item, i) => (
-            <Stack
-              bgcolor="#424242"
-              padding="3px 8px"
-              borderRadius="4px"
-              key={`Venue_Label${i}`}
-            >
-              <Typography variant="caption">{item}</Typography>
-            </Stack>
-          ))}
+          {
+            tags.split(",").length > 0 && tags.split(",").map((tag, index) => {
+              return <Stack bgcolor="#424242" padding="3px 8px" borderRadius="4px" key={index}>
+                <Typography variant="caption">{
+                VENUE_TAGS.filter((tagItem) => tagItem.value === tag)[0].label
+              }
+              </Typography>
+              </Stack>
+            })
+          }
         </Stack>
-        {/*<Typography variant="bodyS">
-          Sessions Booked: {sessions.length} Capacity: {venue.capacity}
-        </Typography>*/}
+        <Typography variant="bodyS">Sessions Booked: Capacity: {
+          formatAmount(Object.values(JSON.parse(bookings)).filter((value: any) => value.length > 0 && value[0].startTime).length, 2)
+        }</Typography>
       </Stack>
       <Stack
         direction="row"
