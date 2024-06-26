@@ -164,7 +164,6 @@ const Sessions = () => {
       `;
 
       const response: any = await composeClient.executeQuery(query, {})
-      console.log(response);
       if ('sessionIndex' in response.data) {
         const sessionData: SessionData = response.data as SessionData;
         const fetchedSessions: Session[] = sessionData.sessionIndex.edges.map(

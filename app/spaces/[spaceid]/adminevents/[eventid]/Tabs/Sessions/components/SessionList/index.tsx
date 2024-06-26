@@ -93,9 +93,7 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
           }
         }
       }
-      console.log('filter: ', variable);
       const response: any = await composeClient.executeQuery(query, variable)
-      console.log(response);
       if ('sessionIndex' in response.data) {
         const sessionData: SessionData = response.data as SessionData;
         const fetchedSessions: Session[] = sessionData.sessionIndex.edges.map(

@@ -617,7 +617,7 @@ const Home: React.FC = () => {
                       <Box>
                         <ZuCalendar
                           onChange={(val) => {
-                            setSelectedDate(val);
+                            setSelectedDate(val)
                           }}
                           slots={{ day: SlotDates }}
                           slotProps={{
