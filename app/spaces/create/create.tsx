@@ -440,7 +440,7 @@ const Create = () => {
                 }}
               >
                 <Uploader3
-                  accept={['.gif', '.jpeg', '.jpg']}
+                  accept={['.gif', '.jpeg', '.jpg', '.png']}
                   // api={'/api/upload/file'}
                   connector={connector}
                   multiple={false}
@@ -494,7 +494,7 @@ const Create = () => {
                 }}
               >
                 <Uploader3
-                  accept={['.gif', '.jpeg', '.jpg']}
+                  accept={['.gif', '.jpeg', '.jpg', '.png']}
                   // api={'/api/upload/file'}
                   connector={connector}
                   multiple={false}

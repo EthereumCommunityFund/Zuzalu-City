@@ -238,7 +238,7 @@ const Overview = () => {
             }}
           >
             <Uploader3
-              accept={['.gif', '.jpeg', '.gif']}
+              accept={['.gif', '.jpeg', '.gif', '.png']}
               connector={connector}
               multiple={false}
               crop={{
@@ -293,7 +293,7 @@ const Overview = () => {
             }}
           >
             <Uploader3
-              accept={['.gif', '.jpeg', '.gif']}
+              accept={['.gif', '.jpeg', '.gif', '.png']}
               connector={connector}
               multiple={false}
               crop={{

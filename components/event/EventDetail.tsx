@@ -1,23 +1,29 @@
-import * as React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Stack, Typography, Box } from '@mui/material';
 import { RightArrowIcon } from 'components/icons';
 import { SOCIAL_TYPES } from '@/constant';
+import { TileLayer, MapContainer, useMap, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { LatLngLiteral } from 'leaflet';
+import LocationFinder from '../map';
 
 type UserLink = {
   title: string;
   links: string;
 };
 interface IEventDetail {
-  status?: string;
-  links?: [UserLink];
+  status?: string
+  links?: [UserLink]
+  location?: LatLngLiteral | undefined
+  address: string
 }
 
-const EventDetail: React.FC<IEventDetail> = ({
-  status = 'In-Person',
-  links = [],
-}) => {
+const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [], location, address }) => {
+
+  console.log("osm", location)
+
   return (
     <Stack spacing="20px">
       <Typography
@@ -76,11 +82,15 @@ const EventDetail: React.FC<IEventDetail> = ({
           Apply to see address
         </Typography>
         <Box
-          component="img"
-          borderRadius="10px"
-          height={'182px'}
-          src="/15.webp"
-        />
+        >
+          {location !== undefined && <MapContainer center={location} zoom={7} scrollWheelZoom={false} style={{ width: "100%", height: "182px", borderRadius: "10px" }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </MapContainer>}
+          {/* <LocationFinder address={address} /> */}
+        </Box>
       </Stack>
     </Stack>
   );

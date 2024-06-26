@@ -559,8 +559,8 @@ const Home = () => {
                     {5000 -
                       (description
                         ? description.blocks
-                            .map((item) => item.data.text.length)
-                            .reduce((prev, current) => prev + current, 0)
+                          .map((item) => item.data.text.length)
+                          .reduce((prev, current) => prev + current, 0)
                         : 0)}{' '}
                     Characters Left
                   </Typography>
@@ -578,7 +578,7 @@ const Home = () => {
                 }}
               >
                 <Uploader3
-                  accept={['.gif', '.jpeg', '.gif']}
+                  accept={['.gif', '.jpeg', '.gif', '.png']}
                   connector={connector}
                   multiple={false}
                   crop={false} // must be false when accept is svg

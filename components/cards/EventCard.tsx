@@ -1,12 +1,12 @@
 'use client';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
-import * as util from '../../utils/index';
 import { supabase } from '@/utils/supabase/client';
 
 type EventCardProps = {
@@ -48,7 +48,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const theme = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [eventLocation, setEventLocation] = useState<string>('Loading...');
 
   const getLocation = async () => {
@@ -70,8 +70,6 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
   useEffect(() => {
     getLocation().catch((err) => console.log(err));
-    const isMobileEnv: boolean = util.isMobile();
-    setIsMobile(isMobileEnv);
   }, []);
 
   const handleNavigation = () => {
@@ -109,12 +107,20 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             <Typography color="white" variant="caption">
               BY:
             </Typography>
-            <Box
+            {/* <Box
               component="img"
               width="18px"
               height="18px"
               src={event.space?.avatar}
               borderRadius="40px"
+            /> */}
+            <Image
+              src={event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
+              loader={() => event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
+              width={18}
+              height={18}
+              alt={event.title}
+              style={{ borderRadius: "100%" }}
             />
             <Typography
               color="white"

@@ -30,7 +30,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   children,
   limit = 5000,
   readonly = false,
-  placeholder = 'Write an Amazing Blog',
   showMore = false,
   ...props
 }: TextEditorPropTypes) => {
@@ -41,7 +40,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       const editor = new EditorJS({
         holder: holder,
         tools,
-        placeholder: placeholder,
         data: value,
         readOnly: readonly,
         async onChange(api, event: any) {
