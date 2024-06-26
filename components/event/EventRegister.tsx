@@ -238,8 +238,8 @@ const EventRegister: React.FC<EventRegisterProps> = ({
           </ZuButton>
           <ZuButton
             onClick={() => {
-              setSponsor(false);
-              setWhitelist(true);
+              setSponsor(true);
+              setWhitelist(false);
               onToggle('right', true);
             }}
             sx={{

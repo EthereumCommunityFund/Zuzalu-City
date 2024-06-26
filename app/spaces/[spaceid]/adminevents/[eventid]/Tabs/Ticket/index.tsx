@@ -55,6 +55,9 @@ const Ticket = ({ event }: PropTypes) => {
   const [isShowQtyRemaining, setIsShowQtyRemaining] = React.useState(false);
   const [isHideUntilSetDate, setIsHideUntilSetDate] = React.useState(false);
   const [isHideAfterSetDate, setIsHideAfterSetDate] = React.useState(false);
+  const [isMintCloseTime, setIsMintCloseTime] = React.useState(false);
+  const [endDate, setEndDate] = React.useState<Dayjs>(dayjs());
+  const [endTime, setEndTime] = React.useState<Dayjs>(dayjs());
   const [isHideWhenSoldOut, setIsHideWhenSoldOut] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState('USDT');
 
@@ -128,23 +131,23 @@ const Ticket = ({ event }: PropTypes) => {
         functionName: 'createNewTicket',
         args: selectedWhiteListTicket
           ? [
-              event?.contractID,
-              ticketInfo?.ticketName,
-              selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
-              convertDateToEpoch(ticketMintDeadline),
-              ticketInfo?.ticketPrice,
-              true,
-              initialWhitelist,
-            ]
+            event?.contractID,
+            ticketInfo?.ticketName,
+            selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
+            convertDateToEpoch(ticketMintDeadline),
+            ticketInfo?.ticketPrice,
+            true,
+            initialWhitelist,
+          ]
           : [
-              event?.contractID,
-              ticketInfo?.ticketName,
-              selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
-              convertDateToEpoch(ticketMintDeadline),
-              ticketInfo?.ticketPrice,
-              false,
-              [],
-            ],
+            event?.contractID,
+            ticketInfo?.ticketName,
+            selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
+            convertDateToEpoch(ticketMintDeadline),
+            ticketInfo?.ticketPrice,
+            false,
+            [],
+          ],
       });
       setTxnHash(createTicketHash);
 
@@ -272,7 +275,7 @@ const Ticket = ({ event }: PropTypes) => {
   const list = (anchor: Anchor) => (
     <Box
       sx={{
-        maxWidth: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+        width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
         backgroundColor: '#222222',
       }}
       role="presentation"
@@ -337,6 +340,12 @@ const Ticket = ({ event }: PropTypes) => {
           handleFileChange={handleFileChange}
           ticketMintDeadline={ticketMintDeadline}
           setTicketMintDeadline={setTicketMintDeadline}
+          isMintCloseTime={isMintCloseTime}
+          setIsMintCloseTime={setIsMintCloseTime}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          endTime={endTime}
+          setEndTime={setEndTime}
         />
       )}
       {!purchasingTicket && !isConfirm && goToSummary && !isNext && (
