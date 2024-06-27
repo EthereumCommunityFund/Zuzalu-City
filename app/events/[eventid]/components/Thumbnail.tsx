@@ -1,9 +1,11 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, useTheme } from '@mui/material';
 import { ZuButton } from 'components/core';
-import { LeftArrowIcon, ShareIcon, HomeIcon } from 'components/icons';
+import { ShareIcon, HomeIcon } from 'components/icons';
+import { MoreIcon } from '@/components/icons/More';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface IThumbnail {
   name?: string;
@@ -11,6 +13,7 @@ interface IThumbnail {
 
 const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
   const router = useRouter();
+  const { breakpoints } = useTheme();
 
   return (
     <Stack
@@ -22,11 +25,22 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
     >
       <Stack direction="row" spacing={2} alignItems="center">
         <ZuButton
-          sx={{ backgroundColor: '#333333' }}
-          startIcon={<LeftArrowIcon />}
+          sx={{
+            backgroundColor: '#333333',
+            minWidth: 'unset'
+          }}
           onClick={() => router.push("/")}
         >
-          Back
+          <ArrowBackIcon />
+          <Typography
+            sx={{
+              [breakpoints.down('md')]: {
+                display: 'none',
+              }
+            }}
+          >
+            Back
+          </Typography>
         </ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">
           {name}
@@ -39,6 +53,11 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
           alignItems="center"
           bgcolor="#333333"
           borderRadius={2}
+          sx={{
+            [breakpoints.down('md')]: {
+              display: 'none'
+            }
+          }}
         >
           <ShareIcon />
         </Stack>
@@ -49,7 +68,7 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
           bgcolor="#333333"
           borderRadius={2}
         >
-          <HomeIcon />
+          <MoreIcon />
         </Stack>
       </Stack>
     </Stack>
