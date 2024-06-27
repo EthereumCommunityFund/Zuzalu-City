@@ -17,6 +17,7 @@ import BpCheckbox from '@/components/event/Checkbox';
 import { Anchor, Session, SessionData, ProfileEdge, Profile } from '@/types';
 import { SPACE_CATEGORIES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { supabase } from '@/utils/supabase/client';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -39,19 +40,19 @@ interface ListPropTypes {
   setSessionExperienceLevel: (val: string) => void
   person: boolean
   setPerson: Dispatch<SetStateAction<boolean>>
-  online: boolean, 
+  online: boolean,
   setOnline: Dispatch<SetStateAction<boolean>>,
-  sessionLocation?: string, 
+  sessionLocation?: string,
   setSessionLocation: Dispatch<SetStateAction<string | undefined>>,
-  locations: string[], 
+  locations: string[],
   setLocations: Dispatch<SetStateAction<string[]>>,
-  sessionDate: Dayjs | null, 
+  sessionDate: Dayjs | null,
   setSessionDate: Dispatch<SetStateAction<Dayjs | null>>,
-  sessionStartTime: Dayjs | null, 
+  sessionStartTime: Dayjs | null,
   setSessionStartTime: Dispatch<SetStateAction<Dayjs | null>>,
-  sessionEndTime: Dayjs | null, 
+  sessionEndTime: Dayjs | null,
   setSessionEndTime: Dispatch<SetStateAction<Dayjs | null>>,
-  sessionVideoURL: string, 
+  sessionVideoURL: string,
   setSessionVideoURL: Dispatch<SetStateAction<string>>,
   sessionOrganizers: string[],
   handleOrganizerChange: (e: any) => void,
@@ -81,17 +82,17 @@ export const List = ({
   setPerson,
   online,
   setOnline,
-  sessionLocation, 
+  sessionLocation,
   setSessionLocation,
-  locations, 
+  locations,
   setLocations,
-  sessionDate, 
+  sessionDate,
   setSessionDate,
   sessionStartTime,
   setSessionStartTime,
   sessionEndTime,
   setSessionEndTime,
-  sessionVideoURL, 
+  sessionVideoURL,
   setSessionVideoURL,
   sessionOrganizers,
   handleOrganizerChange,
@@ -1071,6 +1072,17 @@ const Sessions = () => {
     }
   };
 
+  const getSession = async () => {
+    try {
+      const { data } = await supabase.from('sessions').select('*').eq('eventId', eventId);
+      if (data) {
+        console.log(data);
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   const getPeople = async () => {
     try {
       const response: any = await composeClient.executeQuery(`
@@ -1143,77 +1155,102 @@ const Sessions = () => {
       return;
     }
 
-    if (person) {
-      const update = await composeClient.executeQuery(`
-      mutation {
-        createSession(
-          input: {
-            content: {
-              title: "${sessionName}",
-              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              profileId: "${profileId}",
-              eventId: "${params.eventid.toString()}",
-              tags: "${sessionTags.join(',')}",
-              status: "${sessoinStatus}",
-              format: "person",
-              track: "${sessionTrack}",
-              gated: "${sessionGated}",
-              description: "${strDesc}"
-            }
-          }
-        ) {
-          document {
-            id
-            title
-            createdAt
-            startTime
-            endTime
-            eventId
-            profileId
-          }
-        }
-      }
-      `);
-      toggleDrawer('right', false);
-      await getSessions();
-    } else {
-      const update = await composeClient.executeQuery(`
-      mutation {
-        createSession(
-          input: {
-            content: {
-              title: "${sessionName}",
-              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              profileId: "${profileId}",
-              eventId: "${params.eventid.toString()}",
-              tags: "${sessionTags.join(',')}",
-              status: "${sessoinStatus}",
-              format: "online",
-              track: "${sessionTrack}",
-              gated: "${sessionGated}",
-              description: "${strDesc}"
-            }
-          }
-        ) {
-          document {
-            id
-            title
-            createdAt
-            startTime
-            endTime
-            eventId
-            profileId
-          }
-        }
-      }
-      `);
-      toggleDrawer('right', false);
-      await getSessions();
-    }
+    const format = person ? 'person' : 'online';
+
+    const { data } = await supabase.from('sessions').insert({
+      title: sessionName,
+      description: strDesc,
+      experience_level: sessionExperienceLevel,
+      createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      startTime: sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      endTime: sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      profileId,
+      eventId,
+      tags: sessionTags.join(','),
+      type: sessionType,
+      status: sessoinStatus,
+      format,
+      track: sessionTrack,
+      gated: sessionGated,
+      timezone: dayjs.tz.guess().toString(),
+      video_url: sessionVideoURL
+    })
+
+    console.log("return data", data);
+    toggleDrawer('right', false);
+    await getSession();
+
+    // if (person) {
+    //   const update = await composeClient.executeQuery(`
+    //   mutation {
+    //     createSession(
+    //       input: {
+    //         content: {
+    //           title: "${sessionName}",
+    //           createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           profileId: "${profileId}",
+    //           eventId: "${params.eventid.toString()}",
+    //           tags: "${sessionTags.join(',')}",
+    //           status: "${sessoinStatus}",
+    //           format: "person",
+    //           track: "${sessionTrack}",
+    //           gated: "${sessionGated}",
+    //           description: "${strDesc}"
+    //         }
+    //       }
+    //     ) {
+    //       document {
+    //         id
+    //         title
+    //         createdAt
+    //         startTime
+    //         endTime
+    //         eventId
+    //         profileId
+    //       }
+    //     }
+    //   }
+    //   `);
+    //   toggleDrawer('right', false);
+    //   await getSessions();
+    // } else {
+    //   const update = await composeClient.executeQuery(`
+    //   mutation {
+    //     createSession(
+    //       input: {
+    //         content: {
+    //           title: "${sessionName}",
+    //           createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           profileId: "${profileId}",
+    //           eventId: "${params.eventid.toString()}",
+    //           tags: "${sessionTags.join(',')}",
+    //           status: "${sessoinStatus}",
+    //           format: "online",
+    //           track: "${sessionTrack}",
+    //           gated: "${sessionGated}",
+    //           description: "${strDesc}"
+    //         }
+    //       }
+    //     ) {
+    //       document {
+    //         id
+    //         title
+    //         createdAt
+    //         startTime
+    //         endTime
+    //         eventId
+    //         profileId
+    //       }
+    //     }
+    //   }
+    //   `);
+    //   toggleDrawer('right', false);
+    //   await getSessions();
+    // }
   };
 
 
@@ -1221,6 +1258,7 @@ const Sessions = () => {
   useEffect(() => {
     const fetchData = async () => {
       await getSessions();
+      await getSession();
       await getPeople();
     }
 
@@ -1317,7 +1355,7 @@ const Sessions = () => {
         onOpen={() => toggleDrawer('right', true)}
       >
         {
-          <List 
+          <List
             anchor={'right'}
             createSession={createSession}
             handleChange={handleChange}

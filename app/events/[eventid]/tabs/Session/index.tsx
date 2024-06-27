@@ -17,6 +17,7 @@ import BpCheckbox from '@/components/event/Checkbox';
 import { Anchor, Session, SessionData, ProfileEdge, Profile } from '@/types';
 import { SPACE_CATEGORIES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { supabase } from '@/utils/supabase/client';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -107,6 +108,17 @@ const Sessions = () => {
     }
   };
 
+  const getSession = async () => {
+    try {
+      const { data } = await supabase.from('sessions').select('*').eq('eventId', eventId);
+      if (data) {
+        console.log(data);
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   const getPeople = async () => {
     try {
       const response: any = await composeClient.executeQuery(`
@@ -179,77 +191,102 @@ const Sessions = () => {
       return;
     }
 
-    if (person) {
-      const update = await composeClient.executeQuery(`
-      mutation {
-        createSession(
-          input: {
-            content: {
-              title: "${sessionName}",
-              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              profileId: "${profileId}",
-              eventId: "${params.eventid.toString()}",
-              tags: "${sessionTags.join(',')}",
-              status: "${sessoinStatus}",
-              format: "person",
-              track: "${sessionTrack}",
-              gated: "${sessionGated}",
-              description: "${strDesc}"
-            }
-          }
-        ) {
-          document {
-            id
-            title
-            createdAt
-            startTime
-            endTime
-            eventId
-            profileId
-          }
-        }
-      }
-      `);
-      toggleDrawer('right', false);
-      await getSessions();
-    } else {
-      const update = await composeClient.executeQuery(`
-      mutation {
-        createSession(
-          input: {
-            content: {
-              title: "${sessionName}",
-              createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-              profileId: "${profileId}",
-              eventId: "${params.eventid.toString()}",
-              tags: "${sessionTags.join(',')}",
-              status: "${sessoinStatus}",
-              format: "online",
-              track: "${sessionTrack}",
-              gated: "${sessionGated}",
-              description: "${strDesc}"
-            }
-          }
-        ) {
-          document {
-            id
-            title
-            createdAt
-            startTime
-            endTime
-            eventId
-            profileId
-          }
-        }
-      }
-      `);
-      toggleDrawer('right', false);
-      await getSessions();
-    }
+    const format = person ? 'person' : 'online';
+
+    const { data } = await supabase.from('sessions').insert({
+      title: sessionName,
+      description: strDesc,
+      experience_level: sessionExperienceLevel,
+      createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      startTime: sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      endTime: sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      profileId,
+      eventId,
+      tags: sessionTags.join(','),
+      type: sessionType,
+      status: sessoinStatus,
+      format,
+      track: sessionTrack,
+      gated: sessionGated,
+      timezone: dayjs.tz.guess().toString(),
+      video_url: sessionVideoURL
+    })
+
+    console.log("return data", data);
+    toggleDrawer('right', false);
+    await getSession();
+
+    // if (person) {
+    //   const update = await composeClient.executeQuery(`
+    //   mutation {
+    //     createSession(
+    //       input: {
+    //         content: {
+    //           title: "${sessionName}",
+    //           createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           profileId: "${profileId}",
+    //           eventId: "${params.eventid.toString()}",
+    //           tags: "${sessionTags.join(',')}",
+    //           status: "${sessoinStatus}",
+    //           format: "person",
+    //           track: "${sessionTrack}",
+    //           gated: "${sessionGated}",
+    //           description: "${strDesc}"
+    //         }
+    //       }
+    //     ) {
+    //       document {
+    //         id
+    //         title
+    //         createdAt
+    //         startTime
+    //         endTime
+    //         eventId
+    //         profileId
+    //       }
+    //     }
+    //   }
+    //   `);
+    //   toggleDrawer('right', false);
+    //   await getSessions();
+    // } else {
+    //   const update = await composeClient.executeQuery(`
+    //   mutation {
+    //     createSession(
+    //       input: {
+    //         content: {
+    //           title: "${sessionName}",
+    //           createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+    //           profileId: "${profileId}",
+    //           eventId: "${params.eventid.toString()}",
+    //           tags: "${sessionTags.join(',')}",
+    //           status: "${sessoinStatus}",
+    //           format: "online",
+    //           track: "${sessionTrack}",
+    //           gated: "${sessionGated}",
+    //           description: "${strDesc}"
+    //         }
+    //       }
+    //     ) {
+    //       document {
+    //         id
+    //         title
+    //         createdAt
+    //         startTime
+    //         endTime
+    //         eventId
+    //         profileId
+    //       }
+    //     }
+    //   }
+    //   `);
+    //   toggleDrawer('right', false);
+    //   await getSessions();
+    // }
   };
 
   const List = (anchor: Anchor) => {
@@ -1142,6 +1179,7 @@ const Sessions = () => {
     const fetchData = async () => {
       await getSessions();
       await getPeople();
+      await getSession();
     }
 
     fetchData();

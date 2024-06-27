@@ -184,6 +184,17 @@ const Sessions = () => {
     }
   };
 
+  const getSession = async () => {
+    try {
+      const { data } = await supabase.from('sessions').select('*').eq('eventId', eventId);
+      if (data) {
+        setSessions(data);
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   const getEventDetailInfo = async () => {
     try {
       const response: CeramicResponseType<EventEdge> =
@@ -245,6 +256,7 @@ const Sessions = () => {
     const fetchData = async () => {
       try {
         await getSessions();
+        await getSession();
         await getPeople();
         await getLocation();
         await getEventDetailInfo();
@@ -287,8 +299,6 @@ const Sessions = () => {
     if (!isAuthenticated) {
       return;
     }
-
-    // const output = await editor.save();
     let strDesc: any = JSON.stringify(sessionDescription);
 
     strDesc = strDesc.replaceAll('"', '\\"');
@@ -301,7 +311,6 @@ const Sessions = () => {
       !sessionTags ||
       !sessionTrack ||
       !sessionDescription ||
-      !sessionGated ||
       !profileId;
 
     if (error) {
@@ -311,54 +320,29 @@ const Sessions = () => {
     }
 
     const format = person ? 'person' : 'online';
-    try {
-      const update = await composeClient.executeQuery(`
-        mutation {
-          createSession(
-            input: {
-              content: {
-                title: "${sessionName}",
-                description: "${strDesc}",
-                exprience_level: "${sessionExperienceLevel}",
-                createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "${profileId}",
-                eventId: "${params.eventid.toString()}",
-                tags: "${sessionTags.join(',')}",
-                type: "${sessionType}",
-                status: "${sessoinStatus}",
-                format: "${format}",
-                track: "${sessionTrack}",
-                gated: "${sessionGated}",
-                timezone: "${dayjs.tz.guess()}",
-                video_url: "${sessionVideoURL}"
-              }
-            }
-          ) {
-            document {
-              id
-              title
-              createdAt
-              startTime
-              endTime
-              eventId
-              profileId
-              tags
-              status
-              format
-              track
-              gated
-              description
-            }
-          }
-        }
-      `);
-    } catch (error) {
-      console.error('Failed to create session:', error);
-    }
+
+    const { data } = await supabase.from('sessions').insert({
+      title: sessionName,
+      description: strDesc,
+      experience_level: sessionExperienceLevel,
+      createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      startTime: sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      endTime: sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      profileId,
+      eventId,
+      tags: sessionTags.join(','),
+      type: sessionType,
+      status: sessoinStatus,
+      format,
+      track: sessionTrack,
+      gated: sessionGated,
+      timezone: dayjs.tz.guess().toString(),
+      video_url: sessionVideoURL
+    })
+
+    console.log("return data", data);
     toggleDrawer('right', false);
-    await getSessions();
+    await getSession();
   };
 
   const List = (anchor: Anchor) => {
