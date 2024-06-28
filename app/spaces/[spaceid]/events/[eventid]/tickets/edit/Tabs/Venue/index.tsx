@@ -774,7 +774,7 @@ const Venue: React.FC = () => {
   return (
     <Stack spacing="30px">
       <VenueHeader onToggle={toggleDrawer} />
-      <VenueList venues={MOCK_DATA.venues} onToggle={toggleDrawer} />
+      {/* <VenueList venues={MOCK_DATA.venues} onToggle={toggleDrawer} /> */}
       <SwipeableDrawer
         hideBackdrop={true}
         sx={{

@@ -40,11 +40,11 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle }) => {
           <Typography variant="body2">Add a Space</Typography>
         </Stack>
       )}
-      <Stack paddingY="20px" spacing="10px">
+      {/* <Stack paddingY="20px" spacing="10px">
         {venues?.map((venue, index) => (
           <VenueCard key={`VenueCard-${index}`} title={venue.title} />
         ))}
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 };
