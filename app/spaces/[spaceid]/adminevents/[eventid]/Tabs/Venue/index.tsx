@@ -683,7 +683,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
   };
 
   return (
-    <Stack spacing="30px">
+    <Stack spacing="30px" padding="30px">
       <VenueHeader onToggle={toggleDrawer} count={venues.length} />
       <VenueList venues={venues} onToggle={toggleDrawer} setSearchValue={setSearchValue} />
       <SwipeableDrawer

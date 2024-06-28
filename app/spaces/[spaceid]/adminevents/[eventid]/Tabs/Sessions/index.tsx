@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import isBetween from 'dayjs/plugin/isBetween';
 import timezone from 'dayjs/plugin/timezone';
 import {
   Stack,
@@ -16,7 +17,8 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { TimeStepOptions } from '@mui/x-date-pickers/models';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { TimeStepOptions, TimeView } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { SessionHeader, SessionAdd, SessionList } from './components';
@@ -40,6 +42,7 @@ import {
   EventEdge,
   Anchor,
   CeramicResponseType,
+  Venue,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
 import { SPACE_CATEGORIES } from '@/constant';
@@ -47,6 +50,7 @@ import { supabase } from '@/utils/supabase/client';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(isBetween);
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -60,6 +64,9 @@ const Sessions = () => {
   const [locations, setLocations] = useState<string[]>([]);
   const [people, setPeople] = useState<Profile[]>([]);
   const [eventData, setEventData] = useState<Event>();
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [total, setTotal] = useState<any[]>();
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
 
   const [state, setState] = React.useState({
     top: false,
@@ -81,14 +88,14 @@ const Sessions = () => {
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
-  const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
-  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
-    dayjs(),
+  const [sessionDate, setSessionDate] = useState<Dayjs>(dayjs());
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
+    dayjs().set('hour', 0).set('minute', 0)
   );
-  const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
+  const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(dayjs().set('hour', 0).set('minute', 0));
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
-  const [sessionLocation, setSessionLocation] = useState<string>();
+  const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionTimezone, setSessionTimezone] = useState<string>('');
 
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
@@ -173,11 +180,14 @@ const Sessions = () => {
   const getLocation = async () => {
     try {
       const { data } = await supabase
-        .from('locations')
+        .from('venues')
         .select('*')
         .eq('eventId', eventId);
+      console.log("data", data)
       if (data !== null) {
-        setLocations(data[0].name.split(','));
+        setVenues(data);
+        const locations = data.map(item => item.name);
+        setLocations(locations);
       }
     } catch (err) {
       console.log(err);
@@ -192,6 +202,42 @@ const Sessions = () => {
       }
     } catch (err) {
       console.log(err)
+    }
+  }
+
+  const handleDateChange = (date: Dayjs) => {
+    if (date) {
+      const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
+      const available = JSON.parse(venues.filter(item => item.name === sessionLocation)[0].bookings)
+      setAvailableTimeSlots(available[dayName] || []);
+    }
+    setSessionDate(date);
+  };
+
+  const isDateInRange = (date: Dayjs, startDate?: string, endDate?: string): boolean => {
+    return date.isAfter(dayjs(startDate).subtract(1, 'day')) && date.isBefore(dayjs(endDate).add(1, 'day'));
+  };
+
+  const isTimeAvailable = (date: Dayjs, available: any): boolean => {
+    const isMinuteIntervalValid = date.minute() % 30 === 0;
+    const isWithinAvailableSlot = available.some((slot: any) =>
+      date.isBetween(slot.startTime, slot.endTime, 'minute', '[)')
+    );
+
+    return isMinuteIntervalValid && isWithinAvailableSlot;
+  };
+
+  const getAvailableTime = (name: string, date: Dayjs) => {
+    if (name.length > 0) {
+      const selectedRoom = venues.filter(item => item.name === name)[0]
+      const availability = JSON.parse(selectedRoom["bookings"]);
+      const dayAvailability = availability[date.format('dddd').toLowerCase()].map((slot: any) => ({
+        startTime: dayjs(slot.startTime),
+        endTime: dayjs(slot.endTime)
+      }));
+      return dayAvailability;
+    } else {
+      return undefined;
     }
   }
 
@@ -757,7 +803,8 @@ const Sessions = () => {
                         location
                       </Typography>
                       <DatePicker
-                        onChange={(newValue) => setSessionDate(newValue)}
+                        onChange={(newValue) => { if (newValue !== null) handleDateChange(newValue) }}
+                        shouldDisableDate={(date: Dayjs) => !isDateInRange(date, eventData?.startTime, eventData?.endTime)}
                         sx={{
                           '& .MuiSvgIcon-root': {
                             color: 'white',
@@ -786,16 +833,31 @@ const Sessions = () => {
                     <Stack direction="row" spacing="20px">
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">Start Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionStartTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
+                        <TimePicker
+                          value={sessionStartTime}
+                          ampm={false}
+                          onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
+                          shouldDisableTime={(date: Dayjs, view: TimeView) => {
+                            const available = getAvailableTime(sessionLocation, sessionDate);
+                            if (available !== undefined) {
+                              if (view === 'minutes' || view === 'hours') {
+                                return !isTimeAvailable(date, available);
+                              }
+                              return false;
+                            } else {
+                              return false;
+                            }
+                          }}
                           sx={{
                             '& .MuiSvgIcon-root': {
                               color: 'white',
                             },
                             '& .MuiOutlinedInput-notchedOutline': {
                               border: 'none',
+                            },
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#313131',
+                              borderRadius: '10px',
                             },
                           }}
                           slotProps={{
@@ -820,16 +882,31 @@ const Sessions = () => {
                       </Stack>
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">End Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionEndTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
+                        <TimePicker
+                          value={sessionEndTime}
+                          ampm={false}
+                          onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
+                          shouldDisableTime={(date: Dayjs, view: TimeView) => {
+                            const available = getAvailableTime(sessionLocation, sessionDate);
+                            if (available !== undefined) {
+                              if (view === 'minutes' || view === 'hours') {
+                                return !isTimeAvailable(date, available);
+                              }
+                              return false;
+                            } else {
+                              return false;
+                            }
+                          }}
                           sx={{
                             '& .MuiSvgIcon-root': {
                               color: 'white',
                             },
                             '& .MuiOutlinedInput-notchedOutline': {
                               border: 'none',
+                            },
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#313131',
+                              borderRadius: '10px',
                             },
                           }}
                           slotProps={{
@@ -853,7 +930,7 @@ const Sessions = () => {
                         />
                       </Stack>
                     </Stack>
-                    {sessionDate && sessionStartTime && sessionEndTime && (
+                    {sessionDate && sessionStartTime !== dayjs().set('hour', 0).set('minute', 0) && sessionEndTime !== dayjs().set('hour', 0).set('minute', 0) && (
                       <Stack spacing="10px">
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -916,7 +993,8 @@ const Sessions = () => {
                         Pick a date for this session
                       </Typography>
                       <DatePicker
-                        onChange={(newValue) => setSessionStartTime(newValue)}
+                        onChange={(newValue) => { if (newValue !== null) handleDateChange(newValue) }}
+                        shouldDisableDate={(date: Dayjs) => !isDateInRange(date, eventData?.startTime, eventData?.endTime)}
                         sx={{
                           '& .MuiSvgIcon-root': {
                             color: 'white',
@@ -945,16 +1023,31 @@ const Sessions = () => {
                     <Stack direction="row" spacing="20px">
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">Start Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionStartTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
+                        <TimePicker
+                          value={sessionStartTime}
+                          ampm={false}
+                          onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
+                          shouldDisableTime={(date: Dayjs, view: TimeView) => {
+                            const available = getAvailableTime(sessionLocation, sessionDate);
+                            if (available !== undefined) {
+                              if (view === 'minutes' || view === 'hours') {
+                                return !isTimeAvailable(date, available);
+                              }
+                              return false;
+                            } else {
+                              return false;
+                            }
+                          }}
                           sx={{
                             '& .MuiSvgIcon-root': {
                               color: 'white',
                             },
                             '& .MuiOutlinedInput-notchedOutline': {
                               border: 'none',
+                            },
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#313131',
+                              borderRadius: '10px',
                             },
                           }}
                           slotProps={{
@@ -979,16 +1072,31 @@ const Sessions = () => {
                       </Stack>
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">End Time</Typography>
-                        <DateTimePicker
-                          onChange={(newValue) => setSessionEndTime(newValue)}
-                          views={['hours', 'minutes']}
-                          timeSteps={Custom_Option}
+                        <TimePicker
+                          value={sessionEndTime}
+                          ampm={false}
+                          onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
+                          shouldDisableTime={(date: Dayjs, view: TimeView) => {
+                            const available = getAvailableTime(sessionLocation, sessionDate);
+                            if (available !== undefined) {
+                              if (view === 'minutes' || view === 'hours') {
+                                return !isTimeAvailable(date, available);
+                              }
+                              return false;
+                            } else {
+                              return false;
+                            }
+                          }}
                           sx={{
                             '& .MuiSvgIcon-root': {
                               color: 'white',
                             },
                             '& .MuiOutlinedInput-notchedOutline': {
                               border: 'none',
+                            },
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#313131',
+                              borderRadius: '10px',
                             },
                           }}
                           slotProps={{

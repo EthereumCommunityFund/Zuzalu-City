@@ -53,17 +53,15 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue 
       <Stack spacing="20px">
         <Stack
           sx={{
-            display: 'none',
             flexDirection: 'column',
             gap: '10px',
             [theme.breakpoints.down('md')]: {
               display: 'flex',
             },
-            padding: '0 20px',
           }}
         >
           <OutlinedInput
-            placeholder="Search Events"
+            placeholder="Search Venue Spaces"
             // onKeyDown={(event) => {
             //   if (event.keyCode === 13) {
             //     onSearch();
@@ -71,7 +69,7 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue 
             // }}
             sx={{
               backgroundColor:
-                'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
+                '#313131',
               paddingX: '15px',
               paddingY: '13px',
               borderRadius: '10px',
