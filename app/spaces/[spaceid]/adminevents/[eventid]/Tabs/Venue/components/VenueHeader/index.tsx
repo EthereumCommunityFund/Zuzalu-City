@@ -6,10 +6,12 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface SessionHeaderProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
+  count: number
 }
 
 const VenueHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => {},
+  onToggle = (anchor: Anchor, open: boolean) => { },
+  count = 0
 }) => {
   return (
     <Stack
@@ -20,7 +22,7 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
     >
       <Stack direction={'row'} justifyContent={'space-between'}>
         <Typography variant="h5">Venue Spaces</Typography>
-        <Typography variant="body2">Total Spaces: 89</Typography>
+        <Typography variant="bodyB">Total Spaces: {count}</Typography>
       </Stack>
       <Stack direction={'row'} spacing={2}>
         <Stack
@@ -30,14 +32,14 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
           borderRadius={2}
           padding="5px 10px"
           spacing={1}
-          flex={1}
+          width="50%"
           onClick={() => onToggle('right', true)}
           sx={{ cursor: 'pointer' }}
         >
           <GroupIcon />
           <Stack>
             <Typography variant="subtitle2" color="white">
-              Add a Space
+              Add a Location
             </Typography>
             <Typography
               variant="caption"
@@ -48,7 +50,7 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
             </Typography>
           </Stack>
         </Stack>
-        <Stack
+        {/* <Stack
           direction="row"
           alignItems="center"
           bgcolor="#383838"
@@ -70,7 +72,7 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
               COMING SOON
             </Typography>
           </Stack>
-        </Stack>
+        </Stack> */}
       </Stack>
     </Stack>
   );

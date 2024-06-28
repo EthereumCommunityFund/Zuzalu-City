@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Stack,
@@ -33,6 +33,9 @@ import { ZuButton, ZuInput } from '@/components/core';
 import { TimeRange } from './components';
 import { supabase } from '@/utils/supabase/client';
 import { VENUE_TAGS } from '@/constant';
+import { Venue, Event } from '@/types';
+import { debounce } from 'lodash';
+import dayjs from 'dayjs';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -46,9 +49,13 @@ type AvailableType = {
   endTime: string
 }
 
-const Venue: React.FC = () => {
+interface IVenue {
+  event: Event | undefined;
+}
+
+const Home: React.FC<IVenue> = ({ event }) => {
   const params = useParams();
-  const eventid = params.eventid.toString();
+  const eventId = params.eventid.toString();
 
   const [state, setState] = React.useState({
     top: false,
@@ -63,6 +70,7 @@ const Venue: React.FC = () => {
 
   const [name, setName] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
+  const [venues, setVenues] = useState<Venue[]>([]);
 
   const handleChange = (e: any) => {
     setTags(
@@ -72,9 +80,44 @@ const Venue: React.FC = () => {
 
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
+  const [searchValue, setSearchValue] = useState<string>('');
+
   const connector = createConnector('NFT.storage', {
     token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
+
+  const getVenues = async () => {
+    try {
+      const { data } = await supabase.from('venues').select('*').eq('eventId', eventId);
+      if (data) {
+        const searchedVenues: Venue[] = data.filter((item, i) => item.name.toLowerCase().includes(searchValue.toLowerCase()));
+        if (searchedVenues.length > 0) {
+          setVenues(searchedVenues);
+        }
+        else {
+          setVenues(data);
+        }
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getVenues();
+    }
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (searchValue) {
+      debounceGetEventsCity();
+    }
+  }, [searchValue]);
+
+  const debounceGetEventsCity = debounce(getVenues, 1000);
 
   const List = (anchor: Anchor) => {
     const [monday, setMonday] = useState<AvailableType[]>([{
@@ -99,6 +142,7 @@ const Venue: React.FC = () => {
     }]);
 
     const createVenue = async () => {
+      console.log("here")
       try {
         const bookings = {
           monday,
@@ -107,13 +151,15 @@ const Venue: React.FC = () => {
           thursday,
           friday
         }
-        const { data } = await supabase.from("venue").insert({
+        const { data } = await supabase.from("venues").insert({
           name,
           tags: tags.join(','),
-          eventid,
+          eventId,
           avatar: avatarURL,
           bookings: JSON.stringify(bookings)
         })
+        toggleDrawer('right', false);
+        await getVenues();
       } catch (err) {
         console.log(err);
       }
@@ -323,7 +369,8 @@ const Venue: React.FC = () => {
             >
               <Typography variant="subtitleMB">Available Bookings</Typography>
               <Typography variant="bodyBB">
-                Your event timeframe: Month, 00, 2024 - Month, 00, 2024
+                {/* Your event timeframe: Month, 00, 2024 - Month, 00, 2024 */}
+                {`Your event timeframe: ${dayjs(event?.startTime).format('MMMM')}, ${dayjs(event?.startTime).date()}, ${dayjs(event?.startTime).year()} - ${dayjs(event?.endTime).format('MMMM')}, ${dayjs(event?.endTime).date()}, ${dayjs(event?.endTime).year()}`}
               </Typography>
               <Stack spacing="20px">
                 <Stack direction="row" spacing="20px">
@@ -637,8 +684,8 @@ const Venue: React.FC = () => {
 
   return (
     <Stack spacing="30px">
-      <VenueHeader onToggle={toggleDrawer} />
-      <VenueList venues={MOCK_DATA.venues} onToggle={toggleDrawer} />
+      <VenueHeader onToggle={toggleDrawer} count={venues.length} />
+      <VenueList venues={venues} onToggle={toggleDrawer} setSearchValue={setSearchValue} />
       <SwipeableDrawer
         hideBackdrop={true}
         sx={{
@@ -659,4 +706,4 @@ const Venue: React.FC = () => {
   );
 };
 
-export default Venue;
+export default Home;

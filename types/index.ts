@@ -129,7 +129,11 @@ export interface SessionData {
 
 export interface Venue {
   id: string;
-  title: string;
+  name: string;
+  eventId: string;
+  tags: string;
+  avatar: string;
+  bookings: string;
 }
 
 export type Profile = {

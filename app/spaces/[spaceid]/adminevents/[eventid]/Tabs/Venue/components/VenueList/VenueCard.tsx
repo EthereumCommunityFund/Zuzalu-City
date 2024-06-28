@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { ThreeVerticalIcon } from '@/components/icons';
+import { Venue } from '@/types';
 
 type VenueCardProps = {
-  title?: string;
+  venue: Venue;
 };
 
-const VenueCard: React.FC<VenueCardProps> = ({ title }) => {
+const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
   return (
     <Stack
       direction="row"
@@ -26,20 +27,18 @@ const VenueCard: React.FC<VenueCardProps> = ({ title }) => {
         width="40px"
         height="40px"
         borderRadius="6px"
-        src="/7.jpg"
+        src={venue.avatar || "/7.jpg"}
       />
       <Stack spacing="10px" flex="1">
-        <Typography variant="bodyBB">{title}</Typography>
+        <Typography variant="bodyBB">{venue.name}</Typography>
         <Stack direction="row" spacing="10px">
-          <Stack bgcolor="#424242" padding="3px 8px" borderRadius="4px">
-            <Typography variant="caption">Label</Typography>
-          </Stack>
-          <Stack bgcolor="#424242" padding="3px 8px" borderRadius="4px">
-            <Typography variant="caption">Label</Typography>
-          </Stack>
-          <Stack bgcolor="#424242" padding="3px 8px" borderRadius="4px">
-            <Typography variant="caption">Label</Typography>
-          </Stack>
+          {
+            venue.tags.split(',').map((item, i) => (
+              <Stack bgcolor="#424242" padding="3px 8px" borderRadius="4px" key={`Venue_Label${i}`}>
+                <Typography variant="caption">{item}</Typography>
+              </Stack>
+            ))
+          }
         </Stack>
         <Typography variant="bodyS">Sessions Booked: Capacity: 00</Typography>
       </Stack>
