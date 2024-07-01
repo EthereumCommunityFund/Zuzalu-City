@@ -45,6 +45,13 @@ const Home: React.FC = () => {
             }
             contractID
             id
+            contracts {
+              contractAddress
+              description
+              image_url
+              status
+              type
+            }
           }
         }
       }

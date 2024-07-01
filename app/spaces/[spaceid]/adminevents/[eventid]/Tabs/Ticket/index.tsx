@@ -24,10 +24,11 @@ import {
   mUSDT_TOKEN,
   ticketFactoryGetContract,
 } from '@/constant';
-import { Address } from 'viem';
+import { Address, parseUnits } from 'viem';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertDateToEpoch } from '@/utils/format';
 import { TICKET_ABI } from '@/utils/ticket_abi';
+import { ERC20_ABI } from '@/utils/erc20_abi';
 import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import { useEffect } from 'react';
 import { IEventArg } from '@/app/spaces/[spaceid]/adminevents/page';
@@ -38,6 +39,13 @@ import { TicketType } from './components/CreateTicket';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface PropTypes {
   event?: Event;
+}
+interface Contract {
+  type?: string;
+  contractAddress?: string;
+  description?: string;
+  image_url?: string;
+  status?: string;
 }
 const Ticket = ({ event }: PropTypes) => {
   const [state, setState] = React.useState({
@@ -62,6 +70,8 @@ const Ticket = ({ event }: PropTypes) => {
   const [isHideWhenSoldOut, setIsHideWhenSoldOut] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState('USDT');
   const [selectedType, setSelectedType] = React.useState('Attendee');
+  const [isWhiteList, setIsWhiteList] = React.useState(false);
+  const { ceramic, composeClient, profile } = useCeramicContext();
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -92,8 +102,6 @@ const Ticket = ({ event }: PropTypes) => {
   const [ticketMintDeadline, setTicketMintDeadline] =
     React.useState<Dayjs | null>(dayjs());
   const [vaultIndex, setVaultIndex] = React.useState<number>(0);
-  const [selectedWhiteListTicket, setSelectedWhiteListTicket] =
-    React.useState<boolean>(false);
   const handleFileChange = (event: { target: { files: any[] } }) => {
     const file = event.target.files[0];
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
@@ -119,7 +127,52 @@ const Ticket = ({ event }: PropTypes) => {
     [],
   );
   const initialWhitelist = ['0x0000000000000000000000000000000000000000'];
+  const updateEventById = async (
+    type?: string,
+    contractAddress?: string,
+    description?: string,
+    image_url?: string,
+    status?: string,
+  ) => {
+    const existingContracts: Contract[] = Array.isArray(event?.contracts)
+      ? event.contracts
+      : [];
+    console.log(existingContracts);
+    const newContract: Contract = {
+      type,
+      contractAddress,
+      description,
+      image_url,
+      status,
+    };
+    const updatedContracts: Contract[] = [...existingContracts, newContract];
+    console.log(updatedContracts);
+    const query = `
+         mutation UpdateEvent($i: UpdateEventInput!) {
+          updateEvent(input: $i) {
+            document {
+              id
+            }
+      }
+    }
+  `;
 
+    const variables = {
+      i: {
+        id: event?.id,
+        content: {
+          contracts: updatedContracts,
+        },
+      },
+    };
+
+    try {
+      const result: any = await composeClient.executeQuery(query, variables);
+      console.log(result);
+    } catch (err) {
+      console.log('ERROR: Update: ', err);
+    }
+  };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -127,45 +180,82 @@ const Ticket = ({ event }: PropTypes) => {
       setIsSubmitLoading(true);
       setPurchasingTicket(true);
       setGoToSummary(false);
+      console.log(isTicketFree, 'free');
+      let ticketMintClose: Dayjs;
+      if (isMintCloseTime) {
+        endDate.hour(endTime.hour());
+        endDate.minute(endTime.minute());
+        endDate.second(endTime.second());
+        endDate.millisecond(endTime.millisecond());
+        ticketMintClose = endDate;
+      } else {
+        const eventEndTime = dayjs(event?.endTime, 'YYYY-MM-DD HH:mm:ss');
+        ticketMintClose = eventEndTime.subtract(1, 'minute');
+      }
+
+      const decimal = (await client.readContract({
+        address:
+          selectedToken === 'USDT' ? mUSDT_TOKEN : (mUSDC_TOKEN as Address),
+        abi: ERC20_ABI,
+        functionName: 'decimals',
+      })) as number;
+      console.log(decimal, 'decimal');
       const createTicketHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI,
         functionName: 'createNewTicket',
-        args: selectedWhiteListTicket
+        args: isWhiteList
           ? [
-            event?.contractID,
-            ticketInfo?.ticketName,
-            selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
-            convertDateToEpoch(ticketMintDeadline),
-            ticketInfo?.ticketPrice,
-            true,
-            initialWhitelist,
-          ]
+              event?.contractID,
+              ticketInfo?.ticketName,
+              selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
+              convertDateToEpoch(ticketMintClose),
+              isTicketFree
+                ? 0
+                : parseUnits(String(ticketInfo?.ticketPrice), decimal),
+              true,
+              initialWhitelist,
+            ]
           : [
-            event?.contractID,
-            ticketInfo?.ticketName,
-            selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
-            convertDateToEpoch(ticketMintDeadline),
-            ticketInfo?.ticketPrice,
-            false,
-            [],
-          ],
+              event?.contractID,
+              ticketInfo?.ticketName,
+              selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
+              convertDateToEpoch(ticketMintClose),
+              isTicketFree
+                ? 0
+                : parseUnits(String(ticketInfo?.ticketPrice), decimal),
+              false,
+              [],
+            ],
       });
       setTxnHash(createTicketHash);
 
-      const { status: createTicketStatus } = await waitForTransactionReceipt(
-        config,
-        {
+      const { status: createTicketStatus, logs: createTicketLogs } =
+        await waitForTransactionReceipt(config, {
           hash: createTicketHash,
-        },
-      );
+          timeout: 6000_000,
+        });
 
       if (createTicketStatus === 'success') {
-        // setPurchasingTicket(true);
-        // setGoToSummary(false);
+        const defaultPreviewImage =
+          'https://unsplash.com/photos/a-small-yellow-boat-floating-on-top-of-a-lake-HONnVkEnzDo';
+        const previewImageToUse = previewImage ?? defaultPreviewImage;
+        console.log(createTicketLogs);
+        if (createTicketLogs.length > 0) {
+          const newContractAddress = createTicketLogs[0].address;
+          updateEventById(
+            selectedType,
+            newContractAddress?.toString(),
+            ticketInfo?.description,
+            previewImageToUse,
+            ticketInfo?.startingStatus,
+          );
+          setPurchasingTicket(true);
+          setGoToSummary(false);
+        }
       }
-
+      await readFromContract();
       setIsSubmitLoading(false);
     } catch (error) {
       console.log(error);
@@ -250,11 +340,17 @@ const Ticket = ({ event }: PropTypes) => {
           ];
 
           if (isWhitelistTicket) {
-            multicallContracts.push({
-              ...ticketContract,
-              functionName: 'whitelist',
-              args: ['0x0000000000000000000000000000000000000000'] as const,
-            } as any);
+            multicallContracts.push(
+              {
+                ...ticketContract,
+                functionName: 'whitelist',
+                args: ['0x0000000000000000000000000000000000000000'] as const,
+              } as any,
+              {
+                ...ticketContract,
+                functionName: 'getWhitelistAddresses',
+              } as any,
+            );
           }
 
           const result = await client.multicall({
@@ -262,7 +358,7 @@ const Ticket = ({ event }: PropTypes) => {
           });
           results.push(result);
         }
-
+        console.log('Multicall result: ', results);
         setTickets(results);
       }
       setIsLoading(false);
@@ -307,83 +403,104 @@ const Ticket = ({ event }: PropTypes) => {
         </Typography>
       </Box>
 
-      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && !isTicket && (
-        <InitialSetup setIsNext={setIsNext} />
-      )}
-      {!goToSummary && !isConfirm && !purchasingTicket && isNext && !isTicket && (
-        <TicketSetup
-          setIsNext={setIsNext}
-          setIsConfirm={setIsConfirm}
-          setSelectedToken={setSelectedToken}
-          selectedToken={selectedToken}
-          selectedWhiteListTicket={selectedWhiteListTicket}
-          setSelectedWhiteListTicket={setSelectedWhiteListTicket}
-          setIsTicket={setIsTicket}
-        />
-      )}
-      {!goToSummary && !isConfirm && !purchasingTicket && !isNext && isTicket && (
-        <TicketType
-          setIsTicket={setIsTicket}
-          setIsNext={setIsNext}
-          setIsConfirm={setIsConfirm}
-          setSelectedToken={setSelectedToken}
-          selectedToken={selectedToken}
-          selectedWhiteListTicket={selectedWhiteListTicket}
-          setSelectedWhiteListTicket={setSelectedWhiteListTicket}
-          selectedType={selectedType}
-          setSelectedType={setSelectedType}
-        />
-      )}
-      {isConfirm && !purchasingTicket && !goToSummary && !isNext && !isTicket && (
-        <CreateTicket
-          selectedToken={selectedToken}
-          isTicketFree={isTicketFree}
-          setIsTicketFree={setIsTicketFree}
-          isShowQtyRemaining={isShowQtyRemaining}
-          setIsShowQtyRemaining={setIsShowQtyRemaining}
-          isHideUntilSetDate={isHideUntilSetDate}
-          setIsHideUntilSetDate={setIsHideUntilSetDate}
-          isHideAfterSetDate={isHideAfterSetDate}
-          setIsHideAfterSetDate={setIsHideAfterSetDate}
-          isHideWhenSoldOut={isHideWhenSoldOut}
-          setIsHideWhenSoldOut={setIsHideWhenSoldOut}
-          handleChange={handleChange}
-          setIsConfirm={setIsConfirm}
-          setGoToSummary={setGoToSummary}
-          selectedFile={selectedFile}
-          setSelectedFile={setSelectedFile}
-          previewImage={previewImage}
-          setPreviewImage={setPreviewImage}
-          handleFileChange={handleFileChange}
-          ticketMintDeadline={ticketMintDeadline}
-          setTicketMintDeadline={setTicketMintDeadline}
-          isMintCloseTime={isMintCloseTime}
-          setIsMintCloseTime={setIsMintCloseTime}
-          endDate={endDate}
-          setEndDate={setEndDate}
-          endTime={endTime}
-          setEndTime={setEndTime}
-        />
-      )}
-      {!purchasingTicket && !isConfirm && goToSummary && !isNext && !isTicket && (
-        <TicketCreationSummary
-          handleSubmit={handleSubmit}
-          isTicketFree={isTicketFree}
-          selectedToken={selectedToken}
-          ticketInfo={ticketInfo}
-          setIsConfirm={setIsConfirm}
-          setPurchasingTicket={setPurchasingTicket}
-          setGoToSummary={setGoToSummary}
-        />
-      )}
-      {purchasingTicket && !goToSummary && !isConfirm && !isNext && !isTicket && (
-        <ProcessingTicket
-          setPurchasingTicket={setPurchasingTicket}
-          toggleDrawer={toggleDrawer}
-          isSubmitLoading={isSubmitLoading}
-          txnHash={txnHash}
-        />
-      )}
+      {!goToSummary &&
+        !isConfirm &&
+        !purchasingTicket &&
+        !isNext &&
+        !isTicket && <InitialSetup setIsNext={setIsNext} />}
+      {!goToSummary &&
+        !isConfirm &&
+        !purchasingTicket &&
+        isNext &&
+        !isTicket && (
+          <TicketSetup
+            setIsNext={setIsNext}
+            setIsConfirm={setIsConfirm}
+            setSelectedToken={setSelectedToken}
+            selectedToken={selectedToken}
+            setIsTicket={setIsTicket}
+          />
+        )}
+      {!goToSummary &&
+        !isConfirm &&
+        !purchasingTicket &&
+        !isNext &&
+        isTicket && (
+          <TicketType
+            setIsTicket={setIsTicket}
+            setIsNext={setIsNext}
+            setIsConfirm={setIsConfirm}
+            setSelectedToken={setSelectedToken}
+            selectedToken={selectedToken}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+          />
+        )}
+      {isConfirm &&
+        !purchasingTicket &&
+        !goToSummary &&
+        !isNext &&
+        !isTicket && (
+          <CreateTicket
+            selectedToken={selectedToken}
+            isTicketFree={isTicketFree}
+            setIsTicketFree={setIsTicketFree}
+            isShowQtyRemaining={isShowQtyRemaining}
+            setIsShowQtyRemaining={setIsShowQtyRemaining}
+            isHideUntilSetDate={isHideUntilSetDate}
+            setIsHideUntilSetDate={setIsHideUntilSetDate}
+            isHideAfterSetDate={isHideAfterSetDate}
+            setIsHideAfterSetDate={setIsHideAfterSetDate}
+            isHideWhenSoldOut={isHideWhenSoldOut}
+            setIsHideWhenSoldOut={setIsHideWhenSoldOut}
+            isWhiteList={isWhiteList}
+            setIsWhiteList={setIsWhiteList}
+            handleChange={handleChange}
+            setIsConfirm={setIsConfirm}
+            setGoToSummary={setGoToSummary}
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+            previewImage={previewImage}
+            setPreviewImage={setPreviewImage}
+            handleFileChange={handleFileChange}
+            ticketMintDeadline={ticketMintDeadline}
+            setTicketMintDeadline={setTicketMintDeadline}
+            isMintCloseTime={isMintCloseTime}
+            setIsMintCloseTime={setIsMintCloseTime}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            endTime={endTime}
+            setEndTime={setEndTime}
+          />
+        )}
+      {!purchasingTicket &&
+        !isConfirm &&
+        goToSummary &&
+        !isNext &&
+        !isTicket && (
+          <TicketCreationSummary
+            handleSubmit={handleSubmit}
+            isTicketFree={isTicketFree}
+            selectedToken={selectedToken}
+            isWhiteList={isWhiteList}
+            ticketInfo={ticketInfo}
+            setIsConfirm={setIsConfirm}
+            setPurchasingTicket={setPurchasingTicket}
+            setGoToSummary={setGoToSummary}
+          />
+        )}
+      {purchasingTicket &&
+        !goToSummary &&
+        !isConfirm &&
+        !isNext &&
+        !isTicket && (
+          <ProcessingTicket
+            setPurchasingTicket={setPurchasingTicket}
+            toggleDrawer={toggleDrawer}
+            isSubmitLoading={isSubmitLoading}
+            txnHash={txnHash}
+          />
+        )}
     </Box>
   );
   const vault = (anchor: Anchor) => (
@@ -418,7 +535,7 @@ const Ticket = ({ event }: PropTypes) => {
 
   return (
     <Stack spacing={2}>
-      <TicketHeader event={event} visible={!event?.contractID} />
+      <TicketHeader event={event} visible={!!event?.contractID} />
       {isLoading ? (
         <Box>
           <Typography>Loading...</Typography>
@@ -435,7 +552,7 @@ const Ticket = ({ event }: PropTypes) => {
         <TicketAdd
           onToggle={toggleDrawer}
           setToggleAction={setToggleAction}
-          visible={!!event?.contractID}
+          visible={!event?.contractID}
         />
       )}
       <TicketAccess />

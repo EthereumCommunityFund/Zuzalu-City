@@ -82,7 +82,7 @@ const TicketCard: React.FC<TicketCardProps> = ({
             {ticket[0]?.result}
           </Typography>{' '}
           <Typography classes="subtitle2" color="white">
-            {String(ticket[3]?.result)}{' '}
+            {(ticket[3].result / BigInt(10 ** 18)).toString()}{' '}
             {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
           </Typography>
         </Stack>

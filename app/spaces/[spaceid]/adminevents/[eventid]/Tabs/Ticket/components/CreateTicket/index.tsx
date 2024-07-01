@@ -55,6 +55,8 @@ interface IProps {
   setIsShowQtyRemaining?: React.Dispatch<React.SetStateAction<boolean>> | any;
   isHideUntilSetDate?: boolean;
   setIsHideUntilSetDate?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  isWhiteList?: boolean;
+  setIsWhiteList?: React.Dispatch<React.SetStateAction<boolean>> | any;
   isHideAfterSetDate?: boolean;
   setIsHideAfterSetDate?: React.Dispatch<React.SetStateAction<boolean>> | any;
   isHideWhenSoldOut?: boolean;
@@ -63,8 +65,8 @@ interface IProps {
   setSelectedToken?: React.Dispatch<React.SetStateAction<boolean>> | any;
   selectedWhiteListTicket?: boolean;
   setSelectedWhiteListTicket?:
-  | React.Dispatch<React.SetStateAction<string>>
-  | any;
+    | React.Dispatch<React.SetStateAction<string>>
+    | any;
   ticketInfo?: any;
   handleSubmit?: any;
   selectedFile?: string | null;
@@ -95,16 +97,14 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
         background: '#222',
         height: isMobile ? '100%' : 'calc(100vh - 6.2rem)',
       }}
-      padding="20px 30px" spacing="30px"
+      padding="20px 30px"
+      spacing="30px"
     >
       <Stack spacing="20px">
         <Typography variant="subtitleMB" sx={{ opacity: '0.7' }}>
           Ticket Setup
         </Typography>
-        <Typography
-          variant="bodyB"
-          sx={{ opacity: '0.6' }}
-        >
+        <Typography variant="bodyB" sx={{ opacity: '0.6' }}>
           Ticketing Method cannnot be changed for this event once created.
         </Typography>
       </Stack>
@@ -122,25 +122,24 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
         }}
       >
         <Stack justifyContent="space-between" height="140px">
-          <Typography
-            variant="subtitleSB"
-            sx={{ opacity: '0.7' }}
-          >
+          <Typography variant="subtitleSB" sx={{ opacity: '0.7' }}>
             Create Tickets Individually
           </Typography>
 
-          <Typography
-            variant="bodyM"
-            sx={{ opacity: '0.6' }}
-          >
-            <strong>One ticket equals one contract.</strong>
-            A parent contract is deployed and subsequent tickets created are individual child contracts.
-            This allows for more control of each ticket type created.
+          <Typography variant="bodyM" sx={{ opacity: '0.6' }}>
+            <strong>One ticket equals one contract.</strong>A parent contract is
+            deployed and subsequent tickets created are individual child
+            contracts. This allows for more control of each ticket type created.
           </Typography>
-          <Stack padding="4px 10px" borderRadius="6px" direction="row" spacing="10px" bgcolor="#3e3e3e" alignItems="center">
-            <Typography variant="caption">
-              TICKETING PROTOCOL:
-            </Typography>
+          <Stack
+            padding="4px 10px"
+            borderRadius="6px"
+            direction="row"
+            spacing="10px"
+            bgcolor="#3e3e3e"
+            alignItems="center"
+          >
+            <Typography variant="caption">TICKETING PROTOCOL:</Typography>
             <ScrollIcon />
           </Stack>
         </Stack>
@@ -159,11 +158,7 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
         />
       </Stack>
 
-      <Typography
-        textAlign={'center'}
-        variant="bodyB"
-        sx={{ opacity: '0.8' }}
-      >
+      <Typography textAlign={'center'} variant="bodyB" sx={{ opacity: '0.8' }}>
         You are <strong>Creating Tickets Individually</strong>
       </Typography>
 
@@ -185,12 +180,14 @@ export const InitialSetup = ({ setIsNext }: IProps) => {
         >
           Next
         </Button>
-
       </Box>
-      <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
-        <Typography variant="caption">
-          TICKETING PROTOCOL:
-        </Typography>
+      <Box
+        display="flex"
+        justifyContent={'center'}
+        gap="10px"
+        alignItems="center"
+      >
+        <Typography variant="caption">TICKETING PROTOCOL:</Typography>
         <ScrollIcon />
       </Box>
     </Stack>
@@ -204,7 +201,7 @@ export const TicketSetup = ({
   setSelectedToken,
   selectedWhiteListTicket,
   setSelectedWhiteListTicket,
-  setIsTicket
+  setIsTicket,
 }: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
 
@@ -224,12 +221,10 @@ export const TicketSetup = ({
           <Typography variant="subtitleMB" sx={{ opacity: '0.7' }}>
             Ticket Setup
           </Typography>
-          <Typography
-            variant="bodyB"
-            sx={{ opacity: '0.6' }}
-          >
-            Set the receiving token and address for ticket purchases via crypto payments.
-            These settings cannot be changed once the contract is deployed.
+          <Typography variant="bodyB" sx={{ opacity: '0.6' }}>
+            Set the receiving token and address for ticket purchases via crypto
+            payments. These settings cannot be changed once the contract is
+            deployed.
           </Typography>
         </Stack>
 
@@ -239,42 +234,26 @@ export const TicketSetup = ({
           borderRadius="10px"
           spacing="30px"
         >
-          <Typography
-            variant="subtitleMB"
-            sx={{ opacity: '0.7' }}
-          >
+          <Typography variant="subtitleMB" sx={{ opacity: '0.7' }}>
             Select Token
           </Typography>
 
           <Stack spacing="20px">
             <Stack spacing="10px">
-              <Typography variant="bodyBB">
-                Receiving Token
-              </Typography>
-              <Typography
-                variant="bodyB"
-                sx={{ opacity: '0.6' }}
-              >
+              <Typography variant="bodyBB">Receiving Token</Typography>
+              <Typography variant="bodyB" sx={{ opacity: '0.6' }}>
                 Select a token to be received as payment for ticket purchases
               </Typography>
             </Stack>
           </Stack>
           <Stack spacing="10px">
-            <Typography
-              variant="caption"
-              sx={{ opacity: '0.6' }}
-            >
+            <Typography variant="caption" sx={{ opacity: '0.6' }}>
               PROTOCOL:
             </Typography>
-            <ZuButton startIcon={<EthereumIcon />}>
-              Ethereum Chain
-            </ZuButton>
+            <ZuButton startIcon={<EthereumIcon />}>Ethereum Chain</ZuButton>
           </Stack>
           <Stack spacing="10px">
-            <Typography
-              variant="caption"
-              sx={{ opacity: '0.6' }}
-            >
+            <Typography variant="caption" sx={{ opacity: '0.6' }}>
               TOKEN (ONLY ONE CAN BE SELECTED)
             </Typography>
             <Stack
@@ -343,7 +322,7 @@ export const TicketSetup = ({
                 </Stack>
               </Stack>
             </Stack>
-            <Stack
+            {/* <Stack
               direction="row"
               alignItems="center"
               gap="10px"
@@ -353,21 +332,21 @@ export const TicketSetup = ({
                 checked={selectedWhiteListTicket}
                 onChange={handleToggle}
               />
-              {selectedWhiteListTicket ? (
+              selectedWhiteListTicket ? (
                 <Typography style={{ marginLeft: '8px' }}>Whitelist</Typography>
               ) : (
                 <Typography style={{ marginLeft: '8px' }}>
                   Permissionless
                 </Typography>
-              )}
-            </Stack>
+              )
+            </Stack>*/}
           </Stack>
-          <Box marginTop={'30px'}>
+          {/* <Box marginTop={'30px'}>
             <Typography fontSize="16px" sx={{ opacity: '0.6' }}>
               description - let the user know that the proceeds of this ticket
               purchases are sent to the contract
             </Typography>
-          </Box>
+          </Box>*/}
         </Stack>
         <Box
           display={'flex'}
@@ -412,15 +391,17 @@ export const TicketSetup = ({
             Confirm
           </Button>
         </Box>
-        <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
-          <Typography variant="caption">
-            TICKETING PROTOCOL:
-          </Typography>
+        <Box
+          display="flex"
+          justifyContent={'center'}
+          gap="10px"
+          alignItems="center"
+        >
+          <Typography variant="caption">TICKETING PROTOCOL:</Typography>
           <ScrollIcon />
         </Box>
       </Stack>
-
-    </Stack >
+    </Stack>
   );
 };
 
@@ -428,7 +409,7 @@ export const TicketType = ({
   setIsTicket,
   setIsConfirm,
   selectedType,
-  setSelectedType
+  setSelectedType,
 }: IProps) => {
   const isMobile = useMediaQuery('(max-width:500px)');
 
@@ -444,51 +425,74 @@ export const TicketType = ({
           <Typography variant="subtitleMB" sx={{ opacity: '0.7' }}>
             Ticket Setup
           </Typography>
-          <Typography
-            variant="bodyB"
-            sx={{ opacity: '0.6' }}
-          >
-            Set the receiving token and address for ticket purchases via crypto payments.
-            These settings cannot be changed once the contract is deployed.
+          <Typography variant="bodyB" sx={{ opacity: '0.6' }}>
+            Set the receiving token and address for ticket purchases via crypto
+            payments. These settings cannot be changed once the contract is
+            deployed.
           </Typography>
         </Stack>
-        <Stack padding="20px" spacing="30px" bgcolor="#2d2d2d" borderRadius="10px">
-          <Typography variant="subtitleMB">
-            Select Type
-          </Typography>
+        <Stack
+          padding="20px"
+          spacing="30px"
+          bgcolor="#2d2d2d"
+          borderRadius="10px"
+        >
+          <Typography variant="subtitleMB">Select Type</Typography>
           <Stack spacing="10px">
             <Stack
               onClick={() => setSelectedType('Attendee')}
-              direction="row" justifyContent="space-between" padding="10px 20px" alignItems="center"
-              bgcolor={selectedType === 'Attendee' ? 'rgba(125, 255, 209, 0.10)' : 'rgba(255, 255, 255, 0.05)'} borderRadius="10px">
+              direction="row"
+              justifyContent="space-between"
+              padding="10px 20px"
+              alignItems="center"
+              bgcolor={
+                selectedType === 'Attendee'
+                  ? 'rgba(125, 255, 209, 0.10)'
+                  : 'rgba(255, 255, 255, 0.05)'
+              }
+              borderRadius="10px"
+            >
               <Stack spacing="10px">
-                <Typography variant="bodyMB">
-                  Attendee Ticket
-                </Typography>
+                <Typography variant="bodyMB">Attendee Ticket</Typography>
                 <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
                   These are tickets for those who will attend this event
                 </Typography>
               </Stack>
-              {selectedType === 'Attendee' ? <CheckCircleIcon /> : <UncheckCircleIcon />}
+              {selectedType === 'Attendee' ? (
+                <CheckCircleIcon />
+              ) : (
+                <UncheckCircleIcon />
+              )}
             </Stack>
             <Stack
               onClick={() => setSelectedType('Sponsor')}
-              direction="row" justifyContent="space-between" padding="10px 20px" alignItems="center"
-              bgcolor={selectedType === 'Sponsor' ? 'rgba(125, 255, 209, 0.10)' : 'rgba(255, 255, 255, 0.05)'} borderRadius="10px">
+              direction="row"
+              justifyContent="space-between"
+              padding="10px 20px"
+              alignItems="center"
+              bgcolor={
+                selectedType === 'Sponsor'
+                  ? 'rgba(125, 255, 209, 0.10)'
+                  : 'rgba(255, 255, 255, 0.05)'
+              }
+              borderRadius="10px"
+            >
               <Stack spacing="10px">
-                <Typography variant="bodyMB">
-                  Sponsor Package
-                </Typography>
+                <Typography variant="bodyMB">Sponsor Package</Typography>
                 <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                  These are tickets for those who will attend this event
+                  These are packages for those who will sponsor this event
                 </Typography>
               </Stack>
-              {selectedType === 'Sponsor' ? <CheckCircleIcon /> : <UncheckCircleIcon />}
+              {selectedType === 'Sponsor' ? (
+                <CheckCircleIcon />
+              ) : (
+                <UncheckCircleIcon />
+              )}
             </Stack>
           </Stack>
-          <Typography variant="bodyB" sx={{ opacity: 0.6 }}>
+          {/*<Typography variant="bodyB" sx={{ opacity: 0.6 }}>
             description - let the user know that the proceeds of this ticket purchases are held in the contract
-          </Typography>
+          </Typography>*/}
         </Stack>
         <Box>
           <Box
@@ -535,15 +539,17 @@ export const TicketType = ({
             </Button>
           </Box>
         </Box>
-        <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
-          <Typography variant="caption">
-            TICKETING PROTOCOL:
-          </Typography>
+        <Box
+          display="flex"
+          justifyContent={'center'}
+          gap="10px"
+          alignItems="center"
+        >
+          <Typography variant="caption">TICKETING PROTOCOL:</Typography>
           <ScrollIcon />
         </Box>
       </Stack>
-
-    </Stack >
+    </Stack>
   );
 };
 
@@ -555,8 +561,8 @@ export const CreateTicket = ({
   setIsTicketFree,
   isShowQtyRemaining,
   setIsShowQtyRemaining,
-  isHideUntilSetDate,
-  setIsHideUntilSetDate,
+  isWhiteList,
+  setIsWhiteList,
   isHideAfterSetDate,
   setIsHideAfterSetDate,
   isHideWhenSoldOut,
@@ -569,7 +575,7 @@ export const CreateTicket = ({
   endDate,
   setEndDate,
   endTime,
-  setEndTime
+  setEndTime,
 }: IProps) => {
   const fileInputField = useRef<HTMLInputElement>(null);
   // const [File, setFile] = useState(second)
@@ -605,15 +611,9 @@ export const CreateTicket = ({
           bgcolor="rgba(255, 255, 255, 0.02)"
           borderRadius="10px"
         >
-          <Typography variant="subtitleSB">
-            Ticket Basics
-          </Typography>
+          <Typography variant="subtitleSB">Ticket Basics</Typography>
           <Stack spacing="10px">
-            <Typography
-              variant="bodyBB"
-            >
-              Name*
-            </Typography>
+            <Typography variant="bodyBB">Name*</Typography>
             <ZuInput
               required
               name="ticketName"
@@ -623,11 +623,7 @@ export const CreateTicket = ({
           </Stack>
           {!isTicketFree && (
             <Stack spacing="10px">
-              <Typography
-                variant="bodyBB"
-              >
-                Price*
-              </Typography>
+              <Typography variant="bodyBB">Price*</Typography>
               <Box position="relative">
                 <ZuInput
                   required
@@ -688,12 +684,8 @@ export const CreateTicket = ({
             </Box>
           </Box>
 
-          <Stack spacing="10px">
-            <Typography
-              variant="bodyBB"
-            >
-              Quantity*
-            </Typography>
+          {/*<Stack spacing="10px">
+            <Typography variant="bodyBB">Quantity*</Typography>
             <ZuInput
               required
               type="number"
@@ -703,14 +695,10 @@ export const CreateTicket = ({
             <Typography variant="caption" sx={{ opacity: 0.7 }}>
               Requires a minimum of 1
             </Typography>
-          </Stack>
+          </Stack>*/}
 
           <Stack spacing="10px">
-            <Typography
-              variant="bodyBB"
-            >
-              Description*
-            </Typography>
+            <Typography variant="bodyBB">Description*</Typography>
             <TextField
               required
               name="description"
@@ -744,13 +732,10 @@ export const CreateTicket = ({
           </Stack>
 
           <Stack spacing="10px">
-            <Typography
-              variant="bodyBB"
-            >
-              Add an Agreement Message
-            </Typography>
+            <Typography variant="bodyBB">Add an Agreement Message</Typography>
             <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
-              Write an agreement for users to understand and agree before they proceed to purchase this ticket.
+              Write an agreement for users to understand and agree before they
+              proceed to purchase this ticket.
             </Typography>
             <TextField
               required
@@ -775,11 +760,7 @@ export const CreateTicket = ({
             />
           </Stack>
           <Stack spacing="10px">
-            <Typography
-              variant="bodyBB"
-            >
-              Image
-            </Typography>
+            <Typography variant="bodyBB">Image</Typography>
             <Typography
               variant="bodyS"
               sx={{
@@ -859,28 +840,20 @@ export const CreateTicket = ({
             borderRadius: '10px',
           }}
         >
-          <Typography
-            variant="bodyBB"
-            sx={{ opacity: '0.7' }}
-          >
+          <Typography variant="bodyBB" sx={{ opacity: '0.7' }}>
             Minting Access
           </Typography>
 
           <Stack direction="row" spacing="10px">
             <ZuSwitch
-              checked={isHideUntilSetDate}
-              onChange={() => setIsHideUntilSetDate((prev: boolean) => !prev)}
+              checked={isWhiteList}
+              onChange={() => setIsWhiteList((prev: boolean) => !prev)}
             />
             <Stack spacing="10px">
-              <Typography
-                variant="bodyBB"
-              >
+              <Typography variant="bodyBB">
                 Add Whitelist For This Ticket
               </Typography>
-              <Typography
-                variant="bodyS"
-                sx={{ opacity: '0.7' }}
-              >
+              <Typography variant="bodyS" sx={{ opacity: '0.7' }}>
                 This ticket will require whitelisted addresses to mint
               </Typography>
             </Stack>
@@ -892,78 +865,73 @@ export const CreateTicket = ({
               onChange={() => setIsMintCloseTime((prev: boolean) => !prev)}
             />
             <Stack spacing="10px">
-              <Typography
-                variant="bodyBB"
-              >
+              <Typography variant="bodyBB">
                 Set Minting Closing Period
               </Typography>
-              <Typography
-                variant="bodyS"
-                sx={{ opacity: '0.7' }}
-              >
+              <Typography variant="bodyS" sx={{ opacity: '0.7' }}>
                 Set the end date and time for when minting for this ticket ends.
               </Typography>
             </Stack>
           </Stack>
-          {isMintCloseTime && <Stack direction="row" spacing="20px">
-            <Stack spacing="10px">
-              <Typography variant="bodyBB">
-                End Date*
-              </Typography>
-              <DatePicker
-                onChange={(newValue) => setEndDate(newValue)}
-                sx={{
-                  '& .MuiSvgIcon-root': {
-                    color: 'white',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
-                  },
-                }}
-                slotProps={{
-                  popper: {
-                    sx: {
-                      ...{
-                        '& .MuiPickersDay-root': { color: 'black' },
-                        '& .MuiPickersDay-root.Mui-selected': {
-                          backgroundColor: '#D7FFC4',
-                        },
-                        '& .MuiPickersCalendarHeader-root': {
-                          color: 'black',
+          {isMintCloseTime && (
+            <Stack direction="row" spacing="20px">
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">End Date*</Typography>
+                <DatePicker
+                  onChange={(newValue) => setEndDate(newValue)}
+                  sx={{
+                    '& .MuiSvgIcon-root': {
+                      color: 'white',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                  }}
+                  slotProps={{
+                    popper: {
+                      sx: {
+                        ...{
+                          '& .MuiPickersDay-root': { color: 'black' },
+                          '& .MuiPickersDay-root.Mui-selected': {
+                            backgroundColor: '#D7FFC4',
+                          },
+                          '& .MuiPickersCalendarHeader-root': {
+                            color: 'black',
+                          },
                         },
                       },
                     },
-                  },
-                }} />
-            </Stack>
-            <Stack spacing="10px">
-              <Typography variant="bodyBB">
-                End Time*
-              </Typography>
-              <TimePicker
-                onChange={(newValue) => setEndTime(newValue)}
-                sx={{
-                  '& .MuiSvgIcon-root': {
-                    color: 'white',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
-                  },
-                }}
-                slotProps={{
-                  popper: {
-                    sx: {
-                      ... {
-                        '& .MuiPickersLayout-contentWrapper': {
-                          color: "black"
-                        }
-                      }
+                  }}
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">End Time*</Typography>
+                <TimePicker
+                  onChange={(newValue) => setEndTime(newValue)}
+                  sx={{
+                    '& .MuiSvgIcon-root': {
+                      color: 'white',
                     },
-                  },
-                }} />
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                  }}
+                  slotProps={{
+                    popper: {
+                      sx: {
+                        ...{
+                          '& .MuiPickersLayout-contentWrapper': {
+                            color: 'black',
+                          },
+                        },
+                      },
+                    },
+                  }}
+                />
+              </Stack>
             </Stack>
-          </Stack>}
-        </Stack >
+          )}
+        </Stack>
 
         {/* CONFIGURE SETTINGS */}
         <Stack
@@ -974,23 +942,13 @@ export const CreateTicket = ({
             borderRadius: '10px',
           }}
         >
-          <Typography
-            variant="subtitleMB"
-            sx={{ opacity: '0.7' }}
-          >
+          <Typography variant="subtitleMB" sx={{ opacity: '0.7' }}>
             Configure Display Settings
           </Typography>
 
           <Stack spacing="10px">
-            <Typography
-              variant="bodyBB"
-            >
-              Starting Status*
-            </Typography>
-            <Typography
-              variant="bodyS"
-              sx={{ opacity: '0.8' }}
-            >
+            <Typography variant="bodyBB">Starting Status*</Typography>
+            <Typography variant="bodyS" sx={{ opacity: '0.8' }}>
               Select a status for this ticket post-creation
             </Typography>
             <Select
@@ -1023,20 +981,18 @@ export const CreateTicket = ({
           </Stack>
         </Stack>
 
-        {/* CONFIGURE CONDITIONS */}
+        {/* CONFIGURE CONDITIONS 
         <Stack
           padding="20px"
           spacing="30px"
           sx={{
-            background: 'linear-gradient(0deg, rgba(255, 112, 112, 0.20) 0%, rgba(255, 112, 112, 0.20) 100%), rgba(255, 255, 255, 0.02)',
+            background:
+              'linear-gradient(0deg, rgba(255, 112, 112, 0.20) 0%, rgba(255, 112, 112, 0.20) 100%), rgba(255, 255, 255, 0.02)',
             borderRadius: '10px',
           }}
         >
           <Stack spacing="10px">
-            <Typography
-              variant="bodyBB"
-              sx={{ opacity: '0.7' }}
-            >
+            <Typography variant="bodyBB" sx={{ opacity: '0.7' }}>
               Configure Conditions
             </Typography>
             <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
@@ -1050,15 +1006,10 @@ export const CreateTicket = ({
               onChange={() => setIsHideUntilSetDate((prev: boolean) => !prev)}
             />
             <Stack spacing="10px">
-              <Typography
-                variant="bodyBB"
-              >
+              <Typography variant="bodyBB">
                 Hide Until Set Date and Time
               </Typography>
-              <Typography
-                variant="bodyS"
-                sx={{ opacity: '0.7' }}
-              >
+              <Typography variant="bodyS" sx={{ opacity: '0.7' }}>
                 Make this ticket visible and available to purchase until a set
                 date/time
               </Typography>
@@ -1071,20 +1022,13 @@ export const CreateTicket = ({
               onChange={() => setIsHideAfterSetDate((prev: boolean) => !prev)}
             />
             <Stack spacing="10px">
-              <Typography
-                variant="bodyBB"
-              >
-                Hide After Set Date/Time
-              </Typography>
-              <Typography
-                variant="bodyS"
-                sx={{ opacity: '0.7' }}
-              >
+              <Typography variant="bodyBB">Hide After Set Date/Time</Typography>
+              <Typography variant="bodyS" sx={{ opacity: '0.7' }}>
                 Make this ticket hidden after a set date/time
               </Typography>
             </Stack>
           </Stack>
-        </Stack >
+        </Stack>*/}
 
         <Box
           padding={'20px'}
@@ -1130,13 +1074,16 @@ export const CreateTicket = ({
           </Button>
         </Box>
 
-        <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
-          <Typography variant="caption">
-            TICKETING PROTOCOL:
-          </Typography>
+        <Box
+          display="flex"
+          justifyContent={'center'}
+          gap="10px"
+          alignItems="center"
+        >
+          <Typography variant="caption">TICKETING PROTOCOL:</Typography>
           <ScrollIcon />
         </Box>
-      </Stack >
+      </Stack>
     </LocalizationProvider>
   );
 };
@@ -1181,16 +1128,10 @@ export const TicketCreationSummary = ({
               paddingBottom: '14px',
             }}
           >
-            <Typography
-              variant="bodyB"
-              sx={{ opacity: '0.8' }}
-            >
+            <Typography variant="bodyB" sx={{ opacity: '0.8' }}>
               Method:
             </Typography>
-            <Typography
-              variant="bodyBB"
-              sx={{ opacity: '0.8' }}
-            >
+            <Typography variant="bodyBB" sx={{ opacity: '0.8' }}>
               Combine Tickets in Contract Deployed on Scroll
             </Typography>
           </Box>
@@ -1203,10 +1144,7 @@ export const TicketCreationSummary = ({
             }}
             borderTop={'1px solid rgba(255, 255, 255, 0.10)'}
           >
-            <Typography
-              variant="bodyB"
-              sx={{ opacity: '0.8' }}
-            >
+            <Typography variant="bodyB" sx={{ opacity: '0.8' }}>
               Protocol:
             </Typography>
             <Box
@@ -1219,10 +1157,7 @@ export const TicketCreationSummary = ({
               }}
             >
               <EthereumIcon />
-              <Typography
-                variant="bodyM"
-                marginLeft="8px"
-              >
+              <Typography variant="bodyM" marginLeft="8px">
                 Ethereum Chain
               </Typography>
             </Box>
@@ -1236,10 +1171,7 @@ export const TicketCreationSummary = ({
             }}
             borderTop={'1px solid rgba(255, 255, 255, 0.10)'}
           >
-            <Typography
-              variant="bodyB"
-              sx={{ opacity: '0.8' }}
-            >
+            <Typography variant="bodyB" sx={{ opacity: '0.8' }}>
               Receiving Token:
             </Typography>
             <Box
@@ -1252,10 +1184,7 @@ export const TicketCreationSummary = ({
               }}
             >
               {selectedToken === 'USDT' ? <USDTIcon /> : <USDCIcon />}
-              <Typography
-                variant="bodyM"
-                marginLeft="8px"
-              >
+              <Typography variant="bodyM" marginLeft="8px">
                 {selectedToken === 'USDT' ? 'USDT' : 'USDC'}
               </Typography>
             </Box>
@@ -1270,18 +1199,10 @@ export const TicketCreationSummary = ({
             marginLeft={isMobile ? undefined : '16px'}
             marginTop={isMobile ? '30px' : undefined}
           >
-            <Typography
-              variant="h5"
-            >
-              {ticketInfo?.ticketName}
-            </Typography>
+            <Typography variant="h5">{ticketInfo?.ticketName}</Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography
-                variant="bodyM"
-              >
-                Price:
-              </Typography>
+              <Typography variant="bodyM">Price:</Typography>
               <Typography
                 variant="bodyBB"
                 marginLeft={'10px'}
@@ -1301,11 +1222,7 @@ export const TicketCreationSummary = ({
               </Typography>
             </Box>
 
-            <Typography
-              variant="bodyM"
-            >
-              Description:
-            </Typography>
+            <Typography variant="bodyM">Description:</Typography>
             <Typography
               variant="bodyS"
               sx={{
@@ -1361,10 +1278,13 @@ export const TicketCreationSummary = ({
           Sign & Create
         </Button>
       </Box>
-      <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
-        <Typography variant="caption">
-          TICKETING PROTOCOL:
-        </Typography>
+      <Box
+        display="flex"
+        justifyContent={'center'}
+        gap="10px"
+        alignItems="center"
+      >
+        <Typography variant="caption">TICKETING PROTOCOL:</Typography>
         <ScrollIcon />
       </Box>
     </Stack>
@@ -1381,7 +1301,11 @@ export const ProcessingTicket = ({
   const isMobile = useMediaQuery('(max-width:500px)');
 
   return (
-    <Stack sx={{ background: '#222', height: 'calc(100vh - 6.2rem)' }} spacing="30px" padding="20px 30px">
+    <Stack
+      sx={{ background: '#222', height: 'calc(100vh - 6.2rem)' }}
+      spacing="30px"
+      padding="20px 30px"
+    >
       <Box
         padding={'30px'}
         margin={3}
@@ -1445,10 +1369,13 @@ export const ProcessingTicket = ({
         </Box>
       )}
 
-      <Box display="flex" justifyContent={'center'} gap="10px" alignItems="center">
-        <Typography variant="caption">
-          TICKETING PROTOCOL:
-        </Typography>
+      <Box
+        display="flex"
+        justifyContent={'center'}
+        gap="10px"
+        alignItems="center"
+      >
+        <Typography variant="caption">TICKETING PROTOCOL:</Typography>
         <ScrollIcon />
       </Box>
     </Stack>

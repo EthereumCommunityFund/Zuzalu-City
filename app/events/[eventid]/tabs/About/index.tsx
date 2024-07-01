@@ -62,7 +62,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isSponsorTransaction, setIsSponsorTransaction] =
     useState<boolean>(false);
   const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
-
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
   const params = useParams();
   const eventId = params.eventid.toString();
 
@@ -77,9 +77,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
   const [osm, setOsm] = useState<LatLngLiteral | undefined>({
     lat: 0,
-    lng: 0
-  })
-
+    lng: 0,
+  });
 
   const getEventDetailInfo = async () => {
     try {
@@ -122,6 +121,14 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               customLinks {
                 title
                 links
+              }
+              contractID
+              contracts{
+                type
+                contractAddress
+                description
+                image_url
+                status
               }
             }
           }
@@ -175,11 +182,11 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await getLatLngFromAddress(location);
-      console.log("eventlocatino", location, res)
+      console.log('eventlocatino', location, res);
       setOsm(res);
-    }
+    };
     fetchData();
-  }, [location])
+  }, [location]);
 
   const List = (anchor: Anchor) => {
     const handleClose = () => {
@@ -220,7 +227,13 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               !isAgree &&
               !isMint &&
               !isTransaction &&
-              !isComplete && <Verify setIsVerify={setIsVerify} />}
+              !isComplete && (
+                <Verify
+                  setIsVerify={setIsVerify}
+                  eventContractID={eventData?.contractID}
+                  setFilteredResults={setFilteredResults}
+                />
+              )}
             {isVerify &&
               !isAgree &&
               !isMint &&
@@ -233,7 +246,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               !isMint &&
               !isTransaction &&
               !isComplete && (
-                <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />
+                <Mint
+                  setIsAgree={setIsAgree}
+                  setIsMint={setIsMint}
+                  filteredResults={filteredResults}
+                  event={eventData}
+                />
               )}
             {!isVerify &&
               !isAgree &&
@@ -265,7 +283,11 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               !isSponsorMint &&
               !isSponsorTransaction &&
               !isSponsorComplete && (
-                <SponsorAgree setIsAgree={setIsSponsorAgree} />
+                <SponsorAgree
+                  setIsAgree={setIsSponsorAgree}
+                  eventContractID={eventData?.contractID}
+                  setFilteredResults={setFilteredResults}
+                />
               )}
             {isSponsorAgree &&
               !isSponsorMint &&
@@ -274,6 +296,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 <SponsorMint
                   setIsAgree={setIsSponsorAgree}
                   setIsMint={setIsSponsorMint}
+                  filteredResults={filteredResults}
+                  event={eventData}
                 />
               )}
             {!isSponsorAgree &&
@@ -434,7 +458,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-            <EventDetail status={eventData.status} links={eventData.customLinks} address={location} location={osm} />
+            <EventDetail
+              status={eventData.status}
+              links={eventData.customLinks}
+              address={location}
+              location={osm}
+            />
             {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}

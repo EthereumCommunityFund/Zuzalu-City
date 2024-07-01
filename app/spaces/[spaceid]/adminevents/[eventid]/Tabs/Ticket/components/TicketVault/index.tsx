@@ -139,7 +139,7 @@ const TicketVault = ({
                   opacity: '0.8',
                 }}
               >
-                {String(ticket[3]?.result)}
+                {(ticket[3]?.result / BigInt(10 ** 18)).toString()}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -336,12 +336,21 @@ const TicketVault = ({
             borderTop={'1px solid rgba(255, 255, 255, 0.10)'}
           >
             <Typography
+              fontSize="14px"
+              fontFamily={'Inter'}
+              lineHeight={'160%'}
+              color="white"
+              sx={{ opacity: '0.6' }}
+            >
+              Type:
+            </Typography>
+            <Typography
               fontSize="16px"
               color="white"
               fontWeight={'700'}
               lineHeight={'120%'}
             >
-              {ticket[8]?.result}
+              {ticket[8]?.result ? 'Whitelist' : 'Permissionless'}
             </Typography>
           </Box>
           <Box
@@ -434,23 +443,25 @@ const TicketVault = ({
             background: 'rgba(255, 255, 255, 0.05)',
           }}
         >
-          <Typography
-            onClick={() => setAction('Whitelist')}
-            textAlign={'center'}
-            width={'100%'}
-            paddingY={'8px'}
-            sx={{
-              cursor: 'pointer',
+          {ticket[9]?.result ? (
+            <Typography
+              onClick={() => setAction('Whitelist')}
+              textAlign={'center'}
+              width={'100%'}
+              paddingY={'8px'}
+              sx={{
+                cursor: 'pointer',
 
-              borderRadius: `${action === 'Whitelist' ? '8px' : null}`,
+                borderRadius: `${action === 'Whitelist' ? '8px' : null}`,
 
-              border: `${action === 'Whitelist' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
+                border: `${action === 'Whitelist' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
 
-              background: `${action === 'Whitelist' ? 'rgba(255, 255, 255, 0.10)' : null}`,
-            }}
-          >
-            Whitelist
-          </Typography>
+                background: `${action === 'Whitelist' ? 'rgba(255, 255, 255, 0.10)' : null}`,
+              }}
+            >
+              Whitelist
+            </Typography>
+          ) : null}
           <Typography
             onClick={() => setAction('Withdraw')}
             textAlign={'center'}
@@ -487,16 +498,17 @@ const TicketVault = ({
             balance={balance}
             ticketAddress={ticketAddress}
             tokenAddress={ticket[2]?.result}
+            ticket={ticket}
           />
         ) : action === 'SendTicket' ? (
           <SendNFTTicket ticketAddress={ticketAddress} ticket={ticket} />
-        ) : (
+        ) : ticket[9]?.result ? (
           <Whitelist
             vaultIndex={vaultIndex}
             ticketAddresses={ticketAddresses}
             tickets={tickets}
           />
-        )}
+        ) : null}
 
         <Stack
           direction="row"

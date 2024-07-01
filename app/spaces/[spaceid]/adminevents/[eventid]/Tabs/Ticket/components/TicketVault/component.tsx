@@ -2,6 +2,7 @@ import { TICKET_FACTORY_ADDRESS, mUSDC_TOKEN } from '@/constant';
 import { client, config } from '@/context/WalletContext';
 import { ERC20_ABI } from '@/utils/erc20_abi';
 import { TICKET_ABI } from '@/utils/ticket_abi';
+import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { Address, parseUnits } from 'viem';
 import { scrollSepolia } from 'viem/chains';
@@ -33,8 +34,14 @@ import {
   Stepper,
   StepLabel,
   Modal,
+  List,
+  ListItem,
 } from '@mui/material';
-
+import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
+import { generateNFTMetadata } from '@/utils/generateNFTMetadata';
+import { createFileFromJSON } from '@/utils/generateNFTMetadata';
+import { fetchEmailJsConfig } from '@/utils/emailService';
+import { send } from '@emailjs/browser';
 interface IProps {
   amount?: string;
   recipient?: string;
@@ -45,6 +52,7 @@ interface IWithdrawToken {
   balance: number;
   tokenAddress: string;
   ticketAddress: string;
+  ticket: Array<any>;
 }
 
 interface IConfirmWithdrawalTransaction {
@@ -78,6 +86,7 @@ export const WithdrawToken = ({
   balance,
   tokenAddress,
   ticketAddress,
+  ticket,
 }: IWithdrawToken) => {
   const [showWithdrawalModal, setShowWithdrawalModal] = React.useState(false);
   const [withdrawInfo, setWithdrawInfo] = React.useState<IProps>();
@@ -107,19 +116,14 @@ export const WithdrawToken = ({
   }, []);
 
   const handleWithdraw = async () => {
-    console.log({ withdrawInfo });
-
     try {
+      const ABI = ticket[8]?.result ? TICKET_WITH_WHITELIST_ABI : TICKET_ABI;
       const withdrawHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: ticketAddress as Address,
-        functionName: 'withdrawGeneric',
-        abi: TICKET_ABI,
-        args: [
-          withdrawInfo?.recipient,
-          tokenAddress,
-          parseUnits(String(withdrawInfo?.amount), decimal),
-        ],
+        functionName: 'withdraw',
+        abi: ABI,
+        args: [withdrawInfo?.recipient],
       });
 
       const { status: withdrawStatus } = await waitForTransactionReceipt(
@@ -131,6 +135,7 @@ export const WithdrawToken = ({
 
       if (withdrawStatus === 'success') {
         // action to perform
+        setShowWithdrawalModal(false);
       }
     } catch (error) {
       console.log(error);
@@ -139,82 +144,74 @@ export const WithdrawToken = ({
 
   return (
     <Box>
-      {showWithdrawalModal ? (
-        <ConfirmWithdrawalTransaction
-          amount={withdrawInfo?.amount}
-          recipient={withdrawInfo?.recipient}
-          showWithdrawalModal={showWithdrawalModal}
-          setShowWithdrawalModal={setShowWithdrawalModal}
-          handleWithdraw={handleWithdraw}
-        />
-      ) : (
-        <Box>
-          <Box
-            marginTop={'30px'}
-            sx={{ display: 'flex', alignItems: 'center' }}
+      <ConfirmWithdrawalTransaction
+        amount={withdrawInfo?.amount}
+        recipient={withdrawInfo?.recipient}
+        showWithdrawalModal={showWithdrawalModal}
+        setShowWithdrawalModal={setShowWithdrawalModal}
+        handleWithdraw={handleWithdraw}
+      />
+      <Box>
+        <Box marginTop={'30px'} sx={{ display: 'flex', alignItems: 'center' }}>
+          <SendIcon />
+          <Typography
+            marginLeft={'10px'}
+            fontSize="20px"
+            fontWeight="bold"
+            lineHeight={'120%'}
           >
-            <SendIcon />
-            <Typography
-              marginLeft={'10px'}
-              fontSize="20px"
-              fontWeight="bold"
-              lineHeight={'120%'}
-            >
-              Withdrawal
-            </Typography>
-          </Box>
-          <Box
-            marginTop={'14px'}
-            sx={{ display: 'flex', alignItems: 'center' }}
+            Withdrawal
+          </Typography>
+        </Box>
+        <Box marginTop={'14px'} sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography fontSize="14px" fontWeight={600} lineHeight={'160%'}>
+            {balance} {tokenSymbol === mUSDC_TOKEN ? 'USDC' : 'USDT'}
+          </Typography>
+          <Typography
+            marginLeft={'10px'}
+            fontSize="13px"
+            lineHeight={'140%'}
+            letterSpacing={'0.13px'}
+            sx={{ opacity: '0.8' }}
           >
-            <Typography fontSize="14px" fontWeight={600} lineHeight={'160%'}>
-              {balance} {tokenSymbol === mUSDC_TOKEN ? 'USDC' : 'USDT'}
-            </Typography>
-            <Typography
-              marginLeft={'10px'}
-              fontSize="13px"
-              lineHeight={'140%'}
-              letterSpacing={'0.13px'}
-              sx={{ opacity: '0.8' }}
-            >
-              ($ 1,680.43 USD)
-            </Typography>
-          </Box>
+            ({balance} USD)
+          </Typography>
+        </Box>
 
-          <Box marginTop={'30px'}>
-            <Typography
-              color="white"
-              fontSize="16px"
-              fontWeight={700}
-              fontFamily="Inter"
-              marginBottom="10px"
-            >
-              To Address
-            </Typography>
-            <Input
-              name="recipient"
-              onChange={handleChange}
-              sx={{
-                color: 'white',
-                backgroundColor: '#2d2d2d',
-                padding: '12px 10px',
-                borderRadius: '8px',
-                width: '100%',
-                fontSize: '15px',
-                fontFamily: 'Inter',
-                '&::after': {
-                  borderBottom: 'none',
-                },
-                '&::before': {
-                  borderBottom: 'none',
-                },
-                '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                  borderBottom: 'none',
-                },
-              }}
-              placeholder="0x000"
-            />
-            <Typography
+        <Box marginTop={'30px'}>
+          <Typography
+            color="white"
+            fontSize="16px"
+            fontWeight={700}
+            fontFamily="Inter"
+            marginBottom="10px"
+          >
+            To Address
+          </Typography>
+          <Input
+            name="recipient"
+            onChange={handleChange}
+            sx={{
+              color: 'white',
+              backgroundColor: '#2d2d2d',
+              padding: '12px 10px',
+              borderRadius: '8px',
+              width: '100%',
+              fontSize: '15px',
+              fontFamily: 'Inter',
+              '&::after': {
+                borderBottom: 'none',
+              },
+              '&::before': {
+                borderBottom: 'none',
+              },
+              '&:hover:not(.Mui-disabled, .Mui-error):before': {
+                borderBottom: 'none',
+              },
+            }}
+            placeholder="0x000"
+          />
+          {/*<Typography
               color="white"
               fontSize="16px"
               fontWeight={700}
@@ -263,9 +260,9 @@ export const WithdrawToken = ({
               >
                 Max
               </ZuButton>
-            </Box>
+            </Box>*/}
 
-            {/* <Box marginTop={"14px"} gap={"20px"} display={"flex"} alignItems={"center"} justifyContent={"space-between"}>
+          {/* <Box marginTop={"14px"} gap={"20px"} display={"flex"} alignItems={"center"} justifyContent={"space-between"}>
               <Box sx={{
                 width: "100%"
               }}>
@@ -346,27 +343,26 @@ export const WithdrawToken = ({
                 />
               </Box>
             </Box> */}
-          </Box>
-
-          <Box marginTop={'30px'}>
-            <Button
-              onClick={() => setShowWithdrawalModal(true)}
-              sx={{
-                backgroundColor: '#2f474e',
-                color: '#67DAFF',
-                width: '100%',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: 600,
-                fontFamily: 'Inter',
-              }}
-              startIcon={<RightArrowIcon color="#67DAFF" />}
-            >
-              Submit
-            </Button>
-          </Box>
         </Box>
-      )}
+
+        <Box marginTop={'30px'}>
+          <Button
+            onClick={() => setShowWithdrawalModal(true)}
+            sx={{
+              backgroundColor: '#2f474e',
+              color: '#67DAFF',
+              width: '100%',
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: 600,
+              fontFamily: 'Inter',
+            }}
+            startIcon={<RightArrowIcon color="#67DAFF" />}
+          >
+            Submit
+          </Button>
+        </Box>
+      </Box>
     </Box>
   );
 };
@@ -375,16 +371,28 @@ export const SendNFTTicket = ({ ticketAddress, ticket }: ISendNFTTicket) => {
   const [showNFTTicketModal, setShowNFTTicketModal] = React.useState(false);
   const [recipient, setRecipient] = useState('');
   const tokenId = '0'; // this will be removed and be handled in the contract
-  const tokenURI = 'https://'; // this will be removed and be handled in the contract
-
   const handleSendNFTTicket = async () => {
     try {
+      const metadata = generateNFTMetadata(ticket[0].result, 'NFT ticket', '', [
+        {
+          name: 'Event',
+          value: 'Exclusive Event',
+        },
+        {
+          name: 'Type',
+          value: 'Attendee',
+        },
+      ]);
+      const metadataFile = createFileFromJSON(metadata, 'metaData');
+      const tags = [{ name: 'Content-Type', value: 'application/json' }];
+      const uploadedID = await gaslessFundAndUpload(metadataFile, tags, 'EVM');
+      const ABI = ticket[8]?.result ? TICKET_WITH_WHITELIST_ABI : TICKET_ABI;
       const adminMintHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: ticketAddress as Address,
         functionName: 'adminMint',
-        abi: TICKET_ABI,
-        args: [recipient, tokenId, tokenURI],
+        abi: ABI,
+        args: [recipient, `https://devnet.irys.xyz/${uploadedID}`],
       });
 
       const { status: adminMintStatus } = await waitForTransactionReceipt(
@@ -395,8 +403,9 @@ export const SendNFTTicket = ({ ticketAddress, ticket }: ISendNFTTicket) => {
       );
 
       if (adminMintStatus === 'success') {
-        // action to perform
+        console.log('good');
       }
+      setShowNFTTicketModal(false);
     } catch (error) {
       console.log(error);
     }
@@ -427,15 +436,15 @@ export const SendNFTTicket = ({ ticketAddress, ticket }: ISendNFTTicket) => {
         <Typography fontSize="14px" fontWeight={600} lineHeight={'160%'}>
           {ticket[4].result}
         </Typography>
-        <Typography
+        {/*<Typography
           marginLeft={'10px'}
           fontSize="13px"
           lineHeight={'140%'}
           letterSpacing={'0.13px'}
           sx={{ opacity: '0.8' }}
         >
-          out of {ticket[8].result}
-        </Typography>
+          out of {ticket[8]?.result}
+        </Typography>*/}
       </Box>
 
       <Box marginTop={'30px'}>
@@ -449,7 +458,7 @@ export const SendNFTTicket = ({ ticketAddress, ticket }: ISendNFTTicket) => {
           To Address
         </Typography>
         <Input
-          onChange={(e: any) => setRecipient(e.target.default)}
+          onChange={(e: any) => setRecipient(e.target.value)}
           sx={{
             color: 'white',
             backgroundColor: '#2d2d2d',
@@ -808,8 +817,58 @@ export const Whitelist = ({
   const [email, setEmail] = useState<boolean>(false);
   const [process, setProcess] = useState<boolean>(false);
   const [updated, setUpdated] = useState<boolean>(false);
+  const [emailList, setEmailList] = useState('');
   let ticketAddress = ticketAddresses[vaultIndex];
   let ticket = tickets[vaultIndex];
+  const handleSendEmails = async () => {
+    const emailJsConfig = await fetchEmailJsConfig();
+    if (emailJsConfig) {
+      const { serviceId, templateId, userId } = emailJsConfig;
+      const emails = emailList.split(',').map((email) => email.trim());
+      for (const email of emails) {
+        const result = await send(
+          serviceId,
+          templateId,
+          {
+            to_name: 'ZuVillage',
+            from_name: email,
+            message: 'Here is your invitation to mint the ticket.',
+            reply_to: email,
+          },
+          userId,
+        );
+      }
+      setEmailList('');
+    } else {
+      console.log('Failed to fetch email JS config.');
+    }
+  };
+  const handleAddWhiteLIST = async () => {
+    console.log({ addresses });
+
+    try {
+      const appendHash = await writeContract(config, {
+        chainId: scrollSepolia.id,
+        address: ticketAddress as Address,
+        functionName: 'appendToWhitelist',
+        abi: TICKET_WITH_WHITELIST_ABI,
+        args: [addresses],
+      });
+
+      const { status: appendStatus } = await waitForTransactionReceipt(config, {
+        hash: appendHash,
+        timeout: 6000_000,
+      });
+
+      if (appendStatus === 'success') {
+        // action to perform
+        console.log(emailList);
+        await handleSendEmails();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Stack spacing="30px">
       <Stack spacing="10px">
@@ -924,15 +983,22 @@ export const Whitelist = ({
             borderRadius="10px"
             border="1px solid #383838"
           >
-            <Typography
-              variant="h5"
-              fontSize="24px"
-              fontFamily={'Inter'}
-              lineHeight={'120%'}
-              color="white"
-            >
-              {ticket[0]?.result}
-            </Typography>
+            <List>
+              {ticket[9]?.result &&
+                ticket[9].result.map((address: string, index: number) => (
+                  <ListItem key={index}>
+                    <Typography
+                      variant="h6"
+                      fontSize="8px"
+                      fontFamily={'Inter'}
+                      lineHeight={'120%'}
+                      color="white"
+                    >
+                      {address}
+                    </Typography>
+                  </ListItem>
+                ))}
+            </List>
           </Stack>
           <ZuButton
             sx={{
@@ -962,6 +1028,8 @@ export const Whitelist = ({
             <TextField
               multiline
               rows={4}
+              value={emailList}
+              onChange={(e) => setEmailList(e.target.value)}
               placeholder="simon@ecf.network, reno@ecf.network"
               sx={{
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -1005,6 +1073,7 @@ export const Whitelist = ({
               }}
               startIcon={<RightArrowIcon color="#67DAFF" />}
               onClick={() => {
+                handleAddWhiteLIST();
                 setProcess(true);
                 setEmail(false);
               }}
@@ -1039,6 +1108,11 @@ export const Whitelist = ({
           )}
           <TicketProcessingProgress />
           <ZuButton
+            onClick={() => {
+              setInitial(false);
+              setProcess(false);
+              setEmail(false);
+            }}
             sx={{
               backgroundColor: '#2f474e',
               color: '#67DAFF',

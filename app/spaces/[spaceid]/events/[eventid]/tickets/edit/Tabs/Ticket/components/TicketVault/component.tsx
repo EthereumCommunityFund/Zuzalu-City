@@ -89,7 +89,7 @@ export const WithdrawToken = ({
       const withdrawHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: ticketAddress as Address,
-        functionName: 'withdrawGeneric',
+        functionName: 'withdraw',
         abi: TICKET_ABI,
         args: [
           withdrawInfo?.recipient,

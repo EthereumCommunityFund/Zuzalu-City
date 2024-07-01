@@ -140,7 +140,7 @@ const TicketVault = ({
                   opacity: '0.8',
                 }}
               >
-                {String(ticket[3]?.result)}
+                {(ticket[3].result / BigInt(10 ** 18)).toString()}
               </Typography>
               <Typography
                 fontSize="10px"

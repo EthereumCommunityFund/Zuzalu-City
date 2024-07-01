@@ -136,6 +136,7 @@ const Ticket = () => {
         config,
         {
           hash: createTicketHash,
+          timeout: 6000_000,
         },
       );
 
