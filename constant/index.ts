@@ -132,3 +132,21 @@ export const STARTING_STATUS: {
     value: 'Hidden',
   },
 ];
+
+export const EXPREIENCE_LEVEL_TYPES: {
+  key: string;
+  value: string;
+}[] = [
+  {
+    key: 'beginner',
+    value: 'Beginner',
+  },
+  {
+    key: 'intermediate',
+    value: 'Intermediate',
+  },
+  {
+    key: 'advanced',
+    value: 'Advanced',
+  },
+];

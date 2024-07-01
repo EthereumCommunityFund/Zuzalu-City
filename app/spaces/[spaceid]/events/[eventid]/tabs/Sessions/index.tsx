@@ -1240,10 +1240,7 @@ const Sessions = () => {
                 sessions.length !== 0 ? sessions.map((session, index) => (
                   <SessionCard
                     key={`SessionCard-${index}`}
-                    title={session.title}
-                    startTime={session.startTime}
-                    endTime={session.endTime}
-                    location={session.meeting_url}
+                    session={session}
                   />
                 )) : (
                   <Stack

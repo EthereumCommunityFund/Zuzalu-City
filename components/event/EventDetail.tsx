@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Stack, Typography, Box } from '@mui/material';
+import { Stack, Typography, Box, useTheme } from '@mui/material';
 import { RightArrowIcon } from 'components/icons';
 import { SOCIAL_TYPES } from '@/constant';
 import { TileLayer, MapContainer, useMap, Marker, Popup } from 'react-leaflet';
@@ -26,8 +26,18 @@ const EventDetail: React.FC<IEventDetail> = ({
   location,
   address,
 }) => {
+  const { breakpoints } = useTheme();
+
   return (
-    <Stack spacing="20px">
+    <Stack
+      spacing="20px"
+      sx={{
+        padding: '0px',
+        [breakpoints.down('md')]: {
+          padding: '0px 10px 20px 10px',
+        },
+      }}
+    >
       <Typography
         color="white"
         variant="subtitleMB"
@@ -39,7 +49,11 @@ const EventDetail: React.FC<IEventDetail> = ({
       <Typography color="white" variant="bodyB">
         Format: {status}
       </Typography>
-      <Stack spacing="10px">
+      <Stack
+        spacing="10px"
+        paddingBottom={'20px'}
+        borderBottom={'1px solid rgba(255, 255, 255, 0.10)'}
+      >
         <Typography color="white" variant="bodyBB" paddingBottom="20px">
           Links
         </Typography>
@@ -74,7 +88,7 @@ const EventDetail: React.FC<IEventDetail> = ({
         )}
       </Stack>
       <Stack spacing="5px">
-        <Typography color="white" variant="bodyBB" paddingY="20px">
+        <Typography color="white" variant="bodyBB" paddingBottom="20px">
           Location
         </Typography>
         <Typography color="white" variant="bodyMB">
