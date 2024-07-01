@@ -1228,7 +1228,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               </Stack>
               {
                 sessionsByDate ? Object.entries(sessionsByDate).map(([date, dateSessions]) => (
-                  <Stack spacing="10px" padding="10px">
+                  <Stack spacing="10px" padding="10px" key={`Sesssion-GroupByDate-${date}`}>
                     <Typography
                       borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
                       padding="8px 10px" variant="bodySB" bgcolor="rgba(255, 255, 255, 0.05)"
