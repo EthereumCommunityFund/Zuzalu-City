@@ -5,6 +5,7 @@ import {
   ListIcon,
   PlusIcon,
   TableIcon,
+  PlusCircleIcon
 } from 'components/icons';
 import { ZuButton } from 'components/core';
 import SessionCard from './SessionCard';
@@ -17,57 +18,40 @@ type SessionsListProps = {
 
 const SessionList: React.FC<SessionsListProps> = ({ sessions = [] }) => {
   return (
-    <Stack direction={'column'} spacing={2}>
-      <Stack direction={'row'} justifyContent={'space-between'}>
+    <Stack direction={'column'} spacing="20px">
+      <Stack spacing="10px">
         <Stack direction={'row'} spacing={0.5} alignItems={'center'}>
           <Typography variant="h6">Session List</Typography>
           <InformationIcon />
         </Stack>
-        <Stack direction={'row'} spacing={2} alignItems={'center'}>
+        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+          Sessions makeup the schedule of an event
+        </Typography>
+      </Stack>
+      {
+        sessions.length > 0 ? <Stack spacing={2} divider={<Divider sx={{ borderColor: '#383838' }} />}>
+          {sessions.map((session, index) => (
+            <SessionCard
+              key={`SessionCard-${index}`}
+              title={session.title}
+              startTime={session.startTime}
+              endTime={session.endTime}
+              location={session.meeting_url}
+            />
+          ))}
+        </Stack> :
           <Stack
-            direction={'row'}
-            bgcolor={'#2a2a2a'}
-            padding={'4px'}
-            borderRadius={'10px'}
-            spacing={1}
-            alignItems={'center'}
+            direction="column"
+            alignItems="center"
+            bgcolor="#2d2d2d"
+            padding="20px 10px"
+            borderRadius={2}
           >
-            <Stack bgcolor={'#404040'} padding={'2px'} borderRadius={'5px'}>
-              <ListIcon />
-            </Stack>
-            <Stack>
-              <TableIcon />
-            </Stack>
+            <PlusCircleIcon color="#6c6c6c" size={15} />
+            <Typography variant="subtitle2">No Sessions</Typography>
+            <Typography variant="body2" sx={{ opacity: 0.5 }}>Create a Session</Typography>
           </Stack>
-          <ZuButton startIcon={<PlusIcon />}>Add a Session</ZuButton>
-        </Stack>
-      </Stack>
-      <Typography
-        align="center"
-        paddingY={1.5}
-        variant="subtitleS"
-        bgcolor={'#2b2b2b'}
-        borderRadius={2}
-      >
-        Monday, October 2023
-      </Typography>
-      <Stack spacing={2} divider={<Divider sx={{ borderColor: '#383838' }} />}>
-        {/* <SessionCard />
-        <SessionCard />
-        <SessionCard /> */}
-        {sessions.map((session, index) => (
-          <SessionCard
-            key={`SessionCard-${index}`}
-            title={session.title}
-            startTime={session.startTime}
-            endTime={session.endTime}
-            location={session.meeting_url}
-          />
-        ))}
-      </Stack>
-      <Typography variant="body2" color="white" fontStyle="italic">
-        Prototype Note: Below shows an empty state
-      </Typography>
+      }
     </Stack>
   );
 };

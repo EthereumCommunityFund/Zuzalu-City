@@ -209,7 +209,8 @@ const Sessions = () => {
     if (date) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
       const available = JSON.parse(venues.filter(item => item.name === sessionLocation)[0].bookings)
-      setAvailableTimeSlots(available[dayName] || []);
+      console.log("avail", available[dayName.toLowerCase()] || []);
+      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
     }
     setSessionDate(date);
   };
@@ -218,10 +219,14 @@ const Sessions = () => {
     return date.isAfter(dayjs(startDate).subtract(1, 'day')) && date.isBefore(dayjs(endDate).add(1, 'day'));
   };
 
-  const isTimeAvailable = (date: Dayjs, available: any): boolean => {
+  const isTimeAvailable = (date: Dayjs, available?: any): boolean => {
+    const formattedTime = date.format('HH:mm');
     const isMinuteIntervalValid = date.minute() % 30 === 0;
-    const isWithinAvailableSlot = available.some((slot: any) =>
-      date.isBetween(slot.startTime, slot.endTime, 'minute', '[)')
+    const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
+      const startTime = dayjs(slot.startTime).format('HH:mm');
+      const endTime = dayjs(slot.endTime).format('HH:mm');
+      return formattedTime >= startTime && formattedTime < endTime;
+    }
     );
 
     return isMinuteIntervalValid && isWithinAvailableSlot;
@@ -838,16 +843,22 @@ const Sessions = () => {
                           ampm={false}
                           onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
-                            const available = getAvailableTime(sessionLocation, sessionDate);
-                            if (available !== undefined) {
-                              if (view === 'minutes' || view === 'hours') {
-                                return !isTimeAvailable(date, available);
-                              }
-                              return false;
-                            } else {
-                              return false;
+                            if (view === 'minutes' || view === 'hours') {
+                              return !isTimeAvailable(date);
                             }
-                          }}
+                            return false;
+
+                            // const available = getAvailableTime(sessionLocation, sessionDate);
+                            // if (available !== undefined) {
+                            //   if (view === 'minutes' || view === 'hours') {
+                            //     return !isTimeAvailable(date, available);
+                            //   }
+                            //   return false;
+                            // } else {
+                            //   return false;
+                            // }
+                          }
+                          }
                           sx={{
                             '& .MuiSvgIcon-root': {
                               color: 'white',
@@ -1384,10 +1395,10 @@ const Sessions = () => {
   };
 
   return (
-    <Stack direction={'column'} spacing={6} paddingBottom={5}>
+    <Stack direction={'column'} spacing="40px">
       <SessionHeader onToggle={toggleDrawer} />
       <SessionList sessions={sessions} />
-      <SessionAdd />
+      {/* <SessionAdd /> */}
       <SwipeableDrawer
         hideBackdrop={true}
         sx={{
