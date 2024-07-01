@@ -45,7 +45,7 @@ import {
   Venue,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { SPACE_CATEGORIES } from '@/constant';
+import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 
 dayjs.extend(utc);
@@ -77,7 +77,6 @@ const Sessions = () => {
 
   const [person, setPerson] = useState(true);
   const [online, setOnline] = useState(false);
-  const [editor, setEditorInst] = useState<any>();
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
@@ -87,6 +86,7 @@ const Sessions = () => {
   const [sessionGated, setSessionGated] = useState<boolean>(false);
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
+  const [sessionLiveStreamLink, setSessionLiveStreamLink] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   const [sessionDate, setSessionDate] = useState<Dayjs>(dayjs());
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
@@ -94,7 +94,9 @@ const Sessions = () => {
   );
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(dayjs().set('hour', 0).set('minute', 0));
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
+  const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [speakers, setSpeakers] = useState<Array<string>>([]);
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionTimezone, setSessionTimezone] = useState<string>('');
 
@@ -157,6 +159,9 @@ const Sessions = () => {
                 id
                 username
                 avatar
+                author {
+                  id
+                }
               }
             }
           }
@@ -231,20 +236,6 @@ const Sessions = () => {
 
     return isMinuteIntervalValid && isWithinAvailableSlot;
   };
-
-  const getAvailableTime = (name: string, date: Dayjs) => {
-    if (name.length > 0) {
-      const selectedRoom = venues.filter(item => item.name === name)[0]
-      const availability = JSON.parse(selectedRoom["bookings"]);
-      const dayAvailability = availability[date.format('dddd').toLowerCase()].map((slot: any) => ({
-        startTime: dayjs(slot.startTime),
-        endTime: dayjs(slot.endTime)
-      }));
-      return dayAvailability;
-    } else {
-      return undefined;
-    }
-  }
 
   const getEventDetailInfo = async () => {
     try {
@@ -331,19 +322,25 @@ const Sessions = () => {
   };
 
   const handleSpeakerChange = (e: any) => {
-    setSessionSpeakers(
+    setSpeakers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
         : e.target.value,
     );
+
+    const speakers = e.target.value.map((speaker: any) => people.filter(i => i.username === speaker)[0].author?.id);
+    setSessionSpeakers(speakers);
   };
 
   const handleOrganizerChange = (e: any) => {
-    setSessionOrganizers(
+    setOrganizers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
         : e.target.value,
     );
+
+    const organizers = e.target.value.map((organizer: any) => people.filter(i => i.username === organizer)[0].author?.id);
+    setSessionOrganizers(organizers);
   };
 
   const createSession = async () => {
@@ -461,7 +458,7 @@ const Sessions = () => {
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Select a Track*</Typography>
-                <Typography variant="bodyS">
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                   Attach a relevant track this session relates to
                 </Typography>
                 <Select
@@ -489,7 +486,7 @@ const Sessions = () => {
               <Stack spacing="20px">
                 <Stack spacing="10px">
                   <Typography variant="bodyBB">Session Tags</Typography>
-                  <Typography variant="bodyS">
+                  <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                     Search or create categories related to your space
                   </Typography>
                 </Stack>
@@ -547,7 +544,7 @@ const Sessions = () => {
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Description*</Typography>
-                <Typography variant="bodyS">
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                   Write an introduction for this session
                 </Typography>
                 <TextEditor
@@ -563,46 +560,10 @@ const Sessions = () => {
                   }}
                   setData={setSessionDescription}
                 />
-                {/* <Stack
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '6px',
-                    alignItems: 'center',
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="15"
-                    viewBox="0 0 20 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clipPath="url(#clip0_4575_7884)">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4.80085 4.06177H2.83984V11.506H4.88327V7.3727L6.82879 10.0394L8.68199 7.3727V11.506H10.6226V4.06177H8.68199L6.82879 6.81714L4.80085 4.06177ZM1.55636 0.794922H18.4436C19.3028 0.794922 20 1.59076 20 2.57247V13.0174C20 13.9989 19.3032 14.7949 18.4436 14.7949H1.55636C0.697166 14.7949 0 13.9991 0 13.0174V2.57247C0 1.59091 0.696805 0.794922 1.55636 0.794922ZM14.0078 4.10603H13.9884V7.92826H12.1206L15 11.506L17.8795 7.90628H15.9347V4.10603H14.0078Z"
-                        fill="white"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_4575_7884">
-                        <rect
-                          width="20"
-                          height="14"
-                          fill="white"
-                          transform="translate(0 0.794922)"
-                        />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                  <Typography variant="bodyS">Markdown Available</Typography>
-                </Stack> */}
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Type</Typography>
-                <Typography variant="bodyS">
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                   Choose a type for your session to relay its nature to guests
                 </Typography>
                 <ZuInput
@@ -611,40 +572,43 @@ const Sessions = () => {
                 />
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Status</Typography>
-                <Typography variant="bodyS">
-                  Choose a status for your session to relay its nature to guests
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionStatus(e.target.value)}
-                  placeholder="Type Session Status"
-                />
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Gated</Typography>
-                {/* <Typography variant="bodyS">
-                  Gated
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionGated(e.target.value)}
-                  placeholder="Gated"
-                /> */}
-                <Stack direction="row" alignItems="center">
-                  <BpCheckbox
-                    checked={sessionGated}
-                    onChange={() => setSessionGated((prev) => !prev)}
-                  />
-                  <Typography variant="bodyS">Gated</Typography>
-                </Stack>
-              </Stack>
-              <Stack spacing="10px">
                 <Typography variant="bodyBB">Experience Level</Typography>
-                <Typography variant="bodyS">
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                   Select a level experience may be needed for this session
                 </Typography>
-                <ZuInput
+                <Select
+                  value={sessionExperienceLevel}
+                  style={{ width: '100%' }}
                   onChange={(e) => setSessionExperienceLevel(e.target.value)}
-                  placeholder="Beginner OR Intermediate OR Advanced"
+                  input={<OutlinedInput label="Experience_Level" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {EXPREIENCE_LEVEL_TYPES.map((i, index) => {
+                    return (
+                      <MenuItem
+                        value={i.key}
+                        key={`Speaker_Index${index}`}
+                      >
+                        {i.value}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Live-Stream Link</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Enter a link for where this session will be streamed
+                </Typography>
+                <ZuInput
+                  onChange={(e) => setSessionLiveStreamLink(e.target.value)}
+                  placeholder="https://"
                 />
               </Stack>
             </Stack>
@@ -847,18 +811,7 @@ const Sessions = () => {
                               return !isTimeAvailable(date);
                             }
                             return false;
-
-                            // const available = getAvailableTime(sessionLocation, sessionDate);
-                            // if (available !== undefined) {
-                            //   if (view === 'minutes' || view === 'hours') {
-                            //     return !isTimeAvailable(date, available);
-                            //   }
-                            //   return false;
-                            // } else {
-                            //   return false;
-                            // }
-                          }
-                          }
+                          }}
                           sx={{
                             '& .MuiSvgIcon-root': {
                               color: 'white',
@@ -898,15 +851,10 @@ const Sessions = () => {
                           ampm={false}
                           onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
-                            const available = getAvailableTime(sessionLocation, sessionDate);
-                            if (available !== undefined) {
-                              if (view === 'minutes' || view === 'hours') {
-                                return !isTimeAvailable(date, available);
-                              }
-                              return false;
-                            } else {
-                              return false;
+                            if (view === 'minutes' || view === 'hours') {
+                              return !isTimeAvailable(date);
                             }
+                            return false;
                           }}
                           sx={{
                             '& .MuiSvgIcon-root': {
@@ -1039,15 +987,10 @@ const Sessions = () => {
                           ampm={false}
                           onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
-                            const available = getAvailableTime(sessionLocation, sessionDate);
-                            if (available !== undefined) {
-                              if (view === 'minutes' || view === 'hours') {
-                                return !isTimeAvailable(date, available);
-                              }
-                              return false;
-                            } else {
-                              return false;
+                            if (view === 'minutes' || view === 'hours') {
+                              return !isTimeAvailable(date);
                             }
+                            return false;
                           }}
                           sx={{
                             '& .MuiSvgIcon-root': {
@@ -1088,15 +1031,10 @@ const Sessions = () => {
                           ampm={false}
                           onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
-                            const available = getAvailableTime(sessionLocation, sessionDate);
-                            if (available !== undefined) {
-                              if (view === 'minutes' || view === 'hours') {
-                                return !isTimeAvailable(date, available);
-                              }
-                              return false;
-                            } else {
-                              return false;
+                            if (view === 'minutes' || view === 'hours') {
+                              return !isTimeAvailable(date);
                             }
+                            return false;
                           }}
                           sx={{
                             '& .MuiSvgIcon-root': {
@@ -1153,7 +1091,7 @@ const Sessions = () => {
                 <Box>
                   <Select
                     multiple
-                    value={sessionOrganizers}
+                    value={organizers}
                     style={{ width: '100%' }}
                     onChange={handleOrganizerChange}
                     input={<OutlinedInput label="Name" />}
@@ -1183,7 +1121,7 @@ const Sessions = () => {
                   gap={'10px'}
                   flexWrap={'wrap'}
                 >
-                  {sessionOrganizers.map((i, index) => {
+                  {organizers.map((i, index) => {
                     return (
                       <Chip
                         label={i}
@@ -1191,56 +1129,19 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people
-                            .filter((item) => item.username !== i)
-                            .map((item) => item.username);
-                          setSessionOrganizers(newArray);
+                          const newArray = organizers
+                            .filter((item) => item !== i)
+                          setOrganizers(newArray);
+                          const newDIDs = sessionOrganizers.filter((_, ind) => ind !== index);
+                          setSessionOrganizers(newDIDs);
                         }}
                         key={`Selected_Organizerr${index}`}
                       />
                     );
                   })}
                 </Box>
-                {/* <Stack direction="row" spacing="10px">
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/21.jpg"
-                    />
-                    <Typography variant="bodyMB">QJ</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/drivenfast.webp"
-                    />
-                    <Typography variant="bodyMB">drivenfast</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                </Stack> */}
               </Stack>
-              <Stack spacing="20px">
+              {/* <Stack spacing="20px">
                 <Stack
                   pt="20px"
                   borderTop="1px solid rgba(255, 255, 255, 0.10)"
@@ -1267,7 +1168,7 @@ const Sessions = () => {
                     </Typography>
                   </Stack>
                 </Stack>
-              </Stack>
+              </Stack> */}
               <Stack spacing="20px">
                 <Stack spacing="10px">
                   <Typography variant="bodyBB">Speakers</Typography>
@@ -1278,7 +1179,7 @@ const Sessions = () => {
                 <Box>
                   <Select
                     multiple
-                    value={sessionSpeakers}
+                    value={speakers}
                     style={{ width: '100%' }}
                     onChange={handleSpeakerChange}
                     input={<OutlinedInput label="Name" />}
@@ -1308,7 +1209,7 @@ const Sessions = () => {
                   gap={'10px'}
                   flexWrap={'wrap'}
                 >
-                  {sessionSpeakers.map((i, index) => {
+                  {speakers.map((i, index) => {
                     return (
                       <Chip
                         label={i}
@@ -1316,10 +1217,11 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people
-                            .filter((item) => item.username !== i)
-                            .map((item) => item.username);
-                          setSessionSpeakers(newArray);
+                          const newArray = speakers
+                            .filter((item) => item !== i)
+                          setSpeakers(newArray);
+                          const newDIDs = sessionSpeakers.filter((_, ind) => ind !== index);
+                          setSessionSpeakers(newDIDs);
                         }}
                         key={`Selected_Speaker${index}`}
                       />

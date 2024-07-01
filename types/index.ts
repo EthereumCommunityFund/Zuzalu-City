@@ -140,6 +140,9 @@ export type Profile = {
   id: any;
   username: string;
   avatar?: string;
+  author?: {
+    id: string;
+  }
 };
 export interface ProfileData {
   node: Profile;

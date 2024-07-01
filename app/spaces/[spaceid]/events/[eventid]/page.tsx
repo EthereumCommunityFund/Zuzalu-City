@@ -45,7 +45,7 @@ const Home = () => {
         {tabName === 'About' && (
           <About eventData={eventData} setEventData={setEventData} />
         )}
-        {tabName === 'Sessions' && <Sessions />}
+        {tabName === 'Sessions' && <Sessions eventData={eventData} />}
       </Stack>
     </Stack>
   );
