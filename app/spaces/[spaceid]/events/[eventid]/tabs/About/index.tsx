@@ -82,6 +82,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               tagline
               timezone
               title
+              tracks
               space {
                 id
                 name

@@ -1,83 +1,72 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import { Stack, Typography, Box } from '@mui/material';
-import { EditIcon, MapIcon } from 'components/icons';
-
-const speakers = [
-  {
-    name: 'QJ',
-    avatar: '/qj.webp',
-  },
-  {
-    name: 'Kelly Liu',
-    avatar: '/kelly.webp',
-  },
-  {
-    name: 'Simon Fast',
-  },
-];
+import { EditIcon, MapIcon, SessionIcon } from 'components/icons';
+import { Session } from '@/types';
 
 type SessionCardProps = {
-  title?: string;
-  startTime?: string;
-  endTime?: string;
-  location?: string;
+  session: Session
 };
 
 const SessionCard: React.FC<SessionCardProps> = ({
-  title = 'Opening Meetup (some game to get to know the coworking space + hotels)',
-  startTime = '00:00 AM',
-  endTime = '00:00 AM',
-  location = 'GROUND FLOOR THEATER',
+  session
 }) => {
   return (
     <Stack
-      direction={'column'}
-      spacing={1}
-      padding={1}
+      direction="row"
+      padding="10px 10px 20px 10px"
       borderRadius={'10px'}
       sx={{
         ':hover': {
           backgroundColor: '#383838',
         },
+        cursor: "pointer"
       }}
     >
-      <Stack
-        direction={'row'}
-        alignItems={'center'}
-        justifyContent={'space-between'}
-      >
+      <Stack spacing="10px" flex={1}>
+        <Stack direction="row" spacing="10px" alignItems="center">
+          <Typography bgcolor="#7DFFD11A" padding="2px 4px" color="#7DFFD1" variant="bodyX" borderRadius="2px">
+            · LIVE
+          </Typography>
+          <Typography variant="caption">
+            TRACK
+          </Typography>
+        </Stack>
         <Typography variant="bodyB">
-          {dayjs(startTime).format('HH A')} - {dayjs(endTime).format('HH A')}
+          {dayjs(session.startTime).format('h:mm A')} - {dayjs(session.endTime).format('h:mm A')}
         </Typography>
-        <EditIcon />
-      </Stack>
-      <Typography variant="subtitleSB">{title}</Typography>
-      <Stack direction={'row'} spacing={1}>
-        <Typography variant="bodyS">Speakers:</Typography>
-        {speakers.map((speaker, index) => (
-          <Stack
-            key={`Speaker-${index}`}
-            direction={'row'}
-            spacing={0.5}
-            alignItems={'center'}
-          >
-            {speaker.avatar && (
+        <Typography variant="subtitleSB">{session.title}</Typography>
+        <Stack direction={'row'} spacing={1} alignItems="center">
+          <Typography variant="bodyS" sx={{ opacity: 0.7 }}>Speakers:</Typography>
+          {JSON.parse(session.speakers).map((speaker: any, index: number) => (
+            <Stack
+              key={`Speaker-${index}`}
+              direction={'row'}
+              spacing={0.5}
+              alignItems={'center'}
+            >
               <Box
                 component={'img'}
                 height={20}
                 width={20}
                 borderRadius={10}
-                src={speaker.avatar}
+                src={speaker.avatar || "/16.jpg"}
               />
-            )}
-            <Typography variant="bodyS">{speaker.name}</Typography>
-          </Stack>
-        ))}
+              <Typography variant="bodyS">{speaker.username}</Typography>
+            </Stack>
+          ))}
+        </Stack>
+        <Stack direction={'row'} alignItems={'center'} spacing={1}>
+          <MapIcon size={4} />
+          <Typography variant="caption" sx={{ opacity: 0.5 }}>{session.location}</Typography>
+        </Stack>
       </Stack>
-      <Stack direction={'row'} alignItems={'center'} spacing={1}>
-        <MapIcon size={4} />
-        <Typography variant="caption">{location}</Typography>
+      <Stack padding="4px" spacing="4px" direction="row" alignItems="center" borderRadius="8px" sx={{ opacity: 0.7 }}
+        bgcolor="rgba(255, 255, 255, 0.05)" height="fit-content">
+        <SessionIcon />
+        <Typography variant="bodyS">
+          1
+        </Typography>
       </Stack>
     </Stack>
   );

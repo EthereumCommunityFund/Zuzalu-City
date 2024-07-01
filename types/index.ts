@@ -115,6 +115,9 @@ export interface Session {
   description?: string;
   meeting_url?: string;
   experience_level?: string;
+  location?: string;
+  speakers: string;
+  organizers?: string;
 }
 
 export interface SessionEdge {

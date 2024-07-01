@@ -4,7 +4,6 @@ import OverviewButton from './OverviewButton';
 import { Event } from '@/types';
 import { Anchor, Session, SessionData, ProfileEdge, Profile } from '@/types';
 import { PlusCircleIcon } from '@/components/icons';
-import { List } from '@/app/spaces/[spaceid]/events/[eventid]/tabs/Sessions';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
@@ -265,7 +264,7 @@ const OverviewHeader = ({ event }: PropTypes) => {
         <OverviewButton type={0} onClick={() => toggleDrawer('right', true)} />
         <OverviewButton type={1} onClick={() => { setShowQRScanner(!showQRScanner) }} />
       </Stack>
-      <SwipeableDrawer
+      {/* <SwipeableDrawer
         hideBackdrop={true}
         sx={{
           '& .MuiDrawer-paper': {
@@ -320,7 +319,7 @@ const OverviewHeader = ({ event }: PropTypes) => {
             toggleDrawer={toggleDrawer}
           />
         }
-      </SwipeableDrawer>
+      </SwipeableDrawer> */}
       {
         showQRScanner && <QRReader />
       }

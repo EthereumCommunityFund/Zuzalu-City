@@ -73,6 +73,9 @@ import { Square2StackIcon } from './Square2Stack';
 import { ArrowTopRightSquareIcon } from './ArrowTopRightSquare';
 import { ArrowDownSquare } from './ArrowDownSquare';
 import { HeartIcon } from './Heart';
+import { FingerPrintIcon } from './FingerPrint';
+import { QueueListIcon } from './QueueList';
+import { ChevronDoubleRightIcon } from './ChevronDoubleRight';
 
 export {
   HomeIcon,
@@ -149,5 +152,8 @@ export {
   Square2StackIcon,
   ArrowTopRightSquareIcon,
   ArrowDownSquare,
-  HeartIcon
+  HeartIcon,
+  FingerPrintIcon,
+  QueueListIcon,
+  ChevronDoubleRightIcon
 };

@@ -393,6 +393,8 @@ const Sessions = () => {
     await getSession();
   };
 
+  console.log("eventdata", eventData)
+
   const List = (anchor: Anchor) => {
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>

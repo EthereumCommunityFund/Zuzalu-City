@@ -200,7 +200,7 @@ export const Typography: TypographyOptions = {
 
   bodyX: {
     fontFamily: baseProperties.fontFamily,
-    fontWeight: baseProperties.fontWeightRegular,
+    fontWeight: baseProperties.fontWeightBold,
     fontSize: '10px',
     lineHeight: 0.75,
     letterSpacing: '0.02em',

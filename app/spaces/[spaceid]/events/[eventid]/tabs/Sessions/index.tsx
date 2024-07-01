@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Grid, Typography, SwipeableDrawer, Divider, Box, Select, OutlinedInput, MenuItem, Chip } from '@mui/material';
+import { Stack, Grid, Typography, SwipeableDrawer, Divider, Box, Select, OutlinedInput, MenuItem, Chip, InputAdornment, useTheme } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -10,10 +10,13 @@ import { TimeView } from '@mui/x-date-pickers/models';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
-import { ZuInput, ZuButton, ZuSwitch } from '@/components/core';
+import utc from 'dayjs/plugin/utc';
+import isBetween from 'dayjs/plugin/isBetween';
+import timezone from 'dayjs/plugin/timezone';
+import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
 import TextEditor from '@/components/editor/editor';
 import { OutputData } from '@editorjs/editorjs';
-import { PlusCircleIcon, LockIcon, XMarkIcon, ArchiveBoxIcon, ArrowDownIcon, ChevronDownIcon } from '@/components/icons';
+import { PlusCircleIcon, LockIcon, XMarkIcon, ArchiveBoxIcon, ArrowDownIcon, ChevronDownIcon, SearchIcon, FingerPrintIcon, UserPlusIcon, EditIcon, QueueListIcon, ChevronDoubleRightIcon } from '@/components/icons';
 import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
 import BpCheckbox from '@/components/event/Checkbox';
 import { Anchor, Session, SessionData, ProfileEdge, Profile, CeramicResponseType, EventEdge, Venue, Event } from '@/types';
@@ -30,8 +33,13 @@ interface ISessions {
   eventData: Event | undefined;
 }
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isBetween);
+
 
 const Sessions: React.FC<ISessions> = ({ eventData }) => {
+  const theme = useTheme();
   const { composeClient, isAuthenticated, profile } = useCeramicContext();
 
   const params = useParams();
@@ -44,6 +52,16 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     bottom: false,
     right: false,
   });
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
+    dayjs(
+      new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
+    ),
+  );
+  const [sessionsByDate, setSessionsByDate] = useState<Record<string, Session[]>>();
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -66,9 +84,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     dayjs().set('hour', 0).set('minute', 0)
   );
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(dayjs().set('hour', 0).set('minute', 0));
-  const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
+  const [sessionOrganizers, setSessionOrganizers] = useState<Array<any>>([]);
   const [organizers, setOrganizers] = useState<Array<string>>([]);
-  const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [sessionSpeakers, setSessionSpeakers] = useState<Array<any>>([]);
   const [speakers, setSpeakers] = useState<Array<string>>([]);
   const [sessionLocation, setSessionLocation] = useState<string>();
   const [sessionLiveStreamLink, setSessionLiveStreamLink] = useState<string>("");
@@ -77,61 +95,32 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     setState({ ...state, [anchor]: open });
   };
 
-  const getSessions = async () => {
-    try {
-      const response: any = await composeClient.executeQuery(`
-        query MyQuery {
-          sessionIndex(first: 20) {
-            edges {
-              node {
-                id
-                title
-                createdAt
-                profileId
-                startTime
-                endTime
-                eventId
-                tags
-                type
-                track
-                format
-                status
-                tagline
-                timezone
-                video_url
-                description
-                meeting_url
-                experience_level
-              }
-            }
-          }
-        }
-      `);
-
-      if ('sessionIndex' in response.data) {
-        const sessionData: SessionData = response.data as SessionData;
-        const fetchedSessions: Session[] = sessionData.sessionIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setSessions(fetchedSessions);
-      } else {
-        console.error('Invalid data structure:', response.data);
+  const groupSessionByDate = (sessions: Session[]): Record<string, Session[]> => {
+    return sessions.reduce((acc, session) => {
+      const formattedDate = dayjs(session.startTime).format('MMMM D, YYYY');
+      if (!acc[formattedDate]) {
+        acc[formattedDate] = [];
       }
-    } catch (error) {
-      console.error('Failed to fetch sesssions:', error);
-    }
-  };
+      acc[formattedDate].push(session);
+      return acc;
+    }, {} as Record<string, Session[]>);
+  }
 
   const getSession = async () => {
     try {
       const { data } = await supabase.from('sessions').select('*').eq('eventId', eventId);
       if (data) {
-        console.log(data);
+        setSessions(data);
+        const sessionsbydate = groupSessionByDate(data);
+        console.log("data", sessionsbydate)
+        setSessionsByDate(sessionsbydate);
       }
     } catch (err) {
       console.log(err)
     }
   }
+
+  console.log("sessions", sessions)
 
   const handleDateChange = (date: Dayjs) => {
     if (date) {
@@ -169,6 +158,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 id
                 username
                 avatar
+                author {
+                  id
+                }
               }
             }
           }
@@ -195,7 +187,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         .from('venues')
         .select('*')
         .eq('eventId', eventId);
-      console.log("data", data)
       if (data !== null) {
         setVenues(data);
         const locations = data.map(item => item.name);
@@ -216,19 +207,25 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   };
 
   const handleSpeakerChange = (e: any) => {
-    setSessionSpeakers(
+    setSpeakers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
+        : e.target.value,
+    );
+
+    const speakers = e.target.value.map((speaker: any) => people.filter(i => i.username === speaker)[0]);
+    setSessionSpeakers(speakers);
   }
 
   const handleOrganizerChange = (e: any) => {
-    setSessionOrganizers(
+    setOrganizers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
+        : e.target.value,
+    );
+    const organizers = e.target.value.map((organizer: any) => people.filter(i => i.username === organizer)[0]);
+    setSessionOrganizers(organizers);
   }
-
   const createSession = async () => {
     if (!isAuthenticated) {
       return;
@@ -238,7 +235,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     strDesc = strDesc.replaceAll('"', '\\"');
 
-    const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+    const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessionTags || !sessionTrack || !profileId;
 
     if (error) {
       typeof window !== 'undefined' &&
@@ -261,32 +258,29 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       eventId,
       tags: sessionTags.join(','),
       type: sessionType,
-      status: sessoinStatus,
       format,
       track: sessionTrack,
-      gated: sessionGated,
       timezone: dayjs.tz.guess().toString(),
-      video_url: sessionVideoURL
+      video_url: sessionVideoURL,
+      location: sessionLocation,
+      organizers: JSON.stringify(sessionOrganizers),
+      speakers: JSON.stringify(sessionSpeakers)
     })
 
-    console.log("return data", data);
     toggleDrawer('right', false);
     await getSession();
 
   };
 
-
-
   useEffect(() => {
     const fetchData = async () => {
-      await getSessions();
       await getSession();
       await getPeople();
       await getLocation();
     }
 
     fetchData();
-  })
+  }, [])
 
   const List = (anchor: Anchor) => {
     return (
@@ -700,7 +694,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <TimePicker
                           value={sessionStartTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null) {
+                              const combined = dayjs(sessionDate).set("hour", newValue.hour()).set("minute", newValue.minute());
+                              setSessionStartTime(combined)
+                            }
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -744,7 +743,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <TimePicker
                           value={sessionEndTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null) {
+                              const combined = dayjs(sessionDate).set("hour", newValue.hour()).set("minute", newValue.minute());
+                              setSessionEndTime(combined);
+                            }
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -880,7 +884,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <TimePicker
                           value={sessionStartTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null) {
+                              const combined = dayjs(sessionDate).set("hour", newValue.hour()).set("minute", newValue.minute());
+                              setSessionStartTime(combined)
+                            }
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -924,7 +933,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <TimePicker
                           value={sessionEndTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null) {
+                              const combined = dayjs(sessionDate).set("hour", newValue.hour()).set("minute", newValue.minute());
+                              setSessionEndTime(combined)
+                            }
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -1193,24 +1207,43 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
 
   return (
-    <Stack padding="20px 80px" bgcolor="#222222" height="100vh">
-      <Grid container spacing="30px">
-        <Grid item xs={12} md={8}>
-          <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>
-            <Stack spacing="10px" padding="10px">
-              <Typography textAlign="center" padding="10px" variant="bodyBB" bgcolor="#2c2c2c" borderRadius="10px">
-                Monday, October 30
-              </Typography>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Stack padding="20px 80px" bgcolor="#222222" height="100vh">
+        <Grid container spacing="30px">
+          <Grid item xs={12} md={8}>
+            <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>
+              <Stack sx={{ borderTopRightRadius: "10px", borderTopLeftRadius: "10px" }} paddingX="10px" direction="row">
+                <Stack direction="row" spacing="10px" padding="14px" sx={{ cursor: "pointer" }} alignItems="center">
+                  <QueueListIcon size={5} />
+                  <Typography variant="bodyS">
+                    Full Schedule
+                  </Typography>
+                </Stack>
+                <Stack direction="row" spacing="10px" padding="14px" sx={{ cursor: "pointer" }} alignItems="center">
+                  <ChevronDoubleRightIcon size={5} />
+                  <Typography variant="bodyS">
+                    Today
+                  </Typography>
+                </Stack>
+              </Stack>
               {
-                sessions.length !== 0 ? sessions.map((session, index) => (
-                  <SessionCard
-                    key={`SessionCard-${index}`}
-                    title={session.title}
-                    startTime={session.startTime}
-                    endTime={session.endTime}
-                    location={session.meeting_url}
-                  />
-                )) : (
+                sessionsByDate ? Object.entries(sessionsByDate).map(([date, dateSessions]) => (
+                  <Stack spacing="10px" padding="10px">
+                    <Typography
+                      borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                      padding="8px 10px" variant="bodySB" bgcolor="rgba(255, 255, 255, 0.05)"
+                      borderRadius="10px" sx={{ opacity: 0.6 }}>
+                      {date}
+                    </Typography>
+                    {
+                      dateSessions.map((session, index) => (
+                        <SessionCard
+                          key={`SessionCard-${index}`}
+                          session={session}
+                        />))
+                    }
+                  </Stack>
+                )) :
                   <Stack
                     direction="column"
                     alignItems="center"
@@ -1223,69 +1256,143 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <Typography variant="subtitle2">No Sessions</Typography>
                     <Typography variant="body2">Create a Session</Typography>
                   </Stack>
-                )
               }
             </Stack>
-          </Stack>
 
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" padding="10px" flex={4}>
-            <Stack paddingY="10px">
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Stack spacing="20px">
+              <Stack
+                sx={{
+                  flexDirection: 'column',
+                  gap: '10px',
+                  [theme.breakpoints.down('md')]: {
+                    display: 'flex',
+                  },
+                }}
+              >
+                <OutlinedInput
+                  placeholder="Search Sessions"
+                  // onKeyDown={(event) => {
+                  //   if (event.keyCode === 13) {
+                  //     onSearch();
+                  //   }
+                  // }}
+                  sx={{
+                    backgroundColor:
+                      '#313131',
+                    paddingX: '15px',
+                    paddingY: '13px',
+                    borderRadius: '10px',
+                    height: '35px',
+                    border:
+                      '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
+                    fontFamily: 'Inter',
+                    opacity: 0.7,
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                  }}
+                  startAdornment={
+                    <InputAdornment position="start" sx={{ opacity: 0.6 }}>
+                      <SearchIcon />
+                    </InputAdornment>
+                  }
+                />
+              </Stack>
               <ZuButton startIcon={<LockIcon />} sx={{ width: "100%" }}
                 onClick={() => toggleDrawer('right', true)}
               >
                 Add a Session
               </ZuButton>
-            </Stack>
-            <Stack spacing="10px" divider={<Divider sx={{ border: "1px solid #383838" }} />}>
-              <Typography variant="subtitleSB">
-                Sessions: Sort & Filter
-              </Typography>
-              <Stack paddingY="10px" spacing="10px">
-                <ZuInput placeholder="Tracks" />
-                <ZuInput placeholder="Dates" />
-                <ZuInput placeholder="Location" />
-              </Stack>
-              <Stack spacing="10px">
-                <Typography variant="bodyMB">
-                  Gated For:
-                </Typography>
-                <Stack direction="row" flexWrap="wrap" gap="10px">
-                  <ZuButton>
-                    ZuConnect Resident
-                  </ZuButton>
-                  <ZuButton>
-                    DevConnect Attendee
-                  </ZuButton>
-                  <ZuButton>
-                    Zuzalu Resident
+              {/* <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" padding="10px" flex={4} spacing="10px">
+                <Stack pb="20px" borderBottom="1px solid #383838">
+                  <ZuButton startIcon={<LockIcon />} sx={{ width: "100%" }}
+                    onClick={() => toggleDrawer('right', true)}
+                  >
+                    Add a Session
                   </ZuButton>
                 </Stack>
+                <Stack spacing="5px">
+                  <Typography variant="bodyMB">
+                    Gated For:
+                  </Typography>
+                  <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
+                    Need at least one of the following credentials:
+                  </Typography>
+                </Stack>
+                <ZuButton>
+                  ZuVillage Attendee
+                </ZuButton>
+                <ZuButton startIcon={<FingerPrintIcon />} sx={{ width: "100%" }} variant='outlined'>
+                  Verify
+                </ZuButton>
+              </Stack> */}
+              <Stack spacing="15px">
+                <ZuInput placeholder="Location" />
+                <ZuInput placeholder="Track" />
+                <Stack padding="10px" borderRadius="10px" bgcolor="#2d2d2d" direction="row" alignItems="center" spacing="10px">
+                  <UserPlusIcon />
+                  <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                    My RSVPs
+                  </Typography>
+                  <Stack flex={1} direction='row' justifyContent="end">
+                    <ZuSwitch />
+                  </Stack>
+                </Stack>
+                <Stack padding="10px" borderRadius="10px" bgcolor="#2d2d2d" direction="row" alignItems="center" spacing="10px">
+                  <EditIcon />
+                  <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                    Managed by me
+                  </Typography>
+                  <Stack flex={1} direction='row' justifyContent="end">
+                    <ZuSwitch />
+                  </Stack>
+                </Stack>
               </Stack>
+              <ZuCalendar
+                value={selectedDate}
+                onChange={(val) => {
+                  setSelectedDate(val);
+                }}
+                // slots={{
+                //   day: SlotDates,
+                // }}
+                slotProps={{
+                  day: {
+                    highlightedDays: sessions.map(
+                      (session) => {
+                        return new Date(session.startTime).getDate();
+                      },
+                    ),
+                  } as any,
+                }}
+              // onMonthChange={(val) => handleMonthChange(val)}
+              />
             </Stack>
-          </Stack>
+          </Grid>
         </Grid>
-      </Grid>
-      <SwipeableDrawer
-        hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '50px',
-            height: 'calc(100% - 50px)',
-            boxShadow: 'none',
-          },
-        }}
-        anchor="right"
-        open={state['right']}
-        onClose={() => toggleDrawer('right', false)}
-        onOpen={() => toggleDrawer('right', true)}
-      >
-        {
-          List('right')
-        }
-      </SwipeableDrawer>
-    </Stack>
+        <SwipeableDrawer
+          hideBackdrop={true}
+          sx={{
+            '& .MuiDrawer-paper': {
+              marginTop: '50px',
+              height: 'calc(100% - 50px)',
+              boxShadow: 'none',
+            },
+          }}
+          anchor="right"
+          open={state['right']}
+          onClose={() => toggleDrawer('right', false)}
+          onOpen={() => toggleDrawer('right', true)}
+        >
+          {
+            List('right')
+          }
+        </SwipeableDrawer>
+      </Stack>
+    </LocalizationProvider>
   )
 }
 
