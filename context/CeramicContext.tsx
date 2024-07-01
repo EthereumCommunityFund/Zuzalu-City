@@ -36,15 +36,15 @@ const CeramicContext = createContext<CeramicContextType>({
   ceramic,
   composeClient,
   isAuthenticated: false,
-  authenticate: async () => {},
+  authenticate: async () => { },
   username: undefined,
   profile: undefined,
   newUser: undefined,
-  logout: () => {},
+  logout: () => { },
   isAuthPromptVisible: false,
-  showAuthPrompt: () => {},
-  hideAuthPrompt: () => {},
-  createProfile: async (newName: string) => {},
+  showAuthPrompt: () => { },
+  hideAuthPrompt: () => { },
+  createProfile: async (newName: string) => { },
 });
 
 export const CeramicProvider = ({ children }: any) => {
@@ -83,6 +83,7 @@ export const CeramicProvider = ({ children }: any) => {
             mvpProfile {
               id
               username
+              
             }
           }
         }

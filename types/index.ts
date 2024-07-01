@@ -97,6 +97,15 @@ export interface SpaceData {
   };
 }
 
+type People = {
+  id: string;
+  mvpProfile: {
+    avatar?: string;
+    id: string;
+    username: string;
+  }
+}
+
 export interface Session {
   id: string;
   title: string;
@@ -115,6 +124,8 @@ export interface Session {
   description?: string;
   meeting_url?: string;
   experience_level?: string;
+  speakers?: [People];
+  organizers?: [People];
 }
 
 export interface SessionEdge {
@@ -136,6 +147,9 @@ export type Profile = {
   id: any;
   username: string;
   avatar?: string;
+  author?: {
+    id: string;
+  }
 };
 export interface ProfileData {
   node: Profile;

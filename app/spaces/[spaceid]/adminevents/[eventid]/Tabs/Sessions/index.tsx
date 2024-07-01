@@ -27,6 +27,8 @@ import {
   ArchiveBoxIcon,
   ArrowDownIcon,
   ChevronDownIcon,
+  PlusIcon,
+  MinusIcon,
 } from 'components/icons';
 import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
@@ -42,7 +44,7 @@ import {
   CeramicResponseType,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { SPACE_CATEGORIES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 
 dayjs.extend(utc);
@@ -81,17 +83,21 @@ const Sessions = () => {
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
-  const [sessionDate, setSessionDate] = useState<Dayjs | null>(dayjs());
-  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
-    dayjs(),
-  );
-  const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
+  const [sessionDate, setSessionDate] = useState<Dayjs | null>();
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>();
+  const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>();
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
+  const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [speakers, setSpeakers] = useState<Array<string>>([]);
   const [sessionLocation, setSessionLocation] = useState<string>();
   const [sessionTimezone, setSessionTimezone] = useState<string>('');
 
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
+
+  const [directions, setDirections] = useState<string>('');
+  const [customLocation, setCustomLocation] = useState<string>('');
+  const [isDirections, setIsDirections] = useState<boolean>(false);
 
   const profileId = profile?.id || '';
   const eventId = params.eventid.toString();
@@ -120,6 +126,22 @@ const Sessions = () => {
                 description
                 meeting_url
                 experience_level
+                speakers {
+                  id
+                  mvpProfile {
+                    id
+                    avatar
+                    username
+                  }
+                }
+                organizers {
+                  id
+                  mvpProfile {
+                    id
+                    avatar
+                    username
+                  }
+                }
               }
             }
           }
@@ -132,6 +154,7 @@ const Sessions = () => {
           (edge) => edge.node,
         );
         setSessions(fetchedSessions);
+        console.log("session", fetchedSessions);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -141,8 +164,8 @@ const Sessions = () => {
   };
 
   const getPeople = async () => {
-    try {
-      const response: any = await composeClient.executeQuery(`
+    // try {
+    const response: any = await composeClient.executeQuery(`
         query MyQuery {
           mVPProfileIndex(first: 20) {
             edges {
@@ -150,34 +173,41 @@ const Sessions = () => {
                 id
                 username
                 avatar
+                author {
+                  id
+                }
               }
             }
           }
         }
       `);
+    console.log("respon", response)
 
-      if ('mVPProfileIndex' in response.data) {
-        const profileData: ProfileEdge = response.data as ProfileEdge;
-        const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setPeople(fetchedPeople);
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch sesssions:', error);
+    if ('mVPProfileIndex' in response.data) {
+      const profileData: ProfileEdge = response.data as ProfileEdge;
+      const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
+        (edge) => edge.node,
+      );
+      console.log("people", fetchedPeople);
+      setPeople(fetchedPeople);
+    } else {
+      console.error('Invalid data structure:', response.data);
     }
+    // } catch (error) {
+    //   console.error('Failed to fetch sesssions:', error);
+    // }
   };
 
   const getLocation = async () => {
+    console.log("eventid", eventId)
     try {
       const { data } = await supabase
-        .from('locations')
+        .from('venue')
         .select('*')
-        .eq('eventId', eventId);
+        .eq('eventid', eventId);
       if (data !== null) {
-        setLocations(data[0].name.split(','));
+        setLocations(data.map(item => item.name));
+        console.log("data", data)
       }
     } catch (err) {
       console.log(err);
@@ -268,19 +298,26 @@ const Sessions = () => {
   };
 
   const handleSpeakerChange = (e: any) => {
-    setSessionSpeakers(
+    setSpeakers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
         : e.target.value,
     );
+
+    const speakers = e.target.value.map((speaker: any) => people.filter(i => i.username === speaker)[0].author?.id);
+    setSessionSpeakers(speakers);
+
   };
 
   const handleOrganizerChange = (e: any) => {
-    setSessionOrganizers(
+    setOrganizers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
         : e.target.value,
     );
+
+    const organizers = e.target.value.map((organizer: any) => people.filter(i => i.username === organizer)[0].author?.id);
+    setSessionOrganizers(organizers);
   };
 
   const createSession = async () => {
@@ -301,7 +338,7 @@ const Sessions = () => {
       !sessionTags ||
       !sessionTrack ||
       !sessionDescription ||
-      !sessionGated ||
+      !sessionGated.toString() ||
       !profileId;
 
     if (error) {
@@ -311,54 +348,112 @@ const Sessions = () => {
     }
 
     const format = person ? 'person' : 'online';
-    try {
-      const update = await composeClient.executeQuery(`
-        mutation {
-          createSession(
-            input: {
-              content: {
-                title: "${sessionName}",
-                description: "${strDesc}",
-                exprience_level: "${sessionExperienceLevel}",
-                createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "${profileId}",
-                eventId: "${params.eventid.toString()}",
-                tags: "${sessionTags.join(',')}",
-                type: "${sessionType}",
-                status: "${sessoinStatus}",
-                format: "${format}",
-                track: "${sessionTrack}",
-                gated: "${sessionGated}",
-                timezone: "${dayjs.tz.guess()}",
-                video_url: "${sessionVideoURL}"
+    console.log("speaker", sessionSpeakers, JSON.stringify(sessionSpeakers), sessionSpeakers.join(","))
+
+    if (person) {
+      try {
+        const update = await composeClient.executeQuery(`
+          mutation {
+            createSession(
+              input: {
+                content: {
+                  title: "${sessionName}",
+                  description: "${strDesc}",
+                  experience_level: "${sessionExperienceLevel}",
+                  createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  profileId: "${profileId}",
+                  eventId: "${params.eventid.toString()}",
+                  tags: "${sessionTags.join(',')}",
+                  type: "${sessionType}",
+                  status: "${sessoinStatus}",
+                  format: "${format}",
+                  track: "${sessionTrack}",
+                  gated: "${sessionGated}",
+                  timezone: "${dayjs.tz.guess()}",
+                  speakers: ${JSON.stringify(sessionSpeakers)},
+                  organizers: ${JSON.stringify(sessionOrganizers)},
+                }
+              }
+            ) {
+              document {
+                id
+                title
+                createdAt
+                startTime
+                endTime
+                eventId
+                profileId
+                tags
+                status
+                format
+                track
+                gated
+                description
               }
             }
-          ) {
-            document {
-              id
-              title
-              createdAt
-              startTime
-              endTime
-              eventId
-              profileId
-              tags
-              status
-              format
-              track
-              gated
-              description
+          }
+        `);
+        console.log("data", update)
+      } catch (error) {
+        console.error('Failed to create session:', error);
+      }
+      toggleDrawer('right', false);
+      await getSessions();
+    } else {
+      try {
+        const update = await composeClient.executeQuery(`
+          mutation {
+            createSession(
+              input: {
+                content: {
+                  title: "${sessionName}",
+                  description: "${strDesc}",
+                  experience_level: "${sessionExperienceLevel}",
+                  createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  profileId: "${profileId}",
+                  eventId: "${params.eventid.toString()}",
+                  tags: "${sessionTags.join(',')}",
+                  type: "${sessionType}",
+                  status: "${sessoinStatus}",
+                  format: "${format}",
+                  track: "${sessionTrack}",
+                  gated: "${sessionGated}",
+                  timezone: "${dayjs.tz.guess()}",
+                  video_url: "${sessionVideoURL}",
+                  speakers: ${JSON.stringify(sessionSpeakers)},
+                  organizers: ${JSON.stringify(sessionOrganizers)},
+                }
+              }
+            ) {
+              document {
+                id
+                title
+                createdAt
+                startTime
+                endTime
+                eventId
+                profileId
+                tags
+                status
+                format
+                track
+                gated
+                description
+              }
             }
           }
-        }
-      `);
-    } catch (error) {
-      console.error('Failed to create session:', error);
+        `);
+        console.log("data", update)
+      } catch (error) {
+        console.error('Failed to create session:', error);
+      }
+      toggleDrawer('right', false);
+      await getSessions();
     }
-    toggleDrawer('right', false);
-    await getSessions();
   };
 
   const List = (anchor: Anchor) => {
@@ -575,7 +670,7 @@ const Sessions = () => {
                   placeholder="Meetup, Activity, Party, etc.."
                 />
               </Stack>
-              <Stack spacing="10px">
+              {/* <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Status</Typography>
                 <Typography variant="bodyS">
                   Choose a status for your session to relay its nature to guests
@@ -584,16 +679,9 @@ const Sessions = () => {
                   onChange={(e) => setSessionStatus(e.target.value)}
                   placeholder="Type Session Status"
                 />
-              </Stack>
-              <Stack spacing="10px">
+              </Stack> */}
+              {/* <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Gated</Typography>
-                {/* <Typography variant="bodyS">
-                  Gated
-                </Typography>
-                <ZuInput
-                  onChange={(e) => setSessionGated(e.target.value)}
-                  placeholder="Gated"
-                /> */}
                 <Stack direction="row" alignItems="center">
                   <BpCheckbox
                     checked={sessionGated}
@@ -601,16 +689,36 @@ const Sessions = () => {
                   />
                   <Typography variant="bodyS">Gated</Typography>
                 </Stack>
-              </Stack>
+              </Stack> */}
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Experience Level</Typography>
                 <Typography variant="bodyS">
                   Select a level experience may be needed for this session
                 </Typography>
-                <ZuInput
+                <Select
+                  value={sessionExperienceLevel}
+                  style={{ width: '100%' }}
                   onChange={(e) => setSessionExperienceLevel(e.target.value)}
-                  placeholder="Beginner OR Intermediate OR Advanced"
-                />
+                  input={<OutlinedInput label="Experience_Level" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {EXPREIENCE_LEVEL_TYPES.map((i, index) => {
+                    return (
+                      <MenuItem
+                        value={i.key}
+                        key={`Speaker_Index${index}`}
+                      >
+                        {i.value}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
               </Stack>
             </Stack>
             <Stack
@@ -720,8 +828,11 @@ const Sessions = () => {
                           {location}
                         </MenuItem>
                       ))}
+                      <MenuItem key="custom_location" value="Custom">
+                        Custom
+                      </MenuItem>
                     </Select>
-                    {sessionLocation && (
+                    {sessionLocation && sessionLocation !== "Custom" && (
                       <Stack>
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -761,6 +872,41 @@ const Sessions = () => {
                               </Typography>
                             </Stack>
                           </Stack>
+                        </Stack>
+                      </Stack>
+                    )}
+                    {sessionLocation && sessionLocation === "Custom" && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack spacing="10px">
+                          <Typography variant="bodyBB">
+                            Custom Location
+                          </Typography>
+                          <Typography variant="bodyS">
+                            Write name of the location
+                          </Typography>
+                          <ZuInput placeholder="Type location name" onChange={(e) => setCustomLocation(e.target.value)} />
+                          <ZuButton endIcon={!isDirections ? <PlusIcon size={5} /> : <MinusIcon size={5} />} onClick={() => setIsDirections(prev => !prev)}>
+                            {!isDirections ? "Add Directions" : "Remove Directions"}
+                          </ZuButton>
+                          {
+                            isDirections && <ZuInput placeholder="Directions description" onChange={(e) => setDirections(e.target.value)} />
+                          }
+                          {customLocation && <Stack borderRadius="10px" border="1px solid #383838" padding="10px" spacing="10px">
+                            <Typography variant="caption">
+                              CUSTOM LOCATIONS:
+                            </Typography>
+                            <Stack borderRadius="10px" bgcolor="#373737" padding="10px">
+                              <Typography variant="bodyBB">
+                                {customLocation}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                {directions}
+                              </Typography>
+                            </Stack>
+                          </Stack>}
                         </Stack>
                       </Stack>
                     )}
@@ -1050,7 +1196,7 @@ const Sessions = () => {
                 <Box>
                   <Select
                     multiple
-                    value={sessionOrganizers}
+                    value={organizers}
                     style={{ width: '100%' }}
                     onChange={handleOrganizerChange}
                     input={<OutlinedInput label="Name" />}
@@ -1080,7 +1226,7 @@ const Sessions = () => {
                   gap={'10px'}
                   flexWrap={'wrap'}
                 >
-                  {sessionOrganizers.map((i, index) => {
+                  {organizers.map((i, index) => {
                     return (
                       <Chip
                         label={i}
@@ -1088,10 +1234,11 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people
-                            .filter((item) => item.username !== i)
-                            .map((item) => item.username);
-                          setSessionOrganizers(newArray);
+                          const newArray = organizers
+                            .filter((item) => item !== i)
+                          setOrganizers(newArray);
+                          const newDIDs = sessionOrganizers.filter((_, ind) => ind !== index);
+                          setSessionOrganizers(newDIDs);
                         }}
                         key={`Selected_Organizerr${index}`}
                       />
@@ -1175,7 +1322,7 @@ const Sessions = () => {
                 <Box>
                   <Select
                     multiple
-                    value={sessionSpeakers}
+                    value={speakers}
                     style={{ width: '100%' }}
                     onChange={handleSpeakerChange}
                     input={<OutlinedInput label="Name" />}
@@ -1205,7 +1352,7 @@ const Sessions = () => {
                   gap={'10px'}
                   flexWrap={'wrap'}
                 >
-                  {sessionSpeakers.map((i, index) => {
+                  {speakers.map((i, index) => {
                     return (
                       <Chip
                         label={i}
@@ -1213,10 +1360,11 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = people
-                            .filter((item) => item.username !== i)
-                            .map((item) => item.username);
-                          setSessionSpeakers(newArray);
+                          const newArray = speakers
+                            .filter((item) => item !== i)
+                          setSpeakers(newArray);
+                          const newDIDs = sessionSpeakers.filter((_, ind) => ind !== index);
+                          setSessionSpeakers(newDIDs);
                         }}
                         key={`Selected_Speaker${index}`}
                       />
