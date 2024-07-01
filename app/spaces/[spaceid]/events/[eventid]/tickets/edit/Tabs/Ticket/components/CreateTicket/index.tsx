@@ -423,10 +423,8 @@ export const CreateTicket = ({
   const handleFilesChange = (event: { target: { files: any } }) => {
     const fileUpload = event.target.files[0];
     setFileUploaded(fileUpload);
-    console.log({ fileUploaded });
 
     // const filesLength = fileUpload.length;
-    console.log({ fileUploaded });
     if (fileUpload) {
       setImageUrl(URL.createObjectURL(fileUpload));
     }

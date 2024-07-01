@@ -18,7 +18,6 @@ const EventAbout = ({ description }: EventAboutTypes) => {
       return false;
     }
   }
-  console.log('showmore', showMore);
   return (
     <Stack bgcolor="#292929" padding="10px" borderRadius="10px">
       <Stack padding="10px" spacing="20px">

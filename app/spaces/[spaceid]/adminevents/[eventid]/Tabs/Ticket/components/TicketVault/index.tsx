@@ -57,8 +57,6 @@ const TicketVault = ({
     getInfoFromContract();
   }, [ticketAddress]);
 
-  console.log({ controller, ticket });
-
   return (
     <Stack
       sx={{

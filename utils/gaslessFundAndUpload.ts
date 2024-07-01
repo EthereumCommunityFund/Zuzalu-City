@@ -30,7 +30,6 @@ const gaslessFundAndUploadEVM = async (
           const convertedMsg = Buffer.from(
             message['Transaction hash'],
           ).toString('hex');
-          console.log('convertedMsg: ', convertedMsg);
           const res = await fetch('/api/signDataEVM', {
             method: 'POST',
             body: JSON.stringify({ signatureData: convertedMsg }),
@@ -49,7 +48,6 @@ const gaslessFundAndUploadEVM = async (
 
     _ready: () => {},
   };
-  console.log('Got provider=', provider);
   const token = process.env.NEXT_PUBLIC_TOKEN || '';
 
   const wallet = { name: 'ethersv5', provider: provider };
@@ -63,7 +61,6 @@ const gaslessFundAndUploadEVM = async (
   const address = (await w3signer.getAddress()).toLowerCase();
   await irys.ready();
 
-  console.log('Uploading...');
   const tx = await irys.uploadFile(selectedFile, {
     tags,
   });

@@ -403,7 +403,7 @@ export const SendNFTTicket = ({ ticketAddress, ticket }: ISendNFTTicket) => {
       );
 
       if (adminMintStatus === 'success') {
-        console.log('good');
+        console.log('ticket sent');
       }
       setShowNFTTicketModal(false);
     } catch (error) {
@@ -844,8 +844,6 @@ export const Whitelist = ({
     }
   };
   const handleAddWhiteLIST = async () => {
-    console.log({ addresses });
-
     try {
       const appendHash = await writeContract(config, {
         chainId: scrollSepolia.id,
@@ -862,7 +860,6 @@ export const Whitelist = ({
 
       if (appendStatus === 'success') {
         // action to perform
-        console.log(emailList);
         await handleSendEmails();
       }
     } catch (error) {

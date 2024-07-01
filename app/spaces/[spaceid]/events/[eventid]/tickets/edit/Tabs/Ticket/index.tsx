@@ -144,7 +144,6 @@ const Ticket = () => {
       const eventTicketId = String(
         (events[0] as unknown as IEventArg)?.args?.eventId,
       );
-      console.log({ eventTicketId });
 
       if (createTicketStatus === 'success') {
         // setPurchasingTicket(true);
@@ -168,8 +167,6 @@ const Ticket = () => {
         functionName: 'getTickets',
         args: ['0'],
       })) as Array<string>;
-
-      console.log({ getTicketAddresses });
       setTicketAddresses(getTicketAddresses);
 
       if (getTicketAddresses?.length > 0) {
@@ -179,7 +176,6 @@ const Ticket = () => {
             address: getTicketAddresses[i] as Address,
             abi: TICKET_ABI,
           } as const;
-          console.log({ ticketContract });
 
           const result = await client.multicall({
             contracts: [

@@ -83,8 +83,6 @@ export const WithdrawToken = ({
   }, []);
 
   const handleWithdraw = async () => {
-    console.log({ withdrawInfo });
-
     try {
       const withdrawHash = await writeContract(config, {
         chainId: scrollSepolia.id,

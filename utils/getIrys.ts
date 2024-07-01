@@ -21,8 +21,6 @@ const getIrys = async (
   const wallet = { name: 'ethersv5', provider: ethProvider };
   const webIrys = new WebIrys({ network, token, wallet });
   await webIrys.ready();
-
-  console.log(`Connected to webIrys from ${webIrys.address}`);
   return webIrys;
 };
 

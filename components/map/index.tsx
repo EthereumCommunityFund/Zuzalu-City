@@ -15,18 +15,17 @@ interface IProps {
 const LocationFinder: React.FC<IProps> = ({ address }) => {
   const [coordinates, setCoordinates] = useState<LatLngLiteral | undefined>({
     lat: 0,
-    lng: 0
+    lng: 0,
   });
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await getLatLngFromAddress(address);
-      console.log("eventlocatino", address, res)
       setCoordinates(res);
-    }
+    };
     fetchData();
-  }, [address])
+  }, [address]);
 
   return (
     <div>
@@ -35,7 +34,7 @@ const LocationFinder: React.FC<IProps> = ({ address }) => {
           center={[coordinates.lat, coordinates.lng]}
           zoom={7}
           scrollWheelZoom={false}
-          style={{ width: "100%", height: "182px", borderRadius: "10px" }}
+          style={{ width: '100%', height: '182px', borderRadius: '10px' }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

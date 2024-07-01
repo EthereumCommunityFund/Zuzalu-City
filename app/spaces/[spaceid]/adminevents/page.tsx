@@ -222,7 +222,6 @@ const Home = () => {
       }
     };
     fetchData();
-    console.log(profile);
   }, []);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
@@ -256,7 +255,6 @@ const Home = () => {
     const [error, setError] = useState(false);
 
     const profileId = profile?.id || '';
-    console.log('profileId: ', profileId);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -559,8 +557,8 @@ const Home = () => {
                     {5000 -
                       (description
                         ? description.blocks
-                          .map((item) => item.data.text.length)
-                          .reduce((prev, current) => prev + current, 0)
+                            .map((item) => item.data.text.length)
+                            .reduce((prev, current) => prev + current, 0)
                         : 0)}{' '}
                     Characters Left
                   </Typography>

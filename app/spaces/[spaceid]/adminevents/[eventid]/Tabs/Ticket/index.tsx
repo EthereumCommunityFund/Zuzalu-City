@@ -81,14 +81,6 @@ const Ticket = ({ event }: PropTypes) => {
       [name]: value,
     });
   };
-  console.log(
-    { ticketInfo },
-    isTicketFree,
-    isShowQtyRemaining,
-    isHideUntilSetDate,
-    isHideAfterSetDate,
-    isHideWhenSoldOut,
-  );
 
   const [isConfirm, setIsConfirm] = React.useState(false);
   const [isNext, setIsNext] = React.useState(false);
@@ -137,7 +129,6 @@ const Ticket = ({ event }: PropTypes) => {
     const existingContracts: Contract[] = Array.isArray(event?.contracts)
       ? event.contracts
       : [];
-    console.log(existingContracts);
     const newContract: Contract = {
       type,
       contractAddress,
@@ -146,7 +137,6 @@ const Ticket = ({ event }: PropTypes) => {
       status,
     };
     const updatedContracts: Contract[] = [...existingContracts, newContract];
-    console.log(updatedContracts);
     const query = `
          mutation UpdateEvent($i: UpdateEventInput!) {
           updateEvent(input: $i) {
@@ -168,7 +158,6 @@ const Ticket = ({ event }: PropTypes) => {
 
     try {
       const result: any = await composeClient.executeQuery(query, variables);
-      console.log(result);
     } catch (err) {
       console.log('ERROR: Update: ', err);
     }
@@ -180,7 +169,7 @@ const Ticket = ({ event }: PropTypes) => {
       setIsSubmitLoading(true);
       setPurchasingTicket(true);
       setGoToSummary(false);
-      console.log(isTicketFree, 'free');
+
       let ticketMintClose: Dayjs;
       if (isMintCloseTime) {
         endDate.hour(endTime.hour());
@@ -199,7 +188,7 @@ const Ticket = ({ event }: PropTypes) => {
         abi: ERC20_ABI,
         functionName: 'decimals',
       })) as number;
-      console.log(decimal, 'decimal');
+
       const createTicketHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: TICKET_FACTORY_ADDRESS as Address,
@@ -241,7 +230,7 @@ const Ticket = ({ event }: PropTypes) => {
         const defaultPreviewImage =
           'https://unsplash.com/photos/a-small-yellow-boat-floating-on-top-of-a-lake-HONnVkEnzDo';
         const previewImageToUse = previewImage ?? defaultPreviewImage;
-        console.log(createTicketLogs);
+
         if (createTicketLogs.length > 0) {
           const newContractAddress = createTicketLogs[0].address;
           updateEventById(
@@ -274,7 +263,6 @@ const Ticket = ({ event }: PropTypes) => {
         args: [event?.contractID],
       })) as Array<string>;
 
-      console.log({ getTicketAddresses });
       setTicketAddresses(getTicketAddresses);
 
       if (getTicketAddresses?.length > 0) {
@@ -358,7 +346,6 @@ const Ticket = ({ event }: PropTypes) => {
           });
           results.push(result);
         }
-        console.log('Multicall result: ', results);
         setTickets(results);
       }
       setIsLoading(false);

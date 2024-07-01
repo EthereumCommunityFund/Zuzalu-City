@@ -151,8 +151,6 @@ export const SponsorAgree: React.FC<IProps> = ({
           results.push({ ticketAddress, data: result });
         }
 
-        console.log(results);
-
         const transformedResults = results.map((result) => {
           const newData = [result.ticketAddress, ...result.data];
           return newData;
@@ -242,11 +240,8 @@ export const SponsorMint: React.FC<IProps> = ({
 }) => {
   const [awaiting, setAwaiting] = useState<boolean>(false);
   const { address } = useAccount();
-  console.log(filteredResults);
-  console.log(event?.contracts);
   const filteredTickets = filteredResults.filter((ticket) => {
     const contractAddress = ticket[0].trim().toLowerCase();
-    console.log(`Checking ticket contractAddress: ${contractAddress}`);
     const match = event?.contracts?.some((contract) => {
       if (!contract.contractAddress) {
         return false;
@@ -257,15 +252,10 @@ export const SponsorMint: React.FC<IProps> = ({
       const isMatch =
         normalizedContractAddress === contractAddress &&
         contract.type === 'Sponsor';
-      console.log(
-        `Comparing with contractAddress: ${normalizedContractAddress}, type: ${contract.type}, isMatch: ${isMatch}`,
-      );
       return isMatch;
     });
-    console.log(`Result for ${contractAddress}: ${match}`);
     return match;
   });
-  console.log(filteredTickets);
   const handleMintTicket = async (
     ticketAddress: Address,
     tokenAddress: Address,
@@ -322,7 +312,6 @@ export const SponsorMint: React.FC<IProps> = ({
         );
 
         if (adminMintStatus === 'success') {
-          console.log('ticket got');
           setIsAgree(false);
           setIsMint(true);
         }

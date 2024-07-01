@@ -14,16 +14,18 @@ type UserLink = {
   links: string;
 };
 interface IEventDetail {
-  status?: string
-  links?: [UserLink]
-  location?: LatLngLiteral | undefined
-  address: string
+  status?: string;
+  links?: [UserLink];
+  location?: LatLngLiteral | undefined;
+  address: string;
 }
 
-const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [], location, address }) => {
-
-  console.log("osm", location)
-
+const EventDetail: React.FC<IEventDetail> = ({
+  status = 'In-Person',
+  links = [],
+  location,
+  address,
+}) => {
   return (
     <Stack spacing="20px">
       <Typography
@@ -81,14 +83,20 @@ const EventDetail: React.FC<IEventDetail> = ({ status = "In-Person", links = [],
         <Typography color="white" variant="bodyS">
           Apply to see address
         </Typography>
-        <Box
-        >
-          {location !== undefined && <MapContainer center={location} zoom={7} scrollWheelZoom={false} style={{ width: "100%", height: "182px", borderRadius: "10px" }}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </MapContainer>}
+        <Box>
+          {location !== undefined && (
+            <MapContainer
+              center={location}
+              zoom={7}
+              scrollWheelZoom={false}
+              style={{ width: '100%', height: '182px', borderRadius: '10px' }}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            </MapContainer>
+          )}
           {/* <LocationFinder address={address} /> */}
         </Box>
       </Stack>
