@@ -1,7 +1,13 @@
 'use client';
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Box, Typography, SwipeableDrawer, useTheme } from '@mui/material';
+import {
+  Stack,
+  Box,
+  Typography,
+  SwipeableDrawer,
+  useTheme,
+} from '@mui/material';
 import {
   EventName,
   EventDetail,
@@ -10,10 +16,21 @@ import {
   Initial,
   Disclaimer,
   Email,
-  Payment
+  Payment,
 } from 'components/event';
-import { Verify, Agree, Mint, Complete, Transaction } from '@/components/event/Whitelist';
-import { SponsorAgree, SponsorMint, SponsorTransaction, SponsorComplete } from '@/components/event/Sponsor';
+import {
+  Verify,
+  Agree,
+  Mint,
+  Complete,
+  Transaction,
+} from '@/components/event/Whitelist';
+import {
+  SponsorAgree,
+  SponsorMint,
+  SponsorTransaction,
+  SponsorComplete,
+} from '@/components/event/Sponsor';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -48,13 +65,14 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
   const [isSponsorAgree, setIsSponsorAgree] = useState<boolean>(false);
   const [isSponsorMint, setIsSponsorMint] = useState<boolean>(false);
-  const [isSponsorTransaction, setIsSponsorTransaction] = useState<boolean>(false);
+  const [isSponsorTransaction, setIsSponsorTransaction] =
+    useState<boolean>(false);
   const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
-
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
   const params = useParams();
   const eventId = params.eventid.toString();
 
-  const { breakpoints } = useTheme()
+  const { breakpoints } = useTheme();
 
   const { composeClient } = useCeramicContext();
 
@@ -67,9 +85,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
   const [osm, setOsm] = useState<LatLngLiteral | undefined>({
     lat: 0,
-    lng: 0
-  })
-
+    lng: 0,
+  });
 
   const getEventDetailInfo = async () => {
     try {
@@ -112,6 +129,14 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               customLinks {
                 title
                 links
+              }
+              contractID
+              contracts{
+                type
+                contractAddress
+                description
+                image_url
+                status
               }
             }
           }
@@ -157,7 +182,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
       } catch (err) {
         console.log(err);
       }
-    }
+    };
 
     fetchData();
   }, []);
@@ -165,14 +190,13 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await getLatLngFromAddress(location);
-      console.log("eventlocatino", location, res)
+      console.log('eventlocatino', location, res);
       setOsm(res);
-    }
+    };
     fetchData();
-  }, [location])
+  }, [location]);
 
   const List = (anchor: Anchor) => {
-
     const handleClose = () => {
       toggleDrawer('right', false);
       setIsEmail(false);
@@ -199,43 +223,127 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
           <ZuButton startIcon={<XMarkIcon />} onClick={() => handleClose()}>
             Close
           </ZuButton>
-          <Typography
-            variant="subtitleSB"
-          >
-            Register for Event
-          </Typography>
+          <Typography variant="subtitleSB">Register for Event</Typography>
         </Stack>
         {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
         {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
-        {
-          whitelist &&
+        {whitelist && (
           <>
-            {!isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Verify setIsVerify={setIsVerify} />}
-            {isVerify && !isAgree && !isMint && !isTransaction && !isComplete && <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />}
-            {!isVerify && isAgree && !isMint && !isTransaction && !isComplete && <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />}
-            {!isVerify && !isAgree && isMint && !isTransaction && !isComplete && <Transaction setIsMint={setIsMint} setIsTransaction={setIsTransaction} handleClose={handleClose} />}
-            {!isVerify && !isAgree && !isMint && isTransaction && !isComplete && <Complete setIsTransaction={setIsTransaction} setIsComplete={setIsComplete} handleClose={handleClose} />}
-          </>}
-        {sponsor &&
-          <>
-            {!isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorAgree setIsAgree={setIsSponsorAgree} />}
-            {isSponsorAgree && !isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorMint setIsAgree={setIsSponsorAgree} setIsMint={setIsSponsorMint} />}
-            {!isSponsorAgree && isSponsorMint && !isSponsorTransaction && !isSponsorComplete && <SponsorTransaction setIsMint={setIsSponsorMint} setIsTransaction={setIsSponsorTransaction} handleClose={handleClose} />}
-            {!isSponsorAgree && !isSponsorMint && isSponsorTransaction && !isSponsorComplete && <SponsorComplete setIsTransaction={setIsSponsorTransaction} setIsComplete={setIsSponsorComplete} handleClose={handleClose} />}
+            {!isVerify &&
+              !isAgree &&
+              !isMint &&
+              !isTransaction &&
+              !isComplete && (
+                <Verify
+                  setIsVerify={setIsVerify}
+                  eventContractID={eventData?.contractID}
+                  setFilteredResults={setFilteredResults}
+                />
+              )}
+            {isVerify &&
+              !isAgree &&
+              !isMint &&
+              !isTransaction &&
+              !isComplete && (
+                <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />
+              )}
+            {!isVerify &&
+              isAgree &&
+              !isMint &&
+              !isTransaction &&
+              !isComplete && (
+                <Mint
+                  setIsAgree={setIsAgree}
+                  setIsMint={setIsMint}
+                  filteredResults={filteredResults}
+                  event={eventData}
+                />
+              )}
+            {!isVerify &&
+              !isAgree &&
+              isMint &&
+              !isTransaction &&
+              !isComplete && (
+                <Transaction
+                  setIsMint={setIsMint}
+                  setIsTransaction={setIsTransaction}
+                  handleClose={handleClose}
+                />
+              )}
+            {!isVerify &&
+              !isAgree &&
+              !isMint &&
+              isTransaction &&
+              !isComplete && (
+                <Complete
+                  setIsTransaction={setIsTransaction}
+                  setIsComplete={setIsComplete}
+                  handleClose={handleClose}
+                />
+              )}
           </>
-        }
+        )}
+        {sponsor && (
+          <>
+            {!isSponsorAgree &&
+              !isSponsorMint &&
+              !isSponsorTransaction &&
+              !isSponsorComplete && (
+                <SponsorAgree
+                  setIsAgree={setIsSponsorAgree}
+                  eventContractID={eventData?.contractID}
+                  setFilteredResults={setFilteredResults}
+                />
+              )}
+            {isSponsorAgree &&
+              !isSponsorMint &&
+              !isSponsorTransaction &&
+              !isSponsorComplete && (
+                <SponsorMint
+                  setIsAgree={setIsSponsorAgree}
+                  setIsMint={setIsSponsorMint}
+                  filteredResults={filteredResults}
+                  event={eventData}
+                />
+              )}
+            {!isSponsorAgree &&
+              isSponsorMint &&
+              !isSponsorTransaction &&
+              !isSponsorComplete && (
+                <SponsorTransaction
+                  setIsMint={setIsSponsorMint}
+                  setIsTransaction={setIsSponsorTransaction}
+                  handleClose={handleClose}
+                />
+              )}
+            {!isSponsorAgree &&
+              !isSponsorMint &&
+              isSponsorTransaction &&
+              !isSponsorComplete && (
+                <SponsorComplete
+                  setIsTransaction={setIsSponsorTransaction}
+                  setIsComplete={setIsSponsorComplete}
+                  handleClose={handleClose}
+                />
+              )}
+          </>
+        )}
       </Box>
     );
   };
 
-
   return (
-    <Stack bgcolor="#222222">
+    <Stack
+      padding="40px"
+      justifyContent="center"
+      alignItems="center"
+      bgcolor="#222222"
+    >
       {eventData && (
         <Stack
-          direction="row" 
+          direction="row"
           justifyContent={'center'}
           gap={'10px'}
           paddingTop={'40px'}
@@ -243,12 +351,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             [breakpoints.down('md')]: {
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '20px'
-            }
+              gap: '20px',
+            },
           }}
         >
-          <Stack 
-            spacing="20px" 
+          <Stack
+            spacing="20px"
             boxSizing={'border-box'}
             sx={{
               width: '600px',
@@ -257,11 +365,11 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 width: '540px',
               },
               [breakpoints.down('md')]: {
-                width: '100%'
+                width: '100%',
               },
               [breakpoints.down('sm')]: {
-                px: '10px'
-              }
+                px: '10px',
+              },
             }}
           >
             {/* <Stack spacing="4px">
@@ -290,43 +398,57 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               spacing="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleSB">
-                EVENT SPONSORS
-              </Typography>
-              <Box
-                display="flex"
-                gap="20px"
-                flexWrap="wrap"
-              >
+              <Typography variant="subtitleSB">EVENT SPONSORS</Typography>
+              <Box display="flex" gap="20px" flexWrap="wrap">
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
                 <Stack alignItems="center" spacing="4px">
-                  <Box component="img" src="/sponsor.png" width="100px" height="100px" borderRadius="10px" />
-                  <Typography variant="bodyS">
-                    SponsorName
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/sponsor.png"
+                    width="100px"
+                    height="100px"
+                    borderRadius="10px"
+                  />
+                  <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
               </Box>
             </Stack>
@@ -337,49 +459,60 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               borderRadius="10px"
               height="300px"
             >
-              <Typography variant="subtitleSB">
-                ORGANIZER UPDATES
-              </Typography>
+              <Typography variant="subtitleSB">ORGANIZER UPDATES</Typography>
               <Stack spacing="10px">
                 <Stack direction="row" alignItems="center" spacing="10px">
-                  <Box component="img" src="/5.webp" width="30px" height="30px" borderRadius="20px" />
-                  <Typography variant="bodyMB">
-                    drivenfast
-                  </Typography>
-                  <Typography variant="caption">
-                    3 DAYS AGO
-                  </Typography>
+                  <Box
+                    component="img"
+                    src="/5.webp"
+                    width="30px"
+                    height="30px"
+                    borderRadius="20px"
+                  />
+                  <Typography variant="bodyMB">drivenfast</Typography>
+                  <Typography variant="caption">3 DAYS AGO</Typography>
                 </Stack>
                 <Typography variant="bodyM">
-                  ZuConnect is an experience crafted with love by Zuzalu, whose mission is to
-                  foster a global network of communities to advance humanity by creating playgrounds
-                  at the intersection of free and open technology, science, health, and social innovation.
+                  ZuConnect is an experience crafted with love by Zuzalu, whose
+                  mission is to foster a global network of communities to
+                  advance humanity by creating playgrounds at the intersection
+                  of free and open technology, science, health, and social
+                  innovation.
                 </Typography>
               </Stack>
             </Stack>
           </Stack>
-          <Stack 
+          <Stack
             spacing="20px"
             sx={{
               width: '350px',
               px: '20px',
               [breakpoints.down('md')]: {
                 width: '100%',
-                px: '20px'
+                px: '20px',
               },
               [breakpoints.down('sm')]: {
-                px: '10px'
-              }
+                px: '10px',
+              },
             }}
           >
-            <EventRegister onToggle={toggleDrawer} setWhitelist={setWhitelist} setSponsor={setSponsor} />
+            <EventRegister
+              onToggle={toggleDrawer}
+              setWhitelist={setWhitelist}
+              setSponsor={setSponsor}
+            />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-            <EventDetail status={eventData.status} links={eventData.customLinks} address={location} location={osm} />
+            <EventDetail
+              status={eventData.status}
+              links={eventData.customLinks}
+              address={location}
+              location={osm}
+            />
             {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}
@@ -401,7 +534,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         </Stack>
       )}
     </Stack>
-  )
+  );
 };
 
 export default About;

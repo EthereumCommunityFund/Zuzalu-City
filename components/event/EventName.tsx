@@ -26,7 +26,7 @@ const EventName = ({
   image_url,
   organizer,
   tagline,
-  avatar
+  avatar,
 }: PropTypes) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -43,11 +43,7 @@ const EventName = ({
 
   return (
     <Stack spacing="10px">
-      <Stack
-        width={'100%'}
-        alignItems={'center'}
-        justifyContent={'center'}
-      >
+      <Stack width={'100%'} alignItems={'center'} justifyContent={'center'}>
         <Box
           component="img"
           width={isMobile ? '350px' : '500px'}
@@ -76,8 +72,8 @@ const EventName = ({
         sx={{
           padding: '0px 10px 20px 10px',
           [theme.breakpoints.down('sm')]: {
-            padding: '0px 20px'
-          }
+            padding: '0px 20px',
+          },
         }}
       >
         <Typography color="white" variant="subtitleLB">
@@ -98,11 +94,22 @@ const EventName = ({
           {/* {!isValidJSON(eventDescription.replaceAll('\\"', '"')) ?
           "JSON ERROR" : <Box component="pre" sx={{ fontFamily: "Inter" }}>{JSON.parse(eventDescription.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text).join('\n')}</Box>} */}
         </Typography>
-        <Stack direction="row" spacing="5px" alignItems="center" sx={{paddingTop: '20px'}}>
+        <Stack
+          direction="row"
+          spacing="5px"
+          alignItems="center"
+          sx={{ paddingTop: '20px' }}
+        >
           <Typography color="white" variant="caption">
             BY:
           </Typography>
-          <Box component="img" width={20} height={20} src={avatar} borderRadius="10px" />
+          <Box
+            component="img"
+            width={20}
+            height={20}
+            src={avatar}
+            borderRadius="10px"
+          />
           <Typography color="white" variant="bodyS">
             {spaceName}
           </Typography>

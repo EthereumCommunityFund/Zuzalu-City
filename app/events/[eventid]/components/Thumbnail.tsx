@@ -27,16 +27,16 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
         <ZuButton
           sx={{
             backgroundColor: '#333333',
-            minWidth: 'unset'
+            minWidth: 'unset',
           }}
-          onClick={() => router.push("/")}
+          onClick={() => router.push('/')}
         >
           <ArrowBackIcon />
           <Typography
             sx={{
               [breakpoints.down('md')]: {
                 display: 'none',
-              }
+              },
             }}
           >
             Back
@@ -55,8 +55,8 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
           borderRadius={2}
           sx={{
             [breakpoints.down('md')]: {
-              display: 'none'
-            }
+              display: 'none',
+            },
           }}
         >
           <ShareIcon />

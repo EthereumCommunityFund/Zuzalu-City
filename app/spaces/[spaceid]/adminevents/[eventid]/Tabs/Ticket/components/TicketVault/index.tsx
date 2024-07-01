@@ -2,77 +2,68 @@ import {
   CopyIcon,
   GoToExplorerIcon,
   ScrollIcon,
+  USDCIcon,
   USDTIcon,
 } from '@/components/icons';
 import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import { SendNFTTicket, WithdrawToken, Whitelist } from './component';
-import * as React from 'react';
-import { ethers } from 'ethers';
-import ContractAbi from '@/contracts/ticektContract.json';
-const TicketVault = () => {
-  const [action, setAction] = React.useState('Withdraw');
+import React, { useEffect, useState } from 'react';
+import { SCROLL_EXPLORER, mUSDC_TOKEN } from '@/constant';
+import { shortenAddress } from '@/utils/format';
+import { client } from '@/context/WalletContext';
+import { Address, GetEnsNameReturnType } from 'viem';
+import { ERC20_ABI } from '@/utils/erc20_abi';
+
+interface ITicketVault {
+  vaultIndex: number;
+  ticketAddresses: Array<string>;
+  tickets: Array<any>;
+}
+
+const TicketVault = ({
+  vaultIndex,
+  ticketAddresses,
+  tickets,
+}: ITicketVault) => {
   const isMobile = useMediaQuery('(max-width:500px)');
-  const [price, setPrice] = React.useState('');
-  const [receiveToken, setReceiveToken] = React.useState('');
-  const [revenue, setRevenue] = React.useState('');
-  const [sold, setSold] = React.useState(0);
-  async function getContractData() {
-    const abi = ContractAbi;
-    const provider = new ethers.JsonRpcProvider(
-      'https://scroll-sepolia.drpc.org',
-    );
-    const contract = new ethers.Contract(
-      '0x1CACDa81696334385f5cFD95497150dD8b5d4a55',
-      abi,
-      provider,
-    );
-    /*const erc20Abi = [
-      'function name() view returns (string)',
-      'function symbol() view returns (string)',
-      'function decimals() view returns (uint8)',
-    ];
+  const [action, setAction] = React.useState('Withdraw');
+  const [controller, setController] = useState<GetEnsNameReturnType>('');
+  const [balance, setBalance] = useState<number>(0);
 
-    const paymentTokenAddress = await contract.paymentToken();
-    const tokenContract = new ethers.Contract(
-      paymentTokenAddress,
-      erc20Abi,
-      provider,
-    );
+  let ticketAddress = ticketAddresses[vaultIndex];
+  let ticket = tickets[vaultIndex];
 
-    const tokenName = await tokenContract.name();*/
-
-    const ticketPriceBigNumber = await contract.ticketPrice();
-    const ticketPriceBigInt = BigInt(ticketPriceBigNumber.toString());
-
-    /*let totalRevenueBigInt = BigInt(0);
-
-    const filter = contract.filters.TicketMinted();
-    const events = await contract.queryFilter(filter);
-    const totalSold = events.length;
-
-    events.forEach(() => {
-      totalRevenueBigInt += ticketPriceBigInt;
+  const getInfoFromContract = async () => {
+    //Apparently scroll sepolia doesn't support ens
+    {
+      /*const ensName = await client.getEnsName({
+      address: ticket[7].result,
     });
-    setRevenue(totalRevenueBigInt.toString());*/
-    //setReceiveToken(tokenName);
-    setPrice(ethers.formatEther(ticketPriceBigNumber));
-    //setSold(totalSold);
-  }
+        //setController(ensName);*/
+    }
 
-  React.useEffect(() => {
-    const fetchContractData = async () => {
-      try {
-        await getContractData();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchContractData();
-  }, []);
+    const balance = (await client.readContract({
+      address: ticket[2]?.result as Address,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf',
+      args: [ticketAddress],
+    })) as number;
+
+    setBalance(balance);
+  };
+
+  useEffect(() => {
+    getInfoFromContract();
+  }, [ticketAddress]);
 
   return (
-    <Stack sx={{ background: '#222', height: '100%' }}>
+    <Stack
+      sx={{
+        background: '#222',
+        width: '700px',
+      }}
+    >
       <Box
         sx={{
           background: 'rgba(255, 255, 255, 0.02)',
@@ -84,7 +75,13 @@ const TicketVault = () => {
           spacing={2.5}
           marginTop={'10px'}
         >
-          <Box component="img" width="100px" height="100px" borderRadius="8px" src="/24.webp" />
+          <Box
+            component="img"
+            width="100px"
+            height="100px"
+            borderRadius="8px"
+            src="/24.webp"
+          />
           <Stack direction="column" spacing={0.9}>
             <Typography
               variant="h5"
@@ -93,7 +90,7 @@ const TicketVault = () => {
               lineHeight={'120%'}
               color="white"
             >
-              TicketName
+              {ticket[0]?.result}
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -140,7 +137,7 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                {price}
+                {(ticket[3]?.result / BigInt(10 ** 18)).toString()}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -153,7 +150,7 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                {receiveToken}
+                {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
               </Typography>
             </Box>
 
@@ -177,50 +174,69 @@ const TicketVault = () => {
                   opacity: '0.8',
                 }}
               >
-                {/* 0x9999...f08E */}
-                0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E
+                {shortenAddress(ticketAddress)}
               </Typography>
 
               <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
                 <CopyIcon cursor="pointer" />
               </Box>
 
-              <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
+              <Box
+                marginLeft={'4px'}
+                sx={{ cursor: 'pointer' }}
+                onClick={() =>
+                  window.open(
+                    `${SCROLL_EXPLORER}/address/${ticketAddress}`,
+                    '_blank',
+                  )
+                }
+              >
                 <GoToExplorerIcon cursor="pointer" />
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography
-                fontSize="14px"
-                fontFamily={'Inter'}
-                lineHeight={'160%'}
-                color="white"
-                sx={{ opacity: '0.6' }}
-              >
-                Controller:
-              </Typography>
-              <Typography
-                fontSize="14px"
-                color="white"
-                fontWeight={'400'}
-                lineHeight={'160%'}
-                marginLeft={'10px'}
-                sx={{
-                  opacity: '0.8',
-                }}
-              >
-                etherbro.eth
-              </Typography>
+            {controller && (
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  fontSize="14px"
+                  fontFamily={'Inter'}
+                  lineHeight={'160%'}
+                  color="white"
+                  sx={{ opacity: '0.6' }}
+                >
+                  Controller:
+                </Typography>
+                <Typography
+                  fontSize="14px"
+                  color="white"
+                  fontWeight={'400'}
+                  lineHeight={'160%'}
+                  marginLeft={'10px'}
+                  sx={{
+                    opacity: '0.8',
+                  }}
+                >
+                  {controller}
+                </Typography>
 
-              <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
-                <CopyIcon cursor="pointer" />
-              </Box>
+                <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
+                  <CopyIcon cursor="pointer" />
+                </Box>
 
-              <Box marginLeft={'4px'} sx={{ cursor: 'pointer' }}>
-                <GoToExplorerIcon cursor="pointer" />
+                <Box
+                  marginLeft={'4px'}
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    window.open(
+                      `${SCROLL_EXPLORER}/address/${controller}`,
+                      '_blank',
+                    )
+                  }
+                >
+                  <GoToExplorerIcon cursor="pointer" />
+                </Box>
               </Box>
-            </Box>
+            )}
           </Stack>
         </Stack>
       </Box>
@@ -251,7 +267,7 @@ const TicketVault = () => {
                 fontWeight={'700'}
                 lineHeight={'120%'}
               >
-                {revenue}
+                {balance}
               </Typography>
               <Typography
                 fontSize="10px"
@@ -264,7 +280,7 @@ const TicketVault = () => {
                   opacity: '0.5',
                 }}
               >
-                {receiveToken}
+                {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
               </Typography>
             </Box>
           </Box>
@@ -295,7 +311,8 @@ const TicketVault = () => {
                 alignItems: 'center',
               }}
             >
-              <USDTIcon />
+              {ticket[2]?.result === mUSDC_TOKEN ? <USDCIcon /> : <USDTIcon />}
+
               <Typography
                 fontSize="14px"
                 color="white"
@@ -303,7 +320,7 @@ const TicketVault = () => {
                 fontWeight={'600'}
                 lineHeight={'160%'}
               >
-                {receiveToken}
+                {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
               </Typography>
             </Box>
           </Box>
@@ -323,7 +340,7 @@ const TicketVault = () => {
               color="white"
               sx={{ opacity: '0.6' }}
             >
-              Quantity:
+              Type:
             </Typography>
             <Typography
               fontSize="16px"
@@ -331,7 +348,7 @@ const TicketVault = () => {
               fontWeight={'700'}
               lineHeight={'120%'}
             >
-              200
+              {ticket[8]?.result ? 'Whitelist' : 'Permissionless'}
             </Typography>
           </Box>
           <Box
@@ -358,7 +375,7 @@ const TicketVault = () => {
               fontWeight={'700'}
               lineHeight={'120%'}
             >
-              {sold}
+              {String(ticket[4]?.result)}
             </Typography>
           </Box>
           <Box
@@ -391,15 +408,25 @@ const TicketVault = () => {
               >
                 Scrollscan
               </Typography>
-              <GoToExplorerIcon cursor="pointer" />
+              <Box
+                marginLeft={'4px'}
+                sx={{ cursor: 'pointer' }}
+                onClick={() =>
+                  window.open(
+                    `${SCROLL_EXPLORER}/address/${ticketAddress}`,
+                    '_blank',
+                  )
+                }
+              >
+                <GoToExplorerIcon cursor="pointer" />
+              </Box>
             </Box>
           </Box>
         </Box>
       </Stack>
 
-      <Stack
-        padding="20px"
-        spacing="30px"
+      <Box
+        padding={3}
         marginX={isMobile ? undefined : 3}
         sx={{
           background: 'rgba(255, 255, 255, 0.02)',
@@ -414,19 +441,38 @@ const TicketVault = () => {
             background: 'rgba(255, 255, 255, 0.05)',
           }}
         >
+          {ticket[9]?.result ? (
+            <Typography
+              onClick={() => setAction('Whitelist')}
+              textAlign={'center'}
+              width={'100%'}
+              paddingY={'8px'}
+              sx={{
+                cursor: 'pointer',
+
+                borderRadius: `${action === 'Whitelist' ? '8px' : null}`,
+
+                border: `${action === 'Whitelist' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
+
+                background: `${action === 'Whitelist' ? 'rgba(255, 255, 255, 0.10)' : null}`,
+              }}
+            >
+              Whitelist
+            </Typography>
+          ) : null}
           <Typography
-            onClick={() => setAction('Whitelist')}
+            onClick={() => setAction('Withdraw')}
             textAlign={'center'}
-            width={'100%'}
             paddingY={'8px'}
+            width={'100%'}
             sx={{
               cursor: 'pointer',
-              borderRadius: `${action === 'Whitelist' ? '8px' : null}`,
-              border: `${action === 'Whitelist' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
-              background: `${action === 'Whitelist' ? 'rgba(255, 255, 255, 0.10)' : null}`,
+              borderRadius: `${action === 'Withdraw' ? '8px' : null}`,
+              border: `${action === 'Withdraw' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
+              background: `${action === 'Withdraw' ? 'rgba(255, 255, 255, 0.10)' : null}`,
             }}
           >
-            Whitelist
+            Withdraw Token
           </Typography>
           <Typography
             onClick={() => setAction('SendTicket')}
@@ -442,31 +488,38 @@ const TicketVault = () => {
           >
             Send Ticket
           </Typography>
-          <Typography
-            onClick={() => setAction('Withdraw')}
-            textAlign={'center'}
-            paddingY={'8px'}
-            width={'100%'}
-            sx={{
-              cursor: 'pointer',
-              borderRadius: `${action === 'Withdraw' ? '8px' : null}`,
-              border: `${action === 'Withdraw' ? '1px solid rgba(255, 255, 255, 0.10)' : null}`,
-              background: `${action === 'Withdraw' ? 'rgba(255, 255, 255, 0.10)' : null}`,
-            }}
-          >
-            Withdraw Token
-          </Typography>
         </Box>
 
-        {action === 'Withdraw' ? <WithdrawToken /> : action === 'SendTicket' ? <SendNFTTicket /> : <Whitelist />}
-      </Stack>
+        {action === 'Withdraw' ? (
+          <WithdrawToken
+            tokenSymbol={ticket[2]?.result}
+            balance={balance}
+            ticketAddress={ticketAddress}
+            tokenAddress={ticket[2]?.result}
+            ticket={ticket}
+          />
+        ) : action === 'SendTicket' ? (
+          <SendNFTTicket ticketAddress={ticketAddress} ticket={ticket} />
+        ) : ticket[9]?.result ? (
+          <Whitelist
+            vaultIndex={vaultIndex}
+            ticketAddresses={ticketAddresses}
+            tickets={tickets}
+          />
+        ) : null}
 
-      <Stack direction="row" marginTop={'20px'} justifyContent="center" spacing="10px" alignItems="center">
-        <Typography variant="caption">
-          POWERED BY
-        </Typography>
-        <ScrollIcon />
-      </Stack>
+        <Stack
+          direction="row"
+          marginTop={'20px'}
+          justifyContent="center"
+          spacing="10px"
+          alignItems="center"
+        >
+          <Typography variant="caption">POWERED BY</Typography>
+
+          <ScrollIcon />
+        </Stack>
+      </Box>
     </Stack>
   );
 };

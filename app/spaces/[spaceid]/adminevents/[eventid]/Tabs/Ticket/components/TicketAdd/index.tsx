@@ -3,7 +3,19 @@ import { Stack, Typography } from '@mui/material';
 import ZuButton from 'components/core/Button';
 import { PlusIcon, PlusCircleIcon } from 'components/icons';
 
-const TicketAdd = () => {
+type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
+interface TicketAddProps {
+  onToggle: (anchor: Anchor, open: boolean) => void;
+  setToggleAction: React.Dispatch<React.SetStateAction<string>>;
+  visible?: boolean;
+}
+
+const TicketAdd: React.FC<TicketAddProps> = ({
+  onToggle = (anchor: Anchor, open: boolean) => {},
+  setToggleAction,
+  visible = false,
+}) => {
   return (
     <Stack direction="column" spacing={2}>
       <Stack
@@ -13,7 +25,17 @@ const TicketAdd = () => {
         <Typography variant="h6" color="white">
           Event Tickets
         </Typography>
-        <ZuButton startIcon={<PlusIcon />}>New Ticket</ZuButton>
+        {visible ? (
+          <ZuButton
+            startIcon={<PlusIcon />}
+            onClick={() => {
+              onToggle('right', true);
+              setToggleAction('CreateTicket');
+            }}
+          >
+            New Ticket
+          </ZuButton>
+        ) : null}
       </Stack>
       <Typography mt={0} variant="body2" color="white">
         These are tickets for this event

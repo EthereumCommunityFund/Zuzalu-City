@@ -10,7 +10,7 @@ import {
   Button,
   Select,
   MenuItem,
-  Chip
+  Chip,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -39,12 +39,12 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
-}
+};
 
 type AvailableType = {
-  startTime: string,
-  endTime: string
-}
+  startTime: string;
+  endTime: string;
+};
 
 const Venue: React.FC = () => {
   const params = useParams();
@@ -66,9 +66,11 @@ const Venue: React.FC = () => {
 
   const handleChange = (e: any) => {
     setTags(
-      typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value,
+      typeof e.target.value === 'string'
+        ? e.target.value.split(',')
+        : e.target.value,
     );
-  }
+  };
 
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
@@ -77,26 +79,36 @@ const Venue: React.FC = () => {
   });
 
   const List = (anchor: Anchor) => {
-    const [monday, setMonday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [tuesday, setTuesday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [wednesday, setWednesday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [thursday, setThursday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [friday, setFriday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
+    const [monday, setMonday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [tuesday, setTuesday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [wednesday, setWednesday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [thursday, setThursday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [friday, setFriday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
 
     const createVenue = async () => {
       try {
@@ -105,19 +117,19 @@ const Venue: React.FC = () => {
           tuesday,
           wednesday,
           thursday,
-          friday
-        }
-        const { data } = await supabase.from("venue").insert({
+          friday,
+        };
+        const { data } = await supabase.from('venue').insert({
           name,
           tags: tags.join(','),
           eventid,
           avatar: avatarURL,
-          bookings: JSON.stringify(bookings)
-        })
+          bookings: JSON.stringify(bookings),
+        });
       } catch (err) {
         console.log(err);
       }
-    }
+    };
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -176,7 +188,10 @@ const Venue: React.FC = () => {
               <Typography variant="subtitleMB">Venue Space Details</Typography>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Space Name*</Typography>
-                <ZuInput placeholder="Standard Pass" onChange={(e) => setName(e.target.value)} />
+                <ZuInput
+                  placeholder="Standard Pass"
+                  onChange={(e) => setName(e.target.value)}
+                />
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
@@ -195,47 +210,43 @@ const Venue: React.FC = () => {
                     MenuProps={{
                       PaperProps: {
                         style: {
-                          backgroundColor: '#222222'
-                        }
-                      }
+                          backgroundColor: '#222222',
+                        },
+                      },
                     }}
                   >
-                    {
-                      VENUE_TAGS.map((tag, index) => {
-                        return (
-                          <MenuItem
-                            value={tag.value}
-                            key={index}
-                          >
-                            {
-                              tag.label
-                            }
-                          </MenuItem>
-                        )
-                      })
-                    }
+                    {VENUE_TAGS.map((tag, index) => {
+                      return (
+                        <MenuItem value={tag.value} key={index}>
+                          {tag.label}
+                        </MenuItem>
+                      );
+                    })}
                   </Select>
                 </Box>
-                <Box display={'flex'} flexDirection={'row'} gap={'10px'} flexWrap={'wrap'}>
-                  {
-                    tags.map((tag, index) => {
-                      return (
-                        <Chip
-                          label={VENUE_TAGS.find((item) => item.value === tag)?.label}
-                          sx={{
-                            borderRadius: '10px'
-                          }}
-                          onDelete={
-                            () => {
-                              const newArray = tags.filter((item) => item !== tag);
-                              setTags(newArray)
-                            }
-                          }
-                          key={index}
-                        />
-                      )
-                    })
-                  }
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={'10px'}
+                  flexWrap={'wrap'}
+                >
+                  {tags.map((tag, index) => {
+                    return (
+                      <Chip
+                        label={
+                          VENUE_TAGS.find((item) => item.value === tag)?.label
+                        }
+                        sx={{
+                          borderRadius: '10px',
+                        }}
+                        onDelete={() => {
+                          const newArray = tags.filter((item) => item !== tag);
+                          setTags(newArray);
+                        }}
+                        key={index}
+                      />
+                    );
+                  })}
                 </Box>
                 {/* <Stack direction="row" spacing="10px">
                   <Stack
@@ -337,11 +348,14 @@ const Venue: React.FC = () => {
                     <Typography variant="bodyBB">MON</Typography>
                   </Stack>
                   <Stack spacing="10px" flex="4">
-                    {
-                      monday.map((item, index) => (
-                        <TimeRange key={`Monday-Item-${index}`} values={monday} setValues={setMonday} id={index} />
-                      ))
-                    }
+                    {monday.map((item, index) => (
+                      <TimeRange
+                        key={`Monday-Item-${index}`}
+                        values={monday}
+                        setValues={setMonday}
+                        id={index}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -349,24 +363,30 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      setMonday(prev =>
-                        [
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setMonday((prev) => [
                           ...prev,
                           {
                             startTime: '',
-                            endTime: ''
-                          }
-                        ]
-                      )
-                    }}>
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      const prev = [...monday];
-                      prev.pop();
-                      setMonday(prev)
-                    }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...monday];
+                        prev.pop();
+                        setMonday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -382,11 +402,14 @@ const Venue: React.FC = () => {
                     <Typography variant="bodyBB">TUE</Typography>
                   </Stack>
                   <Stack spacing="10px" flex="4">
-                    {
-                      tuesday.map((item, index) => (
-                        <TimeRange key={`Tuesday-Item-${index}`} values={tuesday} setValues={setTuesday} id={index} />
-                      ))
-                    }
+                    {tuesday.map((item, index) => (
+                      <TimeRange
+                        key={`Tuesday-Item-${index}`}
+                        values={tuesday}
+                        setValues={setTuesday}
+                        id={index}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -394,24 +417,30 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      setTuesday(prev =>
-                        [
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setTuesday((prev) => [
                           ...prev,
                           {
                             startTime: '',
-                            endTime: ''
-                          }
-                        ]
-                      )
-                    }}>
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      const prev = [...tuesday];
-                      prev.pop();
-                      setTuesday(prev)
-                    }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...tuesday];
+                        prev.pop();
+                        setTuesday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -427,11 +456,14 @@ const Venue: React.FC = () => {
                     <Typography variant="bodyBB">WED</Typography>
                   </Stack>
                   <Stack spacing="10px" flex="4">
-                    {
-                      wednesday.map((item, index) => (
-                        <TimeRange key={`Wednesday-Item-${index}`} values={wednesday} setValues={setWednesday} id={index} />
-                      ))
-                    }
+                    {wednesday.map((item, index) => (
+                      <TimeRange
+                        key={`Wednesday-Item-${index}`}
+                        values={wednesday}
+                        setValues={setWednesday}
+                        id={index}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -439,24 +471,30 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      setWednesday(prev =>
-                        [
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setWednesday((prev) => [
                           ...prev,
                           {
                             startTime: '',
-                            endTime: ''
-                          }
-                        ]
-                      )
-                    }}>
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      const prev = [...wednesday];
-                      prev.pop();
-                      setWednesday(prev)
-                    }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...wednesday];
+                        prev.pop();
+                        setWednesday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -472,11 +510,14 @@ const Venue: React.FC = () => {
                     <Typography variant="bodyBB">THU</Typography>
                   </Stack>
                   <Stack spacing="10px" flex="4">
-                    {
-                      thursday.map((item, index) => (
-                        <TimeRange key={`Thursday-Item-${index}`} values={thursday} setValues={setThursday} id={index} />
-                      ))
-                    }
+                    {thursday.map((item, index) => (
+                      <TimeRange
+                        key={`Thursday-Item-${index}`}
+                        values={thursday}
+                        setValues={setThursday}
+                        id={index}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -484,24 +525,30 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      setThursday(prev =>
-                        [
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setThursday((prev) => [
                           ...prev,
                           {
                             startTime: '',
-                            endTime: ''
-                          }
-                        ]
-                      )
-                    }}>
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      const prev = [...thursday];
-                      prev.pop();
-                      setThursday(prev)
-                    }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...thursday];
+                        prev.pop();
+                        setThursday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -517,11 +564,14 @@ const Venue: React.FC = () => {
                     <Typography variant="bodyBB">FRI</Typography>
                   </Stack>
                   <Stack spacing="10px" flex="4">
-                    {
-                      friday.map((item, index) => (
-                        <TimeRange key={`Friday-Item-${index}`} values={friday} setValues={setFriday} id={index} />
-                      ))
-                    }
+                    {friday.map((item, index) => (
+                      <TimeRange
+                        key={`Friday-Item-${index}`}
+                        values={friday}
+                        setValues={setFriday}
+                        id={index}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -529,24 +579,30 @@ const Venue: React.FC = () => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      setFriday(prev =>
-                        [
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setFriday((prev) => [
                           ...prev,
                           {
                             startTime: '',
-                            endTime: ''
-                          }
-                        ]
-                      )
-                    }}>
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }} onClick={() => {
-                      const prev = [...friday];
-                      prev.pop();
-                      setFriday(prev)
-                    }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...friday];
+                        prev.pop();
+                        setFriday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>

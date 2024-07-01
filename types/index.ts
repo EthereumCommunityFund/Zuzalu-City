@@ -10,7 +10,13 @@ export type Link = {
   title: string;
   links: string;
 };
-
+export interface Contract {
+  type?: string;
+  contractAddress?: string;
+  description?: string;
+  image_url?: string;
+  status?: string;
+}
 export interface Event {
   id: string;
   title: string;
@@ -43,6 +49,8 @@ export interface Event {
   };
   customLinks?: [Link];
   tracks?: string;
+  contractID?: number;
+  contracts?: [Contract];
 }
 
 export interface EventEdge {
@@ -169,4 +177,16 @@ export interface CreateProfileResult {
 export interface Coordinates {
   lat: number | undefined;
   lng: number | undefined;
+}
+
+export interface Tag {
+  name: string;
+  value: string;
+}
+
+export interface NFTMetadata {
+  name: string;
+  description: string;
+  image: string;
+  attributes: Tag[];
 }
