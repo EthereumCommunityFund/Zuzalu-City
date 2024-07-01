@@ -1137,44 +1137,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     );
                   })}
                 </Box>
-                {/* <Stack direction="row" spacing="10px">
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/21.jpg"
-                    />
-                    <Typography variant="bodyMB">QJ</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Box
-                      component="img"
-                      width="26px"
-                      height="26px"
-                      borderRadius="100px"
-                      src="/drivenfast.webp"
-                    />
-                    <Typography variant="bodyMB">drivenfast</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                </Stack> */}
               </Stack>
             </Stack>
             <Box display="flex" gap="20px">
