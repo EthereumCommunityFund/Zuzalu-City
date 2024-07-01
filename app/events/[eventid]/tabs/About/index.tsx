@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Box, Typography, SwipeableDrawer } from '@mui/material';
+import { Stack, Box, Typography, SwipeableDrawer, useTheme } from '@mui/material';
 import {
   EventName,
   EventDetail,
@@ -53,6 +53,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
   const params = useParams();
   const eventId = params.eventid.toString();
+
+  const { breakpoints } = useTheme()
 
   const { composeClient } = useCeramicContext();
 
@@ -230,10 +232,38 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
 
 
   return (
-    <Stack padding="40px" justifyContent="center" alignItems="center" bgcolor="#222222">
+    <Stack bgcolor="#222222">
       {eventData && (
-        <Stack width={900} direction="row" spacing="20px">
-          <Stack spacing="20px" flex="2">
+        <Stack
+          direction="row" 
+          justifyContent={'center'}
+          gap={'10px'}
+          paddingTop={'40px'}
+          sx={{
+            [breakpoints.down('md')]: {
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '20px'
+            }
+          }}
+        >
+          <Stack 
+            spacing="20px" 
+            boxSizing={'border-box'}
+            sx={{
+              width: '600px',
+              px: '20px',
+              [breakpoints.down('lg')]: {
+                width: '540px',
+              },
+              [breakpoints.down('md')]: {
+                width: '100%'
+              },
+              [breakpoints.down('sm')]: {
+                px: '10px'
+              }
+            }}
+          >
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="100px" borderRadius="10px" />
                       <Typography variant="caption" textAlign="right">
@@ -328,7 +358,20 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               </Stack>
             </Stack>
           </Stack>
-          <Stack spacing="20px" flex="1">
+          <Stack 
+            spacing="20px"
+            sx={{
+              width: '350px',
+              px: '20px',
+              [breakpoints.down('md')]: {
+                width: '100%',
+                px: '20px'
+              },
+              [breakpoints.down('sm')]: {
+                px: '10px'
+              }
+            }}
+          >
             <EventRegister onToggle={toggleDrawer} setWhitelist={setWhitelist} setSponsor={setSponsor} />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
