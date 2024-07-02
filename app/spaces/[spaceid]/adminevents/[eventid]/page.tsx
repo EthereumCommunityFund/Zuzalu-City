@@ -12,11 +12,7 @@ const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
   const [event, setEvent] = React.useState<Event>();
 
-  const {
-    ceramic,
-    composeClient,
-    profile,
-  } = useCeramicContext();
+  const { ceramic, composeClient, profile } = useCeramicContext();
 
   const pathname = useParams();
 
@@ -47,18 +43,26 @@ const Home: React.FC = () => {
               name
               gated
             }
+            contractID
+            id
+            contracts {
+              contractAddress
+              description
+              image_url
+              status
+              type
+            }
           }
         }
       }
     `;
 
     const variable = {
-      id
-    }
+      id,
+    };
 
     try {
       const result: any = await composeClient.executeQuery(query, variable);
-      console.log(result);
       if (result.data) {
         if (result.data.node) {
           setEvent(result.data.node);
@@ -67,8 +71,7 @@ const Home: React.FC = () => {
     } catch (err) {
       console.log('ERROR: FETCH EVENT: ', err);
     }
-  }
-
+  };
 
   const isMobile = useMediaQuery('(max-width:500px)');
   const renderPage = () => {
@@ -76,7 +79,7 @@ const Home: React.FC = () => {
       case 'Overview':
         return <Overview event={event} />;
       case 'Tickets':
-        return <Ticket />;
+        return <Ticket event={event} />;
       case 'Event Sessions':
         return <Sessions />;
       case 'Venue':
@@ -88,9 +91,9 @@ const Home: React.FC = () => {
 
   React.useEffect(() => {
     if (pathname.eventid) {
-      fetchEventById(pathname.eventid as string)
+      fetchEventById(pathname.eventid as string);
     }
-  }, [])
+  }, []);
 
   return (
     <Stack width="100%">

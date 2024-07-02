@@ -29,6 +29,8 @@ import {
   ArchiveBoxIcon,
   ArrowDownIcon,
   ChevronDownIcon,
+  PlusIcon,
+  MinusIcon,
 } from 'components/icons';
 import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
@@ -102,6 +104,10 @@ const Sessions = () => {
 
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
 
+  const [directions, setDirections] = useState<string>('');
+  const [customLocation, setCustomLocation] = useState<string>('');
+  const [isDirections, setIsDirections] = useState<boolean>(false);
+
   const profileId = profile?.id || '';
   const eventId = params.eventid.toString();
 
@@ -129,18 +135,34 @@ const Sessions = () => {
                 description
                 meeting_url
                 experience_level
+                speakers {
+                  id
+                  mvpProfile {
+                    id
+                    avatar
+                    username
+                  }
+                }
+                organizers {
+                  id
+                  mvpProfile {
+                    id
+                    avatar
+                    username
+                  }
+                }
               }
             }
           }
         }
       `);
-      console.log(response);
       if ('sessionIndex' in response.data) {
         const sessionData: SessionData = response.data as SessionData;
         const fetchedSessions: Session[] = sessionData.sessionIndex.edges.map(
           (edge) => edge.node,
         );
         setSessions(fetchedSessions);
+        console.log("session", fetchedSessions);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -150,8 +172,8 @@ const Sessions = () => {
   };
 
   const getPeople = async () => {
-    try {
-      const response: any = await composeClient.executeQuery(`
+    // try {
+    const response: any = await composeClient.executeQuery(`
         query MyQuery {
           mVPProfileIndex(first: 20) {
             edges {
@@ -167,22 +189,25 @@ const Sessions = () => {
           }
         }
       `);
+    console.log("respon", response)
 
-      if ('mVPProfileIndex' in response.data) {
-        const profileData: ProfileEdge = response.data as ProfileEdge;
-        const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setPeople(fetchedPeople);
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch sesssions:', error);
+    if ('mVPProfileIndex' in response.data) {
+      const profileData: ProfileEdge = response.data as ProfileEdge;
+      const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
+        (edge) => edge.node,
+      );
+      console.log("people", fetchedPeople);
+      setPeople(fetchedPeople);
+    } else {
+      console.error('Invalid data structure:', response.data);
     }
+    // } catch (error) {
+    //   console.error('Failed to fetch sesssions:', error);
+    // }
   };
 
   const getLocation = async () => {
+    console.log("eventid", eventId)
     try {
       const { data } = await supabase
         .from('venues')
@@ -602,7 +627,7 @@ const Sessions = () => {
                     );
                   })}
                 </Select>
-              </Stack>
+              </Stack >
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Live-Stream Link</Typography>
                 <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
@@ -613,7 +638,7 @@ const Sessions = () => {
                   placeholder="https://"
                 />
               </Stack>
-            </Stack>
+            </Stack >
             <Stack
               direction={'column'}
               spacing="30px"
@@ -721,8 +746,11 @@ const Sessions = () => {
                           {location}
                         </MenuItem>
                       ))}
+                      <MenuItem key="custom_location" value="Custom">
+                        Custom
+                      </MenuItem>
                     </Select>
-                    {sessionLocation && (
+                    {sessionLocation && sessionLocation !== "Custom" && (
                       <Stack>
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -762,6 +790,41 @@ const Sessions = () => {
                               </Typography>
                             </Stack>
                           </Stack>
+                        </Stack>
+                      </Stack>
+                    )}
+                    {sessionLocation && sessionLocation === "Custom" && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack spacing="10px">
+                          <Typography variant="bodyBB">
+                            Custom Location
+                          </Typography>
+                          <Typography variant="bodyS">
+                            Write name of the location
+                          </Typography>
+                          <ZuInput placeholder="Type location name" onChange={(e) => setCustomLocation(e.target.value)} />
+                          <ZuButton endIcon={!isDirections ? <PlusIcon size={5} /> : <MinusIcon size={5} />} onClick={() => setIsDirections(prev => !prev)}>
+                            {!isDirections ? "Add Directions" : "Remove Directions"}
+                          </ZuButton>
+                          {
+                            isDirections && <ZuInput placeholder="Directions description" onChange={(e) => setDirections(e.target.value)} />
+                          }
+                          {customLocation && <Stack borderRadius="10px" border="1px solid #383838" padding="10px" spacing="10px">
+                            <Typography variant="caption">
+                              CUSTOM LOCATIONS:
+                            </Typography>
+                            <Stack borderRadius="10px" bgcolor="#373737" padding="10px">
+                              <Typography variant="bodyBB">
+                                {customLocation}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                {directions}
+                              </Typography>
+                            </Stack>
+                          </Stack>}
                         </Stack>
                       </Stack>
                     )}
@@ -1292,9 +1355,9 @@ const Sessions = () => {
                 Add Session
               </ZuButton>
             </Box>
-          </Box>
-        </Box>
-      </LocalizationProvider>
+          </Box >
+        </Box >
+      </LocalizationProvider >
     );
   };
 

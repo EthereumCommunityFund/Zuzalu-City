@@ -65,7 +65,7 @@ import { NewspaperIcon } from './Newspaper';
 import { MinusIcon } from './Minus';
 import { TicketIcon } from './Ticket';
 import { ArrowUpRightIcon } from './ArrowUpRight';
-import { ArrowDownTrayIcon } from './ArrowDownTray'
+import { ArrowDownTrayIcon } from './ArrowDownTray';
 import { ArrowUpLeftIcon } from './ArrowUpLeft';
 import { ChevronUpIcon } from './ChevronUp';
 import { RefreshIcon } from './RefreshIcon';

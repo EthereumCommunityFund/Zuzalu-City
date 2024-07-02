@@ -18,6 +18,60 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
   const params = useParams();
   const eventId = params.eventid.toString();
 
+  // const [eventData, setEventData] = React.useState<Event>();
+  // const { composeClient } = useCeramicContext();
+
+  // const getEventDetailInfo = async () => {
+  //   try {
+  //     const response: CeramicResponseType<EventEdge> =
+  //       (await composeClient.executeQuery(
+  //         `
+  //       query MyQuery ($id: ID!) {
+  //         node (id: $id) {
+  //           ...on Event {
+  //             id
+  //             title
+  //             description
+  //             status
+  //             endTime
+  //             spaceId
+  //             tagline
+  //             timezone
+  //             createdAt
+  //             image_url
+  //             profileId
+  //             startTime
+  //             description
+  //             meeting_url
+  //             external_url
+  //             max_participant
+  //             space {
+  //               name
+  //               gated
+  //               avatar
+  //             }
+  //           }
+  //         }
+  //       }
+  //     `,
+  //         {
+  //           id: eventId,
+  //         },
+  //       )) as CeramicResponseType<EventEdge>;
+
+  //     if (response.data) {
+  //       if (response.data.node) {
+  //         setEventData(response.data.node);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log('Failed to fetch event: ', err);
+  //   }
+  // };
+
+  // React.useEffect(() => {
+  //   getEventDetailInfo();
+  // }, []);
   const [showCopyToast, setShowCopyToast] = React.useState(false);
 
   return eventData ? (
@@ -75,28 +129,29 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           <Typography variant="caption" color="white">
             BY:
           </Typography>
-          <Box component="img" src="/1.webp" height={20} width={20} />
-          <Typography variant="body2" color="white">
+          <Box component="img" src={eventData.space?.avatar} height={18} width={18} borderRadius={40} />
+          <Typography variant="bodyS" color="white">
             {eventData.space && eventData.space.name}
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <EventIcon />
-          <Typography variant="body1" color="white">
+          {/* <EventIcon /> */}
+          <Typography variant="bodyM" color="white">
             {convertDateStringFormat(eventData.startTime)} -{' '}
             {convertDateStringFormat(eventData.endTime)}
           </Typography>
         </Stack>
-        <Typography variant="h5" color="white">
+        <Typography variant="subtitleLB" color="white">
           {eventData.title}
         </Typography>
         <TextEditor
-          holder='space-detail-editor'
+          holder='event-detail-editor'
           readonly={true}
           value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
           sx={{
             fontFamily: 'Inter',
             color: 'white',
+            fontSize: '14px',
             borderRadius: '10px',
             height: 'auto',
             overflow: 'auto',

@@ -74,17 +74,17 @@ const Header = () => {
         {(isTablet ||
           (pathName.split('/')[1] === 'spaces' &&
             pathName.split('/').length > 2)) && (
-            <Button
-              sx={{
-                padding: '10px',
-                width: '40px',
-                minWidth: 'unset',
-              }}
-              onClick={() => setOpenSidebar(true)}
-            >
-              <MenuIcon />
-            </Button>
-          )}
+          <Button
+            sx={{
+              padding: '10px',
+              width: '40px',
+              minWidth: 'unset',
+            }}
+            onClick={() => setOpenSidebar(true)}
+          >
+            <MenuIcon />
+          </Button>
+        )}
 
         <Box
           component="img"
@@ -137,13 +137,19 @@ const Header = () => {
             }}
           >
             <MenuItem>{username}</MenuItem>
-            <MenuItem><span className={"text"}>Wallet Connected</span></MenuItem>
-            <MenuItem onClick={handleProfile}><span className={styles.text}>Profile</span></MenuItem>
+            <MenuItem>
+              <span className={'text'}>Wallet Connected</span>
+            </MenuItem>
+            <MenuItem onClick={handleProfile}>
+              <span className={styles.text}>Profile</span>
+            </MenuItem>
             {/* <MenuItem onClick={() => router.push('/passport')}>
               <span className={styles.text}>Passport</span>
             </MenuItem> */}
             {/*<MenuItem onClick={handleSetting}>Setting</MenuItem>*/}
-            <MenuItem onClick={handleLogout}><span className={styles.text}>Logout</span></MenuItem>
+            <MenuItem onClick={handleLogout}>
+              <span className={styles.text}>Logout</span>
+            </MenuItem>
             <Divider />
 
             <MenuItem onClick={handleMenuClose} style={{ fontSize: '0.8rem' }}>
