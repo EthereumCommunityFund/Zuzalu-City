@@ -3,7 +3,7 @@ import { Stack, Typography } from '@mui/material';
 import ZuButton from 'components/core/Button';
 import { PlusIcon, PlusCircleIcon } from 'components/icons';
 import { Venue } from '@/types';
-import VenueCard from './VenueCard';
+// import VenueCard from './VenueCard';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 

@@ -7,7 +7,7 @@ import { Session } from '@/types';
 interface SessionCardProps {
   session: Session;
   setSelectedSession?: React.Dispatch<React.SetStateAction<Session>> | any;
-};
+}
 
 const SessionCard: React.FC<SessionCardProps> = ({
   session,

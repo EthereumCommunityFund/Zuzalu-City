@@ -18,7 +18,7 @@ import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { PreviewFile } from '@/components';
 import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
-import { VenueHeader, VenueList } from './components';
+// import { VenueHeader, VenueList } from './components';
 import {
   XMarkIcon,
   ArchiveBoxIcon,
@@ -773,7 +773,7 @@ const Venue: React.FC = () => {
 
   return (
     <Stack spacing="30px">
-      <VenueHeader onToggle={toggleDrawer} />
+      {/* <VenueHeader onToggle={toggleDrawer} /> */}
       {/* <VenueList venues={MOCK_DATA.venues} onToggle={toggleDrawer} /> */}
       <SwipeableDrawer
         hideBackdrop={true}

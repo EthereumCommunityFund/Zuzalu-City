@@ -69,6 +69,7 @@ const Sessions = () => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [total, setTotal] = useState<any[]>();
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
+  const [selectedSession, setSelectedSession] = useState<Session>();
 
   const [state, setState] = React.useState({
     top: false,
@@ -1364,7 +1365,7 @@ const Sessions = () => {
   return (
     <Stack direction={'column'} spacing="40px">
       <SessionHeader onToggle={toggleDrawer} />
-      <SessionList sessions={sessions} />
+      <SessionList sessions={sessions} setSelectedSession={setSelectedSession} />
       {/* <SessionAdd /> */}
       <SwipeableDrawer
         hideBackdrop={true}
