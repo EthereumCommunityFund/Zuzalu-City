@@ -14,9 +14,10 @@ import { Session, SessionData } from '@/types';
 
 type SessionsListProps = {
   sessions?: Session[];
+  setSelectedSession: React.Dispatch<React.SetStateAction<Session>> | any;
 };
 
-const SessionList: React.FC<SessionsListProps> = ({ sessions = [] }) => {
+const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSession }) => {
   return (
     <Stack direction={'column'} spacing="20px">
       <Stack spacing="10px">
@@ -34,6 +35,7 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [] }) => {
             <SessionCard
               key={`SessionCard-${index}`}
               session={session}
+              setSelectedSession={setSelectedSession}
             />
           ))}
         </Stack> :

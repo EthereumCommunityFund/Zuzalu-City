@@ -112,12 +112,12 @@ export interface Session {
   status?: string;
   timezone?: string;
   video_url?: string;
-  description?: string;
+  description: string;
   meeting_url?: string;
   experience_level?: string;
   location?: string;
   speakers: string;
-  organizers?: string;
+  organizers: string;
 }
 
 export interface SessionEdge {

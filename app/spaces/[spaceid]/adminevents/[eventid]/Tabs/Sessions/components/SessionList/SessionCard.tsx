@@ -4,15 +4,18 @@ import { Stack, Typography, Box } from '@mui/material';
 import { EditIcon, MapIcon, SessionIcon } from 'components/icons';
 import { Session } from '@/types';
 
-type SessionCardProps = {
-  session: Session
+interface SessionCardProps {
+  session: Session;
+  setSelectedSession?: React.Dispatch<React.SetStateAction<Session>> | any;
 };
 
 const SessionCard: React.FC<SessionCardProps> = ({
-  session
+  session,
+  setSelectedSession
 }) => {
   return (
     <Stack
+      onClick={() => setSelectedSession(session)}
       direction="row"
       padding="10px 10px 20px 10px"
       borderRadius={'10px'}

@@ -14,15 +14,15 @@ import utc from 'dayjs/plugin/utc';
 import isBetween from 'dayjs/plugin/isBetween';
 import timezone from 'dayjs/plugin/timezone';
 import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
-import TextEditor from '@/components/editor/editor';
 import { OutputData } from '@editorjs/editorjs';
-import { PlusCircleIcon, LockIcon, XMarkIcon, ArchiveBoxIcon, ArrowDownIcon, ChevronDownIcon, SearchIcon, FingerPrintIcon, UserPlusIcon, EditIcon, QueueListIcon, ChevronDoubleRightIcon } from '@/components/icons';
+import { PlusCircleIcon, LockIcon, XMarkIcon, ArchiveBoxIcon, ArrowDownIcon, ChevronDownIcon, ChevronUpIcon, SearchIcon, FingerPrintIcon, UserPlusIcon, EditIcon, QueueListIcon, ChevronDoubleRightIcon, LeftArrowIcon, MapIcon, SessionIcon, Cog6Icon } from '@/components/icons';
 import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
 import BpCheckbox from '@/components/event/Checkbox';
 import { Anchor, Session, SessionData, ProfileEdge, Profile, CeramicResponseType, EventEdge, Venue, Event } from '@/types';
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
+import TextEditor from '@/components/editor/editor';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -52,6 +52,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     bottom: false,
     right: false,
   });
+
+  const [selectedSession, setSelectedSession] = useState<Session>();
+  const [showMore, setShowMore] = useState(false);
+
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(
       new Date().toLocaleDateString('en-US', {
@@ -61,6 +65,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       }),
     ),
   );
+
   const [sessionsByDate, setSessionsByDate] = useState<Record<string, Session[]>>();
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -1170,8 +1175,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Stack padding="20px 80px" bgcolor="#222222" height="100vh">
-        <Grid container spacing="30px">
+      <Stack padding="20px" bgcolor="#222222" height="auto">
+        {!selectedSession ? <Grid container spacing="30px">
           <Grid item xs={12} md={8}>
             <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>
               <Stack sx={{ borderTopRightRadius: "10px", borderTopLeftRadius: "10px" }} paddingX="10px" direction="row">
@@ -1202,6 +1207,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <SessionCard
                           key={`SessionCard-${index}`}
                           session={session}
+                          setSelectedSession={setSelectedSession}
                         />))
                     }
                   </Stack>
@@ -1334,7 +1340,241 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               />
             </Stack>
           </Grid>
-        </Grid>
+        </Grid> :
+          <Grid container gap="30px">
+            <Grid item xs={12} md={5}>
+              <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>
+                <Stack padding="10px">
+                  <ZuButton startIcon={<LeftArrowIcon />} onClick={() => setSelectedSession(undefined)}>
+                    Back to List
+                  </ZuButton>
+                </Stack>
+                <Stack padding="20px" spacing="20px">
+                  <Stack spacing="10px">
+                    <Stack direction="row" spacing="10px" alignItems="center">
+                      <Typography bgcolor="#7DFFD11A" padding="2px 4px" color="#7DFFD1" variant="bodyX" borderRadius="2px">
+                        · LIVE
+                      </Typography>
+                      <Typography variant="caption">
+                        TRACK
+                      </Typography>
+                    </Stack>
+                    <Typography variant="bodyS">
+                      {dayjs(selectedSession.startTime).format('MMMM')} {dayjs(selectedSession.startTime).month()} {dayjs(selectedSession.startTime).date()} {dayjs(selectedSession.startTime).format('h:mm A')} - {dayjs(selectedSession.endTime).format('h:mm A')}
+                    </Typography>
+                  </Stack>
+                  <Typography variant="subtitleLB">
+                    {selectedSession.title}
+                  </Typography>
+                  <Stack spacing="10px">
+                    <Stack direction={'row'} alignItems={'center'} spacing={1}>
+                      <MapIcon size={4} />
+                      <Typography variant="caption" sx={{ opacity: 0.5 }}>{selectedSession.location}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} spacing={1} alignItems="center">
+                      <Typography variant="bodyS" sx={{ opacity: 0.7 }}>Speakers:</Typography>
+                      {JSON.parse(selectedSession.speakers).map((speaker: any, index: number) => (
+                        <Stack
+                          key={`Speaker-${index}`}
+                          direction={'row'}
+                          spacing={0.5}
+                          alignItems={'center'}
+                        >
+                          <Box
+                            component={'img'}
+                            height={20}
+                            width={20}
+                            borderRadius={10}
+                            src={speaker.avatar || "/16.jpg"}
+                          />
+                          <Typography variant="bodyS">{speaker.username}</Typography>
+                        </Stack>
+                      ))}
+                    </Stack>
+                  </Stack>
+                  <Typography variant="bodyS">
+                    By: {selectedSession.profileId}
+                  </Typography>
+                  <Stack spacing='10px'>
+                    <Stack direction="row" padding="10px 14px" alignItems="center" spacing="10px"
+                      border="1px solid rgba(255, 255, 255, 0.10)" borderRadius="10px" bgcolor="#383838" justifyContent="center">
+                      <SessionIcon />
+                      <Typography variant="bodyBB">
+                        RSVP Session
+                      </Typography>
+                    </Stack>
+                    <Typography variant="bodyS">
+                      Attending: 000
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Stack spacing="20px" padding="20px">
+                  <Typography variant="subtitleSB">
+                    Description
+                  </Typography>
+                  <TextEditor
+                    holder='session-description'
+                    sx={{
+                      backgroundColor: '#ffffff0d',
+                      fontFamily: 'Inter',
+                      color: 'white',
+                      padding: '12px 12px 12px 80px',
+                      borderRadius: '10px',
+                    }}
+                    value={JSON.parse(selectedSession.description.replaceAll('\\"', '"'))}
+                    showMore={showMore}
+                  />
+                  <ZuButton
+                    startIcon={!showMore ? <ChevronDownIcon size={4} /> : <ChevronUpIcon size={4} />}
+                    sx={{ backgroundColor: '#313131', width: '100%' }}
+                    onClick={() => setShowMore(prev => !prev)}
+                  >
+                    {!showMore ? "Show More" : "Show Less"}
+                  </ZuButton>
+                </Stack>
+                <Stack padding="20px" spacing="20px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyS">
+                      Last Edited By: Drivenfast one day ago
+                    </Typography>
+                    <Typography variant="bodyS">
+                      Edited: Drivenfast one week ago
+                    </Typography>
+                  </Stack>
+                  <Typography variant="bodySB">
+                    View All Edit Logs
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Stack spacing="20px">
+                <Stack padding="14px" borderBottom="1px solid #383838">
+                  <Typography variant="subtitleMB">
+                    Session Details
+                  </Typography>
+                </Stack>
+                <Stack spacing="10px">
+                  <Stack direction="row" spacing="10px" alignItems="center">
+                    <Typography variant="bodyM">
+                      Format:
+                    </Typography>
+                    <Typography variant="bodyM" textTransform="uppercase">
+                      {selectedSession.format}
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" spacing="10px" alignItems="center">
+                    <Typography variant="bodyM">
+                      Type:
+                    </Typography>
+                    <Typography variant="bodyM">
+                      {selectedSession.type}
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" spacing="10px" alignItems="center">
+                    <Typography variant="bodyM">
+                      Experience Level:
+                    </Typography>
+                    <Typography variant="bodyM">
+                      {selectedSession.experience_level}
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Stack spacing="20px">
+                  <Stack direction="row" spacing="10px">
+                    <Cog6Icon />
+                    <Typography variant="bodyM">
+                      Organizers
+                    </Typography>
+                  </Stack>
+                  <Stack flexWrap="wrap" gap="10px" direction="row">
+                    {JSON.parse(selectedSession.organizers).map((organizer: any, index: number) => (
+                      <Stack
+                        key={`Speaker-${index}`}
+                        direction={'row'}
+                        spacing={0.5}
+                        alignItems={'center'}
+                      >
+                        <Box
+                          component={'img'}
+                          height={20}
+                          width={20}
+                          borderRadius={10}
+                          src={organizer.avatar || "/16.jpg"}
+                        />
+                        <Typography variant="bodyS">{organizer.username}</Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Stack>
+                <Stack spacing="20px">
+                  <Stack direction="row" spacing="10px">
+                    <Cog6Icon />
+                    <Typography variant="bodyM">
+                      Speakers
+                    </Typography>
+                  </Stack>
+                  <Stack flexWrap="wrap" gap="10px" direction="row">
+                    {JSON.parse(selectedSession.speakers).map((speaker: any, index: number) => (
+                      <Stack
+                        key={`Speaker-${index}`}
+                        direction={'row'}
+                        spacing={0.5}
+                        alignItems={'center'}
+                      >
+                        <Box
+                          component={'img'}
+                          height={20}
+                          width={20}
+                          borderRadius={10}
+                          src={speaker.avatar || "/16.jpg"}
+                        />
+                        <Typography variant="bodyS">{speaker.username}</Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Stack>
+                <Stack spacing="20px">
+                  <Stack direction="row" spacing="10px">
+                    <Cog6Icon />
+                    <Typography variant="bodyM">
+                      Tags
+                    </Typography>
+                  </Stack>
+                  <Stack flexWrap="wrap" gap="10px" direction="row">
+                    {selectedSession.tags?.split(",").map((tag: any, index: number) => (
+                      <Stack
+                        key={`Speaker-${index}`}
+                        padding="4px 8px"
+                        alignItems={'center'}
+                        bgcolor="#2d2d2d"
+                        borderRadius="10px"
+                      >
+                        <Typography variant="bodyS" textTransform="uppercase">{tag}</Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Stack>
+                <Stack spacing="20px">
+                  <Stack direction="row" spacing="10px">
+                    <MapIcon />
+                    <Typography variant="bodyM">
+                      Location
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" spacing="20px">
+                    <Box component="img" borderRadius="10px" width="80px" height="80px" src="/26.png" />
+                    <Stack alignItems="center">
+                      <Typography variant="bodyM">
+                        {selectedSession.location}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Grid>
+          </Grid>
+        }
         <SwipeableDrawer
           hideBackdrop={true}
           sx={{
