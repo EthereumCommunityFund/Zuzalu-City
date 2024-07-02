@@ -1172,7 +1172,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     );
   };
 
-
+  console.log("select", selectedSession, sessionsByDate)
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack padding="20px" bgcolor="#222222" height="auto">
@@ -1194,7 +1194,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 </Stack>
               </Stack>
               {
-                sessionsByDate ? Object.entries(sessionsByDate).map(([date, dateSessions]) => (
+                (sessionsByDate && Object.keys(sessionsByDate).length !== 0) ? Object.entries(sessionsByDate).map(([date, dateSessions]) => (
                   <Stack spacing="10px" padding="10px" key={`Sesssion-GroupByDate-${date}`}>
                     <Typography
                       borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
@@ -1212,17 +1212,19 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     }
                   </Stack>
                 )) :
-                  <Stack
-                    direction="column"
-                    alignItems="center"
-                    bgcolor="#2d2d2d"
-                    padding="20px"
-                    borderRadius="10px"
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <PlusCircleIcon color="#6c6c6c" size={15} />
-                    <Typography variant="subtitle2">No Sessions</Typography>
-                    <Typography variant="body2">Create a Session</Typography>
+                  <Stack padding="20px">
+                    <Stack
+                      direction="column"
+                      alignItems="center"
+                      bgcolor="#2d2d2d"
+                      padding="20px"
+                      borderRadius="10px"
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <PlusCircleIcon color="#6c6c6c" size={15} />
+                      <Typography variant="subtitle2">No Sessions</Typography>
+                      <Typography variant="body2">Create a Session</Typography>
+                    </Stack>
                   </Stack>
               }
             </Stack>
@@ -1341,9 +1343,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
             </Stack>
           </Grid>
         </Grid> :
-          <Grid container gap="30px">
-            <Grid item xs={12} md={5}>
-              <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" flex={8}>
+          <Grid container>
+            <Grid item xs={12} md={6} padding="20px">
+              <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626">
                 <Stack padding="10px">
                   <ZuButton startIcon={<LeftArrowIcon />} onClick={() => setSelectedSession(undefined)}>
                     Back to List
@@ -1393,7 +1395,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Stack>
                   </Stack>
                   <Typography variant="bodyS">
-                    By: {selectedSession.profileId}
+                    By: {JSON.parse(selectedSession.organizers)[0].username}
                   </Typography>
                   <Stack spacing='10px'>
                     <Stack direction="row" padding="10px 14px" alignItems="center" spacing="10px"
@@ -1447,7 +1449,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 </Stack>
               </Stack>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={6} padding="20px">
               <Stack spacing="20px">
                 <Stack padding="14px" borderBottom="1px solid #383838">
                   <Typography variant="subtitleMB">

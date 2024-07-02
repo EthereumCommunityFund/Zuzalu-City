@@ -35,7 +35,7 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue 
           These are bookable areas at or near a venue for sessions
         </Typography>
       </Stack>
-      {venues?.length === 0 && (
+      {venues?.length === 0 ? (
         <Stack
           direction="column"
           alignItems="center"
@@ -49,52 +49,52 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue 
           <Typography variant="subtitle2">No Spaces</Typography>
           <Typography variant="body2" sx={{ opacity: 0.5 }}>Add a Space</Typography>
         </Stack>
-      )}
-      <Stack spacing="20px">
-        <Stack
-          sx={{
-            flexDirection: 'column',
-            gap: '10px',
-            [theme.breakpoints.down('md')]: {
-              display: 'flex',
-            },
-          }}
-        >
-          <OutlinedInput
-            placeholder="Search Venue Spaces"
-            // onKeyDown={(event) => {
-            //   if (event.keyCode === 13) {
-            //     onSearch();
-            //   }
-            // }}
+      )
+        : (<Stack spacing="20px">
+          <Stack
             sx={{
-              backgroundColor:
-                '#313131',
-              paddingX: '15px',
-              paddingY: '13px',
-              borderRadius: '10px',
-              height: '35px',
-              border:
-                '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-              fontFamily: 'Inter',
-              opacity: 0.7,
-              color: 'white',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
+              flexDirection: 'column',
+              gap: '10px',
+              [theme.breakpoints.down('md')]: {
+                display: 'flex',
               },
             }}
-            onChange={(e) => setSearchValue(e.target.value)}
-            startAdornment={
-              <InputAdornment position="start" sx={{ opacity: 0.6 }}>
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-        </Stack>
-        {venues?.map((venue, index) => (
-          <VenueCard key={`VenueCard-${index}`} venue={venue} />
-        ))}
-      </Stack>
+          >
+            <OutlinedInput
+              placeholder="Search Venue Spaces"
+              // onKeyDown={(event) => {
+              //   if (event.keyCode === 13) {
+              //     onSearch();
+              //   }
+              // }}
+              sx={{
+                backgroundColor:
+                  '#313131',
+                paddingX: '15px',
+                paddingY: '13px',
+                borderRadius: '10px',
+                height: '35px',
+                border:
+                  '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
+                fontFamily: 'Inter',
+                opacity: 0.7,
+                color: 'white',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+              }}
+              onChange={(e) => setSearchValue(e.target.value)}
+              startAdornment={
+                <InputAdornment position="start" sx={{ opacity: 0.6 }}>
+                  <SearchIcon />
+                </InputAdornment>
+              }
+            />
+          </Stack>
+          {venues?.map((venue, index) => (
+            <VenueCard key={`VenueCard-${index}`} venue={venue} />
+          ))}
+        </Stack>)}
     </Stack>
   );
 };

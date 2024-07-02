@@ -345,6 +345,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                       setAvatar(file);
                     }}
                     onComplete={(result: any) => {
+                      console.log("result", result)
                       setAvatarURL(result?.url);
                     }}
                   >
