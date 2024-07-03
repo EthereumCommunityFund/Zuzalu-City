@@ -31,18 +31,7 @@ import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 import { generateNFTMetadata } from '@/utils/generateNFTMetadata';
 import { createFileFromJSON } from '@/utils/generateNFTMetadata';
 import { fetchEmailJsConfig } from '@/utils/emailService';
-import { Event } from '@/types';
-interface IProps {
-  setIsAgree?: React.Dispatch<React.SetStateAction<boolean>> | any;
-  setIsMint?: React.Dispatch<React.SetStateAction<boolean>> | any;
-  setIsTransaction?: React.Dispatch<React.SetStateAction<boolean>> | any;
-  setIsComplete?: React.Dispatch<React.SetStateAction<boolean>> | any;
-  handleClose?: () => void;
-  eventContractID?: number;
-  setFilteredResults?: React.Dispatch<React.SetStateAction<any[]>>;
-  filteredResults?: any[];
-  event?: Event;
-}
+import { Event, IProps, Contract } from '@/types';
 
 export const SponsorAgree: React.FC<IProps> = ({
   setIsAgree,
@@ -159,6 +148,7 @@ export const SponsorAgree: React.FC<IProps> = ({
         setTickets(transformedResults);
         if (setFilteredResults) {
           setFilteredResults(transformedResults);
+          console.log(transformedResults);
         }
       }
     } catch (error) {
@@ -237,6 +227,8 @@ export const SponsorMint: React.FC<IProps> = ({
   setIsMint,
   filteredResults = [],
   event,
+  setTokenId,
+  setTicketMinted,
 }) => {
   const [awaiting, setAwaiting] = useState<boolean>(false);
   const { address } = useAccount();
@@ -256,10 +248,22 @@ export const SponsorMint: React.FC<IProps> = ({
     });
     return match;
   });
+  const findMatchingContract = (
+    contracts: Contract[],
+    ticketAddress: string,
+  ): Contract | undefined => {
+    return contracts.find(
+      (contract) =>
+        contract.contractAddress?.trim().toLowerCase() ===
+        ticketAddress.trim().toLowerCase(),
+    );
+  };
   const handleMintTicket = async (
     ticketAddress: Address,
     tokenAddress: Address,
     ticketPrice: number,
+    isWhiteList: boolean,
+    eventContract: Contract,
   ) => {
     try {
       const approveHash = await writeContract(config, {
@@ -277,16 +281,21 @@ export const SponsorMint: React.FC<IProps> = ({
       );
 
       if (approveStatus === 'success') {
-        const metadata = generateNFTMetadata(ticketAddress, 'NFT ticket', '', [
-          {
-            name: 'Event',
-            value: 'Exclusive Event',
-          },
-          {
-            name: 'Type',
-            value: 'Attendee',
-          },
-        ]);
+        const metadata = generateNFTMetadata(
+          ticketAddress,
+          'NFT ticket',
+          eventContract.image_url as string,
+          [
+            {
+              name: 'Event',
+              value: 'Exclusive Event',
+            },
+            {
+              name: 'Type',
+              value: 'Attendee',
+            },
+          ],
+        );
         const metadataFile = createFileFromJSON(metadata, 'metaData');
         const tags = [{ name: 'Content-Type', value: 'application/json' }];
         const uploadedID = await gaslessFundAndUpload(
@@ -294,7 +303,7 @@ export const SponsorMint: React.FC<IProps> = ({
           tags,
           'EVM',
         );
-        const ABI = TICKET_ABI;
+        const ABI = isWhiteList ? TICKET_WITH_WHITELIST_ABI : TICKET_ABI;
         const MintHash = await writeContract(config, {
           chainId: scrollSepolia.id,
           address: ticketAddress,
@@ -303,17 +312,18 @@ export const SponsorMint: React.FC<IProps> = ({
           args: [address, `https://devnet.irys.xyz/${uploadedID}`, address],
         });
 
-        const { status: adminMintStatus } = await waitForTransactionReceipt(
-          config,
-          {
+        const { status: MintStatus, logs: MintLogs } =
+          await waitForTransactionReceipt(config, {
             hash: MintHash,
             timeout: 6000_000,
-          },
-        );
+          });
 
-        if (adminMintStatus === 'success') {
-          setIsAgree(false);
-          setIsMint(true);
+        if (MintStatus === 'success') {
+          if (MintLogs.length > 0) {
+            setTokenId(BigInt(MintLogs[3].data).toString());
+            setIsAgree(false);
+            setIsMint(true);
+          }
         }
       }
     } catch (error) {
@@ -389,13 +399,27 @@ export const SponsorMint: React.FC<IProps> = ({
                 )}
                 <ZuButton
                   startIcon={<RightArrowIcon color="#67DBFF" />}
-                  onClick={() =>
-                    handleMintTicket(
+                  onClick={() => {
+                    const matchingContract = findMatchingContract(
+                      event?.contracts as Contract[],
                       ticket[0],
-                      ticket[3].result,
-                      Number(ticket[4].result),
-                    )
-                  }
+                    );
+                    if (matchingContract) {
+                      handleMintTicket(
+                        ticket[0],
+                        ticket[3].result,
+                        Number(ticket[4].result),
+                        ticket[10] ? ticket[10].status === 'success' : false,
+                        matchingContract,
+                      );
+                      setTicketMinted(ticket);
+                    } else {
+                      console.error(
+                        'No matching contract found for ticket address:',
+                        ticket[0],
+                      );
+                    }
+                  }}
                   sx={{
                     width: '100%',
                     color: '#67DBFF',
@@ -525,6 +549,8 @@ export const SponsorComplete: React.FC<IProps> = ({
   setIsTransaction,
   setIsComplete,
   handleClose,
+  tokenId,
+  ticketMinted,
 }) => {
   const [view, setView] = useState<boolean>(false);
   return (
@@ -550,7 +576,7 @@ export const SponsorComplete: React.FC<IProps> = ({
           moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px" spacing="30px" alignItems="center" height="100vh">
+      <Stack padding="20px" spacing="30px" alignItems="center" height="auto">
         <Typography variant="subtitleLB">Congrats, you received</Typography>
         <Box
           component="img"
@@ -566,6 +592,24 @@ export const SponsorComplete: React.FC<IProps> = ({
           sx={{ cursor: 'pointer' }}
           onClick={() => setView((prev) => !prev)}
         >
+          <Stack direction="row" alignItems="center" spacing="20px">
+            <Typography variant="bodyM">Contract Address:</Typography>
+            <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+              {ticketMinted ? ticketMinted[0] : ''}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" spacing="20px">
+            <Typography variant="bodyMB">Token_ID:</Typography>
+            <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+              {tokenId}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" spacing="20px">
+            <Typography variant="bodyMB">
+              Ticket mint successfully, Feel free to add this NFT(SBT) into your
+              wallet
+            </Typography>
+          </Stack>
           {!view ? (
             <Stack
               direction="row"

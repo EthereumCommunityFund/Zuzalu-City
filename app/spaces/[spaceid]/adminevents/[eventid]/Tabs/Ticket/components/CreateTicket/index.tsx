@@ -41,7 +41,9 @@ import { SCROLL_EXPLORER } from '@/constant';
 import { OutputData } from '@editorjs/editorjs';
 import TextEditor from '@/components/editor/editor';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-
+import { Uploader3, SelectedFile } from '@lxdao/uploader3';
+import { createConnector } from '@lxdao/uploader3-connector';
+import { PreviewFile } from '@/components';
 interface IProps {
   setIsConfirm?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setGoToSummary?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -87,6 +89,10 @@ interface IProps {
   setIsTicket?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setSelectedType?: React.Dispatch<React.SetStateAction<string>> | any;
   selectedType?: string;
+  ticketImage?: SelectedFile;
+  setTicketImage?: React.Dispatch<React.SetStateAction<SelectedFile>> | any;
+  ticketImageURL?: string;
+  setTicketImageURL?: React.Dispatch<React.SetStateAction<string>> | any;
 }
 
 export const InitialSetup = ({ setIsNext }: IProps) => {
@@ -576,30 +582,14 @@ export const CreateTicket = ({
   setEndDate,
   endTime,
   setEndTime,
+  ticketImage,
+  setTicketImage,
+  ticketImageURL,
+  setTicketImageURL,
 }: IProps) => {
-  const fileInputField = useRef<HTMLInputElement>(null);
-  // const [File, setFile] = useState(second)
-  // const handleClick = (event: any) => {
-  //   hiddenFileInput?.current.click();
-  // };
-
-  const [fileUploaded, setFileUploaded] = useState<HTMLInputElement | null>(
-    null,
-  );
-  const [imageUrl, setImageUrl] = useState<string>('');
-
-  const [description, setDescription] = useState<OutputData>();
-
-  const handleFilesChange = (event: { target: { files: any } }) => {
-    const fileUpload = event.target.files[0];
-    setFileUploaded(fileUpload);
-
-    // const filesLength = fileUpload.length;
-    if (fileUpload) {
-      setImageUrl(URL.createObjectURL(fileUpload));
-    }
-  };
-
+  const connector = createConnector('NFT.storage', {
+    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
+  });
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack padding="20px 30px" spacing="30px">
@@ -767,65 +757,59 @@ export const CreateTicket = ({
             >
               Recommend min of 200 * 200px (1:1 Ratio)
             </Typography>
-
-            <Input
-              id="tb-file-upload"
-              type="file"
-              name="ticketImage"
-              inputProps={{
-                accept: 'image/*',
-              }}
-              ref={fileInputField}
-              onChange={(event: any) => handleFilesChange(event)}
-              sx={{
-                display: 'none',
-                color: 'white',
-                backgroundColor: '#2d2d2d',
-                padding: '12px 10px',
-                borderRadius: '8px',
-                width: '100%',
-                fontSize: '15px',
-                fontFamily: 'Inter',
-                '&::after': {
-                  borderBottom: 'none',
-                },
-                '&::before': {
-                  borderBottom: 'none',
-                },
-                '&:hover:not(.Mui-disabled, .Mui-error):before': {
-                  borderBottom: 'none',
-                },
-              }}
-              placeholder="Enter a name for your event"
-            />
-            <ZuButton>
-              <label htmlFor="tb-file-upload">Upload Image</label>
-              {fileUploaded
-                ? ` - ${fileUploaded?.name.substring(0, 6)}...${fileUploaded?.name.slice(-6)}`
-                : ''}
-            </ZuButton>
-
             <Box
               sx={{
-                backgroundColor: '#2d2d2d',
-                opacity: '0.6',
-                borderRadius: '10px',
-                height: '200px',
-                width: '200px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
               }}
             >
-              {imageUrl && (
-                <Image
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                  alt={imageUrl}
-                  src={imageUrl}
-                  width={100}
-                  height={100}
+              <Typography variant="subtitleSB">
+                Image URL(temporary){' '}
+              </Typography>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Image*</Typography>
+                <ZuInput
+                  required
+                  name="image"
+                  onChange={handleChange}
+                  placeholder="Enter the url for your image"
                 />
-              )}
+              </Stack>
+              <Uploader3
+                accept={['.gif', '.jpeg', '.jpg', '.png']}
+                // api={'/api/upload/file'}
+                connector={connector}
+                multiple={false}
+                crop={false} // must be false when accept is svg
+                onChange={(files) => {
+                  setTicketImage(files[0]);
+                }}
+                onUpload={(result: any) => {
+                  setTicketImage(result);
+                }}
+                onComplete={(result: any) => {
+                  if (result && result.url) {
+                    setTicketImageURL(result.url);
+                  }
+                }}
+              >
+                <Button
+                  component="span"
+                  sx={{
+                    color: 'white',
+                    borderRadius: '10px',
+                    backgroundColor: '#373737',
+                    border: '1px solid #383838',
+                  }}
+                >
+                  Upload
+                </Button>
+              </Uploader3>
+              <PreviewFile
+                sx={{ width: '200px', height: '200px', borderRadius: '10px' }}
+                file={ticketImageURL}
+              />
             </Box>
           </Stack>
         </Stack>
