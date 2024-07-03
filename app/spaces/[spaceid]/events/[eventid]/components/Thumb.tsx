@@ -24,7 +24,7 @@ const Thumb: React.FC<TabbarProps> = ({
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
       sx={{
         position: 'sticky',
-        top: '61px',
+        top: '0px',
         zIndex: 1,
         backgroundColor: '#222222',
       }}

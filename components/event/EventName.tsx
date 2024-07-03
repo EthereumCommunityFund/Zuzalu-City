@@ -43,15 +43,25 @@ const EventName = ({
 
   return (
     <Stack spacing="10px">
-      <Stack width={'100%'} alignItems={'center'} justifyContent={'center'}>
-        <Box
-          component="img"
-          width={isMobile ? '350px' : '500px'}
-          height={isMobile ? '350px' : '500px'}
-          src={image_url}
-          borderRadius="10px"
-          border="1px solid rgba(255, 255, 255, 0.2)"
-        />
+      <Stack
+        width={'100%'}
+        alignItems={'center'}
+        justifyContent={'center'}
+      >
+        <Stack
+          width={'100%'}
+          alignItems={'center'}
+          justifyContent={'center'}
+        >
+          <Box
+            component="img"
+            width={isMobile ? '350px' : '500px'}
+            height={isMobile ? '350px' : '500px'}
+            src={image_url}
+            borderRadius="10px"
+            border="1px solid rgba(255, 255, 255, 0.2)"
+          />
+        </Stack>
       </Stack>
       {/*<Stack
         direction="row"

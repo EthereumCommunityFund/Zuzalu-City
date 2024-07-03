@@ -15,8 +15,15 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
       display="flex"
       gap="10px"
       padding="0px 10px"
+      paddingBottom={'0px'}
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
-      overflow={isSmallScreen ? 'scroll' : 'hidden'}
+      overflow={isSmallScreen ? 'auto' : 'hidden'}
+      position={'sticky'}
+      top={'50px'}
+      zIndex={3}
+      sx={{
+        scrollbarWidth: 'none'
+      }}
     >
       <Typography
         onClick={() => setTabName('Overview')}

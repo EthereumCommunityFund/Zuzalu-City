@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, useTheme } from '@mui/material';
 import { ZuButton } from '@/components/core';
 import { PlusCircleIcon, PlusIcon } from 'components/icons';
 import { Anchor } from '@/types';
@@ -11,6 +11,9 @@ interface SessionHeaderProps {
 const SessionHeader: React.FC<SessionHeaderProps> = ({
   onToggle = (anchor: Anchor, open: boolean) => {},
 }) => {
+
+  const { breakpoints } = useTheme();
+
   return (
     <Stack
       direction={'row'}

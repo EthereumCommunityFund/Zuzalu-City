@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Stack, Typography, Box, SwipeableDrawer } from '@mui/material';
+import { Stack, Typography, Box, SwipeableDrawer, useTheme } from '@mui/material';
 import OverviewButton from './OverviewButton';
 import { Event } from '@/types';
 import { Anchor, Session, SessionData, ProfileEdge, Profile } from '@/types';
@@ -21,6 +21,7 @@ const OverviewHeader = ({ event }: PropTypes) => {
   const params = useParams();
   const eventId = params.eventid.toString();
   const profileId = profile?.id || '';
+  const { breakpoints } = useTheme();
 
   const [state, setState] = React.useState({
     top: false,
@@ -256,13 +257,25 @@ const OverviewHeader = ({ event }: PropTypes) => {
     getPeople();
   }, []);
 
-  return event ? (
-    <Stack direction="column" spacing={3} marginBottom={3}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+  return (
+    event ? <Stack direction="column" spacing={3} marginBottom={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{
+          [breakpoints.down('sm')]: {
+            flexDirection: 'column',
+            alignItems: 'flex-start'
+          }
+        }}
+      >
         <Typography variant="h5" color="white">
           {event.title}
         </Typography>
-        <Stack direction="row">
+        <Stack
+          direction="row"
+        >
           <Typography variant="body1" color="white">
             Today&apos;s Date:&nbsp;
           </Typography>
@@ -276,7 +289,17 @@ const OverviewHeader = ({ event }: PropTypes) => {
           </Typography>
         </Stack>
       </Stack>
-      <Stack direction="row" spacing={2}>
+      <Stack 
+        direction="row" 
+        sx={{
+          gap: '8px',
+          [breakpoints.down('sm')]: {
+            flexDirection: 'column'
+          },
+          borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
+          paddingBottom: '30px'
+        }}  
+      >
         <OverviewButton type={0} onClick={() => toggleDrawer('right', true)} />
         <OverviewButton
           type={1}
