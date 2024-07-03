@@ -111,8 +111,8 @@ type People = {
     avatar?: string;
     id: string;
     username: string;
-  }
-}
+  };
+};
 
 export interface Session {
   id: string;
@@ -157,7 +157,7 @@ export type Profile = {
   avatar?: string;
   author?: {
     id: string;
-  }
+  };
 };
 export interface ProfileData {
   node: Profile;
@@ -189,4 +189,20 @@ export interface NFTMetadata {
   description: string;
   image: string;
   attributes: Tag[];
+}
+export interface IProps {
+  setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsAgree?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsMint?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsTransaction?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsComplete?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  handleClose?: () => void;
+  eventContractID?: number;
+  setFilteredResults?: React.Dispatch<React.SetStateAction<any[]>>;
+  filteredResults?: any[];
+  event?: Event;
+  tokenId?: string;
+  setTokenId?: React.Dispatch<React.SetStateAction<string>> | any;
+  ticketMinted?: any[];
+  setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
 }
