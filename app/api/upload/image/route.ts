@@ -5,7 +5,7 @@ import {
 } from '@lxdao/uploader3-connector';
 
 const connector = createConnector('lighthouse', {
-  token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN as string,
+  token: `${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN}`,
 });
 
 export async function POST(req: Request) {
