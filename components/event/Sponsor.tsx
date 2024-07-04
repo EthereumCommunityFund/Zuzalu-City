@@ -148,7 +148,6 @@ export const SponsorAgree: React.FC<IProps> = ({
         setTickets(transformedResults);
         if (setFilteredResults) {
           setFilteredResults(transformedResults);
-          console.log(transformedResults);
         }
       }
     } catch (error) {

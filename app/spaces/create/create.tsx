@@ -81,7 +81,6 @@ const Create = () => {
 
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
-  console.log('admin', adminId);
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
 
@@ -493,7 +492,7 @@ const Create = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  api={'/api/upload/file'}
+                  api={'/api/upload/image'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {

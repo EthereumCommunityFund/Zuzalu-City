@@ -5,12 +5,11 @@ import {
 } from '@lxdao/uploader3-connector';
 
 const connector = createConnector('lighthouse', {
-  token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN!,
+  token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN as string,
 });
 
 export async function POST(req: Request) {
   const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
-
   let { data: imageData = '', type } = reqBody;
 
   if (!imageData) {
@@ -31,7 +30,6 @@ export async function POST(req: Request) {
   if (buffer.byteLength > 2 * 1024 * 1024) {
     return NextResponse.json({ error: 'file size > 2MB' }, { status: 500 });
   }
-
   return connector
     .postImage({ data: imageData, type })
     .then((result) => {

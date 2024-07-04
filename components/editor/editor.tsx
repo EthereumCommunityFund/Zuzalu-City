@@ -23,9 +23,7 @@ interface TextEditorPropTypes extends BoxProps {
 
 const TextEditor: FC<TextEditorPropTypes> = ({
   value = { blocks: [] },
-  setData = (value: OutputData) => {
-    console.log(value);
-  },
+  setData = (value: OutputData) => {},
   holder = 'editorjs',
   children,
   limit = 5000,

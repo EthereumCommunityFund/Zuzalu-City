@@ -760,18 +760,6 @@ export const CreateTicket = ({
                 gap: '10px',
               }}
             >
-              <Typography variant="subtitleSB">
-                Image URL(temporary){' '}
-              </Typography>
-              <Stack spacing="10px">
-                <Typography variant="bodyBB">Image*</Typography>
-                <ZuInput
-                  required
-                  name="image"
-                  onChange={handleChange}
-                  placeholder="Enter the url for your image"
-                />
-              </Stack>
               <Uploader3
                 accept={['.gif', '.jpeg', '.jpg', '.png']}
                 api={'/api/upload/image'}
@@ -802,7 +790,10 @@ export const CreateTicket = ({
                 </Button>
               </Uploader3>
               <PreviewFile
-                sx={{ width: '200px', height: '200px', borderRadius: '10px' }}
+                sx={{
+                  width: '200px',
+                  height: '200px',
+                }}
                 file={ticketImageURL}
               />
             </Box>
