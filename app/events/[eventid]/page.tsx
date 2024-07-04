@@ -21,7 +21,7 @@ const Home = () => {
       }
       {
         tabName === "Sessions" && (
-          <Sessions />
+          <Sessions eventData={eventData} />
         )
       }
     </Stack>
