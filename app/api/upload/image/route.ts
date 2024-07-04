@@ -3,20 +3,27 @@ import {
   createConnector,
   type Uploader3Connector,
 } from '@lxdao/uploader3-connector';
-
+console.log(
+  'Connector Token Prefix:',
+  process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix,
+);
+console.log('Connector Token:', process.env.NEXT_PUBLIC_CONNECTOR_TOKEN);
 const connector = createConnector('lighthouse', {
   token: `${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN}`,
 });
 
 export async function POST(req: Request) {
+  console.log('Request received');
   const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
   let { data: imageData = '', type } = reqBody;
 
   if (!imageData) {
+    console.error('No image data');
     return NextResponse.json({ error: 'No image data' }, { status: 500 });
   }
 
   if (!type) {
+    console.error('No image type');
     return NextResponse.json({ error: 'No image type' }, { status: 400 });
   }
 
@@ -25,7 +32,6 @@ export async function POST(req: Request) {
   }
 
   const buffer = Buffer.from(imageData, 'base64');
-
   // if buffer size > 2MB throw error
   if (buffer.byteLength > 2 * 1024 * 1024) {
     return NextResponse.json({ error: 'file size > 2MB' }, { status: 500 });
