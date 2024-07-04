@@ -76,6 +76,8 @@ import { HeartIcon } from './Heart';
 import { FingerPrintIcon } from './FingerPrint';
 import { QueueListIcon } from './QueueList';
 import { ChevronDoubleRightIcon } from './ChevronDoubleRight';
+import { MicrophoneIcon } from './Microphone';
+import { TagIcon } from './Tag';
 
 export {
   HomeIcon,
@@ -155,5 +157,7 @@ export {
   HeartIcon,
   FingerPrintIcon,
   QueueListIcon,
-  ChevronDoubleRightIcon
+  ChevronDoubleRightIcon,
+  MicrophoneIcon,
+  TagIcon
 };
