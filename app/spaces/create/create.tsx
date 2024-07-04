@@ -19,7 +19,6 @@ import { Header } from './components';
 import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
-import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { OutputData } from '@editorjs/editorjs';
 import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
@@ -80,13 +79,9 @@ const Create = () => {
     createProfile,
   } = useCeramicContext();
 
-  const connector = createConnector('NFT.storage', {
-    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-  });
-
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
-  console.log("admin", adminId)
+  console.log('admin', adminId);
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
 
@@ -340,9 +335,13 @@ const Create = () => {
                     </Typography>
                   </Stack> */}
                   <Typography variant="caption" color="white">
-                    {
-                      5000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
-                    } Characters Left
+                    {5000 -
+                      (description
+                        ? description.blocks
+                            .map((item) => item.data.text.length)
+                            .reduce((prev, current) => prev + current, 0)
+                        : 0)}{' '}
+                    Characters Left
                   </Typography>
                 </Stack>
               </Stack>
@@ -441,8 +440,7 @@ const Create = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  // api={'/api/upload/file'}
-                  connector={connector}
+                  api={'/api/upload/image'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {
@@ -495,8 +493,7 @@ const Create = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  // api={'/api/upload/file'}
-                  connector={connector}
+                  api={'/api/upload/file'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {

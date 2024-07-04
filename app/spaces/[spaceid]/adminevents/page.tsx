@@ -32,7 +32,6 @@ import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData, Space, SpaceEventData } from '@/types';
-import { createConnector } from '@lxdao/uploader3-connector';
 import {
   TICKET_FACTORY_ADDRESS,
   ticketFactoryGetContract,
@@ -82,10 +81,6 @@ const Home = () => {
   const spaceId = params.spaceid.toString();
 
   const { address, isConnected } = useAccount();
-
-  const connector = createConnector('NFT.storage', {
-    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-  });
 
   const [state, setState] = useState({
     top: false,
@@ -579,7 +574,7 @@ const Home = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.gif', '.png']}
-                  connector={connector}
+                  api={'/api/upload/image'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files: any) => {

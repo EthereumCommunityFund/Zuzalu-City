@@ -16,7 +16,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { PreviewFile } from '@/components';
-import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { VenueHeader, VenueList } from './components';
 import {
@@ -74,9 +73,6 @@ const Venue: React.FC = () => {
 
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
-  const connector = createConnector('NFT.storage', {
-    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-  });
 
   const List = (anchor: Anchor) => {
     const [monday, setMonday] = useState<AvailableType[]>([
@@ -289,7 +285,7 @@ const Venue: React.FC = () => {
                 >
                   <Uploader3
                     accept={['.gif', '.jpeg', '.gif', '.png']}
-                    connector={connector}
+                    api={'/api/upload/image'}
                     multiple={false}
                     crop={false} // must be false when accept is svg
                     onChange={(files: any) => {

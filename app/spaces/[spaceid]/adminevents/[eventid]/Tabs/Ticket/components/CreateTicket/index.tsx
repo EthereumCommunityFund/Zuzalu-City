@@ -42,7 +42,6 @@ import { OutputData } from '@editorjs/editorjs';
 import TextEditor from '@/components/editor/editor';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
-import { createConnector } from '@lxdao/uploader3-connector';
 import { PreviewFile } from '@/components';
 interface IProps {
   setIsConfirm?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -587,9 +586,6 @@ export const CreateTicket = ({
   ticketImageURL,
   setTicketImageURL,
 }: IProps) => {
-  const connector = createConnector('NFT.storage', {
-    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-  });
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack padding="20px 30px" spacing="30px">
@@ -778,8 +774,7 @@ export const CreateTicket = ({
               </Stack>
               <Uploader3
                 accept={['.gif', '.jpeg', '.jpg', '.png']}
-                // api={'/api/upload/file'}
-                connector={connector}
+                api={'/api/upload/image'}
                 multiple={false}
                 crop={false} // must be false when accept is svg
                 onChange={(files) => {
@@ -963,7 +958,7 @@ export const CreateTicket = ({
           </Stack>
         </Stack>
 
-        {/* CONFIGURE CONDITIONS 
+        {/* CONFIGURE CONDITIONS
         <Stack
           padding="20px"
           spacing="30px"
