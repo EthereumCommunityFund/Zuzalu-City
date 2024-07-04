@@ -3,17 +3,12 @@ import {
   createConnector,
   type Uploader3Connector,
 } from '@lxdao/uploader3-connector';
-console.log(
-  'Connector Token Prefix:',
-  process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix,
-);
-console.log('Connector Token:', process.env.NEXT_PUBLIC_CONNECTOR_TOKEN);
+
 const connector = createConnector('lighthouse', {
   token: `${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN}`,
 });
 
 export async function POST(req: Request) {
-  console.log('Request received');
   const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
   let { data: imageData = '', type } = reqBody;
 
