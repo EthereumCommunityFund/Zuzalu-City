@@ -8,10 +8,6 @@ const connector = createConnector('lighthouse', {
   token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN!,
 });
 
-export async function GET(request: Request) {
-  return NextResponse.json({ error: 'Internal Server Error' }, { status: 200 });
-}
-
 export async function POST(req: Request) {
   const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
 
