@@ -896,12 +896,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                               setSessionStartTime(combined)
                             }
                           }}
-                          shouldDisableTime={(date: Dayjs, view: TimeView) => {
-                            if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
-                            }
-                            return false;
-                          }}
                           sx={{
                             '& .MuiSvgIcon-root': {
                               color: 'white',
@@ -944,12 +938,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                               const combined = dayjs(sessionDate).set("hour", newValue.hour()).set("minute", newValue.minute());
                               setSessionEndTime(combined)
                             }
-                          }}
-                          shouldDisableTime={(date: Dayjs, view: TimeView) => {
-                            if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
-                            }
-                            return false;
                           }}
                           sx={{
                             '& .MuiSvgIcon-root': {
