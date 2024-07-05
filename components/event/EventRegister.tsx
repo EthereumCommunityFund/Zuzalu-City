@@ -71,13 +71,13 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               >
                 <Typography variant="bodyMB">Full Pass</Typography>
                 <Stack direction="row" alignItems="end" spacing="5px">
-                  <Typography variant="bodyMB">1000</Typography>
+                  <Typography variant="bodyMB">3000</Typography>
                   <Typography variant="caption">USDT</Typography>
                 </Stack>
               </Stack>
-              <Typography variant="bodyS">
+              {/*<Typography variant="bodyS">
                 This pass does not include accomodation.
-              </Typography>
+              </Typography>*/}
             </Stack>
           </Stack>
           {isOne && (
@@ -94,16 +94,15 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                       justifyContent="space-between"
                       direction="row"
                     >
-                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Typography variant="bodyMB">Private Room</Typography>
                       <Stack direction="row" alignItems="end" spacing="5px">
-                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="bodyMB">+700</Typography>
                         <Typography variant="caption">USDT</Typography>
                       </Stack>
                     </Stack>
                     <Typography variant="bodyS">
-                      Get ready to groove at the Summer Music Festival! Join us
-                      for a day filled with live music, food trucks, and good
-                      vibes.
+                      This pass guarantees a private room for the duration of
+                      your stay.
                     </Typography>
                   </Stack>
                 </Stack>
@@ -115,16 +114,16 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                       justifyContent="space-between"
                       direction="row"
                     >
-                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Typography variant="bodyMB">Shared Room</Typography>
                       <Stack direction="row" alignItems="end" spacing="5px">
-                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="bodyMB">0</Typography>
                         <Typography variant="caption">USDT</Typography>
                       </Stack>
                     </Stack>
                     <Typography variant="bodyS">
-                      Get ready to groove at the Summer Music Festival! Join us
-                      for a day filled with live music, food trucks, and good
-                      vibes.
+                      This pass includes a shared room which may have 1-2
+                      roommates during your stay. You will fill out a Housing
+                      Form for preferences or to request specific roommates.
                     </Typography>
                   </Stack>
                 </Stack>
@@ -149,13 +148,13 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               >
                 <Typography variant="bodyMB">Week Pass</Typography>
                 <Stack direction="row" alignItems="end" spacing="5px">
-                  <Typography variant="bodyMB">1000</Typography>
+                  <Typography variant="bodyMB">1200</Typography>
                   <Typography variant="caption">USDT</Typography>
                 </Stack>
               </Stack>
-              <Typography variant="bodyS">
-                one two three four five six seven eight nine ten elevane
-              </Typography>
+              {/*<Typography variant="bodyS">
+                This pass does not include accomodation.
+              </Typography>*/}
             </Stack>
           </Stack>
           {isTwo && (
@@ -172,16 +171,15 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                       justifyContent="space-between"
                       direction="row"
                     >
-                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Typography variant="bodyMB">Private Room</Typography>
                       <Stack direction="row" alignItems="end" spacing="5px">
-                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="bodyMB">+500</Typography>
                         <Typography variant="caption">USDT</Typography>
                       </Stack>
                     </Stack>
                     <Typography variant="bodyS">
-                      Get ready to groove at the Summer Music Festival! Join us
-                      for a day filled with live music, food trucks, and good
-                      vibes.
+                      This pass guarantees a private room for the duration of
+                      your stay.
                     </Typography>
                   </Stack>
                 </Stack>
@@ -193,16 +191,16 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                       justifyContent="space-between"
                       direction="row"
                     >
-                      <Typography variant="bodyMB">Accom One</Typography>
+                      <Typography variant="bodyMB">Shared Room</Typography>
                       <Stack direction="row" alignItems="end" spacing="5px">
                         <Typography variant="bodyMB">+100</Typography>
                         <Typography variant="caption">USDT</Typography>
                       </Stack>
                     </Stack>
                     <Typography variant="bodyS">
-                      Get ready to groove at the Summer Music Festival! Join us
-                      for a day filled with live music, food trucks, and good
-                      vibes.
+                      This pass includes a shared room which may have 1-2
+                      roommates during your stay. You will fill out a Housing
+                      Form for preferences or to request specific roommates.
                     </Typography>
                   </Stack>
                 </Stack>

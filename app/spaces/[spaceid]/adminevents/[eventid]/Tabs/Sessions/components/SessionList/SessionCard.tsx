@@ -11,9 +11,8 @@ interface SessionCardProps {
 
 const SessionCard: React.FC<SessionCardProps> = ({
   session,
-  setSelectedSession
+  setSelectedSession,
 }) => {
-  console.log("sessioncard", session)
   return (
     <Stack
       onClick={() => setSelectedSession(session)}
@@ -24,12 +23,18 @@ const SessionCard: React.FC<SessionCardProps> = ({
         ':hover': {
           backgroundColor: '#383838',
         },
-        cursor: "pointer"
+        cursor: 'pointer',
       }}
     >
       <Stack spacing="10px" flex={1}>
         <Stack direction="row" spacing="10px" alignItems="center">
-          <Typography bgcolor="#7DFFD11A" padding="2px 4px" color="#7DFFD1" variant="bodyX" borderRadius="2px">
+          <Typography
+            bgcolor="#7DFFD11A"
+            padding="2px 4px"
+            color="#7DFFD1"
+            variant="bodyX"
+            borderRadius="2px"
+          >
             · LIVE
           </Typography>
           <Typography variant="caption" textTransform="uppercase">
@@ -37,11 +42,14 @@ const SessionCard: React.FC<SessionCardProps> = ({
           </Typography>
         </Stack>
         <Typography variant="bodyB">
-          {dayjs(session.startTime).format('h:mm A')} - {dayjs(session.endTime).format('h:mm A')}
+          {dayjs(session.startTime).format('h:mm A')} -{' '}
+          {dayjs(session.endTime).format('h:mm A')}
         </Typography>
         <Typography variant="subtitleSB">{session.title}</Typography>
         <Stack direction={'row'} spacing={1} alignItems="center">
-          <Typography variant="bodyS" sx={{ opacity: 0.7 }}>Speakers:</Typography>
+          <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+            Speakers:
+          </Typography>
           {JSON.parse(session.speakers).map((speaker: any, index: number) => (
             <Stack
               key={`Speaker-${index}`}
@@ -54,7 +62,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
                 height={20}
                 width={20}
                 borderRadius={10}
-                src={speaker.avatar || "/16.jpg"}
+                src={speaker.avatar || '/16.jpg'}
               />
               <Typography variant="bodyS">{speaker.username}</Typography>
             </Stack>
@@ -62,15 +70,23 @@ const SessionCard: React.FC<SessionCardProps> = ({
         </Stack>
         <Stack direction={'row'} alignItems={'center'} spacing={1}>
           <MapIcon size={4} />
-          <Typography variant="caption" sx={{ opacity: 0.5 }}>{session.format === 'online' ? session.video_url : session.location}</Typography>
+          <Typography variant="caption" sx={{ opacity: 0.5 }}>
+            {session.format === 'online' ? session.video_url : session.location}
+          </Typography>
         </Stack>
       </Stack>
-      <Stack padding="4px" spacing="4px" direction="row" alignItems="center" borderRadius="8px" sx={{ opacity: 0.7 }}
-        bgcolor="rgba(255, 255, 255, 0.05)" height="fit-content">
+      <Stack
+        padding="4px"
+        spacing="4px"
+        direction="row"
+        alignItems="center"
+        borderRadius="8px"
+        sx={{ opacity: 0.7 }}
+        bgcolor="rgba(255, 255, 255, 0.05)"
+        height="fit-content"
+      >
         <SessionIcon />
-        <Typography variant="bodyS">
-          1
-        </Typography>
+        <Typography variant="bodyS">1</Typography>
       </Stack>
     </Stack>
   );

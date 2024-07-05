@@ -9,7 +9,7 @@ import {
 import { Event } from '@/types';
 
 interface PropTypes {
-  event?: Event
+  event?: Event;
 }
 
 const Overview = ({ event }: PropTypes) => {
@@ -17,7 +17,7 @@ const Overview = ({ event }: PropTypes) => {
     <Stack direction="column" spacing={4} paddingBottom={5}>
       <OverviewHeader event={event} />
       <OverviewDetail eventData={event} />
-      <OverviewInvite event={event}/>
+      <OverviewInvite event={event} />
       {/* <OverviewPosts /> */}
     </Stack>
   );

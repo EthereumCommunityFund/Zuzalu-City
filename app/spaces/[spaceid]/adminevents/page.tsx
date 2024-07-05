@@ -101,6 +101,8 @@ const Home = () => {
 
   const getSpaceByID = async () => {
     try {
+      console.log(params);
+
       const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {
         node(id: $id) {
@@ -119,6 +121,9 @@ const Home = () => {
             github
             discord
             ens
+            admin {
+              id
+            }
             events(first: 10) {
               edges {
                 node {
@@ -154,7 +159,6 @@ const Home = () => {
       });
       const spaceData: Space = response.data.node as Space;
       setSpace(spaceData);
-
       const eventData: SpaceEventData = response.data.node
         .events as SpaceEventData;
       const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
@@ -217,7 +221,13 @@ const Home = () => {
     const fetchData = async () => {
       try {
         await getEvents();
-        await getSpaceByID();
+        const space = await getSpaceByID();
+        const admins =
+          space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
+        const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+        if (!admins.includes(userDID)) {
+          router.push('/');
+        }
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -254,7 +264,6 @@ const Home = () => {
     const [track, setTrack] = useState<string>('');
     const [tracks, setTracks] = useState<string[]>([]);
     const [error, setError] = useState(false);
-
     const profileId = profile?.id || '';
     const adminId = ceramic?.did?.parent || '';
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -394,8 +403,8 @@ const Home = () => {
                   tagline: inputs.tagline,
                   spaceId: spaceId,
                   profileId: profileId,
-                  //image_url: avatarURL,
                   image_url:
+                    avatarURL ||
                     'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
@@ -564,8 +573,8 @@ const Home = () => {
                     {5000 -
                       (description
                         ? description.blocks
-                          .map((item) => item.data.text.length)
-                          .reduce((prev, current) => prev + current, 0)
+                            .map((item) => item.data.text.length)
+                            .reduce((prev, current) => prev + current, 0)
                         : 0)}{' '}
                     Characters Left
                   </Typography>
@@ -1013,6 +1022,7 @@ const Home = () => {
         spaceId={params.spaceid.toString()}
         avatar={space?.avatar}
         banner={space?.banner}
+        isAdmin={true}
       />
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />

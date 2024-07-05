@@ -177,13 +177,18 @@ const Create = () => {
               tagline: tagline,
               admin: adminId,
               profileId: profileId,
-              avatar: avatarURL,
-              banner: bannerURL,
+              avatar:
+                avatarURL ||
+                'https://nftstorage.link/ipfs/bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe',
+              banner:
+                bannerURL ||
+                'https://nftstorage.link/ipfs/bafybeifqan4j2n7gygwkmekcty3dsp7v4rxbjimpo7nrktclwxgxreiyay',
               category: categories.join(', '),
             },
           },
         },
       );
+      console.log(update);
       typeof window !== 'undefined' &&
         window.alert(
           'Submitted! Create process probably complete after few minute. Please check it in Space List page.',

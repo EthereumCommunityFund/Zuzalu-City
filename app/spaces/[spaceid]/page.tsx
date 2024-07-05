@@ -39,7 +39,7 @@ export default function SpaceDetailPage() {
   const params = useParams();
   const theme = useTheme();
   const router = useRouter();
-  const { composeClient } = useCeramicContext();
+  const { composeClient, ceramic } = useCeramicContext();
   const [showMore, setShowMore] = useState(false);
   const [space, setSpace] = useState<Space>();
   const [showCopyToast, setShowCopyToast] = useState(false);
@@ -49,9 +49,7 @@ export default function SpaceDetailPage() {
   const [contentHeight, setContentHeight] = useState(0);
   const [isContentLarge, setIsContentLarge] = useState(false);
 
-  useEffect(() => {
-    setCurrentHref(window.location.href);
-  }, []);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const getSpaceByID = async () => {
     try {
@@ -73,6 +71,9 @@ export default function SpaceDetailPage() {
             github
             discord
             ens
+            admin {
+              id
+            }
             events(first: 10) {
               edges {
                 node {
@@ -112,7 +113,6 @@ export default function SpaceDetailPage() {
       });
       const spaceData: Space = response.data.node as Space;
       setSpace(spaceData);
-
       const eventData: SpaceEventData = response.data.node
         .events as SpaceEventData;
       const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
@@ -122,28 +122,40 @@ export default function SpaceDetailPage() {
       console.error('Failed to fetch space:', error);
     }
   };
-
   useEffect(() => {
-    getSpaceByID()
-      .then((space = {} as Space) => {
-        document.title = space.name + ' - ' + 'Zuzalu City';
-      })
-      .catch((error) => {
+    const fetchData = async () => {
+      try {
+        setCurrentHref(window.location.href);
+        console.log(params);
+        const space = await getSpaceByID();
+        document.title = space?.name + ' - ' + 'Zuzalu City';
+        const admins =
+          space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
+        const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+        if (admins.includes(userDID)) {
+          setIsAdmin(true);
+        }
+      } catch (error) {
         console.error('An error occurred:', error);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
-    const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
-    console.log("edi", editorContent)
+    const editorContent = document.querySelector(
+      '.codex-editor__redactor',
+    ) as HTMLElement;
+    console.log('edi', editorContent);
     if (editorContent) {
-      console.log("here", editorContent.scrollHeight > 300)
+      console.log('here', editorContent.scrollHeight > 300);
       setContentHeight(editorContent.scrollHeight);
       setIsContentLarge(editorContent.scrollHeight > 300);
     }
   }, [space?.description]);
 
-  console.log("false", isContentLarge)
+  console.log('false', isContentLarge);
 
   return (
     <Box
@@ -159,6 +171,7 @@ export default function SpaceDetailPage() {
         spaceId={params.spaceid.toString()}
         avatar={space?.avatar}
         banner={space?.banner}
+        isAdmin={isAdmin}
       />
       <Box
         sx={{
