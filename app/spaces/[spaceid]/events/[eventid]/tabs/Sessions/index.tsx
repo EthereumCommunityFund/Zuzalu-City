@@ -1616,7 +1616,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               </Stack>
               <Stack spacing="20px" padding="20px">
                 <Typography variant="subtitleSB">Description</Typography>
-                <TextEditor
+                <Typography>
+                  {JSON.parse(selectedSession.description.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text)}
+                </Typography>
+                {/* <TextEditor
                   holder="session-description"
                   readonly
                   sx={{
@@ -1630,7 +1633,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     selectedSession.description.replaceAll('\\"', '"'),
                   )}
                   showMore={showMore}
-                />
+                /> */}
                 <ZuButton
                   startIcon={
                     !showMore ? (
