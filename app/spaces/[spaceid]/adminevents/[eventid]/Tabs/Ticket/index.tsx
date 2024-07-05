@@ -97,7 +97,6 @@ const Ticket = ({ event }: PropTypes) => {
   const [ticketMintDeadline, setTicketMintDeadline] =
     React.useState<Dayjs | null>(dayjs());
   const [vaultIndex, setVaultIndex] = React.useState<number>(0);
-  console.log(event?.contracts);
   const handleFileChange = (event: { target: { files: any[] } }) => {
     const file = event.target.files[0];
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
@@ -190,7 +189,7 @@ const Ticket = ({ event }: PropTypes) => {
         abi: ERC20_ABI,
         functionName: 'decimals',
       })) as number;
-      console.log(ticketImageURL);
+
       const createTicketHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: TICKET_FACTORY_ADDRESS as Address,
@@ -231,7 +230,7 @@ const Ticket = ({ event }: PropTypes) => {
       if (createTicketStatus === 'success') {
         const defaultPreviewImage =
           'https://unsplash.com/photos/a-small-yellow-boat-floating-on-top-of-a-lake-HONnVkEnzDo';
-        const previewImageToUse = ticketInfo?.image ?? defaultPreviewImage;
+        const previewImageToUse = ticketImageURL ?? defaultPreviewImage;
 
         if (createTicketLogs.length > 0) {
           const newContractAddress = createTicketLogs[0].address;
@@ -358,7 +357,6 @@ const Ticket = ({ event }: PropTypes) => {
   };
   useEffect(() => {
     readFromContract();
-    console.log(event?.contractID);
   }, []);
 
   const list = (anchor: Anchor) => (
@@ -463,6 +461,8 @@ const Ticket = ({ event }: PropTypes) => {
             setEndTime={setEndTime}
             ticketImage={ticketImage}
             setTicketImage={setTicketImage}
+            ticketImageURL={ticketImageURL}
+            setTicketImageURL={setTicketImageURL}
           />
         )}
       {!purchasingTicket &&

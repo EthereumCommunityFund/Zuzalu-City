@@ -89,13 +89,16 @@ const Sessions = () => {
   const [sessionGated, setSessionGated] = useState<boolean>(false);
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
-  const [sessionLiveStreamLink, setSessionLiveStreamLink] = useState<string>("");
+  const [sessionLiveStreamLink, setSessionLiveStreamLink] =
+    useState<string>('');
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   const [sessionDate, setSessionDate] = useState<Dayjs>(dayjs());
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
-    dayjs().set('hour', 0).set('minute', 0)
+    dayjs().set('hour', 0).set('minute', 0),
   );
-  const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(dayjs().set('hour', 0).set('minute', 0));
+  const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
+    dayjs().set('hour', 0).set('minute', 0),
+  );
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
@@ -163,7 +166,6 @@ const Sessions = () => {
           (edge) => edge.node,
         );
         setSessions(fetchedSessions);
-        console.log("session", fetchedSessions);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -190,14 +192,13 @@ const Sessions = () => {
           }
         }
       `);
-    console.log("respon", response)
 
     if ('mVPProfileIndex' in response.data) {
       const profileData: ProfileEdge = response.data as ProfileEdge;
       const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
         (edge) => edge.node,
       );
-      console.log("people", fetchedPeople);
+
       setPeople(fetchedPeople);
     } else {
       console.error('Invalid data structure:', response.data);
@@ -208,16 +209,15 @@ const Sessions = () => {
   };
 
   const getLocation = async () => {
-    console.log("eventid", eventId)
     try {
       const { data } = await supabase
         .from('venues')
         .select('*')
         .eq('eventId', eventId);
-      console.log("data", data)
+      console.log('data', data);
       if (data !== null) {
         setVenues(data);
-        const locations = data.map(item => item.name);
+        const locations = data.map((item) => item.name);
         setLocations(locations);
       }
     } catch (err) {
@@ -227,27 +227,39 @@ const Sessions = () => {
 
   const getSession = async () => {
     try {
-      const { data } = await supabase.from('sessions').select('*').eq('eventId', eventId);
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('eventId', eventId);
       if (data) {
         setSessions(data);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
 
   const handleDateChange = (date: Dayjs) => {
     if (date) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
-      const available = JSON.parse(venues.filter(item => item.name === sessionLocation)[0].bookings)
-      console.log("avail", available[dayName.toLowerCase()] || []);
+      const available = JSON.parse(
+        venues.filter((item) => item.name === sessionLocation)[0].bookings,
+      );
+      console.log('avail', available[dayName.toLowerCase()] || []);
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
     }
     setSessionDate(date);
   };
 
-  const isDateInRange = (date: Dayjs, startDate?: string, endDate?: string): boolean => {
-    return date.isAfter(dayjs(startDate).subtract(1, 'day')) && date.isBefore(dayjs(endDate).add(1, 'day'));
+  const isDateInRange = (
+    date: Dayjs,
+    startDate?: string,
+    endDate?: string,
+  ): boolean => {
+    return (
+      date.isAfter(dayjs(startDate).subtract(1, 'day')) &&
+      date.isBefore(dayjs(endDate).add(1, 'day'))
+    );
   };
 
   const isTimeAvailable = (date: Dayjs, available?: any): boolean => {
@@ -257,8 +269,7 @@ const Sessions = () => {
       const startTime = dayjs(slot.startTime).format('HH:mm');
       const endTime = dayjs(slot.endTime).format('HH:mm');
       return formattedTime >= startTime && formattedTime < endTime;
-    }
-    );
+    });
 
     return isMinuteIntervalValid && isWithinAvailableSlot;
   };
@@ -354,7 +365,10 @@ const Sessions = () => {
         : e.target.value,
     );
 
-    const speakers = e.target.value.map((speaker: any) => people.filter(i => i.username === speaker)[0].author?.id);
+    const speakers = e.target.value.map(
+      (speaker: any) =>
+        people.filter((i) => i.username === speaker)[0].author?.id,
+    );
     setSessionSpeakers(speakers);
   };
 
@@ -365,7 +379,10 @@ const Sessions = () => {
         : e.target.value,
     );
 
-    const organizers = e.target.value.map((organizer: any) => people.filter(i => i.username === organizer)[0].author?.id);
+    const organizers = e.target.value.map(
+      (organizer: any) =>
+        people.filter((i) => i.username === organizer)[0].author?.id,
+    );
     setSessionOrganizers(organizers);
   };
 
@@ -411,15 +428,15 @@ const Sessions = () => {
       track: sessionTrack,
       gated: sessionGated,
       timezone: dayjs.tz.guess().toString(),
-      video_url: sessionVideoURL
-    })
+      video_url: sessionVideoURL,
+    });
 
-    console.log("return data", data);
+    console.log('return data', data);
     toggleDrawer('right', false);
     await getSession();
   };
 
-  console.log("eventdata", eventData)
+  console.log('eventdata', eventData);
 
   const List = (anchor: Anchor) => {
     return (
@@ -619,16 +636,13 @@ const Sessions = () => {
                 >
                   {EXPREIENCE_LEVEL_TYPES.map((i, index) => {
                     return (
-                      <MenuItem
-                        value={i.key}
-                        key={`Speaker_Index${index}`}
-                      >
+                      <MenuItem value={i.key} key={`Speaker_Index${index}`}>
                         {i.value}
                       </MenuItem>
                     );
                   })}
                 </Select>
-              </Stack >
+              </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Live-Stream Link</Typography>
                 <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
@@ -639,7 +653,7 @@ const Sessions = () => {
                   placeholder="https://"
                 />
               </Stack>
-            </Stack >
+            </Stack>
             <Stack
               direction={'column'}
               spacing="30px"
@@ -751,7 +765,7 @@ const Sessions = () => {
                         Custom
                       </MenuItem>
                     </Select>
-                    {sessionLocation && sessionLocation !== "Custom" && (
+                    {sessionLocation && sessionLocation !== 'Custom' && (
                       <Stack>
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -794,7 +808,7 @@ const Sessions = () => {
                         </Stack>
                       </Stack>
                     )}
-                    {sessionLocation && sessionLocation === "Custom" && (
+                    {sessionLocation && sessionLocation === 'Custom' && (
                       <Stack>
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -806,26 +820,54 @@ const Sessions = () => {
                           <Typography variant="bodyS">
                             Write name of the location
                           </Typography>
-                          <ZuInput placeholder="Type location name" onChange={(e) => setCustomLocation(e.target.value)} />
-                          <ZuButton endIcon={!isDirections ? <PlusIcon size={5} /> : <MinusIcon size={5} />} onClick={() => setIsDirections(prev => !prev)}>
-                            {!isDirections ? "Add Directions" : "Remove Directions"}
+                          <ZuInput
+                            placeholder="Type location name"
+                            onChange={(e) => setCustomLocation(e.target.value)}
+                          />
+                          <ZuButton
+                            endIcon={
+                              !isDirections ? (
+                                <PlusIcon size={5} />
+                              ) : (
+                                <MinusIcon size={5} />
+                              )
+                            }
+                            onClick={() => setIsDirections((prev) => !prev)}
+                          >
+                            {!isDirections
+                              ? 'Add Directions'
+                              : 'Remove Directions'}
                           </ZuButton>
-                          {
-                            isDirections && <ZuInput placeholder="Directions description" onChange={(e) => setDirections(e.target.value)} />
-                          }
-                          {customLocation && <Stack borderRadius="10px" border="1px solid #383838" padding="10px" spacing="10px">
-                            <Typography variant="caption">
-                              CUSTOM LOCATIONS:
-                            </Typography>
-                            <Stack borderRadius="10px" bgcolor="#373737" padding="10px">
-                              <Typography variant="bodyBB">
-                                {customLocation}
+                          {isDirections && (
+                            <ZuInput
+                              placeholder="Directions description"
+                              onChange={(e) => setDirections(e.target.value)}
+                            />
+                          )}
+                          {customLocation && (
+                            <Stack
+                              borderRadius="10px"
+                              border="1px solid #383838"
+                              padding="10px"
+                              spacing="10px"
+                            >
+                              <Typography variant="caption">
+                                CUSTOM LOCATIONS:
                               </Typography>
-                              <Typography variant="bodyS">
-                                {directions}
-                              </Typography>
+                              <Stack
+                                borderRadius="10px"
+                                bgcolor="#373737"
+                                padding="10px"
+                              >
+                                <Typography variant="bodyBB">
+                                  {customLocation}
+                                </Typography>
+                                <Typography variant="bodyS">
+                                  {directions}
+                                </Typography>
+                              </Stack>
                             </Stack>
-                          </Stack>}
+                          )}
                         </Stack>
                       </Stack>
                     )}
@@ -838,8 +880,16 @@ const Sessions = () => {
                         location
                       </Typography>
                       <DatePicker
-                        onChange={(newValue) => { if (newValue !== null) handleDateChange(newValue) }}
-                        shouldDisableDate={(date: Dayjs) => !isDateInRange(date, eventData?.startTime, eventData?.endTime)}
+                        onChange={(newValue) => {
+                          if (newValue !== null) handleDateChange(newValue);
+                        }}
+                        shouldDisableDate={(date: Dayjs) =>
+                          !isDateInRange(
+                            date,
+                            eventData?.startTime,
+                            eventData?.endTime,
+                          )
+                        }
                         sx={{
                           '& .MuiSvgIcon-root': {
                             color: 'white',
@@ -871,7 +921,10 @@ const Sessions = () => {
                         <TimePicker
                           value={sessionStartTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null)
+                              setSessionStartTime(newValue);
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -915,7 +968,9 @@ const Sessions = () => {
                         <TimePicker
                           value={sessionEndTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null) setSessionEndTime(newValue);
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -955,47 +1010,51 @@ const Sessions = () => {
                         />
                       </Stack>
                     </Stack>
-                    {sessionDate && sessionStartTime !== dayjs().set('hour', 0).set('minute', 0) && sessionEndTime !== dayjs().set('hour', 0).set('minute', 0) && (
-                      <Stack spacing="10px">
-                        <Stack alignItems="center">
-                          <ArrowDownIcon />
-                        </Stack>
-                        <Stack
-                          spacing="10px"
-                          padding="10px"
-                          border="1px solid rgba(255, 255, 255, 0.10)"
-                          borderRadius="10px"
-                        >
-                          <Typography variant="caption">
-                            Date & times your are booking:
-                          </Typography>
+                    {sessionDate &&
+                      sessionStartTime !==
+                        dayjs().set('hour', 0).set('minute', 0) &&
+                      sessionEndTime !==
+                        dayjs().set('hour', 0).set('minute', 0) && (
+                        <Stack spacing="10px">
+                          <Stack alignItems="center">
+                            <ArrowDownIcon />
+                          </Stack>
                           <Stack
-                            borderRadius="10px"
-                            padding="10px"
-                            bgcolor="#313131"
                             spacing="10px"
+                            padding="10px"
+                            border="1px solid rgba(255, 255, 255, 0.10)"
+                            borderRadius="10px"
                           >
-                            <Typography variant="bodyBB">
-                              {`${sessionDate.format('MMMM')}` +
-                                ' ' +
-                                `${sessionDate.format('DD')}` +
-                                ', ' +
-                                `${sessionDate.format('YYYY')}`}
+                            <Typography variant="caption">
+                              Date & times your are booking:
                             </Typography>
-                            <Typography variant="bodyS">
-                              Start Time:{' '}
-                              {`${sessionStartTime.format('HH')}` +
-                                `${sessionStartTime.format('A')}`}
-                            </Typography>
-                            <Typography variant="bodyS">
-                              End Time: :{' '}
-                              {`${sessionEndTime.format('HH')}` +
-                                `${sessionEndTime.format('A')}`}
-                            </Typography>
+                            <Stack
+                              borderRadius="10px"
+                              padding="10px"
+                              bgcolor="#313131"
+                              spacing="10px"
+                            >
+                              <Typography variant="bodyBB">
+                                {`${sessionDate.format('MMMM')}` +
+                                  ' ' +
+                                  `${sessionDate.format('DD')}` +
+                                  ', ' +
+                                  `${sessionDate.format('YYYY')}`}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                Start Time:{' '}
+                                {`${sessionStartTime.format('HH')}` +
+                                  `${sessionStartTime.format('A')}`}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                End Time: :{' '}
+                                {`${sessionEndTime.format('HH')}` +
+                                  `${sessionEndTime.format('A')}`}
+                              </Typography>
+                            </Stack>
                           </Stack>
                         </Stack>
-                      </Stack>
-                    )}
+                      )}
                   </Stack>
                 </Stack>
               )}
@@ -1018,8 +1077,16 @@ const Sessions = () => {
                         Pick a date for this session
                       </Typography>
                       <DatePicker
-                        onChange={(newValue) => { if (newValue !== null) handleDateChange(newValue) }}
-                        shouldDisableDate={(date: Dayjs) => !isDateInRange(date, eventData?.startTime, eventData?.endTime)}
+                        onChange={(newValue) => {
+                          if (newValue !== null) handleDateChange(newValue);
+                        }}
+                        shouldDisableDate={(date: Dayjs) =>
+                          !isDateInRange(
+                            date,
+                            eventData?.startTime,
+                            eventData?.endTime,
+                          )
+                        }
                         sx={{
                           '& .MuiSvgIcon-root': {
                             color: 'white',
@@ -1051,7 +1118,10 @@ const Sessions = () => {
                         <TimePicker
                           value={sessionStartTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionStartTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null)
+                              setSessionStartTime(newValue);
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -1095,7 +1165,9 @@ const Sessions = () => {
                         <TimePicker
                           value={sessionEndTime}
                           ampm={false}
-                          onChange={(newValue) => { if (newValue !== null) setSessionEndTime(newValue) }}
+                          onChange={(newValue) => {
+                            if (newValue !== null) setSessionEndTime(newValue);
+                          }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
                               return !isTimeAvailable(date);
@@ -1195,10 +1267,13 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = organizers
-                            .filter((item) => item !== i)
+                          const newArray = organizers.filter(
+                            (item) => item !== i,
+                          );
                           setOrganizers(newArray);
-                          const newDIDs = sessionOrganizers.filter((_, ind) => ind !== index);
+                          const newDIDs = sessionOrganizers.filter(
+                            (_, ind) => ind !== index,
+                          );
                           setSessionOrganizers(newDIDs);
                         }}
                         key={`Selected_Organizerr${index}`}
@@ -1283,10 +1358,13 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = speakers
-                            .filter((item) => item !== i)
+                          const newArray = speakers.filter(
+                            (item) => item !== i,
+                          );
                           setSpeakers(newArray);
-                          const newDIDs = sessionSpeakers.filter((_, ind) => ind !== index);
+                          const newDIDs = sessionSpeakers.filter(
+                            (_, ind) => ind !== index,
+                          );
                           setSessionSpeakers(newDIDs);
                         }}
                         key={`Selected_Speaker${index}`}
@@ -1356,16 +1434,19 @@ const Sessions = () => {
                 Add Session
               </ZuButton>
             </Box>
-          </Box >
-        </Box >
-      </LocalizationProvider >
+          </Box>
+        </Box>
+      </LocalizationProvider>
     );
   };
 
   return (
     <Stack direction={'column'} spacing="40px">
       <SessionHeader onToggle={toggleDrawer} />
-      <SessionList sessions={sessions} setSelectedSession={setSelectedSession} />
+      <SessionList
+        sessions={sessions}
+        setSelectedSession={setSelectedSession}
+      />
       {/* <SessionAdd /> */}
       <SwipeableDrawer
         hideBackdrop={true}

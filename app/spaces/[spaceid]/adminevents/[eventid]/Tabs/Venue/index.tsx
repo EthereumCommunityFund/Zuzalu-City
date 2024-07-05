@@ -16,7 +16,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { PreviewFile } from '@/components';
-import { createConnector } from '@lxdao/uploader3-connector';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { VenueHeader, VenueList } from './components';
 import {
@@ -90,25 +89,29 @@ const Home: React.FC<IVenue> = ({ event }) => {
 
   const getVenues = async () => {
     try {
-      const { data } = await supabase.from('venues').select('*').eq('eventId', eventId);
+      const { data } = await supabase
+        .from('venues')
+        .select('*')
+        .eq('eventId', eventId);
       if (data) {
-        const searchedVenues: Venue[] = data.filter((item, i) => item.name.toLowerCase().includes(searchValue.toLowerCase()));
+        const searchedVenues: Venue[] = data.filter((item, i) =>
+          item.name.toLowerCase().includes(searchValue.toLowerCase()),
+        );
         if (searchedVenues.length > 0) {
           setVenues(searchedVenues);
-        }
-        else {
+        } else {
           setVenues(data);
         }
       }
     } catch (err) {
-      console.log("err", err);
+      console.log('err', err);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       await getVenues();
-    }
+    };
 
     fetchData();
   }, []);
@@ -154,22 +157,22 @@ const Home: React.FC<IVenue> = ({ event }) => {
     ]);
 
     const createVenue = async () => {
-      console.log("here")
+      console.log('here');
       try {
         const bookings = {
           monday,
           tuesday,
           wednesday,
           thursday,
-          friday
-        }
-        const { data } = await supabase.from("venues").insert({
+          friday,
+        };
+        const { data } = await supabase.from('venues').insert({
           name,
           tags: tags.join(','),
           eventId,
           avatar: avatarURL,
-          bookings: JSON.stringify(bookings)
-        })
+          bookings: JSON.stringify(bookings),
+        });
         toggleDrawer('right', false);
         await getVenues();
       } catch (err) {
@@ -335,7 +338,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 >
                   <Uploader3
                     accept={['.gif', '.jpeg', '.gif', '.png']}
-                    connector={connector}
+                    api={'/api/file/upload'}
                     multiple={false}
                     crop={false} // must be false when accept is svg
                     onChange={(files: any) => {
@@ -345,7 +348,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                       setAvatar(file);
                     }}
                     onComplete={(result: any) => {
-                      console.log("result", result)
+                      console.log('result', result);
                       setAvatarURL(result?.url);
                     }}
                   >
@@ -742,7 +745,11 @@ const Home: React.FC<IVenue> = ({ event }) => {
   return (
     <Stack spacing="30px" padding="30px">
       <VenueHeader onToggle={toggleDrawer} count={venues.length} />
-      <VenueList venues={venues} onToggle={toggleDrawer} setSearchValue={setSearchValue} />
+      <VenueList
+        venues={venues}
+        onToggle={toggleDrawer}
+        setSearchValue={setSearchValue}
+      />
       <SwipeableDrawer
         hideBackdrop={true}
         sx={{
