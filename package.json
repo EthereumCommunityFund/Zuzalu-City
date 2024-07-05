@@ -13,6 +13,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "leaflet": "^1.9.0",
     "@4everland/upload-pin": "^1.1.1",
     "@aws-sdk/client-s3": "^3.575.0",
     "@ceramicnetwork/http-client": "^5.10.0",
