@@ -552,8 +552,8 @@ const Home = () => {
                     {5000 -
                       (description
                         ? description.blocks
-                            .map((item) => item.data.text.length)
-                            .reduce((prev, current) => prev + current, 0)
+                          .map((item) => item.data.text.length)
+                          .reduce((prev, current) => prev + current, 0)
                         : 0)}{' '}
                     Characters Left
                   </Typography>
@@ -577,12 +577,15 @@ const Home = () => {
                     multiple={false}
                     crop={false} // must be false when accept is svg
                     onChange={(files: any) => {
+                      console.log("onchange", files);
                       setAvatar(files[0]);
                     }}
                     onUpload={(file: any) => {
+                      console.log("onUpload", file);
                       setAvatar(file);
                     }}
                     onComplete={(result: any) => {
+                      console.log("onComplete", result);
                       setAvatarURL(result?.url);
                     }}
                   >
