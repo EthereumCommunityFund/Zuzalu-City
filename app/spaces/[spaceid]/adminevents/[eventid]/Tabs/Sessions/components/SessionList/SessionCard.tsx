@@ -13,6 +13,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
   session,
   setSelectedSession
 }) => {
+  console.log("sessioncard", session)
   return (
     <Stack
       onClick={() => setSelectedSession(session)}
@@ -31,8 +32,8 @@ const SessionCard: React.FC<SessionCardProps> = ({
           <Typography bgcolor="#7DFFD11A" padding="2px 4px" color="#7DFFD1" variant="bodyX" borderRadius="2px">
             · LIVE
           </Typography>
-          <Typography variant="caption">
-            TRACK
+          <Typography variant="caption" textTransform="uppercase">
+            {session.track}
           </Typography>
         </Stack>
         <Typography variant="bodyB">
@@ -61,7 +62,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
         </Stack>
         <Stack direction={'row'} alignItems={'center'} spacing={1}>
           <MapIcon size={4} />
-          <Typography variant="caption" sx={{ opacity: 0.5 }}>{session.location}</Typography>
+          <Typography variant="caption" sx={{ opacity: 0.5 }}>{session.format === 'online' ? session.video_url : session.location}</Typography>
         </Stack>
       </Stack>
       <Stack padding="4px" spacing="4px" direction="row" alignItems="center" borderRadius="8px" sx={{ opacity: 0.7 }}

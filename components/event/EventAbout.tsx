@@ -27,6 +27,7 @@ const EventAbout = ({ description }: EventAboutTypes) => {
         <Stack>
           <TextEditor
             holder="event-description"
+            readonly
             value={JSON.parse(description.replaceAll('\\"', '"'))}
             showMore={showMore}
           />

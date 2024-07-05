@@ -69,6 +69,7 @@ import { supabase } from '@/utils/supabase/client';
 import TextEditor from '@/components/editor/editor';
 import { SessionSupabaseData } from '@/types';
 import { supaCreateSession } from '@/services/session';
+import Link from 'next/link';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -885,9 +886,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Stack>
                     {sessionDate &&
                       sessionStartTime !==
-                        dayjs().set('hour', 0).set('minute', 0) &&
+                      dayjs().set('hour', 0).set('minute', 0) &&
                       sessionEndTime !==
-                        dayjs().set('hour', 0).set('minute', 0) && (
+                      dayjs().set('hour', 0).set('minute', 0) && (
                         <Stack spacing="10px">
                           <Stack alignItems="center">
                             <ArrowDownIcon />
@@ -1478,7 +1479,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       }),
                     } as any,
                   }}
-                  // onMonthChange={(val) => handleMonthChange(val)}
+                // onMonthChange={(val) => handleMonthChange(val)}
                 />
               </Stack>
             </Grid>
@@ -1515,7 +1516,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     >
                       · LIVE
                     </Typography>
-                    <Typography variant="caption">TRACK</Typography>
+                    <Typography variant="caption" textTransform="uppercase">{selectedSession.track}</Typography>
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing="14px">
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
@@ -1535,9 +1536,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Stack spacing="10px">
                   <Stack direction={'row'} alignItems={'center'} spacing={1}>
                     <MapIcon size={4} />
-                    <Typography variant="caption" sx={{ opacity: 0.5 }}>
-                      {selectedSession.location}
-                    </Typography>
+                    {selectedSession.format === 'online' ?
+                      <Link
+                        href={selectedSession.video_url || ''}
+                        target="_blank"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Typography variant="caption" color="white" sx={{ opacity: 0.5 }}>
+                          {selectedSession.video_url}
+                        </Typography>
+                      </Link>
+                      :
+                      <Typography variant="caption" sx={{ opacity: 0.5 }}>
+                        {selectedSession.location}
+                      </Typography>
+                    }
                   </Stack>
                   <Stack direction={'row'} spacing={1} alignItems="center">
                     <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
@@ -1605,6 +1618,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Typography variant="subtitleSB">Description</Typography>
                 <TextEditor
                   holder="session-description"
+                  readonly
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
@@ -1631,7 +1645,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   {!showMore ? 'Show More' : 'Show Less'}
                 </ZuButton>
               </Stack>
-              <Stack padding="20px" spacing="20px">
+              {/* <Stack padding="20px" spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
@@ -1655,7 +1669,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Typography variant="bodySB" sx={{ opacity: 0.5 }}>
                   View All Edit Logs
                 </Typography>
-              </Stack>
+              </Stack> */}
             </Stack>
             <Stack spacing="20px" width="320px">
               <Stack padding="14px" borderBottom="1px solid #383838">
