@@ -4,7 +4,7 @@ import { createConnector, type Uploader3Connector } from '@lxdao/uploader3-conne
 const token = `${process?.env?.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process?.env?.NEXT_PUBLIC_CONNECTOR_TOKEN}`;
 
 export async function GET() {
-  return NextResponse.json({ message: token }, { status: 200 });
+  return NextResponse.json({ message: token.length }, { status: 200 });
 }
 
 export async function POST(req: Request) {

@@ -439,7 +439,7 @@ const Create = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  api={'/api/upload/image'}
+                  api={'/api/file/upload'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {
@@ -492,7 +492,7 @@ const Create = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  api={'/api/upload/image'}
+                  api={'/api/file/upload'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {

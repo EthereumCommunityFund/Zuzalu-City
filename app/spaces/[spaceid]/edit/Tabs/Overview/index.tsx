@@ -235,7 +235,7 @@ const Overview = () => {
           >
             <Uploader3
               accept={['.gif', '.jpeg', '.gif', '.png']}
-              api={'/api/upload/image'}
+              api={'/api/file/upload'}
               multiple={false}
               crop={{
                 size: { width: 400, height: 400 },
@@ -290,7 +290,7 @@ const Overview = () => {
           >
             <Uploader3
               accept={['.gif', '.jpeg', '.gif', '.png']}
-              api={'/api/upload/image'}
+              api={'/api/file/upload'}
               multiple={false}
               crop={{
                 size: { width: 600, height: 400 },
