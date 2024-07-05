@@ -70,6 +70,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
 
   const [name, setName] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
+  const [capacity, setCapacity] = useState<number>(0);
   const [venues, setVenues] = useState<Venue[]>([]);
 
   const handleChange = (e: any) => {
@@ -168,7 +169,8 @@ const Home: React.FC<IVenue> = ({ event }) => {
           tags: tags.join(','),
           eventId,
           avatar: avatarURL,
-          bookings: JSON.stringify(bookings)
+          bookings: JSON.stringify(bookings),
+          capacity
         })
         toggleDrawer('right', false);
         await getVenues();
@@ -370,6 +372,13 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     file={avatarURL}
                   />
                 </Box>
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Space Capacity*</Typography>
+                <ZuInput
+                  type="number"
+                  onChange={(e) => setCapacity(Number(e.target.value))}
+                />
               </Stack>
             </Stack>
             <Stack
