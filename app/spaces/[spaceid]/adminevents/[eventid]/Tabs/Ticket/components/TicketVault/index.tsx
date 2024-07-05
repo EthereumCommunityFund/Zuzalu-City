@@ -14,17 +14,19 @@ import { shortenAddress } from '@/utils/format';
 import { client } from '@/context/WalletContext';
 import { Address, GetEnsNameReturnType } from 'viem';
 import { ERC20_ABI } from '@/utils/erc20_abi';
-
+import { Contract } from '@/types';
 interface ITicketVault {
   vaultIndex: number;
   ticketAddresses: Array<string>;
   tickets: Array<any>;
+  eventContracts: Contract[];
 }
 
 const TicketVault = ({
   vaultIndex,
   ticketAddresses,
   tickets,
+  eventContracts,
 }: ITicketVault) => {
   const isMobile = useMediaQuery('(max-width:500px)');
   const [action, setAction] = React.useState('Withdraw');
@@ -33,7 +35,14 @@ const TicketVault = ({
 
   let ticketAddress = ticketAddresses[vaultIndex];
   let ticket = tickets[vaultIndex];
-
+  const eventContract = eventContracts.find((contract) => {
+    if (contract.contractAddress) {
+      return (
+        contract.contractAddress.trim().toLowerCase() ===
+        ticketAddresses[vaultIndex].trim().toLowerCase()
+      );
+    }
+  });
   const getInfoFromContract = async () => {
     //Apparently scroll sepolia doesn't support ens
     {
@@ -48,9 +57,9 @@ const TicketVault = ({
       abi: ERC20_ABI,
       functionName: 'balanceOf',
       args: [ticketAddress],
-    })) as number;
+    })) as bigint;
 
-    setBalance(balance);
+    setBalance(Number(balance / BigInt(10 ** 18)));
   };
 
   useEffect(() => {
@@ -75,12 +84,17 @@ const TicketVault = ({
           spacing={2.5}
           marginTop={'10px'}
         >
-          <Box
-            component="img"
-            width="100px"
-            height="100px"
-            borderRadius="8px"
-            src="/24.webp"
+          <Image
+            alt={''}
+            src={eventContract?.image_url || '/24.webp'}
+            loader={() => eventContract?.image_url || '/24.webp'}
+            width={100}
+            height={100}
+            objectFit="cover"
+            style={{
+              width: isMobile ? '100%' : undefined,
+              height: isMobile ? '100%' : undefined,
+            }}
           />
           <Stack direction="column" spacing={0.9}>
             <Typography
@@ -194,7 +208,6 @@ const TicketVault = ({
                 <GoToExplorerIcon cursor="pointer" />
               </Box>
             </Box>
-
             {controller && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Typography
@@ -499,7 +512,11 @@ const TicketVault = ({
             ticket={ticket}
           />
         ) : action === 'SendTicket' ? (
-          <SendNFTTicket ticketAddress={ticketAddress} ticket={ticket} />
+          <SendNFTTicket
+            ticketAddress={ticketAddress}
+            ticket={ticket}
+            eventContract={eventContract as Contract}
+          />
         ) : ticket[9]?.result ? (
           <Whitelist
             vaultIndex={vaultIndex}

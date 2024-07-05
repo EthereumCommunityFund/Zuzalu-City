@@ -36,6 +36,7 @@ import { Event } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Abi, AbiItem } from 'viem';
 import { TicketType } from './components/CreateTicket';
+import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface PropTypes {
   event?: Event;
@@ -72,7 +73,7 @@ const Ticket = ({ event }: PropTypes) => {
   const [selectedType, setSelectedType] = React.useState('Attendee');
   const [isWhiteList, setIsWhiteList] = React.useState(false);
   const { ceramic, composeClient, profile } = useCeramicContext();
-
+  const [creatingImage, setCreatingImage] = React.useState('');
   const handleChange = (e: any) => {
     const { name, value } = e.target;
 
@@ -91,9 +92,12 @@ const Ticket = ({ event }: PropTypes) => {
   const [txnHash, setTxnHash] = React.useState('');
   const [selectedFile, setSelectedFile] = React.useState<string | null>(null);
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
+  const [ticketImage, setTicketImage] = React.useState<SelectedFile>();
+  const [ticketImageURL, setTicketImageURL] = React.useState<string>();
   const [ticketMintDeadline, setTicketMintDeadline] =
     React.useState<Dayjs | null>(dayjs());
   const [vaultIndex, setVaultIndex] = React.useState<number>(0);
+  console.log(event?.contracts);
   const handleFileChange = (event: { target: { files: any[] } }) => {
     const file = event.target.files[0];
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
@@ -109,8 +113,6 @@ const Ticket = ({ event }: PropTypes) => {
       setPreviewImage(null);
     }
   };
-
-  // the event ticket ID here will be retrieved from ceramic
 
   const [isSubmitLoading, setIsSubmitLoading] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -188,7 +190,7 @@ const Ticket = ({ event }: PropTypes) => {
         abi: ERC20_ABI,
         functionName: 'decimals',
       })) as number;
-
+      console.log(ticketImageURL);
       const createTicketHash = await writeContract(config, {
         chainId: scrollSepolia.id,
         address: TICKET_FACTORY_ADDRESS as Address,
@@ -229,7 +231,7 @@ const Ticket = ({ event }: PropTypes) => {
       if (createTicketStatus === 'success') {
         const defaultPreviewImage =
           'https://unsplash.com/photos/a-small-yellow-boat-floating-on-top-of-a-lake-HONnVkEnzDo';
-        const previewImageToUse = previewImage ?? defaultPreviewImage;
+        const previewImageToUse = ticketInfo?.image ?? defaultPreviewImage;
 
         if (createTicketLogs.length > 0) {
           const newContractAddress = createTicketLogs[0].address;
@@ -356,6 +358,7 @@ const Ticket = ({ event }: PropTypes) => {
   };
   useEffect(() => {
     readFromContract();
+    console.log(event?.contractID);
   }, []);
 
   const list = (anchor: Anchor) => (
@@ -458,6 +461,8 @@ const Ticket = ({ event }: PropTypes) => {
             setEndDate={setEndDate}
             endTime={endTime}
             setEndTime={setEndTime}
+            ticketImage={ticketImage}
+            setTicketImage={setTicketImage}
           />
         )}
       {!purchasingTicket &&
@@ -516,13 +521,14 @@ const Ticket = ({ event }: PropTypes) => {
         vaultIndex={vaultIndex}
         ticketAddresses={ticketAddresses}
         tickets={tickets}
+        eventContracts={event?.contracts ? event.contracts : []}
       />
     </Box>
   );
 
   return (
     <Stack spacing={2}>
-      <TicketHeader event={event} visible={!!event?.contractID} />
+      <TicketHeader event={event} visible={event?.contractID === null} />
       {isLoading ? (
         <Box>
           <Typography>Loading...</Typography>
@@ -534,12 +540,13 @@ const Ticket = ({ event }: PropTypes) => {
           tickets={tickets}
           setToggleAction={setToggleAction}
           onToggle={toggleDrawer}
+          eventContracts={event?.contracts ? event.contracts : []}
         />
       ) : (
         <TicketAdd
           onToggle={toggleDrawer}
           setToggleAction={setToggleAction}
-          visible={!event?.contractID}
+          visible={event?.contractID !== null}
         />
       )}
       <TicketAccess />
