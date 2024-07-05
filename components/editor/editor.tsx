@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, Fragment, FC, useState } from 'react';
+import React, { useEffect, useRef, Fragment, FC, useState, SetStateAction } from 'react';
 import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
@@ -18,6 +18,10 @@ interface TextEditorPropTypes extends BoxProps {
   placeholder?: string;
   readonly?: boolean;
   showMore?: boolean;
+  setShowMore?: React.Dispatch<SetStateAction<boolean>> | any;
+  isContentLarge?: boolean;
+  setIsContentLarge?: React.Dispatch<SetStateAction<boolean>> | any;
+  setContentHeight?: (height: number) => void;
   limit?: number;
 }
 
@@ -31,10 +35,13 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   limit = 5000,
   readonly = false,
   showMore = false,
+  setShowMore,
+  isContentLarge,
+  setIsContentLarge,
+  setContentHeight = () => { },
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
-  const [contentHeight, setContentHeight] = useState(0);
 
   useEffect(() => {
     if (!ref.current) {
@@ -116,9 +123,9 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   useEffect(() => {
     const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
     if (editorContent) {
-      applyCustomStyles(showMore || contentHeight <= 300);
+      applyCustomStyles(showMore || editorContent.scrollHeight <= 300);
     }
-  }, [showMore, contentHeight]);
+  }, [showMore]);
 
   return (
     <Fragment>

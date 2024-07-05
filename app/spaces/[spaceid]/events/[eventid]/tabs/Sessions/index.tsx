@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Stack,
@@ -102,6 +102,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   const [selectedSession, setSelectedSession] = useState<Session>();
   const [showMore, setShowMore] = useState(false);
+  const [isContentLarge, setIsContentLarge] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(
@@ -368,6 +370,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const contentHeight = contentRef.current?.scrollHeight ?? 0;
+    setIsContentLarge(contentHeight > 300);
+  }, [selectedSession?.description]);
 
   const List = (anchor: Anchor) => {
     return (
@@ -1616,7 +1623,16 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               </Stack>
               <Stack spacing="20px" padding="20px">
                 <Typography variant="subtitleSB">Description</Typography>
-                <Typography>
+                <Typography
+                  ref={contentRef}
+                  style={{
+                    maxHeight: showMore ? 'none' : '300px',
+                    overflow: 'hidden',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: showMore ? 'none' : '3',
+                  }}
+                >
                   {JSON.parse(selectedSession.description.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text)}
                 </Typography>
                 {/* <TextEditor
@@ -1634,7 +1650,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   )}
                   showMore={showMore}
                 /> */}
-                <ZuButton
+                {isContentLarge && <ZuButton
                   startIcon={
                     !showMore ? (
                       <ChevronDownIcon size={4} />
@@ -1646,7 +1662,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   onClick={() => setShowMore((prev) => !prev)}
                 >
                   {!showMore ? 'Show More' : 'Show Less'}
-                </ZuButton>
+                </ZuButton>}
               </Stack>
               {/* <Stack padding="20px" spacing="20px">
                 <Stack spacing="10px">
