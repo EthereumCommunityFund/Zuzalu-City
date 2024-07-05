@@ -9,7 +9,7 @@ import {
 import Image from 'next/image';
 import { shortenAddress } from '@/utils/format';
 import { mUSDC_TOKEN } from '@/constant';
-
+import { Contract } from '@/types';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export type TicketCardProps = {
@@ -26,6 +26,7 @@ export type TicketCardProps = {
   setToggleAction?: React.Dispatch<React.SetStateAction<string>>;
   setVaultIndex?: React.Dispatch<React.SetStateAction<number>>;
   onToggle?: (anchor: Anchor, open: boolean) => void;
+  eventContract?: Contract;
 };
 
 const TicketCard: React.FC<TicketCardProps> = ({
@@ -41,11 +42,12 @@ const TicketCard: React.FC<TicketCardProps> = ({
   ticketAddresses,
   setVaultIndex,
   setToggleAction,
+  eventContract,
   onToggle = (anchor: Anchor, open: boolean) => {},
 }) => {
   const isMobile = useMediaQuery('(max-width:500px)');
   let status = true;
-
+  console.log(eventContract);
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
@@ -61,8 +63,9 @@ const TicketCard: React.FC<TicketCardProps> = ({
       }}
     >
       <Image
-        alt={'24.webp'}
-        src={'/24.webp'}
+        alt={''}
+        src={eventContract?.image_url || '/24.webp'}
+        loader={() => eventContract?.image_url || '/24.webp'}
         width={100}
         height={100}
         objectFit="cover"
@@ -71,7 +74,6 @@ const TicketCard: React.FC<TicketCardProps> = ({
           height: isMobile ? '100%' : undefined,
         }}
       />
-
       <Stack direction="column" spacing={1}>
         <Stack
           gap={1}

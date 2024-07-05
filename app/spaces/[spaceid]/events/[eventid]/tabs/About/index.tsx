@@ -76,7 +76,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isMint, setIsMint] = useState<boolean>(false);
   const [isTransaction, setIsTransaction] = useState<boolean>(false);
   const [isComplete, setIsComplete] = useState<boolean>(false);
-
+  const [tokenId, setTokenId] = useState<string>('');
   const [isSponsorAgree, setIsSponsorAgree] = useState<boolean>(false);
   const [isSponsorMint, setIsSponsorMint] = useState<boolean>(false);
   const [isSponsorTransaction, setIsSponsorTransaction] =

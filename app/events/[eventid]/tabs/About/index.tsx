@@ -62,13 +62,14 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isMint, setIsMint] = useState<boolean>(false);
   const [isTransaction, setIsTransaction] = useState<boolean>(false);
   const [isComplete, setIsComplete] = useState<boolean>(false);
-
+  const [tokenId, setTokenId] = useState<string>('');
   const [isSponsorAgree, setIsSponsorAgree] = useState<boolean>(false);
   const [isSponsorMint, setIsSponsorMint] = useState<boolean>(false);
   const [isSponsorTransaction, setIsSponsorTransaction] =
     useState<boolean>(false);
   const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
   const [filteredResults, setFilteredResults] = useState<any[]>([]);
+  const [ticketMinted, setTicketMinted] = useState<any[]>([]);
   const params = useParams();
   const eventId = params.eventid.toString();
 
@@ -191,7 +192,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await getLatLngFromAddress(location);
-      console.log('eventlocatino', location, res);
       setOsm(res);
     };
     fetchData();
@@ -260,6 +260,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                   setIsMint={setIsMint}
                   filteredResults={filteredResults}
                   event={eventData}
+                  setTokenId={setTokenId}
+                  setTicketMinted={setTicketMinted}
                 />
               )}
             {!isVerify &&
@@ -282,6 +284,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                   setIsTransaction={setIsTransaction}
                   setIsComplete={setIsComplete}
                   handleClose={handleClose}
+                  tokenId={tokenId}
+                  ticketMinted={ticketMinted}
                 />
               )}
           </>
@@ -307,6 +311,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                   setIsMint={setIsSponsorMint}
                   filteredResults={filteredResults}
                   event={eventData}
+                  setTokenId={setTokenId}
+                  setTicketMinted={setTicketMinted}
                 />
               )}
             {!isSponsorAgree &&
@@ -327,6 +333,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                   setIsTransaction={setIsSponsorTransaction}
                   setIsComplete={setIsSponsorComplete}
                   handleClose={handleClose}
+                  tokenId={tokenId}
+                  ticketMinted={ticketMinted}
                 />
               )}
           </>
