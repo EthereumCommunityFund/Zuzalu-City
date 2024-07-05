@@ -256,7 +256,7 @@ const Home = () => {
     const [error, setError] = useState(false);
 
     const profileId = profile?.id || '';
-    const adminId = ceramic?.did?.parent || '';
+    const adminId = ceramic?.did || '';
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 

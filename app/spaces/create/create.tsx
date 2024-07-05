@@ -85,7 +85,7 @@ const Create = () => {
   });
 
   const profileId = profile?.id || '';
-  const adminId = ceramic?.did?.parent || '';
+  const adminId = ceramic?.did || '';
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
 
