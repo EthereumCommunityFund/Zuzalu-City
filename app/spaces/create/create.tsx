@@ -26,6 +26,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
+import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 
 interface Space {
   id: string;
@@ -83,7 +84,19 @@ const Create = () => {
   const adminId = ceramic?.did?.parent || '';
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
+  const uploadFile = async (fileToUpload: File) => {
+    const fileType = fileToUpload.type;
+    const tags = [{ name: 'Content-Type', value: fileType }];
 
+    try {
+      const response = await gaslessFundAndUpload(fileToUpload, tags, 'EVM');
+      const fileUrl = `https://gateway.irys.xyz/${response}`;
+      console.log(`File uploaded ==> ${fileUrl}`);
+      setAvatarURL(fileUrl);
+    } catch (e) {
+      console.log('Error uploading file ', e);
+    }
+  };
   const createSpace = async () => {
     let strDesc: any = JSON.stringify(description);
 
@@ -449,14 +462,7 @@ const Create = () => {
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {
                     setAvatar(files[0]);
-                  }}
-                  onUpload={(result: any) => {
-                    setAvatar(result);
-                  }}
-                  onComplete={(result: any) => {
-                    if (result && result.url) {
-                      setAvatarURL(result.url);
-                    }
+                    uploadFile(files[0].file);
                   }}
                 >
                   <Button

@@ -182,6 +182,7 @@ export interface Venue {
   tags: string;
   avatar: string;
   bookings: string;
+  capacity: number;
 }
 
 export type Profile = {

@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { ThreeVerticalIcon } from '@/components/icons';
 import { Venue } from '@/types';
+import { supabase } from '@/utils/supabase/client';
+import { Session } from '@/types';
 
 type VenueCardProps = {
   venue: Venue;
 };
 
 const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const getSession = async () => {
+    try {
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('location', venue.name);
+      if (data) {
+        setSessions(data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getSession();
+    }
+
+    fetchData();
+  }, [])
+
   return (
     <Stack
       direction="row"
@@ -40,7 +65,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
             ))
           }
         </Stack>
-        <Typography variant="bodyS">Sessions Booked: Capacity: 00</Typography>
+        <Typography variant="bodyS">Sessions Booked: {sessions.length} Capacity: {venue.capacity}</Typography>
       </Stack>
       <Stack
         direction="row"

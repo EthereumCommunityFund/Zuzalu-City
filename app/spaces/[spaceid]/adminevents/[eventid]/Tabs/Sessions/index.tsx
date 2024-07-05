@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useParams } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -70,6 +70,7 @@ const Sessions = () => {
   const [total, setTotal] = useState<any[]>();
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session>();
+  const [selectedRoom, setSelectedRoom] = useState<Venue>();
 
   const [state, setState] = React.useState({
     top: false,
@@ -239,6 +240,11 @@ const Sessions = () => {
     }
   };
 
+  const handleRoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedRoom = venues.filter(item => item.name === e.target.value)[0];
+    setSelectedRoom(selectedRoom);
+  }
+
   const handleDateChange = (date: Dayjs) => {
     if (date) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
@@ -334,7 +340,7 @@ const Sessions = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getSessions();
+        // await getSessions();
         await getSession();
         await getPeople();
         await getLocation();
@@ -345,6 +351,29 @@ const Sessions = () => {
     };
     fetchData();
   }, []);
+
+  const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
+  const getBookedSession = async () => {
+    try {
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('location', sessionLocation);
+      if (data) {
+        setBookedSessions(data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getBookedSession();
+    }
+
+    fetchData();
+  }, [sessionLocation])
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -744,7 +773,11 @@ const Sessions = () => {
                     </Typography>
                     <Select
                       value={sessionLocation}
-                      onChange={(e) => setSessionLocation(e.target.value)}
+                      onChange={(e) => {
+                        const selectedRoom = venues.filter(item => item.name === e.target.value)[0];
+                        setSelectedRoom(selectedRoom);
+                        setSessionLocation(e.target.value);
+                      }}
                       MenuProps={{
                         PaperProps: {
                           style: {
@@ -798,10 +831,10 @@ const Sessions = () => {
                                 {sessionLocation}
                               </Typography>
                               <Typography variant="bodyS">
-                                Sessions booked: 22
+                                Sessions booked: {bookedSessions.length}
                               </Typography>
                               <Typography variant="caption">
-                                Capacity: 15
+                                Capacity: {selectedRoom?.capacity}
                               </Typography>
                             </Stack>
                           </Stack>
