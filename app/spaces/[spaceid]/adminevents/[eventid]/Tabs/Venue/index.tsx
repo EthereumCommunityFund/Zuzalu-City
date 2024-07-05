@@ -35,7 +35,7 @@ import { VENUE_TAGS } from '@/constant';
 import { Venue, Event } from '@/types';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
-
+import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Custom_Option: TimeStepOptions = {
@@ -83,7 +83,19 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
   const [searchValue, setSearchValue] = useState<string>('');
+  const uploadFile = async (fileToUpload: File) => {
+    const fileType = fileToUpload.type;
+    const tags = [{ name: 'Content-Type', value: fileType }];
 
+    try {
+      const response = await gaslessFundAndUpload(fileToUpload, tags, 'EVM');
+      const fileUrl = `https://gateway.irys.xyz/${response}`;
+      console.log(`File uploaded ==> ${fileUrl}`);
+      setAvatarURL(fileUrl);
+    } catch (e) {
+      console.log('Error uploading file ', e);
+    }
+  };
   const getVenues = async () => {
     try {
       const { data } = await supabase
@@ -336,18 +348,11 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 >
                   <Uploader3
                     accept={['.gif', '.jpeg', '.gif', '.png']}
-                    api={'/api/file/upload'}
                     multiple={false}
                     crop={false} // must be false when accept is svg
                     onChange={(files: any) => {
                       setAvatar(files[0]);
-                    }}
-                    onUpload={(file: any) => {
-                      setAvatar(file);
-                    }}
-                    onComplete={(result: any) => {
-                      console.log('result', result);
-                      setAvatarURL(result?.url);
+                      uploadFile(files[0]);
                     }}
                   >
                     <Button

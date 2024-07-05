@@ -457,7 +457,6 @@ const Create = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  api={'/api/file/upload'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {
@@ -503,17 +502,11 @@ const Create = () => {
               >
                 <Uploader3
                   accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  api={'/api/file/upload'}
                   multiple={false}
                   crop={false} // must be false when accept is svg
                   onChange={(files) => {
                     setBanner(files[0]);
-                  }}
-                  onUpload={(file: any) => {
-                    setBanner(file);
-                  }}
-                  onComplete={(result: any) => {
-                    setBannerURL(result?.url);
+                    uploadFile(files[0].file);
                   }}
                 >
                   <Button

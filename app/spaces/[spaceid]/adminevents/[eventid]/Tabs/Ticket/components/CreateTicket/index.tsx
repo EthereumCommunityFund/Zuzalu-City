@@ -43,6 +43,7 @@ import TextEditor from '@/components/editor/editor';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
+import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 interface IProps {
   setIsConfirm?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setGoToSummary?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -586,6 +587,19 @@ export const CreateTicket = ({
   ticketImageURL,
   setTicketImageURL,
 }: IProps) => {
+  const uploadFile = async (fileToUpload: File) => {
+    const fileType = fileToUpload.type;
+    const tags = [{ name: 'Content-Type', value: fileType }];
+
+    try {
+      const response = await gaslessFundAndUpload(fileToUpload, tags, 'EVM');
+      const fileUrl = `https://gateway.irys.xyz/${response}`;
+      console.log(`File uploaded ==> ${fileUrl}`);
+      setTicketImageURL(fileUrl);
+    } catch (e) {
+      console.log('Error uploading file ', e);
+    }
+  };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack padding="20px 30px" spacing="30px">
@@ -762,19 +776,11 @@ export const CreateTicket = ({
             >
               <Uploader3
                 accept={['.gif', '.jpeg', '.jpg', '.png']}
-                api={'/api/file/upload'}
                 multiple={false}
                 crop={false} // must be false when accept is svg
                 onChange={(files) => {
                   setTicketImage(files[0]);
-                }}
-                onUpload={(result: any) => {
-                  setTicketImage(result);
-                }}
-                onComplete={(result: any) => {
-                  if (result && result.url) {
-                    setTicketImageURL(result.url);
-                  }
+                  uploadFile(files[0].file);
                 }}
               >
                 <Button

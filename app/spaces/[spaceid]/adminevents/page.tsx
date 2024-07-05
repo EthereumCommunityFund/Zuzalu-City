@@ -43,6 +43,7 @@ import { supabase } from '@/utils/supabase/client';
 import { useAccount } from 'wagmi';
 import Input from '@/components/core/Input';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
+import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 
 interface Inputs {
   name: string;
@@ -310,7 +311,19 @@ const Home = () => {
         setTrack('');
       }
     };
+    const uploadFile = async (fileToUpload: File) => {
+      const fileType = fileToUpload.type;
+      const tags = [{ name: 'Content-Type', value: fileType }];
 
+      try {
+        const response = await gaslessFundAndUpload(fileToUpload, tags, 'EVM');
+        const fileUrl = `https://gateway.irys.xyz/${response}`;
+        console.log(`File uploaded ==> ${fileUrl}`);
+        setAvatarURL(fileUrl);
+      } catch (e) {
+        console.log('Error uploading file ', e);
+      }
+    };
     const createEvent = async () => {
       const isNeeded =
         inputs.name.length === 0 ||
@@ -589,20 +602,11 @@ const Home = () => {
                 >
                   <Uploader3
                     accept={['.gif', '.jpeg', '.gif', '.png']}
-                    api={'/api/file/upload'}
                     multiple={false}
                     crop={false} // must be false when accept is svg
                     onChange={(files: any) => {
-                      console.log('onchange', files);
                       setAvatar(files[0]);
-                    }}
-                    onUpload={(file: any) => {
-                      console.log('onUpload', file);
-                      setAvatar(file);
-                    }}
-                    onComplete={(result: any) => {
-                      console.log('onComplete', result);
-                      setAvatarURL(result?.url);
+                      uploadFile(files[0].file);
                     }}
                   >
                     <Button
