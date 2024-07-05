@@ -84,19 +84,39 @@ const Create = () => {
   const adminId = ceramic?.did?.parent || '';
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
-  const uploadFile = async (fileToUpload: File) => {
-    const fileType = fileToUpload.type;
-    const tags = [{ name: 'Content-Type', value: fileType }];
+  const [file, setFile] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const inputFile = useRef<HTMLInputElement>(null);
 
+  const uploadFile = async (fileToUpload: File, image: string) => {
     try {
-      const response = await gaslessFundAndUpload(fileToUpload, tags, 'EVM');
-      const fileUrl = `https://gateway.irys.xyz/${response}`;
-      console.log(`File uploaded ==> ${fileUrl}`);
-      setAvatarURL(fileUrl);
+      setUploading(true);
+      const data = new FormData();
+      data.set('file', fileToUpload);
+      const res = await fetch('/api/pinata', {
+        method: 'POST',
+        body: data,
+      });
+      const resData = await res.json();
+      console.log(resData);
+      if (image === 'Avatar') {
+        setAvatarURL(resData.url);
+      } else {
+        setBannerURL(resData.url);
+      }
+      setUploading(false);
     } catch (e) {
-      console.log('Error uploading file ', e);
+      console.log(e);
+      setUploading(false);
+      alert('Trouble uploading file');
     }
   };
+
+  const handleImageChange = (e: any) => {
+    setFile(e.target.files[0]);
+    uploadFile(e.target.files[0], e.target.id);
+  };
+
   const createSpace = async () => {
     let strDesc: any = JSON.stringify(description);
 
@@ -455,27 +475,24 @@ const Create = () => {
                   gap: '10px',
                 }}
               >
-                <Uploader3
-                  accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  multiple={false}
-                  crop={false} // must be false when accept is svg
-                  onChange={(files) => {
-                    setAvatar(files[0]);
-                    uploadFile(files[0].file);
+                <ZuInput
+                  type="file"
+                  id="Avatar"
+                  ref={inputFile}
+                  onChange={handleImageChange}
+                />
+                {/*<Button
+                  disabled={uploading}
+                  onClick={() => inputFile.current && inputFile.current.click()}
+                  sx={{
+                    color: 'white',
+                    borderRadius: '10px',
+                    backgroundColor: '#373737',
+                    border: '1px solid #383838',
                   }}
                 >
-                  <Button
-                    component="span"
-                    sx={{
-                      color: 'white',
-                      borderRadius: '10px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
-                    }}
-                  >
-                    Upload
-                  </Button>
-                </Uploader3>
+                  {uploading ? 'Uploading...' : 'Upload'}
+                </Button>*/}
                 <PreviewFile
                   sx={{
                     width: '150px',
@@ -500,27 +517,12 @@ const Create = () => {
                   gap: '10px',
                 }}
               >
-                <Uploader3
-                  accept={['.gif', '.jpeg', '.jpg', '.png']}
-                  multiple={false}
-                  crop={false} // must be false when accept is svg
-                  onChange={(files) => {
-                    setBanner(files[0]);
-                    uploadFile(files[0].file);
-                  }}
-                >
-                  <Button
-                    component="span"
-                    sx={{
-                      color: 'white',
-                      borderRadius: '10px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
-                    }}
-                  >
-                    Upload
-                  </Button>
-                </Uploader3>
+                <ZuInput
+                  type="file"
+                  id="Banner"
+                  ref={inputFile}
+                  onChange={handleImageChange}
+                />
                 <PreviewFile
                   sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
                   file={bannerURL}

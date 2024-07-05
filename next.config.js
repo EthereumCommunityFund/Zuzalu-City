@@ -14,6 +14,12 @@ const nextConfig = {
         pathname: '**',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'scarlet-binding-hummingbird-437.mypinata.cloud',
+        pathname: '/ipfs/**',
+        port: '',
+      },
     ],
   },
   swcMinify: false,

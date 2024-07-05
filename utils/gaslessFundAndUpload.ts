@@ -52,7 +52,7 @@ const gaslessFundAndUploadEVM = async (
 
   const wallet = { name: 'ethersv5', provider: provider };
   const irys = new WebIrys({
-    network: 'devnet', // "mainnet" || "devnet"
+    network: 'mainnet', // "mainnet" || "devnet"
     token,
     wallet,
   });

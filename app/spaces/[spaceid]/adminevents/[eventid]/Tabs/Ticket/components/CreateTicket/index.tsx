@@ -587,18 +587,33 @@ export const CreateTicket = ({
   ticketImageURL,
   setTicketImageURL,
 }: IProps) => {
-  const uploadFile = async (fileToUpload: File) => {
-    const fileType = fileToUpload.type;
-    const tags = [{ name: 'Content-Type', value: fileType }];
+  const [file, setFile] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const inputFile = useRef<HTMLInputElement>(null);
 
+  const uploadFile = async (fileToUpload: File) => {
     try {
-      const response = await gaslessFundAndUpload(fileToUpload, tags, 'EVM');
-      const fileUrl = `https://gateway.irys.xyz/${response}`;
-      console.log(`File uploaded ==> ${fileUrl}`);
-      setTicketImageURL(fileUrl);
+      setUploading(true);
+      const data = new FormData();
+      data.set('file', fileToUpload);
+      const res = await fetch('/api/pinata', {
+        method: 'POST',
+        body: data,
+      });
+      const resData = await res.json();
+      console.log(resData);
+      setTicketImageURL(resData.url);
+      setUploading(false);
     } catch (e) {
-      console.log('Error uploading file ', e);
+      console.log(e);
+      setUploading(false);
+      alert('Trouble uploading file');
     }
+  };
+
+  const handleImageChange = (e: any) => {
+    setFile(e.target.files[0]);
+    uploadFile(e.target.files[0]);
   };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -774,27 +789,12 @@ export const CreateTicket = ({
                 gap: '10px',
               }}
             >
-              <Uploader3
-                accept={['.gif', '.jpeg', '.jpg', '.png']}
-                multiple={false}
-                crop={false} // must be false when accept is svg
-                onChange={(files) => {
-                  setTicketImage(files[0]);
-                  uploadFile(files[0].file);
-                }}
-              >
-                <Button
-                  component="span"
-                  sx={{
-                    color: 'white',
-                    borderRadius: '10px',
-                    backgroundColor: '#373737',
-                    border: '1px solid #383838',
-                  }}
-                >
-                  Upload
-                </Button>
-              </Uploader3>
+              <ZuInput
+                type="file"
+                id="Avatar"
+                ref={inputFile}
+                onChange={handleImageChange}
+              />
               <PreviewFile
                 sx={{
                   width: '200px',

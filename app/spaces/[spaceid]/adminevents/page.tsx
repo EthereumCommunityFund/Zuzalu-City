@@ -262,6 +262,34 @@ const Home = () => {
     const [error, setError] = useState(false);
     const profileId = profile?.id || '';
     const adminId = ceramic?.did?.parent || '';
+    const [file, setFile] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const inputFile = useRef<HTMLInputElement>(null);
+
+    const uploadFile = async (fileToUpload: File) => {
+      try {
+        setUploading(true);
+        const data = new FormData();
+        data.set('file', fileToUpload);
+        const res = await fetch('/api/pinata', {
+          method: 'POST',
+          body: data,
+        });
+        const resData = await res.json();
+        console.log(resData);
+        setAvatarURL(resData.url);
+        setUploading(false);
+      } catch (e) {
+        console.log(e);
+        setUploading(false);
+        alert('Trouble uploading file');
+      }
+    };
+
+    const handleImageChange = (e: any) => {
+      setFile(e.target.files[0]);
+      uploadFile(e.target.files[0]);
+    };
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 
@@ -311,19 +339,7 @@ const Home = () => {
         setTrack('');
       }
     };
-    const uploadFile = async (fileToUpload: File) => {
-      const fileType = fileToUpload.type;
-      const tags = [{ name: 'Content-Type', value: fileType }];
 
-      try {
-        const response = await gaslessFundAndUpload(fileToUpload, tags, 'EVM');
-        const fileUrl = `https://gateway.irys.xyz/${response}`;
-        console.log(`File uploaded ==> ${fileUrl}`);
-        setAvatarURL(fileUrl);
-      } catch (e) {
-        console.log('Error uploading file ', e);
-      }
-    };
     const createEvent = async () => {
       const isNeeded =
         inputs.name.length === 0 ||
@@ -600,27 +616,12 @@ const Home = () => {
                     gap: '10px',
                   }}
                 >
-                  <Uploader3
-                    accept={['.gif', '.jpeg', '.gif', '.png']}
-                    multiple={false}
-                    crop={false} // must be false when accept is svg
-                    onChange={(files: any) => {
-                      setAvatar(files[0]);
-                      uploadFile(files[0].file);
-                    }}
-                  >
-                    <Button
-                      component="span"
-                      sx={{
-                        color: 'white',
-                        borderRadius: '10px',
-                        backgroundColor: '#373737',
-                        border: '1px solid #383838',
-                      }}
-                    >
-                      Upload
-                    </Button>
-                  </Uploader3>
+                  <ZuInput
+                    type="file"
+                    id="Avatar"
+                    ref={inputFile}
+                    onChange={handleImageChange}
+                  />
                   <PreviewFile
                     sx={{
                       width: '200px',
