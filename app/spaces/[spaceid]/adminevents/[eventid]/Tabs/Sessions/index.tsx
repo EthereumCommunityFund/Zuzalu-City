@@ -362,7 +362,7 @@ const Sessions = () => {
     }
 
     fetchData();
-  }, [selectedRoom])
+  }, [sessionLocation])
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });

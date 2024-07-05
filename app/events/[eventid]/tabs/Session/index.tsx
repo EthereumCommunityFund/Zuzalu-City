@@ -104,6 +104,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [showMore, setShowMore] = useState(false);
   const [isContentLarge, setIsContentLarge] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [selectedRoom, setSelectedRoom] = useState<Venue>();
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(
@@ -370,6 +371,29 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     fetchData();
   }, []);
+
+  const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
+  const getBookedSession = async () => {
+    try {
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('location', sessionLocation);
+      if (data) {
+        setBookedSessions(data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getBookedSession();
+    }
+
+    fetchData();
+  }, [sessionLocation])
 
   useEffect(() => {
     const contentHeight = contentRef.current?.scrollHeight ?? 0;
@@ -682,7 +706,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Typography>
                     <Select
                       value={sessionLocation}
-                      onChange={(e) => setSessionLocation(e.target.value)}
+                      onChange={(e) => {
+                        const selectedRoom = venues.filter(item => item.name === e.target.value)[0];
+                        setSelectedRoom(selectedRoom);
+                        setSessionLocation(e.target.value);
+                      }}
                       MenuProps={{
                         PaperProps: {
                           style: {
@@ -733,10 +761,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                                 {sessionLocation}
                               </Typography>
                               <Typography variant="bodyS">
-                                Sessions booked: 22
+                                Sessions booked: {selectedRoom?.capacity}
                               </Typography>
                               <Typography variant="caption">
-                                Capacity: 15
+                                Capacity: {bookedSessions.length}
                               </Typography>
                             </Stack>
                           </Stack>
