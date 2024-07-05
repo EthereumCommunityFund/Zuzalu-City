@@ -402,7 +402,7 @@ const Home = () => {
                   profileId: profileId,
                   //image_url: avatarURL,
                   image_url:
-                    'https://bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe.ipfs.nftstorage.link/',
+                    'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),

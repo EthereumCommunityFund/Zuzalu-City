@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Stack,
@@ -69,6 +69,7 @@ import { supabase } from '@/utils/supabase/client';
 import TextEditor from '@/components/editor/editor';
 import { SessionSupabaseData } from '@/types';
 import { supaCreateSession } from '@/services/session';
+import Link from 'next/link';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -101,6 +102,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   const [selectedSession, setSelectedSession] = useState<Session>();
   const [showMore, setShowMore] = useState(false);
+  const [isContentLarge, setIsContentLarge] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(
@@ -182,9 +185,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       console.log(err);
     }
   };
-
   const handleDateChange = (date: Dayjs) => {
-    if (date) {
+    if (date && person) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
@@ -221,7 +223,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          mVPProfileIndex(first: 50) {
+          mVPProfileIndex(first: 20) {
             edges {
               node {
                 id
@@ -324,6 +326,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     const adminId = ceramic?.did?.parent || '';
     console.log(adminId);
     const format = person ? 'person' : 'online';
+
     const formattedData: SessionSupabaseData = {
       title: sessionName,
       description: strDesc,
@@ -353,6 +356,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     } catch (error) {
       console.error('Error creating session:', error);
     }
+
     toggleDrawer('right', false);
     await getSession();
   };
@@ -366,6 +370,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const contentHeight = contentRef.current?.scrollHeight ?? 0;
+    setIsContentLarge(contentHeight > 300);
+  }, [selectedSession?.description]);
 
   const List = (anchor: Anchor) => {
     return (
@@ -425,7 +434,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               <Typography variant="subtitleMB">Session Details</Typography>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Name*</Typography>
-                <ZuInput onChange={(e) => setSessionName(e.target.value)} />
+                <ZuInput
+                  onChange={(e) => setSessionName(e.target.value)}
+                  placeholder="Standard Pass"
+                />
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Select a Track*</Typography>
@@ -881,9 +893,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Stack>
                     {sessionDate &&
                       sessionStartTime !==
-                        dayjs().set('hour', 0).set('minute', 0) &&
+                      dayjs().set('hour', 0).set('minute', 0) &&
                       sessionEndTime !==
-                        dayjs().set('hour', 0).set('minute', 0) && (
+                      dayjs().set('hour', 0).set('minute', 0) && (
                         <Stack spacing="10px">
                           <Stack alignItems="center">
                             <ArrowDownIcon />
@@ -1474,7 +1486,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       }),
                     } as any,
                   }}
-                  // onMonthChange={(val) => handleMonthChange(val)}
+                // onMonthChange={(val) => handleMonthChange(val)}
                 />
               </Stack>
             </Grid>
@@ -1511,7 +1523,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     >
                       · LIVE
                     </Typography>
-                    <Typography variant="caption">TRACK</Typography>
+                    <Typography variant="caption" textTransform="uppercase">{selectedSession.track}</Typography>
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing="14px">
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
@@ -1531,9 +1543,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Stack spacing="10px">
                   <Stack direction={'row'} alignItems={'center'} spacing={1}>
                     <MapIcon size={4} />
-                    <Typography variant="caption" sx={{ opacity: 0.5 }}>
-                      {selectedSession.location}
-                    </Typography>
+                    {selectedSession.format === 'online' ?
+                      <Link
+                        href={selectedSession.video_url || ''}
+                        target="_blank"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Typography variant="caption" color="white" sx={{ opacity: 0.5 }}>
+                          {selectedSession.video_url}
+                        </Typography>
+                      </Link>
+                      :
+                      <Typography variant="caption" sx={{ opacity: 0.5 }}>
+                        {selectedSession.location}
+                      </Typography>
+                    }
                   </Stack>
                   <Stack direction={'row'} spacing={1} alignItems="center">
                     <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
@@ -1599,8 +1623,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               </Stack>
               <Stack spacing="20px" padding="20px">
                 <Typography variant="subtitleSB">Description</Typography>
-                <TextEditor
+                <Typography
+                  ref={contentRef}
+                  style={{
+                    maxHeight: showMore ? 'none' : '300px',
+                    overflow: 'hidden',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: showMore ? 'none' : '3',
+                  }}
+                >
+                  {JSON.parse(selectedSession.description.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text)}
+                </Typography>
+                {/* <TextEditor
                   holder="session-description"
+                  readonly
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
@@ -1612,8 +1649,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     selectedSession.description.replaceAll('\\"', '"'),
                   )}
                   showMore={showMore}
-                />
-                <ZuButton
+                /> */}
+                {isContentLarge && <ZuButton
                   startIcon={
                     !showMore ? (
                       <ChevronDownIcon size={4} />
@@ -1625,9 +1662,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   onClick={() => setShowMore((prev) => !prev)}
                 >
                   {!showMore ? 'Show More' : 'Show Less'}
-                </ZuButton>
+                </ZuButton>}
               </Stack>
-              <Stack padding="20px" spacing="20px">
+              {/* <Stack padding="20px" spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
@@ -1651,7 +1688,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Typography variant="bodySB" sx={{ opacity: 0.5 }}>
                   View All Edit Logs
                 </Typography>
-              </Stack>
+              </Stack> */}
             </Stack>
             <Stack spacing="20px" width="320px">
               <Stack padding="14px" borderBottom="1px solid #383838">

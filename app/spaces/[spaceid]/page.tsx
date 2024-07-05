@@ -45,6 +45,10 @@ export default function SpaceDetailPage() {
   const [showCopyToast, setShowCopyToast] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [currentHref, setCurrentHref] = useState('');
+
+  const [contentHeight, setContentHeight] = useState(0);
+  const [isContentLarge, setIsContentLarge] = useState(false);
+
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const getSpaceByID = async () => {
@@ -139,19 +143,19 @@ export default function SpaceDetailPage() {
     fetchData();
   }, []);
 
-  const shortDescription = (description: string, showMore: boolean) => {
-    if (showMore) return description;
-    return description.substring(0, 30);
-  };
-
-  function isValidJSON(str: string): boolean {
-    try {
-      JSON.parse(str);
-      return true;
-    } catch (e) {
-      return false;
+  useEffect(() => {
+    const editorContent = document.querySelector(
+      '.codex-editor__redactor',
+    ) as HTMLElement;
+    console.log('edi', editorContent);
+    if (editorContent) {
+      console.log('here', editorContent.scrollHeight > 300);
+      setContentHeight(editorContent.scrollHeight);
+      setIsContentLarge(editorContent.scrollHeight > 300);
     }
-  }
+  }, [space?.description]);
+
+  console.log('false', isContentLarge);
 
   return (
     <Box
@@ -398,6 +402,10 @@ export default function SpaceDetailPage() {
                     holder="space-detail-editor"
                     readonly={true}
                     value={JSON.parse(space.description.replaceAll('\\"', '"'))}
+                    setContentHeight={(height: number) => {
+                      setContentHeight(height);
+                      setIsContentLarge(height > 300);
+                    }}
                     sx={{
                       fontFamily: 'Inter',
                       color: 'white',
@@ -419,7 +427,7 @@ export default function SpaceDetailPage() {
               <Skeleton variant="rounded" width={'100%'} height={60} />
             )}
 
-            {space && (
+            {isContentLarge && (
               <SidebarButton
                 sx={{
                   width: '100%',
@@ -442,9 +450,9 @@ export default function SpaceDetailPage() {
               >
                 <Stack direction="row" spacing={'10px'} alignItems={'center'}>
                   {showMore ? (
-                    <ChevronDownIcon size={4} />
-                  ) : (
                     <ChevronUpIcon size={4} />
+                  ) : (
+                    <ChevronDownIcon size={4} />
                   )}
                   <span>{showMore ? 'Show Less' : 'Show More'}</span>
                 </Stack>
