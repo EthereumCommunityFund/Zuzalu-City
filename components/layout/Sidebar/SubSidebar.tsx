@@ -28,6 +28,7 @@ interface SubSidebarProps {
   title?: string;
   avatar?: string;
   banner?: string;
+  isAdmin: boolean;
 }
 
 const MenuItem: React.FC<
@@ -57,6 +58,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
   title,
   avatar,
   banner,
+  isAdmin,
 }) => {
   const theme = useTheme();
   const router = useRouter();
@@ -235,12 +237,14 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
           {/*  content="Announcements"*/}
           {/*  isActive={false}*/}
           {/*/>*/}
-          <SidebarButton
-            icon={<TableIcon />}
-            content="Manage Events"
-            isActive={false}
-            onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
-          />
+          {isAdmin && (
+            <SidebarButton
+              icon={<TableIcon />}
+              content="Manage Events"
+              isActive={false}
+              onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
+            />
+          )}
         </Stack>
       </Stack>
     </Stack>

@@ -99,6 +99,9 @@ export interface Space {
   members?: {
     id: string;
   }[];
+  admin?: {
+    id: string;
+  }[];
 }
 
 export interface SpaceEdge {

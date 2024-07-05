@@ -119,6 +119,7 @@ const Home = () => {
             github
             discord
             ens
+            admin
             events(first: 10) {
               edges {
                 node {
@@ -218,6 +219,12 @@ const Home = () => {
       try {
         await getEvents();
         await getSpaceByID();
+        const admins =
+          space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
+        const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+        if (!admins.includes(userDID)) {
+          router.push('/');
+        }
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -254,9 +261,8 @@ const Home = () => {
     const [track, setTrack] = useState<string>('');
     const [tracks, setTracks] = useState<string[]>([]);
     const [error, setError] = useState(false);
-
     const profileId = profile?.id || '';
-    const adminId = ceramic?.did || '';
+    const adminId = ceramic?.did?.parent || '';
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 
@@ -1013,6 +1019,7 @@ const Home = () => {
         spaceId={params.spaceid.toString()}
         avatar={space?.avatar}
         banner={space?.banner}
+        isAdmin={true}
       />
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />

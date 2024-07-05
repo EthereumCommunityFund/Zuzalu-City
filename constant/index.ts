@@ -7,7 +7,7 @@ export const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia3BicWVtYnRiZHVwaWRrYmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQ3MTc1NjMsImV4cCI6MjAzMDI5MzU2M30.ZvO6KbDesswcZ77B-vAKI7lzSCiGjcfEN0vHfRo-tFs';
 
 export const JWT_SECRET = 'ZuCity';
-
+export const chainID = 534351;
 export const PROVIDER =
   'https://eth-sepolia.g.alchemy.com/v2/dIHWHPAPI_-uPhkXh5mcNrqJV88vkI-2';
 
@@ -45,108 +45,108 @@ export const SPACE_CATEGORIES: {
   value: string;
   label: string;
 }[] = [
-    {
-      value: 'network_states',
-      label: 'Network States',
-    },
-    {
-      value: 'charter_cities',
-      label: 'Charter Cities',
-    },
-    {
-      value: 'coordinations',
-      label: 'Coordinations',
-    },
-    {
-      value: 'zk_tech',
-      label: 'ZK Tech',
-    },
-    {
-      value: 'core_eth_development',
-      label: 'Core Ethereum Development',
-    },
-    {
-      value: 'l2_projects',
-      label: 'Layer2 Projects',
-    },
-    {
-      value: 'decentralized_social',
-      label: 'Decentralized Social',
-    },
-  ];
+  {
+    value: 'network_states',
+    label: 'Network States',
+  },
+  {
+    value: 'charter_cities',
+    label: 'Charter Cities',
+  },
+  {
+    value: 'coordinations',
+    label: 'Coordinations',
+  },
+  {
+    value: 'zk_tech',
+    label: 'ZK Tech',
+  },
+  {
+    value: 'core_eth_development',
+    label: 'Core Ethereum Development',
+  },
+  {
+    value: 'l2_projects',
+    label: 'Layer2 Projects',
+  },
+  {
+    value: 'decentralized_social',
+    label: 'Decentralized Social',
+  },
+];
 
 export const VENUE_TAGS: {
   value: string;
   label: string;
 }[] = [
-    {
-      value: 'live_stream_available',
-      label: 'Live-stream Available',
-    },
-    {
-      value: 'external_venue',
-      label: 'External Venue',
-    },
-  ];
+  {
+    value: 'live_stream_available',
+    label: 'Live-stream Available',
+  },
+  {
+    value: 'external_venue',
+    label: 'External Venue',
+  },
+];
 
 export const SOCIAL_TYPES: {
   key: string;
   value: string;
 }[] = [
-    {
-      key: 'github',
-      value: 'Github',
-    },
-    {
-      key: 'discord',
-      value: 'Discord',
-    },
-    {
-      key: 'twitter',
-      value: 'Twitter',
-    },
-    {
-      key: 'telegram',
-      value: 'Telegram',
-    },
-    {
-      key: 'lens',
-      value: 'Lens',
-    },
-    {
-      key: 'nostr',
-      value: 'Nostr',
-    },
-  ];
+  {
+    key: 'github',
+    value: 'Github',
+  },
+  {
+    key: 'discord',
+    value: 'Discord',
+  },
+  {
+    key: 'twitter',
+    value: 'Twitter',
+  },
+  {
+    key: 'telegram',
+    value: 'Telegram',
+  },
+  {
+    key: 'lens',
+    value: 'Lens',
+  },
+  {
+    key: 'nostr',
+    value: 'Nostr',
+  },
+];
 
 export const STARTING_STATUS: {
   key: string;
   value: string;
 }[] = [
-    {
-      key: 'available',
-      value: 'Available',
-    },
-    {
-      key: 'hidden',
-      value: 'Hidden',
-    },
-  ];
+  {
+    key: 'available',
+    value: 'Available',
+  },
+  {
+    key: 'hidden',
+    value: 'Hidden',
+  },
+];
 
 export const EXPREIENCE_LEVEL_TYPES: {
   key: string;
   value: string;
 }[] = [
-    {
-      key: 'beginner',
-      value: 'Beginner',
-    },
-    {
-      key: 'intermediate',
-      value: 'Intermediate',
-    },
-    {
-      key: 'advanced',
-      value: 'Advanced',
-    },
-  ];
+  {
+    key: 'beginner',
+    value: 'Beginner',
+  },
+  {
+    key: 'intermediate',
+    value: 'Intermediate',
+  },
+  {
+    key: 'advanced',
+    value: 'Advanced',
+  },
+];

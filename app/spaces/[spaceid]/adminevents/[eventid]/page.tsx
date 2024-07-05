@@ -90,9 +90,16 @@ const Home: React.FC = () => {
   };
 
   React.useEffect(() => {
-    if (pathname.eventid) {
-      fetchEventById(pathname.eventid as string);
-    }
+    const fetchData = async () => {
+      try {
+        if (pathname.eventid) {
+          fetchEventById(pathname.eventid as string);
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
   }, []);
 
   return (

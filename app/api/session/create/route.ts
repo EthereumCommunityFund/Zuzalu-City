@@ -60,11 +60,14 @@ export async function POST(req: NextRequest) {
 
     if (response.data && response.data.node) {
       const admins =
-        response.data.node.admins?.map((admins) => admins.id) || [];
+        response.data.node.admins?.map((admin) => admin.id.toLowerCase()) || [];
       const members =
-        response.data.node.members?.map((members) => members.id) || [];
-
-      if (!admins.includes(userDID) && !members.includes(userDID)) {
+        response.data.node.members?.map((member) => member.id.toLowerCase()) ||
+        [];
+      if (
+        !admins.includes(userDID.toLowerCase()) &&
+        !members.includes(userDID.toLowerCase())
+      ) {
         return NextResponse.json(
           { error: 'Profile ID is neither an admin nor a member' },
           { status: 403 },

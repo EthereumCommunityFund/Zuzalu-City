@@ -176,7 +176,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       if (data) {
         setSessions(data);
         const sessionsbydate = groupSessionByDate(data);
-        console.log('data', sessionsbydate);
         setSessionsByDate(sessionsbydate);
       }
     } catch (err) {
@@ -323,6 +322,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       return;
     }
     const adminId = ceramic?.did?.parent || '';
+    console.log(adminId);
     const format = person ? 'person' : 'online';
     const formattedData: SessionSupabaseData = {
       title: sessionName,
