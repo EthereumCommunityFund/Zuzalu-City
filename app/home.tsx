@@ -162,6 +162,7 @@ const Home: React.FC = () => {
                 name
                 avatar
               }
+              tracks
             }
           }
         }
@@ -249,6 +250,7 @@ const Home: React.FC = () => {
                   username
                   avatar
                 }
+                tracks
               }
             }
           }
@@ -311,6 +313,7 @@ const Home: React.FC = () => {
               endTime
               id
               startTime
+              tracks
             }
           }
         }

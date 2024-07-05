@@ -192,6 +192,7 @@ const Home = () => {
               space {
                 avatar
               }
+              tracks
             }
           }
         }
@@ -255,7 +256,7 @@ const Home = () => {
     const [error, setError] = useState(false);
 
     const profileId = profile?.id || '';
-
+    const adminId = ceramic?.did?.parent || '';
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 
@@ -378,6 +379,9 @@ const Home = () => {
                  links
                }
                tracks
+               admins{
+               id
+               }
              }
            }
          }
@@ -390,7 +394,9 @@ const Home = () => {
                   tagline: inputs.tagline,
                   spaceId: spaceId,
                   profileId: profileId,
-                  image_url: avatarURL,
+                  //image_url: avatarURL,
+                  image_url:
+                    'https://bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe.ipfs.nftstorage.link/',
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
@@ -402,6 +408,7 @@ const Home = () => {
                   min_participant: inputs.min_participant,
                   status: person ? 'In-Person' : 'Online',
                   tracks: tracks.join(','),
+                  admins: adminId,
                 },
               },
             },

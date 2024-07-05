@@ -51,6 +51,12 @@ export interface Event {
   tracks?: string;
   contractID?: number;
   contracts?: [Contract];
+  admins?: {
+    id: string;
+  }[];
+  members?: {
+    id: string;
+  }[];
 }
 
 export interface EventEdge {
@@ -111,8 +117,8 @@ type People = {
     avatar?: string;
     id: string;
     username: string;
-  }
-}
+  };
+};
 
 export interface Session {
   id: string;
@@ -136,7 +142,26 @@ export interface Session {
   speakers: string;
   organizers: string;
 }
-
+export type SessionSupabaseData = {
+  title: string;
+  description?: string;
+  experience_level?: string;
+  createdAt: string;
+  startTime: string | null;
+  endTime: string | null;
+  profileId: string;
+  eventId: string;
+  tags?: string;
+  type?: string;
+  format?: string;
+  track?: string;
+  timezone?: string;
+  video_url?: string;
+  location?: string;
+  organizers?: string;
+  speakers?: string;
+  userDID: string;
+};
 export interface SessionEdge {
   node: Session;
 }
@@ -162,7 +187,7 @@ export type Profile = {
   avatar?: string;
   author?: {
     id: string;
-  }
+  };
 };
 export interface ProfileData {
   node: Profile;

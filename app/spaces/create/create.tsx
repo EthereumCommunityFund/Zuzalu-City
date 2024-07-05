@@ -86,7 +86,6 @@ const Create = () => {
 
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
-  console.log("admin", adminId)
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
 
@@ -340,9 +339,13 @@ const Create = () => {
                     </Typography>
                   </Stack> */}
                   <Typography variant="caption" color="white">
-                    {
-                      5000 - (description ? description.blocks.map((item) => item.data.text.length).reduce((prev, current) => prev + current, 0) : 0)
-                    } Characters Left
+                    {5000 -
+                      (description
+                        ? description.blocks
+                            .map((item) => item.data.text.length)
+                            .reduce((prev, current) => prev + current, 0)
+                        : 0)}{' '}
+                    Characters Left
                   </Typography>
                 </Stack>
               </Stack>

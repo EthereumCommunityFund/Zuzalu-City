@@ -60,6 +60,7 @@ const EventsPage: React.FC = () => {
                 name
                 avatar
               }
+              tracks
             }
           }
         }

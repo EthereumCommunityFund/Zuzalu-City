@@ -55,6 +55,7 @@
     "@walletconnect/sign-client": "^2.12.2",
     "@walletconnect/universal-provider": "^2.12.2",
     "arbundles": "^0.11.1",
+    "axios": "^1.7.2",
     "dayjs": "^1.11.10",
     "did-session": "^3.1.0",
     "dids": "^5.0.2",

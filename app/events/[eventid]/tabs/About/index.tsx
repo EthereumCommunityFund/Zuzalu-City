@@ -138,6 +138,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 image_url
                 status
               }
+              tracks
             }
           }
         }

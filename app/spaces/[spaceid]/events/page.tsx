@@ -109,6 +109,7 @@ const Home = () => {
               min_participant
               max_participant
               createdAt
+              tracks
             }
           }
         }
