@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, Fragment, FC } from 'react';
+import React, { useEffect, useRef, Fragment, FC, useState } from 'react';
 import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
@@ -34,6 +34,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
+  const [contentHeight, setContentHeight] = useState(0);
 
   useEffect(() => {
     if (!ref.current) {
@@ -85,7 +86,11 @@ const TextEditor: FC<TextEditorPropTypes> = ({
           }
         },
         onReady: () => {
-          applyCustomStyles(showMore);
+          const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+          if (editorContent) {
+            setContentHeight(editorContent.scrollHeight);
+            applyCustomStyles(editorContent.scrollHeight <= 300);
+          }
         },
       });
 
@@ -109,8 +114,11 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   };
 
   useEffect(() => {
-    applyCustomStyles(showMore);
-  }, [showMore]);
+    const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+    if (editorContent) {
+      applyCustomStyles(showMore || contentHeight <= 300);
+    }
+  }, [showMore, contentHeight]);
 
   return (
     <Fragment>
