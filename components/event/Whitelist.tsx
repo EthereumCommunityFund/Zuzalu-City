@@ -31,7 +31,7 @@ import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 import { generateNFTMetadata } from '@/utils/generateNFTMetadata';
 import { createFileFromJSON } from '@/utils/generateNFTMetadata';
 import { fetchEmailJsConfig } from '@/utils/emailService';
-import { Event } from '@/types';
+import { Event, Contract } from '@/types';
 interface IProps {
   setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setIsAgree?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -43,6 +43,10 @@ interface IProps {
   setFilteredResults?: React.Dispatch<React.SetStateAction<any[]>>;
   filteredResults?: any[];
   event?: Event;
+  tokenId?: string;
+  setTokenId?: React.Dispatch<React.SetStateAction<string>> | any;
+  ticketMinted?: any[];
+  setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
 }
 
 export const Verify: React.FC<IProps> = ({
@@ -431,6 +435,8 @@ export const Mint: React.FC<IProps> = ({
   setIsMint,
   filteredResults = [],
   event,
+  setTokenId,
+  setTicketMinted,
 }) => {
   const [awaiting, setAwaiting] = useState<boolean>(false);
   const { address } = useAccount();
@@ -450,10 +456,21 @@ export const Mint: React.FC<IProps> = ({
     });
     return match;
   });
+  const findMatchingContract = (
+    contracts: Contract[],
+    ticketAddress: string,
+  ): Contract | undefined => {
+    return contracts.find(
+      (contract) =>
+        contract.contractAddress?.trim().toLowerCase() ===
+        ticketAddress.trim().toLowerCase(),
+    );
+  };
   const handleMintTicket = async (
     ticketAddress: Address,
     tokenAddress: Address,
     ticketPrice: number,
+    eventContract: Contract,
   ) => {
     try {
       const approveHash = await writeContract(config, {
@@ -471,16 +488,21 @@ export const Mint: React.FC<IProps> = ({
       );
 
       if (approveStatus === 'success') {
-        const metadata = generateNFTMetadata(ticketAddress, 'NFT ticket', '', [
-          {
-            name: 'Event',
-            value: 'Exclusive Event',
-          },
-          {
-            name: 'Type',
-            value: 'Attendee',
-          },
-        ]);
+        const metadata = generateNFTMetadata(
+          ticketAddress,
+          'NFT ticket',
+          eventContract.image_url as string,
+          [
+            {
+              name: 'Event',
+              value: 'Exclusive Event',
+            },
+            {
+              name: 'Type',
+              value: 'Attendee',
+            },
+          ],
+        );
         const metadataFile = createFileFromJSON(metadata, 'metaData');
         const tags = [{ name: 'Content-Type', value: 'application/json' }];
         const uploadedID = await gaslessFundAndUpload(
@@ -497,17 +519,18 @@ export const Mint: React.FC<IProps> = ({
           args: [address, `https://devnet.irys.xyz/${uploadedID}`, address],
         });
 
-        const { status: adminMintStatus } = await waitForTransactionReceipt(
-          config,
-          {
+        const { status: MintStatus, logs: MintLogs } =
+          await waitForTransactionReceipt(config, {
             hash: MintHash,
             timeout: 6000_000,
-          },
-        );
+          });
 
-        if (adminMintStatus === 'success') {
-          setIsAgree(false);
-          setIsMint(true);
+        if (MintStatus === 'success') {
+          if (MintLogs.length > 0) {
+            setTokenId(BigInt(MintLogs[3].data).toString());
+            setIsAgree(false);
+            setIsMint(true);
+          }
         }
       }
     } catch (error) {
@@ -584,13 +607,26 @@ export const Mint: React.FC<IProps> = ({
                 )}
                 <ZuButton
                   startIcon={<RightArrowIcon color="#67DBFF" />}
-                  onClick={() =>
-                    handleMintTicket(
+                  onClick={() => {
+                    const matchingContract = findMatchingContract(
+                      event?.contracts as Contract[],
                       ticket[0],
-                      ticket[3].result,
-                      Number(ticket[4].result),
-                    )
-                  }
+                    );
+                    if (matchingContract) {
+                      handleMintTicket(
+                        ticket[0],
+                        ticket[3].result,
+                        Number(ticket[4].result),
+                        matchingContract,
+                      );
+                      setTicketMinted(ticket);
+                    } else {
+                      console.error(
+                        'No matching contract found for ticket address:',
+                        ticket[0],
+                      );
+                    }
+                  }}
                   sx={{
                     width: '100%',
                     color: '#67DBFF',
@@ -720,6 +756,8 @@ export const Complete: React.FC<IProps> = ({
   setIsTransaction,
   setIsComplete,
   handleClose,
+  tokenId,
+  ticketMinted,
 }) => {
   const [view, setView] = useState<boolean>(false);
   return (
@@ -761,6 +799,24 @@ export const Complete: React.FC<IProps> = ({
           sx={{ cursor: 'pointer' }}
           onClick={() => setView((prev) => !prev)}
         >
+          <Stack direction="row" alignItems="center" spacing="20px">
+            <Typography variant="bodyM">Contract Address:</Typography>
+            <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+              {ticketMinted ? ticketMinted[0] : ''}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" spacing="20px">
+            <Typography variant="bodyMB">Token_ID:</Typography>
+            <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
+              {tokenId}
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" spacing="20px">
+            <Typography variant="bodyMB">
+              Ticket mint successfully, Feel free to add this NFT(SBT) into your
+              wallet
+            </Typography>
+          </Stack>
           {!view ? (
             <Stack
               direction="row"
