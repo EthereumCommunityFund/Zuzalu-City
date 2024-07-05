@@ -185,7 +185,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     }
   };
   const handleDateChange = (date: Dayjs) => {
-    if (date) {
+    if (date && person) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
