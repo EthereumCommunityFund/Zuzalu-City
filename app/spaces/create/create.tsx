@@ -85,7 +85,7 @@ const Create = () => {
   });
 
   const profileId = profile?.id || '';
-  const adminId = ceramic?.did || '';
+  const adminId = ceramic?.did?.parent || '';
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
 
@@ -188,6 +188,7 @@ const Create = () => {
           },
         },
       );
+      console.log(update);
       typeof window !== 'undefined' &&
         window.alert(
           'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
