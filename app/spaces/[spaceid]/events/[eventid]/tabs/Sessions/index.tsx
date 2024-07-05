@@ -70,6 +70,8 @@ import TextEditor from '@/components/editor/editor';
 import { SessionSupabaseData } from '@/types';
 import { supaCreateSession } from '@/services/session';
 import Link from 'next/link';
+import formatDateAgo from '@/utils/formatDateAgo';
+
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -1577,12 +1579,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         target="_blank"
                         style={{ textDecoration: 'none' }}
                       >
-                        <Typography variant="caption" color="white" sx={{ opacity: 0.5 }}>
+                        <Typography variant="bodyM" color="white" sx={{ opacity: 0.5 }}>
                           {selectedSession.video_url}
                         </Typography>
                       </Link>
                       :
-                      <Typography variant="caption" sx={{ opacity: 0.5 }}>
+                      <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
                         {selectedSession.location}
                       </Typography>
                     }
@@ -1692,31 +1694,31 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   {!showMore ? 'Show More' : 'Show Less'}
                 </ZuButton>}
               </Stack>
-              {/* <Stack padding="20px" spacing="20px">
+              <Stack padding="20px" spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       Last Edited By:
                     </Typography>
-                    <Typography variant="bodyS">Drivenfast</Typography>
+                    <Typography variant="bodyS">{JSON.parse(selectedSession.organizers)[0].username}</Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      one day ago
+                      {formatDateAgo(selectedSession.createdAt)}
                     </Typography>
                   </Stack>
                   <Stack direction="row" spacing="10px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       Edited By:
                     </Typography>
-                    <Typography variant="bodyS">Drivenfast</Typography>
+                    <Typography variant="bodyS">{JSON.parse(selectedSession.organizers)[0].username}</Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      one week ago
+                      {formatDateAgo(selectedSession.createdAt)}
                     </Typography>
                   </Stack>
                 </Stack>
                 <Typography variant="bodySB" sx={{ opacity: 0.5 }}>
                   View All Edit Logs
                 </Typography>
-              </Stack> */}
+              </Stack>
             </Stack>
             <Stack spacing="20px" width="320px">
               <Stack padding="14px" borderBottom="1px solid #383838">
