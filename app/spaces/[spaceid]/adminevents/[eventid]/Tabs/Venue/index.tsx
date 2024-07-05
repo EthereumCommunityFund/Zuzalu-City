@@ -84,10 +84,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const [avatarURL, setAvatarURL] = useState<string>();
   const [searchValue, setSearchValue] = useState<string>('');
 
-  const connector = createConnector('NFT.storage', {
-    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-  });
-
   const getVenues = async () => {
     try {
       const { data } = await supabase
