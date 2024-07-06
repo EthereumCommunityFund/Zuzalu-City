@@ -242,9 +242,9 @@ const Home = () => {
       name: '',
       symbol: '',
       tagline: '',
-      participant: 0,
-      min_participant: 0,
-      max_participant: 0,
+      participant: 1,
+      min_participant: 1,
+      max_participant: 1,
       timezone: '',
     });
 
@@ -446,7 +446,7 @@ const Home = () => {
               },
             },
           );
-
+          console.log(update);
           const { data } = await supabase.from('locations').insert({
             name: locations.join(','),
             eventId: update.data.createEvent.document.id,
@@ -456,7 +456,6 @@ const Home = () => {
             window.alert(
               'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
             );
-          router.push('/spaces');
         } catch (err) {
           console.log(err);
         }

@@ -147,9 +147,7 @@ export default function SpaceDetailPage() {
     const editorContent = document.querySelector(
       '.codex-editor__redactor',
     ) as HTMLElement;
-    console.log('edi', editorContent);
     if (editorContent) {
-      console.log('here', editorContent.scrollHeight > 300);
       setContentHeight(editorContent.scrollHeight);
       setIsContentLarge(editorContent.scrollHeight > 300);
     }
