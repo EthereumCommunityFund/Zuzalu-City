@@ -1,57 +1,59 @@
 import { type Uploader3Connector } from '@lxdao/uploader3-connector';
+import FormData from 'form-data';
+import fetch from 'node-fetch';
 
 const token = `${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN}`;
 
-import FormData from 'form-data';
-import fetch from 'node-fetch';
+enum ErrorMessage {
+  NO_IMAGE_DATA_OR_TYPE = 'No image data or type provided',
+  FILE_SIZE_TOO_LARGE = 'File size exceeds 2MB limit',
+}
 
 export async function GET() {
   return Response.json({ message: 'get' }, { status: 200 });
 }
 
 export async function POST(req: Request) {
-  const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
-  let { data: imageData = '', type } = reqBody;
+  const { data: imageData = '', type } =
+    (await req.json()) as Uploader3Connector.PostImageFile;
 
-  if (!imageData) {
-    return Response.json({ error: 'No image data' }, { status: 500 });
+  if (!imageData || !type) {
+    return Response.json(
+      { error: ErrorMessage.NO_IMAGE_DATA_OR_TYPE },
+      { status: 400 },
+    );
   }
 
-  if (!type) {
-    return Response.json({ error: 'No image type' }, { status: 500 });
-  }
+  let imageDataStr = imageData.startsWith('data:image/')
+    ? imageData.replace(/^data:image\/\w+;base64,/, '')
+    : imageData;
+  const buffer = Buffer.from(imageDataStr, 'base64');
 
-  if (imageData.startsWith('data:image/')) {
-    imageData = imageData.replace(/^data:image\/\w+;base64,/, '');
-  }
-
-  const buffer = Buffer.from(imageData, 'base64');
-
-  // if buffer size > 2MB throw error
   if (buffer.byteLength > 2 * 1024 * 1024) {
-    return Response.json({ error: 'file size > 2MB' }, { status: 500 });
+    return Response.json(
+      { error: ErrorMessage.FILE_SIZE_TOO_LARGE },
+      { status: 400 },
+    );
   }
 
-  const formData = new FormData();
-  formData.append('file', buffer, { contentType: type });
-
-  return fetch('https://node.lighthouse.storage/api/v0/add', {
-    method: 'POST',
-    body: formData,
-    headers: {
-      Encryption: 'false',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      const { Hash: cid } = res as { Hash: string };
-      return Response.json(
-        { url: `https://gateway.lighthouse.storage/ipfs/${cid}` },
-        { status: 200 },
-      );
-    })
-    .catch((e) => {
-      return Response.json({ error: e.message }, { status: 500 });
+  try {
+    const formData = new FormData();
+    formData.append('file', buffer, { contentType: type });
+    const res = await fetch('https://node.lighthouse.storage/api/v0/add', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Encryption: 'false',
+        Authorization: `Bearer ${token}`,
+      },
     });
+    const { Hash: cid } = (await res.json()) as { Hash: string };
+    return Response.json(
+      { url: `https://gateway.lighthouse.storage/ipfs/${cid}` },
+      { status: 200 },
+    );
+  } catch (e) {
+    // @ts-ignore
+    return Response.json({ error: e.message }, { status: 500 });
+  }
 }
