@@ -44,6 +44,7 @@ const Custom_Option: TimeStepOptions = {
 type AvailableType = {
   startTime: string;
   endTime: string;
+  error?: string;
 };
 
 const Venue: React.FC = () => {
@@ -78,6 +79,34 @@ const Venue: React.FC = () => {
     token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
   });
 
+  const validateTimeRanges = (ranges: AvailableType[]) => {
+    const errors = ranges.map((range, index) => {
+      const startTime = new Date(range.startTime).getTime();
+      const endTime = new Date(range.endTime).getTime();
+
+      if (startTime >= endTime) {
+        return { ...range, error: 'Start time must be before end time' };
+      }
+
+      for (let i = 0; i < ranges.length; i++) {
+        if (i !== index) {
+          const otherStartTime = new Date(ranges[i].startTime).getTime();
+          const otherEndTime = new Date(ranges[i].endTime).getTime();
+          if (
+            (startTime < otherEndTime && startTime >= otherStartTime) ||
+            (endTime > otherStartTime && endTime <= otherEndTime)
+          ) {
+            return { ...range, error: 'Time ranges overlap' };
+          }
+        }
+      }
+
+      return { ...range, error: '' };
+    });
+
+    return errors;
+  };
+
   const List = (anchor: Anchor) => {
     const [monday, setMonday] = useState<AvailableType[]>([
       {
@@ -111,24 +140,25 @@ const Venue: React.FC = () => {
     ]);
 
     const createVenue = async () => {
-      try {
-        const bookings = {
-          monday,
-          tuesday,
-          wednesday,
-          thursday,
-          friday,
-        };
-        const { data } = await supabase.from('venue').insert({
-          name,
-          tags: tags.join(','),
-          eventid,
-          avatar: avatarURL,
-          bookings: JSON.stringify(bookings),
-        });
-      } catch (err) {
-        console.log(err);
-      }
+      console.log("mon", monday)
+      // try {
+      //   const bookings = {
+      //     monday,
+      //     tuesday,
+      //     wednesday,
+      //     thursday,
+      //     friday,
+      //   };
+      //   const { data } = await supabase.from('venue').insert({
+      //     name,
+      //     tags: tags.join(','),
+      //     eventid,
+      //     avatar: avatarURL,
+      //     bookings: JSON.stringify(bookings),
+      //   });
+      // } catch (err) {
+      //   console.log(err);
+      // }
     };
 
     return (
@@ -367,13 +397,7 @@ const Venue: React.FC = () => {
                       padding="10px"
                       sx={{ cursor: 'pointer' }}
                       onClick={() => {
-                        setMonday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
+                        setMonday((prev) => validateTimeRanges([...prev, { startTime: '', endTime: '' }]));
                       }}
                     >
                       <PlusIcon size={5} />
@@ -384,7 +408,7 @@ const Venue: React.FC = () => {
                       onClick={() => {
                         const prev = [...monday];
                         prev.pop();
-                        setMonday(prev);
+                        setMonday(validateTimeRanges(prev));
                       }}
                     >
                       <MinusIcon size={5} />
