@@ -763,10 +763,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                                 {sessionLocation}
                               </Typography>
                               <Typography variant="bodyS">
-                                Sessions booked: {selectedRoom?.capacity}
+                                Sessions booked: {bookedSessions.length}
                               </Typography>
                               <Typography variant="caption">
-                                Capacity: {bookedSessions.length}
+                                Capacity: {selectedRoom?.capacity}
                               </Typography>
                             </Stack>
                           </Stack>
