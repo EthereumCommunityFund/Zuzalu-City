@@ -19,6 +19,11 @@ const Header: React.FC<IHeader> = ({ name, spaceId }) => {
       padding="10px 14px"
       borderBottom="1px solid #383838"
       bgcolor="#2d2d2d"
+      sx={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+      }}
     >
       <Stack direction="row" spacing={2} alignItems="center">
         <ZuButton

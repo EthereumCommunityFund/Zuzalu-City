@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
     <Box
       sx={{
         width: selected !== 'Space Details' ? '260px' : 'auto',
-        height: '100vh',
+        height: 'calc(100vh - 50px)',
         position: 'sticky',
         top: '50px',
         transitionProperty: 'width',

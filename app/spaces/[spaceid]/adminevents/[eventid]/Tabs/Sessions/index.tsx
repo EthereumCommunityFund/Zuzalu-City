@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import {
   Stack,
   Box,
   Typography,
   SwipeableDrawer,
-  FormControl,
   OutlinedInput,
-  InputAdornment,
+  Select,
+  Chip,
+  MenuItem,
+  Radio,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -22,16 +26,29 @@ import {
   PlusCircleIcon,
   ArchiveBoxIcon,
   ArrowDownIcon,
-  SearchIcon,
   ChevronDownIcon,
+  PlusIcon,
+  MinusIcon,
 } from 'components/icons';
 import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Session, SessionData } from '@/types';
+import {
+  Session,
+  SessionData,
+  Profile,
+  ProfileEdge,
+  Event,
+  EventEdge,
+  Anchor,
+  CeramicResponseType,
+} from '@/types';
 import { OutputData } from '@editorjs/editorjs';
+import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
+import { supabase } from '@/utils/supabase/client';
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -42,6 +59,9 @@ const Sessions = () => {
   const params = useParams();
   const [isChecked, setIsChecked] = React.useState(true);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [people, setPeople] = useState<Profile[]>([]);
+  const [eventData, setEventData] = useState<Event>();
 
   const [state, setState] = React.useState({
     top: false,
@@ -50,27 +70,34 @@ const Sessions = () => {
     right: false,
   });
 
+  const [person, setPerson] = useState(true);
+  const [online, setOnline] = useState(false);
+  const [editor, setEditorInst] = useState<any>();
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
-  const [sessionDescription, setSessionDescription] =
-    useState<OutputData>();
+  const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
+  const [sessoinStatus, setSessionStatus] = useState<string>('');
+  const [sessionGated, setSessionGated] = useState<boolean>(false);
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
-  // const [sessionFormat, setSessionFormat] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
-  // const [sessionCreatedAt, setSessionCreatedAt] = useState<Dayjs | null>(dayjs());
-  const [sessoinStatus, setSessionStatus] = useState<string>('');
-  const [sessionGated, setSessionGated] = useState<string>('');
-  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(
-    dayjs(),
-  );
-  const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(dayjs());
+  const [sessionDate, setSessionDate] = useState<Dayjs | null>();
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>();
+  const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>();
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
+  const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
-  const [error, setError] = useState(false);
+  const [speakers, setSpeakers] = useState<Array<string>>([]);
+  const [sessionLocation, setSessionLocation] = useState<string>();
+  const [sessionTimezone, setSessionTimezone] = useState<string>('');
+
   const { composeClient, profile, isAuthenticated } = useCeramicContext();
+
+  const [directions, setDirections] = useState<string>('');
+  const [customLocation, setCustomLocation] = useState<string>('');
+  const [isDirections, setIsDirections] = useState<boolean>(false);
 
   const profileId = profile?.id || '';
   const eventId = params.eventid.toString();
@@ -94,18 +121,32 @@ const Sessions = () => {
                 track
                 format
                 status
-                tagline
                 timezone
                 video_url
                 description
                 meeting_url
                 experience_level
+                speakers {
+                  id
+                  mvpProfile {
+                    id
+                    avatar
+                    username
+                  }
+                }
+                organizers {
+                  id
+                  mvpProfile {
+                    id
+                    avatar
+                    username
+                  }
+                }
               }
             }
           }
         }
       `);
-
       if ('sessionIndex' in response.data) {
         const sessionData: SessionData = response.data as SessionData;
         const fetchedSessions: Session[] = sessionData.sessionIndex.edges.map(
@@ -120,10 +161,118 @@ const Sessions = () => {
     }
   };
 
+  const getPeople = async () => {
+    // try {
+    const response: any = await composeClient.executeQuery(`
+        query MyQuery {
+          mVPProfileIndex(first: 20) {
+            edges {
+              node {
+                id
+                username
+                avatar
+                author {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `);
+
+    if ('mVPProfileIndex' in response.data) {
+      const profileData: ProfileEdge = response.data as ProfileEdge;
+      const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
+        (edge) => edge.node,
+      );
+
+      setPeople(fetchedPeople);
+    } else {
+      console.error('Invalid data structure:', response.data);
+    }
+    // } catch (error) {
+    //   console.error('Failed to fetch sesssions:', error);
+    // }
+  };
+
+  const getLocation = async () => {
+    try {
+      const { data } = await supabase
+        .from('venue')
+        .select('*')
+        .eq('eventid', eventId);
+      if (data !== null) {
+        setLocations(data.map((item) => item.name));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getEventDetailInfo = async () => {
+    try {
+      const response: CeramicResponseType<EventEdge> =
+        (await composeClient.executeQuery(
+          `
+        query MyQuery($id: ID!) {
+          node (id: $id) {
+            ...on Event {
+              createdAt
+              description
+              endTime
+              external_url
+              gated
+              id
+              image_url
+              max_participant
+              meeting_url
+              min_participant
+              participant_count
+              profileId
+              spaceId
+              startTime
+              status
+              tagline
+              timezone
+              title
+              tracks
+              space {
+                id
+                name
+                gated
+                avatar
+                banner
+                description
+              }
+              profile {
+                username  
+                avatar
+              }
+            }
+          }
+        }
+      `,
+          {
+            id: eventId,
+          },
+        )) as CeramicResponseType<EventEdge>;
+      if (response.data) {
+        if (response.data.node) {
+          setEventData(response.data.node);
+        }
+      }
+    } catch (err) {
+      console.log('Failed to fetch event: ', err);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         await getSessions();
+        await getPeople();
+        await getLocation();
+        await getEventDetailInfo();
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -135,102 +284,176 @@ const Sessions = () => {
     setState({ ...state, [anchor]: open });
   };
 
+  const handleChange = (e: any) => {
+    setSessionTags(
+      typeof e.target.value === 'string'
+        ? e.target.value.split(',')
+        : e.target.value,
+    );
+  };
+
+  const handleSpeakerChange = (e: any) => {
+    setSpeakers(
+      typeof e.target.value === 'string'
+        ? e.target.value.split(',')
+        : e.target.value,
+    );
+
+    const speakers = e.target.value.map(
+      (speaker: any) =>
+        people.filter((i) => i.username === speaker)[0].author?.id,
+    );
+    setSessionSpeakers(speakers);
+  };
+
+  const handleOrganizerChange = (e: any) => {
+    setOrganizers(
+      typeof e.target.value === 'string'
+        ? e.target.value.split(',')
+        : e.target.value,
+    );
+
+    const organizers = e.target.value.map(
+      (organizer: any) =>
+        people.filter((i) => i.username === organizer)[0].author?.id,
+    );
+    setSessionOrganizers(organizers);
+  };
+
+  const createSession = async () => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    // const output = await editor.save();
+    let strDesc: any = JSON.stringify(sessionDescription);
+
+    strDesc = strDesc.replaceAll('"', '\\"');
+    const error =
+      !eventId ||
+      !sessionStartTime ||
+      !sessionEndTime ||
+      !sessionName ||
+      !sessoinStatus ||
+      !sessionTags ||
+      !sessionTrack ||
+      !sessionDescription ||
+      !sessionGated.toString() ||
+      !profileId;
+
+    if (error) {
+      typeof window !== 'undefined' &&
+        window.alert('Please fill necessary fields!');
+      return;
+    }
+
+    const format = person ? 'person' : 'online';
+
+    if (person) {
+      try {
+        const update = await composeClient.executeQuery(`
+          mutation {
+            createSession(
+              input: {
+                content: {
+                  title: "${sessionName}",
+                  description: "${strDesc}",
+                  experience_level: "${sessionExperienceLevel}",
+                  createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  profileId: "${profileId}",
+                  eventId: "${params.eventid.toString()}",
+                  tags: "${sessionTags.join(',')}",
+                  type: "${sessionType}",
+                  status: "${sessoinStatus}",
+                  format: "${format}",
+                  track: "${sessionTrack}",
+                  gated: "${sessionGated}",
+                  timezone: "${dayjs.tz.guess()}",
+                  speakers: ${JSON.stringify(sessionSpeakers)},
+                  organizers: ${JSON.stringify(sessionOrganizers)},
+                }
+              }
+            ) {
+              document {
+                id
+                title
+                createdAt
+                startTime
+                endTime
+                eventId
+                profileId
+                tags
+                status
+                format
+                track
+                gated
+                description
+              }
+            }
+          }
+        `);
+      } catch (error) {
+        console.error('Failed to create session:', error);
+      }
+      toggleDrawer('right', false);
+      await getSessions();
+    } else {
+      try {
+        const update = await composeClient.executeQuery(`
+          mutation {
+            createSession(
+              input: {
+                content: {
+                  title: "${sessionName}",
+                  description: "${strDesc}",
+                  experience_level: "${sessionExperienceLevel}",
+                  createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
+                  profileId: "${profileId}",
+                  eventId: "${params.eventid.toString()}",
+                  tags: "${sessionTags.join(',')}",
+                  type: "${sessionType}",
+                  status: "${sessoinStatus}",
+                  format: "${format}",
+                  track: "${sessionTrack}",
+                  gated: "${sessionGated}",
+                  timezone: "${dayjs.tz.guess()}",
+                  video_url: "${sessionVideoURL}",
+                  speakers: ${JSON.stringify(sessionSpeakers)},
+                  organizers: ${JSON.stringify(sessionOrganizers)},
+                }
+              }
+            ) {
+              document {
+                id
+                title
+                createdAt
+                startTime
+                endTime
+                eventId
+                profileId
+                tags
+                status
+                format
+                track
+                gated
+                description
+              }
+            }
+          }
+        `);
+      } catch (error) {
+        console.error('Failed to create session:', error);
+      }
+      toggleDrawer('right', false);
+      await getSessions();
+    }
+  };
+
   const List = (anchor: Anchor) => {
-    const [person, setPerson] = useState(true);
-    const [online, setOnline] = useState(false);
-    const [editor, setEditorInst] = useState<any>();
-
-    const createSession = async () => {
-      if (!isAuthenticated) {
-        return;
-      }
-
-      const output = await editor.save();
-      let strDesc: any = JSON.stringify(output);
-
-      strDesc = strDesc.replaceAll('"', '\\"');
-
-      const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
-
-      if (error) {
-        typeof window !== 'undefined' &&
-          window.alert(
-            'Please fill necessary fields!',
-          );
-        return;
-      }
-
-      if (person) {
-        const update = await composeClient.executeQuery(`
-        mutation {
-          createSession(
-            input: {
-              content: {
-                title: "${sessionName}",
-                createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "${profileId}",
-                eventId: "${params.eventid.toString()}",
-                tags: "${sessionTags.join(',')}",
-                status: "${sessoinStatus}",
-                format: "person",
-                track: "${sessionTrack}",
-                gated: "${sessionGated}",
-              }
-            }
-          ) {
-            document {
-              id
-              title
-              createdAt
-              startTime
-              endTime
-              eventId
-              profileId
-            }
-          }
-        }
-        `);
-        toggleDrawer('right', false);
-        await getSessions();
-      } else {
-        const update = await composeClient.executeQuery(`
-        mutation {
-          createSession(
-            input: {
-              content: {
-                title: "${sessionName}",
-                createdAt: "${dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                startTime: "${sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                endTime: "${sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]')}",
-                profileId: "${profileId}",
-                eventId: "${params.eventid.toString()}",
-                tags: "${sessionTags.join(',')}",
-                status: "${sessoinStatus}",
-                format: "online",
-                track: "${sessionTrack}",
-                gated: "${sessionGated}",
-              }
-            }
-          ) {
-            document {
-              id
-              title
-              createdAt
-              startTime
-              endTime
-              eventId
-              profileId
-            }
-          }
-        }
-        `);
-        toggleDrawer('right', false);
-        await getSessions();
-      }
-    };
-
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
@@ -298,10 +521,27 @@ const Sessions = () => {
                 <Typography variant="bodyS">
                   Attach a relevant track this session relates to
                 </Typography>
-                <ZuInput
+                <Select
+                  value={sessionTrack}
+                  style={{ width: '100%' }}
                   onChange={(e) => setSessionTrack(e.target.value)}
-                  placeholder="Select"
-                />
+                  input={<OutlinedInput label="Name" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {eventData?.tracks?.split(',').map((i, index) => {
+                    return (
+                      <MenuItem value={i} key={`EventTrack_Index${index}`}>
+                        {i}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
@@ -310,56 +550,57 @@ const Sessions = () => {
                     Search or create categories related to your space
                   </Typography>
                 </Stack>
-                <FormControl focused sx={{ border: 'none' }}>
-                  <OutlinedInput
-                    placeholder="Search or add a tag"
-                    sx={{
-                      backgroundColor:
-                        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
+                <Box>
+                  <Select
+                    multiple
+                    value={sessionTags}
+                    style={{ width: '100%' }}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222',
+                        },
                       },
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-                <Stack direction="row" spacing="10px">
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
                   >
-                    <Typography variant="bodyMB">tag1</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Typography variant="bodyMB">tag2</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                </Stack>
+                    {SPACE_CATEGORIES.map((tag, index) => {
+                      return (
+                        <MenuItem value={tag.value} key={index}>
+                          {tag.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </Box>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={'10px'}
+                  flexWrap={'wrap'}
+                >
+                  {sessionTags.map((tag, index) => {
+                    return (
+                      <Chip
+                        label={
+                          SPACE_CATEGORIES.find((item) => item.value === tag)
+                            ?.label
+                        }
+                        sx={{
+                          borderRadius: '10px',
+                        }}
+                        onDelete={() => {
+                          const newArray = sessionTags.filter(
+                            (item) => item !== tag,
+                          );
+                          setSessionTags(newArray);
+                        }}
+                        key={index}
+                      />
+                    );
+                  })}
+                </Box>
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Description*</Typography>
@@ -367,8 +608,7 @@ const Sessions = () => {
                   Write an introduction for this session
                 </Typography>
                 <TextEditor
-                  holder="space_description"
-                  value={sessionDescription}
+                  holder="session_description"
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
@@ -427,15 +667,52 @@ const Sessions = () => {
                   placeholder="Meetup, Activity, Party, etc.."
                 />
               </Stack>
+              {/* <Stack spacing="10px">
+                <Typography variant="bodyBB">Session Status</Typography>
+                <Typography variant="bodyS">
+                  Choose a status for your session to relay its nature to guests
+                </Typography>
+                <ZuInput
+                  onChange={(e) => setSessionStatus(e.target.value)}
+                  placeholder="Type Session Status"
+                />
+              </Stack> */}
+              {/* <Stack spacing="10px">
+                <Typography variant="bodyBB">Session Gated</Typography>
+                <Stack direction="row" alignItems="center">
+                  <BpCheckbox
+                    checked={sessionGated}
+                    onChange={() => setSessionGated((prev) => !prev)}
+                  />
+                  <Typography variant="bodyS">Gated</Typography>
+                </Stack>
+              </Stack> */}
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Experience Level</Typography>
                 <Typography variant="bodyS">
                   Select a level experience may be needed for this session
                 </Typography>
-                <ZuInput
+                <Select
+                  value={sessionExperienceLevel}
+                  style={{ width: '100%' }}
                   onChange={(e) => setSessionExperienceLevel(e.target.value)}
-                  placeholder="Beginner OR Intermediate OR Advanced"
-                />
+                  input={<OutlinedInput label="Experience_Level" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {EXPREIENCE_LEVEL_TYPES.map((i, index) => {
+                    return (
+                      <MenuItem value={i.key} key={`Speaker_Index${index}`}>
+                        {i.value}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
               </Stack>
             </Stack>
             <Stack
@@ -526,44 +803,135 @@ const Sessions = () => {
                     <Typography variant="bodyS">
                       Book a location to host this session
                     </Typography>
-                    <ZuInput placeholder="Room" />
-                    <Stack alignItems="center">
-                      <ArrowDownIcon />
-                    </Stack>
-                    <Stack
-                      borderRadius="10px"
-                      border="1px solid rgba(255, 255, 255, 0.10)"
-                      spacing="10px"
-                      padding="10px"
+                    <Select
+                      value={sessionLocation}
+                      onChange={(e) => setSessionLocation(e.target.value)}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            backgroundColor: '#222222',
+                          },
+                        },
+                      }}
                     >
-                      <Typography variant="caption">
-                        Your are booking at:
-                      </Typography>
-                      <Stack
-                        borderRadius="10px"
-                        padding="10px"
-                        bgcolor="#313131"
-                        direction="row"
-                        spacing="10px"
-                      >
-                        <Box
-                          component="img"
-                          width="60px"
-                          height="60px"
-                          borderRadius="8px"
-                          src="/20.png"
-                        />
-                        <Stack spacing="4px">
-                          <Typography variant="bodyBB">Room One</Typography>
-                          <Typography variant="bodyS">
-                            Sessions booked: 22
-                          </Typography>
+                      {locations.map((location, index) => (
+                        <MenuItem
+                          key={`Location-Index${index}`}
+                          value={location}
+                        >
+                          {location}
+                        </MenuItem>
+                      ))}
+                      <MenuItem key="custom_location" value="Custom">
+                        Custom
+                      </MenuItem>
+                    </Select>
+                    {sessionLocation && sessionLocation !== 'Custom' && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack
+                          borderRadius="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          spacing="10px"
+                          padding="10px"
+                        >
                           <Typography variant="caption">
-                            Capacity: 15
+                            Your are booking at:
                           </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            direction="row"
+                            spacing="10px"
+                          >
+                            <Box
+                              component="img"
+                              width="60px"
+                              height="60px"
+                              borderRadius="8px"
+                              src="/20.png"
+                            />
+                            <Stack spacing="4px">
+                              <Typography variant="bodyBB">
+                                {sessionLocation}
+                              </Typography>
+                              <Typography variant="bodyS">
+                                Sessions booked: 22
+                              </Typography>
+                              <Typography variant="caption">
+                                Capacity: 15
+                              </Typography>
+                            </Stack>
+                          </Stack>
                         </Stack>
                       </Stack>
-                    </Stack>
+                    )}
+                    {sessionLocation && sessionLocation === 'Custom' && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack spacing="10px">
+                          <Typography variant="bodyBB">
+                            Custom Location
+                          </Typography>
+                          <Typography variant="bodyS">
+                            Write name of the location
+                          </Typography>
+                          <ZuInput
+                            placeholder="Type location name"
+                            onChange={(e) => setCustomLocation(e.target.value)}
+                          />
+                          <ZuButton
+                            endIcon={
+                              !isDirections ? (
+                                <PlusIcon size={5} />
+                              ) : (
+                                <MinusIcon size={5} />
+                              )
+                            }
+                            onClick={() => setIsDirections((prev) => !prev)}
+                          >
+                            {!isDirections
+                              ? 'Add Directions'
+                              : 'Remove Directions'}
+                          </ZuButton>
+                          {isDirections && (
+                            <ZuInput
+                              placeholder="Directions description"
+                              onChange={(e) => setDirections(e.target.value)}
+                            />
+                          )}
+                          {customLocation && (
+                            <Stack
+                              borderRadius="10px"
+                              border="1px solid #383838"
+                              padding="10px"
+                              spacing="10px"
+                            >
+                              <Typography variant="caption">
+                                CUSTOM LOCATIONS:
+                              </Typography>
+                              <Stack
+                                borderRadius="10px"
+                                bgcolor="#373737"
+                                padding="10px"
+                              >
+                                <Typography variant="bodyBB">
+                                  {customLocation}
+                                </Typography>
+                                <Typography variant="bodyS">
+                                  {directions}
+                                </Typography>
+                              </Stack>
+                            </Stack>
+                          )}
+                        </Stack>
+                      </Stack>
+                    )}
                   </Stack>
                   <Stack spacing="20px">
                     <Stack spacing="10px">
@@ -573,7 +941,7 @@ const Sessions = () => {
                         location
                       </Typography>
                       <DatePicker
-                        onChange={(newValue) => setSessionStartTime(newValue)}
+                        onChange={(newValue) => setSessionDate(newValue)}
                         sx={{
                           '& .MuiSvgIcon-root': {
                             color: 'white',
@@ -669,33 +1037,47 @@ const Sessions = () => {
                         />
                       </Stack>
                     </Stack>
-                    <Stack alignItems="center">
-                      <ArrowDownIcon />
-                    </Stack>
-                    <Stack
-                      spacing="10px"
-                      padding="10px"
-                      border="1px solid rgba(255, 255, 255, 0.10)"
-                      borderRadius="10px"
-                    >
-                      <Typography variant="caption">
-                        Date & times your are booking:
-                      </Typography>
-                      <Stack
-                        borderRadius="10px"
-                        padding="10px"
-                        bgcolor="#313131"
-                        spacing="10px"
-                      >
-                        <Typography variant="bodyBB">May 23, 2024</Typography>
-                        <Typography variant="bodyS">
-                          Start Time: 8:30AM
-                        </Typography>
-                        <Typography variant="bodyS">
-                          End Time: : 10:30AM
-                        </Typography>
+                    {sessionDate && sessionStartTime && sessionEndTime && (
+                      <Stack spacing="10px">
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack
+                          spacing="10px"
+                          padding="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          borderRadius="10px"
+                        >
+                          <Typography variant="caption">
+                            Date & times your are booking:
+                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            spacing="10px"
+                          >
+                            <Typography variant="bodyBB">
+                              {`${sessionDate.format('MMMM')}` +
+                                ' ' +
+                                `${sessionDate.format('DD')}` +
+                                ', ' +
+                                `${sessionDate.format('YYYY')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              Start Time:{' '}
+                              {`${sessionStartTime.format('HH')}` +
+                                `${sessionStartTime.format('A')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              End Time: :{' '}
+                              {`${sessionEndTime.format('HH')}` +
+                                `${sessionEndTime.format('A')}`}
+                            </Typography>
+                          </Stack>
+                        </Stack>
                       </Stack>
-                    </Stack>
+                    )}
                   </Stack>
                 </Stack>
               )}
@@ -833,33 +1215,62 @@ const Sessions = () => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <FormControl focused sx={{ border: 'none' }}>
-                  <OutlinedInput
-                    placeholder="Search or add a person"
-                    sx={{
-                      backgroundColor:
-                        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
+                <Box>
+                  <Select
+                    multiple
+                    value={organizers}
+                    style={{ width: '100%' }}
+                    onChange={handleOrganizerChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222',
+                        },
                       },
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-                <Stack direction="row" spacing="10px">
+                  >
+                    {people.map((i, index) => {
+                      return (
+                        <MenuItem
+                          value={i.username}
+                          key={`Organizer_Index${index}`}
+                        >
+                          {i.username}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </Box>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={'10px'}
+                  flexWrap={'wrap'}
+                >
+                  {organizers.map((i, index) => {
+                    return (
+                      <Chip
+                        label={i}
+                        sx={{
+                          borderRadius: '10px',
+                        }}
+                        onDelete={() => {
+                          const newArray = organizers.filter(
+                            (item) => item !== i,
+                          );
+                          setOrganizers(newArray);
+                          const newDIDs = sessionOrganizers.filter(
+                            (_, ind) => ind !== index,
+                          );
+                          setSessionOrganizers(newDIDs);
+                        }}
+                        key={`Selected_Organizerr${index}`}
+                      />
+                    );
+                  })}
+                </Box>
+                {/* <Stack direction="row" spacing="10px">
                   <Stack
                     direction="row"
                     spacing="10px"
@@ -896,7 +1307,7 @@ const Sessions = () => {
                     <Typography variant="bodyMB">drivenfast</Typography>
                     <XMarkIcon size={4} />
                   </Stack>
-                </Stack>
+                </Stack> */}
               </Stack>
               <Stack spacing="20px">
                 <Stack
@@ -933,33 +1344,62 @@ const Sessions = () => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <FormControl focused sx={{ border: 'none' }}>
-                  <OutlinedInput
-                    placeholder="Search or add a person"
-                    sx={{
-                      backgroundColor:
-                        'var(--Inactive-White, rgba(255, 255, 255, 0.05))',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
+                <Box>
+                  <Select
+                    multiple
+                    value={speakers}
+                    style={{ width: '100%' }}
+                    onChange={handleSpeakerChange}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          backgroundColor: '#222222',
+                        },
                       },
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-                <Stack direction="row" spacing="10px">
+                  >
+                    {people.map((i, index) => {
+                      return (
+                        <MenuItem
+                          value={i.username}
+                          key={`Speaker_Index${index}`}
+                        >
+                          {i.username}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </Box>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={'10px'}
+                  flexWrap={'wrap'}
+                >
+                  {speakers.map((i, index) => {
+                    return (
+                      <Chip
+                        label={i}
+                        sx={{
+                          borderRadius: '10px',
+                        }}
+                        onDelete={() => {
+                          const newArray = speakers.filter(
+                            (item) => item !== i,
+                          );
+                          setSpeakers(newArray);
+                          const newDIDs = sessionSpeakers.filter(
+                            (_, ind) => ind !== index,
+                          );
+                          setSessionSpeakers(newDIDs);
+                        }}
+                        key={`Selected_Speaker${index}`}
+                      />
+                    );
+                  })}
+                </Box>
+                {/* <Stack direction="row" spacing="10px">
                   <Stack
                     direction="row"
                     spacing="10px"
@@ -996,7 +1436,7 @@ const Sessions = () => {
                     <Typography variant="bodyMB">drivenfast</Typography>
                     <XMarkIcon size={4} />
                   </Stack>
-                </Stack>
+                </Stack> */}
               </Stack>
             </Stack>
             <Box display="flex" gap="20px">
@@ -1005,6 +1445,7 @@ const Sessions = () => {
                   flex: 1,
                 }}
                 startIcon={<XMarkIcon />}
+                onClick={() => toggleDrawer('right', false)}
               >
                 Discard
               </ZuButton>

@@ -4,7 +4,11 @@ import { useRouter, useParams } from 'next/navigation';
 import { Box, Button, Typography } from '@mui/material';
 import { LeftArrowIcon } from 'components/icons';
 
-const Navbar = () => {
+interface PropTypes {
+  spaceName?: string;
+}
+
+const Navbar = ({spaceName = ''}: PropTypes) => {
   const router = useRouter();
   const params = useParams();
 
@@ -39,7 +43,9 @@ const Navbar = () => {
         fontSize="18px"
         fontWeight={700}
       >
-        ZuVillage Georgia
+        {
+          spaceName
+        }
       </Typography>
     </Box>
   );

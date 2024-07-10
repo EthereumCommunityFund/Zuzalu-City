@@ -67,7 +67,7 @@ const Home: React.FC = () => {
         day: '2-digit',
       }),
     ),
-  )
+  );
 
   const {
     ceramic,
@@ -158,6 +158,10 @@ const Home: React.FC = () => {
                 username
                 avatar
               }
+              space {
+                name
+                avatar
+              }
             }
           }
         }
@@ -181,21 +185,43 @@ const Home: React.FC = () => {
   const getEventsByDate = async () => {
     try {
       if (selectedDate) {
-        let currentDate = new Date(selectedDate.format('YYYY-MM-DDTHH:mm:ss[Z]'));
+        let currentDate = new Date(
+          selectedDate.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+        );
 
         const timeDiff = selectedDate.utcOffset();
-        if(timeDiff < 0) {
-          currentDate = new Date(new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)).getTime() - (24* 60 * 60 * 1000 + timeDiff * 60 * 1000));
+        if (timeDiff < 0) {
+          currentDate = new Date(
+            new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).getTime() -
+              (24 * 60 * 60 * 1000 + timeDiff * 60 * 1000),
+          );
         } else {
-          currentDate = new Date(new Date(currentDate.getTime() - (24 * 60 * 60 * 1000)).getTime() - (timeDiff * 60 * 1000))
+          currentDate = new Date(
+            new Date(currentDate.getTime() - 24 * 60 * 60 * 1000).getTime() -
+              timeDiff * 60 * 1000,
+          );
         }
         const utcYear = currentDate.getFullYear();
-        const uctMM = String(currentDate.getMonth() + 1).length === 1 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
-        const utcDD = String(currentDate.getDate() + 1).length === 1 ? `0${currentDate.getDate() + 1}` : currentDate.getDate() + 1;
-        const utcHH = String(currentDate.getHours()).length === 1 ? `0${currentDate.getHours()}` : currentDate.getHours();
-        const utcMM = String(currentDate.getMinutes()).length === 1 ? `0${currentDate.getMinutes()}` : currentDate.getMinutes();
-        const utcSS = String(currentDate.getSeconds()).length === 1 ? `0${currentDate.getSeconds()}` : currentDate.getSeconds();
-        console.log('selectedDate: ', selectedDate.format('YYYY-MM-DDTHH:mm:ss[Z]'), `${utcYear}-${uctMM}-${utcDD}T${utcHH}:${utcMM}:${utcSS}Z`)
+        const uctMM =
+          String(currentDate.getMonth() + 1).length === 1
+            ? `0${currentDate.getMonth() + 1}`
+            : currentDate.getMonth() + 1;
+        const utcDD =
+          String(currentDate.getDate() + 1).length === 1
+            ? `0${currentDate.getDate() + 1}`
+            : currentDate.getDate() + 1;
+        const utcHH =
+          String(currentDate.getHours()).length === 1
+            ? `0${currentDate.getHours()}`
+            : currentDate.getHours();
+        const utcMM =
+          String(currentDate.getMinutes()).length === 1
+            ? `0${currentDate.getMinutes()}`
+            : currentDate.getMinutes();
+        const utcSS =
+          String(currentDate.getSeconds()).length === 1
+            ? `0${currentDate.getSeconds()}`
+            : currentDate.getSeconds();
         const getEventsByDate_QUERY = `
           query ($input:EventFiltersInput!) {
           eventIndex(filters:$input, first: 20){
@@ -245,7 +271,7 @@ const Home: React.FC = () => {
           const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
             (edge) => edge.node,
           );
-          console.log('fetchEvents: ', fetchedEvents)
+
           setEvents(fetchedEvents);
         } else {
           console.error('Invalid data structure:', response.data);
@@ -296,8 +322,12 @@ const Home: React.FC = () => {
           input: {
             where: {
               startTime: {
-                lessThanOrEqualTo: dateForCalendar?.endOf('month').format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                greaterThanOrEqualTo: dateForCalendar?.startOf('month').format('YYYY-MM-DDTHH:mm:ss[Z]')
+                lessThanOrEqualTo: dateForCalendar
+                  ?.endOf('month')
+                  .format('YYYY-MM-DDTHH:mm:ss[Z]'),
+                greaterThanOrEqualTo: dateForCalendar
+                  ?.startOf('month')
+                  .format('YYYY-MM-DDTHH:mm:ss[Z]'),
               },
             },
           },
@@ -315,10 +345,9 @@ const Home: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
-  }
+  };
 
   const handleMonthChange = (date: Dayjs) => {
-    console.log('date: ', date.endOf('month').toISOString());
     setDateForCalendar(date);
   };
 
@@ -348,17 +377,16 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     getEventsInMonth();
-  }, [dateForCalendar])
+  }, [dateForCalendar]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box width={'100vw'} minHeight={'100vh'}>
-        <AuthPrompt />
+      <Box width={'100vw'} minHeight={'calc(100vh - 50px)'}>
         <Box
           display="grid"
           gridTemplateColumns={'auto 1fr'}
           sx={{ backgroundColor: '#222222' }}
-          minHeight={'100vh'}
+          height={'calc(100vh - 50px)'}
         >
           {!isTablet && <Sidebar selected="Home" />}
           <Box
@@ -366,6 +394,11 @@ const Home: React.FC = () => {
             flex={1}
             padding={isMobile ? '10px' : '30px'}
             width={isTablet ? '100vw' : 'calc(100vw - 260px)'}
+            height={'100%'}
+            sx={{
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}
           >
             <Box
               display="flex"
@@ -373,7 +406,7 @@ const Home: React.FC = () => {
               borderRadius="10px"
               padding="40px 40px"
               sx={{
-                backgroundImage: 'url("/4.webp")',
+                backgroundImage: 'url("/27.jpg")',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
@@ -497,11 +530,8 @@ const Home: React.FC = () => {
                           <Box>
                             {eventsList.map((event, index) => (
                               <EventCard
-                                id={event.id}
-                                spaceId={event.spaceId}
                                 key={`EventCard-${index}`}
                                 event={event}
-                                by={event.profile?.username}
                               />
                             ))}
                           </Box>
@@ -567,18 +597,19 @@ const Home: React.FC = () => {
                         <ZuCalendar
                           value={selectedDate}
                           onChange={(val) => {
-                            console.log('val: ', val);
-                            setSelectedDate(val)
+                            setSelectedDate(val);
                           }}
                           slots={{
-                            day: SlotDates
+                            day: SlotDates,
                           }}
                           slotProps={{
                             day: {
-                              highlightedDays: eventsForCalendar.map((event) => {
-                                return (new Date(event.startTime).getDate())
-                              })
-                            } as any
+                              highlightedDays: eventsForCalendar.map(
+                                (event) => {
+                                  return new Date(event.startTime).getDate();
+                                },
+                              ),
+                            } as any,
                           }}
                           onMonthChange={(val) => handleMonthChange(val)}
                         />

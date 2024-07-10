@@ -73,7 +73,6 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-
   return (
     <Stack
       sx={{
@@ -87,6 +86,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
         },
         boxSizing: 'border-box',
         fontFamily: 'Inter',
+        overflowY: 'auto',
       }}
     >
       <Stack
@@ -224,7 +224,12 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
             boxSizing: 'border-box',
           }}
         >
-          <SidebarButton icon={<HomeIcon />} onClick={() => router.push("/spaces")} content="Home" isActive={false} />
+          <SidebarButton
+            icon={<HomeIcon />}
+            onClick={() => router.push('/spaces')}
+            content="Home"
+            isActive={false}
+          />
           {/*<SidebarButton*/}
           {/*  icon={<AnnouncementsIcon />}*/}
           {/*  content="Announcements"*/}
@@ -232,7 +237,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
           {/*/>*/}
           <SidebarButton
             icon={<TableIcon />}
-            content="Events"
+            content="Manage Events"
             isActive={false}
             onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
           />

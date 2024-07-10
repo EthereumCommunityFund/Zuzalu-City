@@ -9,8 +9,14 @@ export type IconProps = {
 export type Link = {
   title: string;
   links: string;
+};
+export interface Contract {
+  type?: string;
+  contractAddress?: string;
+  description?: string;
+  image_url?: string;
+  status?: string;
 }
-
 export interface Event {
   id: string;
   title: string;
@@ -41,7 +47,10 @@ export interface Event {
     username?: string;
     avatar?: string;
   };
-  customLinks?: [Link]
+  customLinks?: [Link];
+  tracks?: string;
+  contractID?: number;
+  contracts?: [Contract];
 }
 
 export interface EventEdge {
@@ -82,8 +91,8 @@ export interface Space {
   ens?: string;
   category?: string;
   members?: {
-    id: string
-  }[]
+    id: string;
+  }[];
 }
 
 export interface SpaceEdge {
@@ -95,6 +104,15 @@ export interface SpaceData {
     edges: SpaceEdge[];
   };
 }
+
+type People = {
+  id: string;
+  mvpProfile: {
+    avatar?: string;
+    id: string;
+    username: string;
+  };
+};
 
 export interface Session {
   id: string;
@@ -109,12 +127,13 @@ export interface Session {
   track?: string;
   format?: string;
   status?: string;
-  tagline?: string;
   timezone?: string;
   video_url?: string;
   description?: string;
   meeting_url?: string;
   experience_level?: string;
+  speakers?: [People];
+  organizers?: [People];
 }
 
 export interface SessionEdge {
@@ -132,25 +151,58 @@ export interface Venue {
   title: string;
 }
 
-
-
 export type Profile = {
   id: any;
   username: string;
   avatar?: string;
+  author?: {
+    id: string;
+  };
 };
 export interface ProfileData {
-  node: Profile
+  node: Profile;
 }
 
 export interface ProfileEdge {
   mVPProfileIndex: {
-    edges: ProfileData[]
-  }
+    edges: ProfileData[];
+  };
 }
-
 
 export interface CreateProfileResult {
   profile?: Profile;
   error?: string;
+}
+
+export interface Coordinates {
+  lat: number | undefined;
+  lng: number | undefined;
+}
+
+export interface Tag {
+  name: string;
+  value: string;
+}
+
+export interface NFTMetadata {
+  name: string;
+  description: string;
+  image: string;
+  attributes: Tag[];
+}
+export interface IProps {
+  setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsAgree?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsMint?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsTransaction?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setIsComplete?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  handleClose?: () => void;
+  eventContractID?: number;
+  setFilteredResults?: React.Dispatch<React.SetStateAction<any[]>>;
+  filteredResults?: any[];
+  event?: Event;
+  tokenId?: string;
+  setTokenId?: React.Dispatch<React.SetStateAction<string>> | any;
+  ticketMinted?: any[];
+  setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
 }

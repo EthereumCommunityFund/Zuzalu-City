@@ -1,14 +1,15 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
-import { ChevronDownIcon } from 'components/icons';
+import { ChevronDownIcon, ChevronUpIcon } from 'components/icons';
+import TextEditor from '../editor/editor';
 
 interface EventAboutTypes {
-  tagline?: string;
   description: string;
 }
 
-const EventAbout = ({ tagline, description }: EventAboutTypes) => {
+const EventAbout = ({ description }: EventAboutTypes) => {
+  const [showMore, setShowMore] = useState(false);
   function isValidJSON(str: string): boolean {
     try {
       JSON.parse(str);
@@ -20,32 +21,25 @@ const EventAbout = ({ tagline, description }: EventAboutTypes) => {
   return (
     <Stack bgcolor="#292929" padding="10px" borderRadius="10px">
       <Stack padding="10px" spacing="20px">
-        <Typography color="white" variant="subtitleSB">
+        <Typography color="white" variant="subtitleSB" sx={{ opacity: 0.6 }}>
           ABOUT THIS EVENT
         </Typography>
         <Stack>
-          <Typography color="white" variant="subtitleMB">
-            {tagline}
-          </Typography>
-          <Typography color="white" variant="bodyB">
-            {
-              (description === null) && "NULL"
-            }
-            {
-              (description !== null && !isValidJSON(description.replaceAll('\\"', '"'))) && description
-            }
-            {
-              (description === null || !isValidJSON(description.replaceAll('\\"', '"')) || JSON.parse(description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
-                "JSON ERROR" : JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data.text
-            }
-          </Typography>
+          <TextEditor
+            holder="event-description"
+            value={JSON.parse(description.replaceAll('\\"', '"'))}
+            showMore={showMore}
+          />
         </Stack>
       </Stack>
       <ZuButton
-        startIcon={<ChevronDownIcon />}
+        startIcon={
+          !showMore ? <ChevronDownIcon size={4} /> : <ChevronUpIcon size={4} />
+        }
         sx={{ backgroundColor: '#313131', width: '100%' }}
+        onClick={() => setShowMore((prev) => !prev)}
       >
-        Show More
+        {!showMore ? 'Show More' : 'Show Less'}
       </ZuButton>
     </Stack>
   );

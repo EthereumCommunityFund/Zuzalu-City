@@ -24,7 +24,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   bgImage = '/5.webp',
   logoImage = '/1.webp',
   title,
-  description = 'Welcome Zucity',
+  description,
   joined = false,
   members = [],
   categories = '',
@@ -82,37 +82,15 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               overflow: 'auto',
             }}
           >
-            {isValidJSON(description.replaceAll('\\"', '"')) ? (
-              <TextEditor
-                holder={'space-detail-editor' + id}
-                readonly={true}
-                value={JSON.parse(description.replaceAll('\\"', '"'))}
-                sx={{
-                  fontFamily: 'Inter',
-                  color: 'white',
-                  height: 'auto',
-                  overflow: 'hidden',
-                  padding: '0px',
-                  '& > div > div': {
-                    paddingBottom: '0px !important',
-                  },
-                  '& .ce-block__content': {
-                    maxWidth: '100% !important', // Adjust the margin value as needed
-                  },
-                  '& .ce-block:first-child': {
-                    display: 'none',
-                  },
-                }}
-              />
-            ) : (
-              <Typography
-                variant="bodyM"
-                color="white"
-                sx={{ wordWrap: 'break-word' }}
-              >
-                {description}
-              </Typography>
-            )}
+            <Typography
+              variant="bodyM"
+              color="white"
+              sx={{ wordWrap: 'break-word' }}
+            >
+              {description &&
+                JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
+                  .text}
+            </Typography>
           </Stack>
           <Stack direction="row">
             <Typography color="white" variant="caption">

@@ -1,5 +1,7 @@
 .spaceButton {
   position: relative;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .spaceButton:before {
@@ -13,6 +15,7 @@
   background: url(/5.webp) lightgray 50% / cover no-repeat;
   border-radius: 10px;
   opacity: 0.3;
+  overflow: hidden;
 }
 
 .spaceButton:hover:before {

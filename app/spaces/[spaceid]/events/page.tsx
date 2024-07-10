@@ -143,10 +143,16 @@ const Home = () => {
   }, []);
 
   return (
-    <Stack direction="row" height="100vh" width="100%">
+    <Stack direction="row" height="calc(100vh - 50px)" width="100%">
       <IconSidebar />
       <SubSidebar title={space?.name} spaceId={params.spaceid.toString()} />
-      <Stack flex={1}>
+      <Stack
+        flex={1}
+        sx={{
+          height: '100%',
+          overflowY: 'auto',
+        }}
+      >
         <Header />
         <Stack
           direction="row"
@@ -154,6 +160,12 @@ const Home = () => {
           padding={1}
           borderBottom="1px solid #383838"
           alignItems="center"
+          sx={{
+            position: 'sticky',
+            top: 61,
+            backgroundColor: 'rgba(0,0,0,0.65)',
+            zIndex: 1,
+          }}
         >
           <Typography variant="bodyMB">Admin:</Typography>
           <ZuButton

@@ -24,7 +24,7 @@ interface CeramicContextType {
   authenticate: () => Promise<void>;
   username: string | undefined;
   profile: Profile | undefined;
-  newUser: boolean;
+  newUser: boolean | undefined;
   logout: () => void;
   isAuthPromptVisible: boolean;
   showAuthPrompt: () => void;
@@ -36,23 +36,23 @@ const CeramicContext = createContext<CeramicContextType>({
   ceramic,
   composeClient,
   isAuthenticated: false,
-  authenticate: async () => {},
+  authenticate: async () => { },
   username: undefined,
   profile: undefined,
-  newUser: false,
-  logout: () => {},
+  newUser: undefined,
+  logout: () => { },
   isAuthPromptVisible: false,
-  showAuthPrompt: () => {},
-  hideAuthPrompt: () => {},
-  createProfile: async (newName: string) => {},
+  showAuthPrompt: () => { },
+  hideAuthPrompt: () => { },
+  createProfile: async (newName: string) => { },
 });
 
 export const CeramicProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthPromptVisible, setAuthPromptVisible] = useState(false);
   const [username, setUsername] = useState<string | undefined>(undefined);
-  const [profile, setProfile] = useState<Profile | undefined>();
-  const [newUser, setNewUser] = useState(false);
+  const [profile, setProfile] = useState<Profile | undefined>(undefined);
+  const [newUser, setNewUser] = useState<boolean | undefined>(undefined);
   const authenticate = async () => {
     await authenticateCeramic(ceramic, composeClient);
     setIsAuthenticated(true);
@@ -83,19 +83,19 @@ export const CeramicProvider = ({ children }: any) => {
             mvpProfile {
               id
               username
+              
             }
           }
         }
       `);
       const basicProfile: { id: string; username: string } | undefined =
         profile?.data?.viewer?.mvpProfile;
-      localStorage.setItem(
-        'username',
-        profile?.data?.viewer?.mvpProfile?.username,
-      );
-      setProfile(basicProfile);
-      setUsername(basicProfile?.username);
-      if (!basicProfile) {
+      if (basicProfile?.id) {
+        localStorage.setItem('username', basicProfile.username);
+        setProfile(basicProfile);
+        setUsername(basicProfile.username);
+        setNewUser(false);
+      } else {
         setNewUser(true);
       }
     }

@@ -9,10 +9,10 @@ let theme = createTheme({
   palette: { ...Colors },
   breakpoints: {
     values: {
-      xs: 0,
-      sm: 390,
+      xs: 390,
+      sm: 540,
       md: 960,
-      lg: 1290,
+      lg: 1200,
       xl: 1440,
     },
   },
