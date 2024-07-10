@@ -53,6 +53,7 @@ interface Inputs {
   max_participant: number;
   min_participant: number;
   timezone: string;
+  external_url: string;
 }
 
 interface EventDocument {
@@ -242,10 +243,11 @@ const Home = () => {
       name: '',
       symbol: '',
       tagline: '',
-      participant: 1,
-      min_participant: 1,
-      max_participant: 1,
+      participant: 10,
+      min_participant: 10,
+      max_participant: 10,
       timezone: '',
+      external_url: 'TBD',
     });
 
     const [description, setDescription] = useState<OutputData>();
@@ -415,6 +417,7 @@ const Home = () => {
                admins{
                id
                }
+               external_url
              }
            }
          }
@@ -442,6 +445,7 @@ const Home = () => {
                   status: person ? 'In-Person' : 'Online',
                   tracks: tracks.join(','),
                   admins: adminId,
+                  external_url: inputs.external_url,
                 },
               },
             },
@@ -691,6 +695,15 @@ const Home = () => {
                   />
                 </Box>
               </Box>
+              <Stack spacing="10px">
+                <Typography variant="subtitleSB">External_URL</Typography>
+                <ZuInput
+                  onChange={handleInputChange}
+                  type="string"
+                  name="external_url"
+                  placeholder="You can input the external URL "
+                />
+              </Stack>
               <Stack spacing="10px">
                 <Typography variant="subtitleSB">Participant</Typography>
                 <ZuInput

@@ -16,16 +16,20 @@ interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
   setWhitelist?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setSponsor?: React.Dispatch<React.SetStateAction<boolean>> | any;
+  external_url?: string;
 }
 
 const EventRegister: React.FC<EventRegisterProps> = ({
   onToggle,
   setWhitelist,
   setSponsor,
+  external_url,
 }) => {
   const [isOne, setIsOne] = useState<boolean>(false);
   const [isTwo, setIsTwo] = useState<boolean>(false);
-
+  const handleClick = () => {
+    window.open(external_url, '_blank');
+  };
   return (
     <Stack
       borderRadius="10px"
@@ -44,15 +48,15 @@ const EventRegister: React.FC<EventRegisterProps> = ({
         </Typography>
       </Stack>
       <Stack spacing="20px" padding="10px 20px">
-        <Stack spacing="4px">
+        {/* <Stack spacing="4px">
           <Typography color="white" variant="bodyMB">
             Get Ticket: (single)
           </Typography>
           <Typography color="#FF9C66" variant="bodyS">
             All tickets require an invite code to mint
           </Typography>
-        </Stack>
-        <Stack spacing="10px">
+        </Stack>*/}
+        {/*<Stack spacing="10px">
           <Stack
             onClick={() => setIsOne((prev) => !prev)}
             sx={{ cursor: 'pointer' }}
@@ -75,12 +79,12 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                   <Typography variant="caption">USDT</Typography>
                 </Stack>
               </Stack>
-              {/*<Typography variant="bodyS">
+              <Typography variant="bodyS">
                 This pass does not include accomodation.
-              </Typography>*/}
+              </Typography>
             </Stack>
-          </Stack>
-          {isOne && (
+          </Stack>*/}
+        {/*{isOne && (
             <Stack>
               <Typography variant="bodyS" textAlign="center">
                 Select Accommodation Type:
@@ -152,12 +156,12 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                   <Typography variant="caption">USDT</Typography>
                 </Stack>
               </Stack>
-              {/*<Typography variant="bodyS">
+              <Typography variant="bodyS">
                 This pass does not include accomodation.
-              </Typography>*/}
+              </Typography>
             </Stack>
-          </Stack>
-          {isTwo && (
+          </Stack>*/}
+        {/*{isTwo && (
             <Stack>
               <Typography variant="bodyS" textAlign="center">
                 Select Accommodation Type:
@@ -207,7 +211,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               </Stack>
             </Stack>
           )}
-        </Stack>
+        </Stack>*/}
         <Stack spacing="10px">
           <ZuButton
             sx={{
@@ -216,10 +220,11 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               width: '100%',
             }}
             startIcon={<RightArrowCircleIcon color="#D7FFC4" />}
+            onClick={handleClick}
           >
             Register For Event
           </ZuButton>
-          <Typography textAlign="center" variant="caption">
+          {/*<Typography textAlign="center" variant="caption">
             OR
           </Typography>
           <ZuButton
@@ -254,7 +259,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
           >
             <Typography variant="caption">TICKETING PROTOCOL BY:</Typography>
             <ScrollIcon />
-          </Stack>
+          </Stack>*/}
         </Stack>
         {/* <Stack direction="row" spacing={1} alignItems="center">
           <Stack direction="row" spacing={-1} alignItems="center">

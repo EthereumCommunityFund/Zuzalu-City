@@ -230,7 +230,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
         {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
-        {whitelist && (
+        {/*{whitelist && (
           <>
             {!isVerify &&
               !isAgree &&
@@ -338,7 +338,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 />
               )}
           </>
-        )}
+        )}*/}
       </Box>
     );
   };
@@ -461,7 +461,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 </Stack>
               </Box>
             </Stack>
-            <Stack
+            {/*<Stack
               bgcolor="#292929"
               padding="20px"
               spacing="20px"
@@ -489,7 +489,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                   innovation.
                 </Typography>
               </Stack>
-            </Stack>
+            </Stack>*/}
           </Stack>
           <Stack
             spacing="20px"
@@ -509,6 +509,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               onToggle={toggleDrawer}
               setWhitelist={setWhitelist}
               setSponsor={setSponsor}
+              external_url={eventData.external_url}
             />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
