@@ -92,14 +92,12 @@ const Home = () => {
   });
 
   const [space, setSpace] = useState<Space>();
-
+  const [reload, setReload] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
 
   const getSpaceByID = async () => {
     try {
-      console.log(params);
-
       const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {
         node(id: $id) {
@@ -230,7 +228,7 @@ const Home = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [reload]);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -278,7 +276,6 @@ const Home = () => {
           body: data,
         });
         const resData = await res.json();
-        console.log(resData);
         setAvatarURL(resData.url);
         setUploading(false);
       } catch (e) {
@@ -450,7 +447,6 @@ const Home = () => {
               },
             },
           );
-          console.log(update);
           const { data } = await supabase.from('locations').insert({
             name: locations.join(','),
             eventId: update.data.createEvent.document.id,
@@ -470,7 +466,7 @@ const Home = () => {
       }
 
       toggleDrawer('right', false);
-      await getEvents();
+      setReload((prev) => !prev);
     };
 
     return (

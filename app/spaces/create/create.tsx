@@ -98,7 +98,6 @@ const Create = () => {
         body: data,
       });
       const resData = await res.json();
-      console.log(resData);
       if (image === 'Avatar') {
         setAvatarURL(resData.url);
       } else {
@@ -216,7 +215,6 @@ const Create = () => {
           },
         },
       );
-      console.log(update);
       typeof window !== 'undefined' &&
         window.alert(
           'Submitted! Create process probably complete after few minute. Please check it in Space List page.',

@@ -47,7 +47,6 @@ const TicketCard: React.FC<TicketCardProps> = ({
 }) => {
   const isMobile = useMediaQuery('(max-width:500px)');
   let status = true;
-  console.log(eventContract);
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}

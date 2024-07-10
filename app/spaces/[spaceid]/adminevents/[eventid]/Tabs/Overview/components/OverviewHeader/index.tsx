@@ -12,11 +12,10 @@ import { QRReader } from '@/components/modals/QRScanModal/QRReader';
 import { supabase } from '@/utils/supabase/client';
 
 interface PropTypes {
-  event?: Event
+  event?: Event;
 }
 
 const OverviewHeader = ({ event }: PropTypes) => {
-
   const { composeClient, isAuthenticated, profile } = useCeramicContext();
 
   const params = useParams();
@@ -37,18 +36,28 @@ const OverviewHeader = ({ event }: PropTypes) => {
   const [sessionName, setSessionName] = React.useState<string>('');
   const [sessionTrack, setSessionTrack] = React.useState<string>('');
   const [sessionTags, setSessionTags] = React.useState<Array<string>>([]);
-  const [sessionDescription, setSessionDescription] = React.useState<OutputData>();
+  const [sessionDescription, setSessionDescription] =
+    React.useState<OutputData>();
   const [sessionType, setSessionType] = React.useState<string>('');
   const [sessoinStatus, setSessionStatus] = React.useState<string>('');
   const [sessionGated, setSessionGated] = React.useState<string>('');
-  const [sessionExperienceLevel, setSessionExperienceLevel] = React.useState<string>('');
+  const [sessionExperienceLevel, setSessionExperienceLevel] =
+    React.useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
   const [sessionVideoURL, setSessionVideoURL] = React.useState<string>('');
   const [sessionDate, setSessionDate] = React.useState<Dayjs | null>(dayjs());
-  const [sessionStartTime, setSessionStartTime] = React.useState<Dayjs | null>(dayjs());
-  const [sessionEndTime, setSessionEndTime] = React.useState<Dayjs | null>(dayjs());
-  const [sessionOrganizers, setSessionOrganizers] = React.useState<Array<string>>([]);
-  const [sessionSpeakers, setSessionSpeakers] = React.useState<Array<string>>([]);
+  const [sessionStartTime, setSessionStartTime] = React.useState<Dayjs | null>(
+    dayjs(),
+  );
+  const [sessionEndTime, setSessionEndTime] = React.useState<Dayjs | null>(
+    dayjs(),
+  );
+  const [sessionOrganizers, setSessionOrganizers] = React.useState<
+    Array<string>
+  >([]);
+  const [sessionSpeakers, setSessionSpeakers] = React.useState<Array<string>>(
+    [],
+  );
   const [sessionLocation, setSessionLocation] = React.useState<string>();
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
@@ -57,14 +66,17 @@ const OverviewHeader = ({ event }: PropTypes) => {
 
   const getSession = async () => {
     try {
-      const { data } = await supabase.from('sessions').select('*').eq('eventId', eventId);
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('eventId', eventId);
       if (data) {
         console.log(data);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
 
   const getPeople = async () => {
     try {
@@ -94,8 +106,7 @@ const OverviewHeader = ({ event }: PropTypes) => {
     } catch (error) {
       console.error('Failed to fetch sesssions:', error);
     }
-  }
-
+  };
 
   const handleChange = (e: any) => {
     setSessionTags(
@@ -109,15 +120,17 @@ const OverviewHeader = ({ event }: PropTypes) => {
     setSessionSpeakers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
-  }
+        : e.target.value,
+    );
+  };
 
   const handleOrganizerChange = (e: any) => {
     setSessionOrganizers(
       typeof e.target.value === 'string'
         ? e.target.value.split(',')
-        : e.target.value,)
-  }
+        : e.target.value,
+    );
+  };
 
   const createSession = async () => {
     if (!isAuthenticated) {
@@ -128,13 +141,19 @@ const OverviewHeader = ({ event }: PropTypes) => {
 
     strDesc = strDesc.replaceAll('"', '\\"');
 
-    const error = !eventId || !sessionStartTime || !sessionEndTime || !sessionName || !sessoinStatus || !sessionTags || !sessionTrack || !profileId;
+    const error =
+      !eventId ||
+      !sessionStartTime ||
+      !sessionEndTime ||
+      !sessionName ||
+      !sessoinStatus ||
+      !sessionTags ||
+      !sessionTrack ||
+      !profileId;
 
     if (error) {
       typeof window !== 'undefined' &&
-        window.alert(
-          'Please fill necessary fields!',
-        );
+        window.alert('Please fill necessary fields!');
       return;
     }
 
@@ -156,10 +175,9 @@ const OverviewHeader = ({ event }: PropTypes) => {
       track: sessionTrack,
       gated: sessionGated,
       timezone: dayjs.tz.guess().toString(),
-      video_url: sessionVideoURL
-    })
+      video_url: sessionVideoURL,
+    });
 
-    console.log("return data", data);
     toggleDrawer('right', false);
     // await getSession();
 
@@ -235,11 +253,11 @@ const OverviewHeader = ({ event }: PropTypes) => {
   };
 
   React.useEffect(() => {
-    getPeople()
-  }, [])
+    getPeople();
+  }, []);
 
-  return (
-    event ? <Stack direction="column" spacing={3} marginBottom={3}>
+  return event ? (
+    <Stack direction="column" spacing={3} marginBottom={3}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="h5" color="white">
           {event.title}
@@ -249,20 +267,23 @@ const OverviewHeader = ({ event }: PropTypes) => {
             Today&apos;s Date:&nbsp;
           </Typography>
           <Typography variant="body1" color="white" sx={{ opacity: 0.7 }}>
-            {
-              new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })
-            }
+            {new Date().toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </Typography>
         </Stack>
       </Stack>
       <Stack direction="row" spacing={2}>
         <OverviewButton type={0} onClick={() => toggleDrawer('right', true)} />
-        <OverviewButton type={1} onClick={() => { setShowQRScanner(!showQRScanner) }} />
+        <OverviewButton
+          type={1}
+          onClick={() => {
+            setShowQRScanner(!showQRScanner);
+          }}
+        />
       </Stack>
       {/* <SwipeableDrawer
         hideBackdrop={true}
@@ -320,11 +341,10 @@ const OverviewHeader = ({ event }: PropTypes) => {
           />
         }
       </SwipeableDrawer> */}
-      {
-        showQRScanner && <QRReader />
-      }
+      {showQRScanner && <QRReader />}
     </Stack>
-      : <></>
+  ) : (
+    <></>
   );
 };
 

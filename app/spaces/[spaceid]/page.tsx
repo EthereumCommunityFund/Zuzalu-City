@@ -152,8 +152,6 @@ export default function SpaceDetailPage() {
     }
   }, [space?.description]);
 
-  console.log('false', isContentLarge);
-
   return (
     <Box
       sx={{

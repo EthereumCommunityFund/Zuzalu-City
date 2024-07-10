@@ -7,8 +7,11 @@ import { definition } from '@/composites/definition.js';
 import { CeramicClient } from '@ceramicnetwork/http-client';
 import { ComposeClient } from '@composedb/client';
 
+const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
 const ceramicUrl =
-  process.env.NEXT_PUBLIC_CERAMIC_URL || 'http://localhost:7007';
+  (isDev
+    ? process.env.NEXT_PUBLIC_CERAMIC_URL_DEV
+    : process.env.NEXT_PUBLIC_CERAMIC_URL_PROD) || 'http://localhost:7007';
 
 const composeClient = new ComposeClient({
   ceramic: ceramicUrl,
