@@ -71,7 +71,33 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [capacity, setCapacity] = useState<number>(0);
   const [venues, setVenues] = useState<Venue[]>([]);
+  const validateTimeRanges = (ranges: AvailableType[]) => {
+    const errors = ranges.map((range, index) => {
+      const startTime = new Date(range.startTime).getTime();
+      const endTime = new Date(range.endTime).getTime();
 
+      if (startTime >= endTime) {
+        return { ...range, error: 'Start time must be before end time' };
+      }
+
+      for (let i = 0; i < ranges.length; i++) {
+        if (i !== index) {
+          const otherStartTime = new Date(ranges[i].startTime).getTime();
+          const otherEndTime = new Date(ranges[i].endTime).getTime();
+          if (
+            (startTime < otherEndTime && startTime >= otherStartTime) ||
+            (endTime > otherStartTime && endTime <= otherEndTime)
+          ) {
+            return { ...range, error: 'Time ranges overlap' };
+          }
+        }
+      }
+
+      return { ...range, error: '' };
+    });
+
+    return errors;
+  };
   const handleChange = (e: any) => {
     setTags(
       typeof e.target.value === 'string'
@@ -428,13 +454,12 @@ const Home: React.FC<IVenue> = ({ event }) => {
                       padding="10px"
                       sx={{ cursor: 'pointer' }}
                       onClick={() => {
-                        setMonday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
+                        setMonday((prev) =>
+                          validateTimeRanges([
+                            ...prev,
+                            { startTime: '', endTime: '' },
+                          ]),
+                        );
                       }}
                     >
                       <PlusIcon size={5} />
@@ -445,7 +470,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                       onClick={() => {
                         const prev = [...monday];
                         prev.pop();
-                        setMonday(prev);
+                        setMonday(validateTimeRanges(prev));
                       }}
                     >
                       <MinusIcon size={5} />
