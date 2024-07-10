@@ -29,6 +29,10 @@ export const PreviewFile = (props: {
     >
       {file && (
         <Img3
+          gateways={[
+            'https://ipfs.io/ipfs/',
+            'https://gateway.lighthouse.storage/ipfs/',
+          ]}
           style={{
             maxHeight: '100%',
             maxWidth: '100%',

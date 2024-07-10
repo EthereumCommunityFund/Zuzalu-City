@@ -32,7 +32,6 @@ import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData, Space, SpaceEventData } from '@/types';
-import { createConnector } from '@lxdao/uploader3-connector';
 import {
   TICKET_FACTORY_ADDRESS,
   ticketFactoryGetContract,
@@ -82,10 +81,6 @@ const Home = () => {
   const spaceId = params.spaceid.toString();
 
   const { address, isConnected } = useAccount();
-
-  const connector = createConnector('NFT.storage', {
-    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-  });
 
   const [state, setState] = useState({
     top: false,
@@ -390,9 +385,7 @@ const Home = () => {
                   tagline: inputs.tagline,
                   spaceId: spaceId,
                   profileId: profileId,
-                  //image_url: avatarURL,
-                  image_url:
-                    'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
+                  image_url: avatarURL,
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
@@ -559,60 +552,65 @@ const Home = () => {
                     {5000 -
                       (description
                         ? description.blocks
-                            .map((item) => item.data.text.length)
-                            .reduce((prev, current) => prev + current, 0)
+                          .map((item) => item.data.text.length)
+                          .reduce((prev, current) => prev + current, 0)
                         : 0)}{' '}
                     Characters Left
                   </Typography>
                 </Stack>
               </Stack>
-              <Typography variant="subtitleSB">Event Avatar</Typography>
-              <Typography variant="bodyS">
-                Recommend min of 200x200px (1:1 Ratio)
-              </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                }}
-              >
-                <Uploader3
-                  accept={['.gif', '.jpeg', '.gif', '.png']}
-                  connector={connector}
-                  multiple={false}
-                  crop={false} // must be false when accept is svg
-                  onChange={(files: any) => {
-                    setAvatar(files[0]);
-                  }}
-                  onUpload={(file: any) => {
-                    setAvatar(file);
-                  }}
-                  onComplete={(result: any) => {
-                    setAvatarURL(result?.url);
+              <Stack spacing="10px" padding="20px">
+                <Typography variant="subtitleSB">Event Avatar</Typography>
+                <Typography variant="bodyS">
+                  Recommend min of 200x200px (1:1 Ratio)
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
                   }}
                 >
-                  <Button
-                    component="span"
-                    sx={{
-                      color: 'white',
-                      borderRadius: '10px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
+                  <Uploader3
+                    accept={['.gif', '.jpeg', '.gif', '.png']}
+                    api={'/api/file/upload'}
+                    multiple={false}
+                    crop={false} // must be false when accept is svg
+                    onChange={(files: any) => {
+                      console.log("onchange", files);
+                      setAvatar(files[0]);
+                    }}
+                    onUpload={(file: any) => {
+                      console.log("onUpload", file);
+                      setAvatar(file);
+                    }}
+                    onComplete={(result: any) => {
+                      console.log("onComplete", result);
+                      setAvatarURL(result?.url);
                     }}
                   >
-                    Upload
-                  </Button>
-                </Uploader3>
-                <PreviewFile
-                  sx={{
-                    width: '420px',
-                    height: '420px',
-                    borderRadius: '10px',
-                  }}
-                  file={avatarURL}
-                />
-              </Box>
+                    <Button
+                      component="span"
+                      sx={{
+                        color: 'white',
+                        borderRadius: '10px',
+                        backgroundColor: '#373737',
+                        border: '1px solid #383838',
+                      }}
+                    >
+                      Upload
+                    </Button>
+                  </Uploader3>
+                  <PreviewFile
+                    sx={{
+                      width: '200px',
+                      height: '200px',
+                      borderRadius: '10px',
+                    }}
+                    file={avatarURL}
+                  />
+                </Box>
+              </Stack>
               <Box display="flex" justifyContent="space-between" gap="20px">
                 <Box flex={1}>
                   <Typography variant="subtitleSB">Start Date</Typography>

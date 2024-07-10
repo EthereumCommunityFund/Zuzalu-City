@@ -6,16 +6,12 @@ import TextEditor from '@/components/editor/editor';
 import { OutputData } from '@editorjs/editorjs';
 import { Uploader3 } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
-import { createConnector } from '@lxdao/uploader3-connector';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, SpaceData } from '@/types';
 
 const Overview = () => {
   const theme = useTheme();
   const params = useParams();
-  const connector = createConnector('NFT.storage', {
-    token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-  });
   const { composeClient } = useCeramicContext();
 
   const [space, setSpace] = useState<Space>();
@@ -239,7 +235,7 @@ const Overview = () => {
           >
             <Uploader3
               accept={['.gif', '.jpeg', '.gif', '.png']}
-              connector={connector}
+              api={'/api/file/upload'}
               multiple={false}
               crop={{
                 size: { width: 400, height: 400 },
@@ -294,7 +290,7 @@ const Overview = () => {
           >
             <Uploader3
               accept={['.gif', '.jpeg', '.gif', '.png']}
-              connector={connector}
+              api={'/api/file/upload'}
               multiple={false}
               crop={{
                 size: { width: 600, height: 400 },

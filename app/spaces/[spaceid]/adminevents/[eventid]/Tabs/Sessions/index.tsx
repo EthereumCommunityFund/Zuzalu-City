@@ -153,7 +153,6 @@ const Sessions = () => {
           (edge) => edge.node,
         );
         setSessions(fetchedSessions);
-        console.log("session", fetchedSessions);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -180,14 +179,13 @@ const Sessions = () => {
           }
         }
       `);
-    console.log("respon", response)
 
     if ('mVPProfileIndex' in response.data) {
       const profileData: ProfileEdge = response.data as ProfileEdge;
       const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
         (edge) => edge.node,
       );
-      console.log("people", fetchedPeople);
+
       setPeople(fetchedPeople);
     } else {
       console.error('Invalid data structure:', response.data);
@@ -198,15 +196,13 @@ const Sessions = () => {
   };
 
   const getLocation = async () => {
-    console.log("eventid", eventId)
     try {
       const { data } = await supabase
         .from('venue')
         .select('*')
         .eq('eventid', eventId);
       if (data !== null) {
-        setLocations(data.map(item => item.name));
-        console.log("data", data)
+        setLocations(data.map((item) => item.name));
       }
     } catch (err) {
       console.log(err);
@@ -303,9 +299,11 @@ const Sessions = () => {
         : e.target.value,
     );
 
-    const speakers = e.target.value.map((speaker: any) => people.filter(i => i.username === speaker)[0].author?.id);
+    const speakers = e.target.value.map(
+      (speaker: any) =>
+        people.filter((i) => i.username === speaker)[0].author?.id,
+    );
     setSessionSpeakers(speakers);
-
   };
 
   const handleOrganizerChange = (e: any) => {
@@ -315,7 +313,10 @@ const Sessions = () => {
         : e.target.value,
     );
 
-    const organizers = e.target.value.map((organizer: any) => people.filter(i => i.username === organizer)[0].author?.id);
+    const organizers = e.target.value.map(
+      (organizer: any) =>
+        people.filter((i) => i.username === organizer)[0].author?.id,
+    );
     setSessionOrganizers(organizers);
   };
 
@@ -347,7 +348,6 @@ const Sessions = () => {
     }
 
     const format = person ? 'person' : 'online';
-    console.log("speaker", sessionSpeakers, JSON.stringify(sessionSpeakers), sessionSpeakers.join(","))
 
     if (person) {
       try {
@@ -394,7 +394,6 @@ const Sessions = () => {
             }
           }
         `);
-        console.log("data", update)
       } catch (error) {
         console.error('Failed to create session:', error);
       }
@@ -446,7 +445,6 @@ const Sessions = () => {
             }
           }
         `);
-        console.log("data", update)
       } catch (error) {
         console.error('Failed to create session:', error);
       }
@@ -709,10 +707,7 @@ const Sessions = () => {
                 >
                   {EXPREIENCE_LEVEL_TYPES.map((i, index) => {
                     return (
-                      <MenuItem
-                        value={i.key}
-                        key={`Speaker_Index${index}`}
-                      >
+                      <MenuItem value={i.key} key={`Speaker_Index${index}`}>
                         {i.value}
                       </MenuItem>
                     );
@@ -831,7 +826,7 @@ const Sessions = () => {
                         Custom
                       </MenuItem>
                     </Select>
-                    {sessionLocation && sessionLocation !== "Custom" && (
+                    {sessionLocation && sessionLocation !== 'Custom' && (
                       <Stack>
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -874,7 +869,7 @@ const Sessions = () => {
                         </Stack>
                       </Stack>
                     )}
-                    {sessionLocation && sessionLocation === "Custom" && (
+                    {sessionLocation && sessionLocation === 'Custom' && (
                       <Stack>
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -886,26 +881,54 @@ const Sessions = () => {
                           <Typography variant="bodyS">
                             Write name of the location
                           </Typography>
-                          <ZuInput placeholder="Type location name" onChange={(e) => setCustomLocation(e.target.value)} />
-                          <ZuButton endIcon={!isDirections ? <PlusIcon size={5} /> : <MinusIcon size={5} />} onClick={() => setIsDirections(prev => !prev)}>
-                            {!isDirections ? "Add Directions" : "Remove Directions"}
+                          <ZuInput
+                            placeholder="Type location name"
+                            onChange={(e) => setCustomLocation(e.target.value)}
+                          />
+                          <ZuButton
+                            endIcon={
+                              !isDirections ? (
+                                <PlusIcon size={5} />
+                              ) : (
+                                <MinusIcon size={5} />
+                              )
+                            }
+                            onClick={() => setIsDirections((prev) => !prev)}
+                          >
+                            {!isDirections
+                              ? 'Add Directions'
+                              : 'Remove Directions'}
                           </ZuButton>
-                          {
-                            isDirections && <ZuInput placeholder="Directions description" onChange={(e) => setDirections(e.target.value)} />
-                          }
-                          {customLocation && <Stack borderRadius="10px" border="1px solid #383838" padding="10px" spacing="10px">
-                            <Typography variant="caption">
-                              CUSTOM LOCATIONS:
-                            </Typography>
-                            <Stack borderRadius="10px" bgcolor="#373737" padding="10px">
-                              <Typography variant="bodyBB">
-                                {customLocation}
+                          {isDirections && (
+                            <ZuInput
+                              placeholder="Directions description"
+                              onChange={(e) => setDirections(e.target.value)}
+                            />
+                          )}
+                          {customLocation && (
+                            <Stack
+                              borderRadius="10px"
+                              border="1px solid #383838"
+                              padding="10px"
+                              spacing="10px"
+                            >
+                              <Typography variant="caption">
+                                CUSTOM LOCATIONS:
                               </Typography>
-                              <Typography variant="bodyS">
-                                {directions}
-                              </Typography>
+                              <Stack
+                                borderRadius="10px"
+                                bgcolor="#373737"
+                                padding="10px"
+                              >
+                                <Typography variant="bodyBB">
+                                  {customLocation}
+                                </Typography>
+                                <Typography variant="bodyS">
+                                  {directions}
+                                </Typography>
+                              </Stack>
                             </Stack>
-                          </Stack>}
+                          )}
                         </Stack>
                       </Stack>
                     )}
@@ -1233,10 +1256,13 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = organizers
-                            .filter((item) => item !== i)
+                          const newArray = organizers.filter(
+                            (item) => item !== i,
+                          );
                           setOrganizers(newArray);
-                          const newDIDs = sessionOrganizers.filter((_, ind) => ind !== index);
+                          const newDIDs = sessionOrganizers.filter(
+                            (_, ind) => ind !== index,
+                          );
                           setSessionOrganizers(newDIDs);
                         }}
                         key={`Selected_Organizerr${index}`}
@@ -1359,10 +1385,13 @@ const Sessions = () => {
                           borderRadius: '10px',
                         }}
                         onDelete={() => {
-                          const newArray = speakers
-                            .filter((item) => item !== i)
+                          const newArray = speakers.filter(
+                            (item) => item !== i,
+                          );
                           setSpeakers(newArray);
-                          const newDIDs = sessionSpeakers.filter((_, ind) => ind !== index);
+                          const newDIDs = sessionSpeakers.filter(
+                            (_, ind) => ind !== index,
+                          );
                           setSessionSpeakers(newDIDs);
                         }}
                         key={`Selected_Speaker${index}`}
