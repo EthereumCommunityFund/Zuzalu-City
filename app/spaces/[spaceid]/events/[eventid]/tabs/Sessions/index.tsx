@@ -195,6 +195,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
+      console.log("ava", available)
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
     }
     setSessionDate(date);

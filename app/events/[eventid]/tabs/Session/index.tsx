@@ -120,6 +120,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
+
+  const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>([]);
+
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -192,13 +195,29 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const handleDateChange = (date: Dayjs) => {
     if (date && person) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
+      const selectedDay = date.format('YYYY-MM-DD');
+
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
+      console.log("ava", available[dayName.toLowerCase()])
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+
+      console.log("booked", bookedSessions)
+
+      const bookedSessionsDay = bookedSessions.filter(session => {
+        const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+        return sessionStartDay === selectedDay;
+      });
+
+      console.log("booked", bookedSessionsDay)
+
+      setBookedSessionsForDay(bookedSessionsDay);
     }
     setSessionDate(date);
   };
+
+  console.log('event', eventData?.startTime)
 
   const isDateInRange = (
     date: Dayjs,
@@ -213,6 +232,15 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   const isTimeAvailable = (date: Dayjs, available?: any): boolean => {
     const formattedTime = date.format('HH:mm');
+
+    const isWithinBookedSession = bookedSessionsForDay.some(session => {
+      const sessionStartTime = dayjs(session.startTime).format('HH:mm');
+      const sessionEndTime = dayjs(session.endTime).format('HH:mm');
+      return formattedTime >= sessionStartTime && formattedTime < sessionEndTime;
+    });
+
+    console.log("book", bookedSessionsForDay)
+
     const isMinuteIntervalValid = date.minute() % 30 === 0;
     const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
       const startTime = dayjs(slot.startTime).format('HH:mm');
@@ -375,6 +403,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   }, []);
 
   const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
+
   const getBookedSession = async () => {
     try {
       const { data } = await supabase
