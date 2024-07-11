@@ -9,7 +9,7 @@ const Home = () => {
   const [tabName, setTabName] = useState('About');
 
   const [eventData, setEventData] = useState<Event>();
-
+  console.log("eventData",eventData);
   return (
     <Stack color="white">
       <Thumbnail name={eventData?.title} />

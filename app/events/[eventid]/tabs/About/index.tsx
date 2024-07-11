@@ -40,6 +40,21 @@ import { SpaceCard } from '@/components/cards';
 import { Anchor } from '@/types';
 import { LatLngLiteral } from 'leaflet';
 import getLatLngFromAddress from '@/utils/osm';
+import { styled } from '@mui/system';
+
+const BlurBackground = styled('div')(({ open }: { open: Boolean }) => ({
+  position: 'fixed',
+  top: '50px',
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundColor: open ? '#222222' : 'none',
+  // backdropFilter: open ? 'blur(20px)' : 'none',
+  opacity: open ? 0.4: 0,
+  zIndex: 1000,
+  transition: 'backdrop-filter 0.3s ease',
+  pointerEvents: open ? 'auto' : 'none', // Disable interaction with background when closed
+}));
 
 interface IAbout {
   eventData: Event | undefined;
@@ -207,16 +222,28 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         sx={{
           width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
           backgroundColor: '#222222',
+          '@media (max-width: 700px)': {
+            width: '100vw', // Full width for screens smaller than 700px
+          },
+          '@media (max-width: 500px)': {
+            width: '100%', // Full width for screens smaller than 700px
+          },
         }}
         role="presentation"
         zIndex="10"
         borderLeft="1px solid #383838"
       >
         <Stack
+          sx={{
+            position: 'fixed',
+            backdropFilter: 'blur(20px)',
+            backgroundColor: 'rgba(34, 34, 34, 0.8)',
+          }}
           direction="row"
           spacing="14px"
           alignItems="center"
           height="50px"
+          width="100%"
           borderBottom="1px solid #383838"
           paddingX={3}
         >
@@ -225,6 +252,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
           </ZuButton>
           <Typography variant="subtitleSB">Register for Event</Typography>
         </Stack>
+        <Box sx={{ height: '50px' }} />
         {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
@@ -525,20 +553,24 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
                     </Stack> */}
           </Stack>
-          <SwipeableDrawer
-            hideBackdrop={true}
-            sx={{
-              '& .MuiDrawer-paper': {
-                boxShadow: 'none',
-              },
-            }}
-            anchor="right"
-            open={state['right']}
-            onClose={() => toggleDrawer('right', false)}
-            onOpen={() => toggleDrawer('right', true)}
-          >
-            {List('right')}
-          </SwipeableDrawer>
+          <BlurBackground open={state['right']}>
+            <SwipeableDrawer
+              hideBackdrop={true}
+              sx={{
+                '& .MuiDrawer-paper': {
+                  boxShadow: 'none',
+                  position: 'fixed',
+                  top: '50px',
+                },
+              }}
+              anchor="right"
+              open={state['right']}
+              onClose={() => toggleDrawer('right', false)}
+              onOpen={() => toggleDrawer('right', true)}
+            >
+              {List('right')}
+            </SwipeableDrawer>
+          </BlurBackground>
         </Stack>
       )}
     </Stack>

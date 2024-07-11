@@ -21,7 +21,7 @@ const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
       borderBottom="1px solid rgba(255, 255, 255, 0.1)"
       position={'sticky'}
       top={'50px'}
-      zIndex={10000}
+      zIndex={1000}
     >
       <Stack direction="row" spacing={2} height="100%">
         <Stack
