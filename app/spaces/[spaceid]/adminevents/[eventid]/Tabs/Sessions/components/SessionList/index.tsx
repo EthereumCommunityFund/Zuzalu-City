@@ -15,8 +15,9 @@ import { Session, SessionData } from '@/types';
 import SessionAdd from '../SessionAdd';
 import RowCalendar from '@/components/calendar/RowCalendar';
 import dayjs from 'dayjs';
-import { useCeramicContext } from '@/context/CeramicContext';
 import { format } from 'date-fns';
+import { supabase } from '@/utils/supabase/client';
+import { useParams } from 'next/navigation';
 
 type SessionsListProps = {
   sessions?: Session[];
@@ -28,83 +29,28 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
   const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
   const [searchString, setSearchString] = React.useState<string>('');
   const [filteredSessions, setFilteredSessions] = React.useState<Session[]>([]);
-
-  const { composeClient, profile, isAuthenticated } = useCeramicContext();
+  const params = useParams();
 
   const getSessions = async (searchString?: string, selectedDate?: Date) => {
     try {
-
-      let filter = {};
-      let variable = {};
-      const query = `
-        query MyQuery ($filter: SessionFiltersInput) {
-          sessionIndex(first: 20, filters: $filter) {
-            edges {
-              node {
-                id
-                title
-                createdAt
-                profileId
-                startTime
-                endTime
-                eventId
-                tags
-                type
-                track
-                format
-                status
-                timezone
-                video_url
-                description
-                meeting_url
-                experience_level
-              }
-            }
-          }
-        }
-      `;
-
-      if(searchString) {
-        filter = {...filter, title: {
-          equalTo: searchString
-        }}
-
-        variable = {
-          filter: {
-            where: filter
-          }
-        }
+      const eventId = params.eventid.toString();
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('eventId', eventId)
+        .ilike('title', `%${searchString}%`)
+        .ilike('startTime', selectedDate ? `%${dayjs(
+          selectedDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }),
+        ).format('YYYY-MM-DDT')}%` : '%%')
+      if (data) {
+        setFilteredSessions(data);
       }
-
-      if(selectedDate) {
-        filter = {...filter, startTime: {
-          equalTo: dayjs(
-            selectedDate.toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            }),
-          ).format('YYYY-MM-DDTHH:mm:ss[Z]')
-        }}
-
-        variable = {
-          filter: {
-            where: filter
-          }
-        }
-      }
-      const response: any = await composeClient.executeQuery(query, variable)
-      if ('sessionIndex' in response.data) {
-        const sessionData: SessionData = response.data as SessionData;
-        const fetchedSessions: Session[] = sessionData.sessionIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setFilteredSessions(fetchedSessions);
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch sesssions:', error);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -135,14 +81,14 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
           </Stack>
         </Stack>
       </Stack>
-      <ZuInput 
+      <ZuInput
         startAdornment={
           <Stack
             sx={{
               paddingRight: '10px'
             }}
           >
-            <SearchIcon/>
+            <SearchIcon />
           </Stack>
         }
         placeholder='Search Sessions'
@@ -158,7 +104,7 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
         setSelectedDate={setSelectedDate}
       />
 
-      <Divider 
+      <Divider
         variant='fullWidth'
         orientation='horizontal'
         sx={{
@@ -192,7 +138,7 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
         ))}
       </Stack>
     </Stack>
-    : <SessionAdd />
+      : <SessionAdd />
   );
 };
 
