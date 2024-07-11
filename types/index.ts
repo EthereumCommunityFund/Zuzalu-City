@@ -191,7 +191,7 @@ export interface SessionData {
   };
 }
 
-export interface Venue {
+export interface VenueDTO {
   id: string;
   name: string;
   eventId: string;

@@ -186,10 +186,8 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
         {filteredSessions.map((session, index) => (
           <SessionCard
             key={`SessionCard-${index}`}
-            title={session.title}
-            startTime={session.startTime}
-            endTime={session.endTime}
-            location={session.meeting_url}
+            session={session}
+            setSelectedSession={setSelectedSession}
           />
         ))}
       </Stack>

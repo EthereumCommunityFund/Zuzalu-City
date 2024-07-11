@@ -33,7 +33,7 @@ import { ZuButton, ZuInput } from '@/components/core';
 import { TimeRange } from './components';
 import { supabase } from '@/utils/supabase/client';
 import { VENUE_TAGS } from '@/constant';
-import { Venue, Event } from '@/types';
+import { VenueDTO, Event } from '@/types';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
@@ -70,6 +70,8 @@ const Home: React.FC<IVenue> = ({ event }) => {
     bottom: false,
     right: false,
   });
+
+  const [venues, setVenues] = useState<VenueDTO[]>([])
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -124,7 +126,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
         .select('*')
         .eq('eventId', eventId);
       if (data) {
-        const searchedVenues: Venue[] = data.filter((item, i) =>
+        const searchedVenues: VenueDTO[] = data.filter((item, i) =>
           item.name.toLowerCase().includes(searchValue.toLowerCase()),
         );
         if (searchedVenues.length > 0) {
@@ -845,9 +847,13 @@ const Home: React.FC<IVenue> = ({ event }) => {
     );
   };
 
+  useEffect(() => {
+    getVenues();
+  }, [])
+
   return (
     <Stack spacing="30px" padding="30px">
-      <VenueHeader onToggle={toggleDrawer} count={venues.length} />
+      <VenueHeader onToggle={toggleDrawer} spaceAmount={venues.length} />
       <VenueList
         venues={venues}
         onToggle={toggleDrawer}

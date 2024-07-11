@@ -34,6 +34,8 @@ import { ZuButton, ZuInput } from '@/components/core';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import { supabase } from '@/utils/supabase/client';
 import { VenueDTO } from '@/types';
+import { VenueHeader } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Venue/components';
+import VenueList from './components/VenueList';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 

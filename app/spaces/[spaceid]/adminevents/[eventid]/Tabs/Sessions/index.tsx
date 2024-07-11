@@ -42,7 +42,7 @@ import {
   EventEdge,
   Anchor,
   CeramicResponseType,
-  Venue,
+  VenueDTO,
   SessionSupabaseData,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
@@ -70,11 +70,12 @@ const Sessions = () => {
   const [locations, setLocations] = useState<string[]>([]);
   const [people, setPeople] = useState<Profile[]>([]);
   const [eventData, setEventData] = useState<Event>();
-  const [venues, setVenues] = useState<Venue[]>([]);
+  const [venues, setVenues] = useState<VenueDTO[]>([]);
   const [total, setTotal] = useState<any[]>();
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session>();
-  const [selectedRoom, setSelectedRoom] = useState<Venue>();
+  const [selectedRoom, setSelectedRoom] = useState<VenueDTO>();
+
   const [state, setState] = React.useState({
     top: false,
     left: false,
