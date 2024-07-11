@@ -602,16 +602,20 @@ const Home: React.FC = () => {
                           onChange={(val) => {
                             setSelectedDate(val);
                           }}
-                          slots={{
-                            day: SlotDates,
-                          }}
+                          slots={{ day: SlotDates }}
                           slotProps={{
                             day: {
-                              highlightedDays: eventsForCalendar.map(
-                                (event) => {
-                                  return new Date(event.startTime).getDate();
-                                },
-                              ),
+                              highlightedDays: eventsForCalendar
+                                .filter((event) => {
+                                  // filter event.startTime month equal to selected month
+                                  return (
+                                    dayjs(event.startTime).month() ===
+                                    selectedDate?.month()
+                                  );
+                                })
+                                .map((event) => {
+                                  return dayjs(event.startTime).date();
+                                }),
                             } as any,
                           }}
                           onMonthChange={(val) => handleMonthChange(val)}
