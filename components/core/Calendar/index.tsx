@@ -21,8 +21,10 @@ const ZuCalendar = styled(DateCalendar)({
     color: 'white',
   },
   '& .Mui-selected.MuiPickersDay-dayWithMargin': {
-    backgroundColor: 'rgba(215, 255, 196, 0.20)',
-    color: '#D7FFC4',
+    backgroundColor: 'rgba(125, 255, 209, 0.20)',
+    border: '1px solid rgba(125, 255, 209, 0.40)',
+    color: '#7DFFD1',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
   },
   '& .MuiPickersYear-yearButton': {
     lineHeight: 1.75,
