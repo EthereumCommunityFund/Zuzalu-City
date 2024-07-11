@@ -210,7 +210,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
           backgroundColor: '#222222',
         }}
         role="presentation"
-        zIndex="10"
+        zIndex="10001"
         borderLeft="1px solid #383838"
       >
         <Stack
@@ -399,6 +399,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               location={location}
               organizer={eventData.profile?.username as string}
               image_url={eventData.image_url}
+              status={eventData.status}
             />
             <EventAbout description={eventData.description} />
             <Stack
@@ -407,7 +408,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               spacing="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleSB">EVENT SPONSORS</Typography>
+              <Typography variant="subtitleSB" sx={{opacity: '0.6', textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)'}} fontSize={'18px'} fontWeight={700}>EVENT SPONSORS</Typography>
               <Box display="flex" gap="20px" flexWrap="wrap">
                 <Stack alignItems="center" spacing="4px">
                   <Box
@@ -468,7 +469,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               borderRadius="10px"
               height="300px"
             >
-              <Typography variant="subtitleSB">ORGANIZER UPDATES</Typography>
+              <Typography variant="subtitleSB" sx={{opacity: '0.6', textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)'}} fontSize={'18px'} fontWeight={700}>ORGANIZER UPDATES</Typography>
               <Stack spacing="10px">
                 <Stack direction="row" alignItems="center" spacing="10px">
                   <Box

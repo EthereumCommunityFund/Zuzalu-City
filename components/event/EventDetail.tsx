@@ -27,7 +27,6 @@ const EventDetail: React.FC<IEventDetail> = ({
   address,
 }) => {
   const { breakpoints } = useTheme();
-
   return (
     <Stack
       spacing="20px"
@@ -46,15 +45,15 @@ const EventDetail: React.FC<IEventDetail> = ({
       >
         Event Details
       </Typography>
-      <Typography color="white" variant="bodyB">
+      {/* <Typography color="white" variant="bodyB">
         Format: {status}
-      </Typography>
+      </Typography> */}
       <Stack
         spacing="10px"
         paddingBottom={'20px'}
         borderBottom={'1px solid rgba(255, 255, 255, 0.10)'}
       >
-        <Typography color="white" variant="bodyBB" paddingBottom="20px">
+        <Typography color="white" variant="bodyBB" paddingBottom="20px" sx={{opacity: '0.7'}}>
           Links
         </Typography>
         {links?.length !== 0 && (
@@ -72,7 +71,7 @@ const EventDetail: React.FC<IEventDetail> = ({
                   bgcolor="#2a2a2a"
                   padding="10px 14px"
                   borderRadius="10px"
-                  sx={{ cursor: 'pointer' }}
+                  sx={{ cursor: 'pointer', opacity: '0.7' }}
                 >
                   <Typography color="white" variant="bodyB">
                     {
@@ -88,13 +87,13 @@ const EventDetail: React.FC<IEventDetail> = ({
         )}
       </Stack>
       <Stack spacing="5px">
-        <Typography color="white" variant="bodyBB" paddingBottom="20px">
+        <Typography color="white" variant="bodyBB" paddingBottom="20px" fontSize={'16px'} fontWeight={700} sx={{opacity: '0.7'}}>
           Location
         </Typography>
-        <Typography color="white" variant="bodyMB">
+        <Typography color="white" variant="bodyMB" fontSize={'14px'} fontWeight={600}>
           City, Country
         </Typography>
-        <Typography color="white" variant="bodyS">
+        <Typography color="white" variant="bodyS" fontSize={'13px'} sx={{opacity: '0.8'}}>
           Apply to see address
         </Typography>
         <Box>

@@ -527,7 +527,7 @@ export const SponsorTransaction: React.FC<IProps> = ({
           moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px" height="100vh">
+      <Stack padding="20px" height="100%">
         {isWait ? (
           <Stack
             padding="20px"
