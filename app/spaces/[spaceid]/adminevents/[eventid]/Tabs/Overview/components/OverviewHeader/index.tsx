@@ -366,8 +366,7 @@ const OverviewHeader = ({ event }: PropTypes) => {
       </SwipeableDrawer> */}
       {showQRScanner && <QRReader />}
     </Stack>
-  ) : (
-    <></>
+   : <></>
   );
 };
 
