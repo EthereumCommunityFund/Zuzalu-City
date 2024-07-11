@@ -66,7 +66,7 @@ import {
   Profile,
   CeramicResponseType,
   EventEdge,
-  Venue,
+  VenueDTO,
   Event,
 } from '@/types';
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
@@ -112,7 +112,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     right: false,
   });
 
-  const [selectedRoom, setSelectedRoom] = useState<Venue>();
+  const [selectedRoom, setSelectedRoom] = useState<VenueDTO>();
   const [selectedSession, setSelectedSession] = useState<Session>();
   const [showMore, setShowMore] = useState(false);
   const [isContentLarge, setIsContentLarge] = useState(false);
@@ -136,7 +136,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   );
 
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
-  const [venues, setVenues] = useState<Venue[]>([]);
+  const [venues, setVenues] = useState<VenueDTO[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [people, setPeople] = useState<Profile[]>([]);
   const [locations, setLocations] = useState<string[]>([]);

@@ -857,6 +857,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
       <VenueList
         venues={venues}
         onToggle={toggleDrawer}
+        searchValue={searchValue}
         setSearchValue={setSearchValue}
       />
       <SwipeableDrawer

@@ -7,28 +7,20 @@ import {
   useTheme,
 } from '@mui/material';
 import ZuButton from 'components/core/Button';
-import {
-  PlusIcon,
-  PlusCircleIcon,
-  InformationIcon,
-  SearchIcon,
-} from 'components/icons';
-import { Venue } from '@/types';
+import { PlusIcon, PlusCircleIcon, SearchIcon, InformationIcon } from 'components/icons';
+import { VenueDTO } from '@/types';
 import VenueCard from './VenueCard';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface VenueListProps {
-  venues?: Venue[];
+  venues?: VenueDTO[];
   onToggle: (anchor: Anchor, open: boolean) => void;
   setSearchValue: React.Dispatch<React.SetStateAction<string>> | any;
+  searchValue: string;
 }
 
-const VenueList: React.FC<VenueListProps> = ({
-  venues,
-  onToggle,
-  setSearchValue,
-}) => {
+const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue, searchValue }) => {
   const theme = useTheme();
 
   return (
