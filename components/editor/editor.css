@@ -1,0 +1,8 @@
+.ce-inline-toolbar {
+  color: black;
+}
+
+.codex-editor__redactor {
+  padding-bottom: 0 !important;
+  overflow: hidden;
+}

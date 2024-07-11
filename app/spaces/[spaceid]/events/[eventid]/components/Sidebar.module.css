@@ -1,0 +1,25 @@
+.spaceButton {
+  position: relative;
+  --banner-bg: "url('/5.webp')"
+}
+
+.spaceButton:before {
+  display: block;
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--banner-bg);
+  background-color: lightgray;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  border-radius: 10px;
+  opacity: 0.3;
+}
+
+.spaceButton:hover:before {
+  opacity: 0.4;
+}

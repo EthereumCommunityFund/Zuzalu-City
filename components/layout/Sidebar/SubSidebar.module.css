@@ -1,0 +1,45 @@
+.spaceButton {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.spaceButton:before {
+  display: block;
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(/5.webp) lightgray 50% / cover no-repeat;
+  border-radius: 10px;
+  opacity: 0.3;
+  overflow: hidden;
+}
+
+.spaceButton:hover:before {
+  opacity: 0.4;
+}
+
+.icon {
+  opacity: 0.5;
+}
+
+.menu {
+  cursor: pointer;
+}
+
+.menu:hover {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 700;
+
+  .text {
+    font-weight: 700;
+  }
+
+  .icon {
+    opacity: 1;
+  }
+}
