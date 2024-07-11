@@ -1,5 +1,11 @@
 'use client';
-import React, { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  useRef,
+} from 'react';
 import { useParams } from 'next/navigation';
 import {
   Stack,
@@ -185,7 +191,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       if (data) {
         setSessions(data);
         const sessionsbydate = groupSessionByDate(data);
-        console.log('data', sessionsbydate);
         setSessionsByDate(sessionsbydate);
       }
     } catch (err) {
@@ -421,10 +426,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   useEffect(() => {
     const fetchData = async () => {
       await getBookedSession();
-    }
+    };
 
     fetchData();
-  }, [sessionLocation])
+  }, [sessionLocation]);
 
   useEffect(() => {
     const contentHeight = contentRef.current?.scrollHeight ?? 0;
@@ -738,7 +743,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <Select
                       value={sessionLocation}
                       onChange={(e) => {
-                        const selectedRoom = venues.filter(item => item.name === e.target.value)[0];
+                        const selectedRoom = venues.filter(
+                          (item) => item.name === e.target.value,
+                        )[0];
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
                       }}
@@ -952,9 +959,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Stack>
                     {sessionDate &&
                       sessionStartTime !==
-                      dayjs().set('hour', 0).set('minute', 0) &&
+                        dayjs().set('hour', 0).set('minute', 0) &&
                       sessionEndTime !==
-                      dayjs().set('hour', 0).set('minute', 0) && (
+                        dayjs().set('hour', 0).set('minute', 0) && (
                         <Stack spacing="10px">
                           <Stack alignItems="center">
                             <ArrowDownIcon />
@@ -1545,7 +1552,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       }),
                     } as any,
                   }}
-                // onMonthChange={(val) => handleMonthChange(val)}
+                  // onMonthChange={(val) => handleMonthChange(val)}
                 />
               </Stack>
             </Grid>
@@ -1582,7 +1589,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     >
                       · LIVE
                     </Typography>
-                    <Typography variant="caption" textTransform="uppercase">{selectedSession.track}</Typography>
+                    <Typography variant="caption" textTransform="uppercase">
+                      {selectedSession.track}
+                    </Typography>
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing="14px">
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
@@ -1602,21 +1611,25 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Stack spacing="10px">
                   <Stack direction={'row'} alignItems={'center'} spacing={1}>
                     <MapIcon size={4} />
-                    {selectedSession.format === 'online' ?
+                    {selectedSession.format === 'online' ? (
                       <Link
                         href={selectedSession.video_url || ''}
                         target="_blank"
                         style={{ textDecoration: 'none' }}
                       >
-                        <Typography variant="bodyM" color="white" sx={{ opacity: 0.5 }}>
+                        <Typography
+                          variant="bodyM"
+                          color="white"
+                          sx={{ opacity: 0.5 }}
+                        >
                           {selectedSession.video_url}
                         </Typography>
                       </Link>
-                      :
+                    ) : (
                       <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
                         {selectedSession.location}
                       </Typography>
-                    }
+                    )}
                   </Stack>
                   <Stack direction={'row'} spacing={1} alignItems="center">
                     <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
@@ -1692,7 +1705,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     WebkitLineClamp: showMore ? 'none' : '3',
                   }}
                 >
-                  {JSON.parse(selectedSession.description.replaceAll('\\"', '"')).blocks.map((item: any) => item.data.text)}
+                  {JSON.parse(
+                    selectedSession.description.replaceAll('\\"', '"'),
+                  ).blocks.map((item: any) => item.data.text)}
                 </Typography>
                 {/* <TextEditor
                   holder="session-description"
@@ -1709,19 +1724,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   )}
                   showMore={showMore}
                 /> */}
-                {isContentLarge && <ZuButton
-                  startIcon={
-                    !showMore ? (
-                      <ChevronDownIcon size={4} />
-                    ) : (
-                      <ChevronUpIcon size={4} />
-                    )
-                  }
-                  sx={{ backgroundColor: '#313131', width: '100%' }}
-                  onClick={() => setShowMore((prev) => !prev)}
-                >
-                  {!showMore ? 'Show More' : 'Show Less'}
-                </ZuButton>}
+                {isContentLarge && (
+                  <ZuButton
+                    startIcon={
+                      !showMore ? (
+                        <ChevronDownIcon size={4} />
+                      ) : (
+                        <ChevronUpIcon size={4} />
+                      )
+                    }
+                    sx={{ backgroundColor: '#313131', width: '100%' }}
+                    onClick={() => setShowMore((prev) => !prev)}
+                  >
+                    {!showMore ? 'Show More' : 'Show Less'}
+                  </ZuButton>
+                )}
               </Stack>
               <Stack padding="20px" spacing="20px">
                 <Stack spacing="10px">
@@ -1729,7 +1746,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       Last Edited By:
                     </Typography>
-                    <Typography variant="bodyS">{JSON.parse(selectedSession.organizers)[0].username}</Typography>
+                    <Typography variant="bodyS">
+                      {JSON.parse(selectedSession.organizers)[0].username}
+                    </Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       {formatDateAgo(selectedSession.createdAt)}
                     </Typography>
@@ -1738,7 +1757,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       Edited By:
                     </Typography>
-                    <Typography variant="bodyS">{JSON.parse(selectedSession.organizers)[0].username}</Typography>
+                    <Typography variant="bodyS">
+                      {JSON.parse(selectedSession.organizers)[0].username}
+                    </Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       {formatDateAgo(selectedSession.createdAt)}
                     </Typography>
@@ -1785,7 +1806,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               >
                 <Stack spacing="20px">
                   <Stack direction="row" spacing="10px" alignItems="center">
-                    <Cog6Icon size={5} />
+                    {/*<Cog6Icon size={5} />*/}
                     <Typography variant="bodyM" sx={{ opacity: 0.7 }}>
                       Session Organizers
                     </Typography>

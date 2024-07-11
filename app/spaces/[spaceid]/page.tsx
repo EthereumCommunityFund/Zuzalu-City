@@ -126,7 +126,6 @@ export default function SpaceDetailPage() {
     const fetchData = async () => {
       try {
         setCurrentHref(window.location.href);
-        console.log(params);
         const space = await getSpaceByID();
         document.title = space?.name + ' - ' + 'Zuzalu City';
         const admins =
@@ -152,8 +151,6 @@ export default function SpaceDetailPage() {
       setIsContentLarge(editorContent.scrollHeight > 300);
     }
   }, [space?.description]);
-
-  console.log('false', isContentLarge);
 
   return (
     <Box

@@ -1,13 +1,18 @@
 import * as React from 'react';
 import { Typography, Stack } from '@mui/material';
-import { CalendarIcon, SessionIcon } from 'components/icons';
+import { CalendarIcon, SessionIcon, LockIcon } from 'components/icons';
 
 interface TabbarProps {
   tabName: string;
   setTabName: (value: string | ((prevVar: string) => string)) => void;
+  canViewSessions: boolean;
 }
 
-const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
+const Thumb: React.FC<TabbarProps> = ({
+  tabName,
+  setTabName,
+  canViewSessions,
+}) => {
   return (
     <Stack
       direction="row"
@@ -45,14 +50,14 @@ const Thumb: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
           spacing={1}
           alignItems="center"
           borderBottom={tabName === 'Sessions' ? '1px solid white' : 'none'}
-          sx={{ cursor: 'pointer' }}
+          sx={{ cursor: canViewSessions ? 'pointer' : 'not-allowed' }}
         >
-          <SessionIcon />
+          {canViewSessions ? <SessionIcon /> : <LockIcon />}
           <Typography
-            onClick={() => setTabName('Sessions')}
+            onClick={() => canViewSessions && setTabName('Sessions')}
             color="white"
             variant="bodyMB"
-            sx={{ cursor: 'pointer' }}
+            sx={{ cursor: canViewSessions ? 'pointer' : 'not-allowed' }}
           >
             Sessions
           </Typography>

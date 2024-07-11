@@ -53,6 +53,7 @@ interface Inputs {
   max_participant: number;
   min_participant: number;
   timezone: string;
+  external_url: string;
 }
 
 interface EventDocument {
@@ -91,14 +92,12 @@ const Home = () => {
   });
 
   const [space, setSpace] = useState<Space>();
-
+  const [reload, setReload] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
 
   const getSpaceByID = async () => {
     try {
-      console.log(params);
-
       const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {
         node(id: $id) {
@@ -229,7 +228,7 @@ const Home = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [reload]);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -242,10 +241,11 @@ const Home = () => {
       name: '',
       symbol: '',
       tagline: '',
-      participant: 1,
-      min_participant: 1,
-      max_participant: 1,
+      participant: 10,
+      min_participant: 10,
+      max_participant: 10,
       timezone: '',
+      external_url: 'TBD',
     });
 
     const [description, setDescription] = useState<OutputData>();
@@ -276,7 +276,6 @@ const Home = () => {
           body: data,
         });
         const resData = await res.json();
-        console.log(resData);
         setAvatarURL(resData.url);
         setUploading(false);
       } catch (e) {
@@ -415,6 +414,7 @@ const Home = () => {
                admins{
                id
                }
+               external_url
              }
            }
          }
@@ -442,11 +442,11 @@ const Home = () => {
                   status: person ? 'In-Person' : 'Online',
                   tracks: tracks.join(','),
                   admins: adminId,
+                  external_url: inputs.external_url,
                 },
               },
             },
           );
-          console.log(update);
           const { data } = await supabase.from('locations').insert({
             name: locations.join(','),
             eventId: update.data.createEvent.document.id,
@@ -466,7 +466,7 @@ const Home = () => {
       }
 
       toggleDrawer('right', false);
-      await getEvents();
+      setReload((prev) => !prev);
     };
 
     return (
@@ -691,6 +691,15 @@ const Home = () => {
                   />
                 </Box>
               </Box>
+              <Stack spacing="10px">
+                <Typography variant="subtitleSB">External_URL</Typography>
+                <ZuInput
+                  onChange={handleInputChange}
+                  type="string"
+                  name="external_url"
+                  placeholder="You can input the external URL "
+                />
+              </Stack>
               <Stack spacing="10px">
                 <Typography variant="subtitleSB">Participant</Typography>
                 <ZuInput

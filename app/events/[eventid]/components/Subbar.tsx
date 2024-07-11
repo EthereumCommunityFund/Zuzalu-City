@@ -1,15 +1,25 @@
 'use client';
 import * as React from 'react';
 import { Typography, Stack } from '@mui/material';
-import { CalendarIcon, HomeIcon, SessionIcon } from 'components/icons';
+import {
+  CalendarIcon,
+  HomeIcon,
+  SessionIcon,
+  LockIcon,
+} from 'components/icons';
 import { ZuButton } from 'components/core';
 
 interface SubbarProps {
   tabName: string;
   setTabName: (value: string | ((prevVar: string) => string)) => void;
+  canViewSessions: boolean;
 }
 
-const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
+const Subbar: React.FC<SubbarProps> = ({
+  tabName,
+  setTabName,
+  canViewSessions,
+}) => {
   return (
     <Stack
       direction="row"
@@ -47,12 +57,12 @@ const Subbar: React.FC<SubbarProps> = ({ tabName, setTabName }) => {
           borderBottom={tabName === 'Sessions' ? '1px solid white' : 'none'}
           sx={{ cursor: 'pointer' }}
         >
-          <SessionIcon />
+          {canViewSessions ? <SessionIcon /> : <LockIcon />}
           <Typography
-            onClick={() => setTabName('Sessions')}
+            onClick={() => canViewSessions && setTabName('Sessions')}
             color="white"
             variant="bodyMB"
-            sx={{ cursor: 'pointer' }}
+            sx={{ cursor: canViewSessions ? 'pointer' : 'not-allowed' }}
           >
             Sessions
           </Typography>

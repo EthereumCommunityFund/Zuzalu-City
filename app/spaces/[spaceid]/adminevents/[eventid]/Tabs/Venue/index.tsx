@@ -123,7 +123,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
         body: data,
       });
       const resData = await res.json();
-      console.log(resData);
       setAvatarURL(resData.url);
       setUploading(false);
     } catch (e) {
@@ -207,7 +206,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
     ]);
 
     const createVenue = async () => {
-      console.log('here');
       try {
         const bookings = {
           monday,

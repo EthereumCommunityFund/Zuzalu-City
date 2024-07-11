@@ -13,7 +13,7 @@ import {
   Payment,
 } from '@/components/event';
 import { ZuButton } from '@/components/core';
-import { XMarkIcon } from '@/components/icons';
+import { XMarkIcon, LockIcon } from '@/components/icons';
 import {
   CeramicResponseType,
   Event,
@@ -48,7 +48,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const params = useParams();
   const eventId = params.eventid.toString();
 
-  const { composeClient } = useCeramicContext();
+  const { composeClient, ceramic } = useCeramicContext();
 
   const [state, setState] = useState({
     top: false,
@@ -70,7 +70,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
   const [isEmail, setIsEmail] = useState<boolean>(false);
   const [isPayment, setIsPayment] = useState<boolean>(false);
-
   const [isVerify, setIsVerify] = useState<boolean>(false);
   const [isAgree, setIsAgree] = useState<boolean>(false);
   const [isMint, setIsMint] = useState<boolean>(false);
@@ -110,6 +109,12 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               timezone
               title
               tracks
+              members{
+              id
+              }
+              admins{
+              id
+              }
               space {
                 id
                 name
@@ -427,6 +432,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               onToggle={toggleDrawer}
               setWhitelist={setWhitelist}
               setSponsor={setSponsor}
+              external_url={eventData.external_url}
             />
             {/* <Stack spacing="4px">List
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />

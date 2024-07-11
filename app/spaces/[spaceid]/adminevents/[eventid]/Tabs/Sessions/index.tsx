@@ -215,7 +215,6 @@ const Sessions = () => {
         .from('venues')
         .select('*')
         .eq('eventId', eventId);
-      console.log('data', data);
       if (data !== null) {
         setVenues(data);
         const locations = data.map((item) => item.name);
@@ -241,9 +240,11 @@ const Sessions = () => {
   };
 
   const handleRoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedRoom = venues.filter(item => item.name === e.target.value)[0];
+    const selectedRoom = venues.filter(
+      (item) => item.name === e.target.value,
+    )[0];
     setSelectedRoom(selectedRoom);
-  }
+  };
 
   const handleDateChange = (date: Dayjs) => {
     if (date) {
@@ -251,7 +252,6 @@ const Sessions = () => {
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
-      console.log('avail', available[dayName.toLowerCase()] || []);
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
     }
     setSessionDate(date);
@@ -370,10 +370,10 @@ const Sessions = () => {
   useEffect(() => {
     const fetchData = async () => {
       await getBookedSession();
-    }
+    };
 
     fetchData();
-  }, [sessionLocation])
+  }, [sessionLocation]);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -460,12 +460,9 @@ const Sessions = () => {
       video_url: sessionVideoURL,
     });
 
-    console.log('return data', data);
     toggleDrawer('right', false);
     await getSession();
   };
-
-  console.log('eventdata', eventData);
 
   const List = (anchor: Anchor) => {
     return (
@@ -774,7 +771,9 @@ const Sessions = () => {
                     <Select
                       value={sessionLocation}
                       onChange={(e) => {
-                        const selectedRoom = venues.filter(item => item.name === e.target.value)[0];
+                        const selectedRoom = venues.filter(
+                          (item) => item.name === e.target.value,
+                        )[0];
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
                       }}

@@ -359,7 +359,6 @@ const Home: React.FC = () => {
     const fetchData = async () => {
       try {
         await getSpaces();
-        console.log(ceramic);
         await getEvents();
       } catch (error) {
         console.error('An error occurred:', error);

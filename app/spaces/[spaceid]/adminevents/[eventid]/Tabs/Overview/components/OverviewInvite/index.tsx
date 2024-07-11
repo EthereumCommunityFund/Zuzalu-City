@@ -67,7 +67,6 @@ const OverviewInvite = ({ event }: PropTypes) => {
       setMembers(response.data.node.members);
       setAdmins(response.data.node.admins);
       setAuthor(response.data.node.author.id);
-      console.log(response.data.node.members);
     } catch (error) {
       console.error('Failed to fetch event:', error);
     }
@@ -78,7 +77,6 @@ const OverviewInvite = ({ event }: PropTypes) => {
       ...admins.map((admin) => admin.id),
       `did:pkh:eip155:${chainID.toString()}:${initialAdmin}`,
     ];
-    console.log(updatedAdmins);
     const query = `
       mutation UpdateEvent($i: UpdateEventInput!) {
        updateEvent(input: $i) {
