@@ -1,84 +1,53 @@
 'use client';
-import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Stack,
   Box,
   Typography,
   Button,
-  Input,
   Select,
   MenuItem,
   OutlinedInput,
   Chip,
-  IconButton,
   TextField,
 } from '@mui/material';
+import * as yup from 'yup';
 import TextEditor from '@/components/editor/editor';
 import { ZuInput } from '@/components/core';
 import { Header } from './components';
 import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
-import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { OutputData } from '@editorjs/editorjs';
 import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
-import CloseIcon from '@mui/icons-material/Close';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
-import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 
-interface Space {
-  id: string;
-  avatar?: string;
-  banner?: string;
-  description?: string;
-  name: string;
-  profileId?: string;
-  tagline?: string;
-  website?: string;
-  twitter?: string;
-  telegram?: string;
-  nostr?: string;
-  lens?: string;
-  github?: string;
-  discord?: string;
-  ens?: string;
-}
-
-interface Inputs {
-  name: string;
-  tagline: string;
-}
+const validationSchema = yup.object({
+  name: yup.string().required('Name is required.'),
+  tagline: yup.string().required('Tagline is required.'),
+  categories: yup
+    .array()
+    .min(1, 'Categories are required.')
+    .max(15, 'Categories select up to 15 items.')
+    .required('Categories are required.'),
+});
 
 const Create = () => {
   const router = useRouter();
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
-  const [banner, setBanner] = useState<SelectedFile>();
   const [bannerURL, setBannerURL] = useState<string>();
   const [description, setDescription] = useState<OutputData>();
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [socialLinks, setSocialLinks] = useState<number[]>([0]);
   const [customLinks, setCustomLinks] = useState<number[]>([0]);
 
-  const {
-    ceramic,
-    composeClient,
-    isAuthenticated,
-    authenticate,
-    logout,
-    showAuthPrompt,
-    hideAuthPrompt,
-    isAuthPromptVisible,
-    newUser,
-    profile,
-    username,
-    createProfile,
-  } = useCeramicContext();
+  const { ceramic, composeClient, isAuthenticated, profile } =
+    useCeramicContext();
 
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
@@ -120,7 +89,7 @@ const Create = () => {
     let strDesc: any = JSON.stringify(description);
 
     if (!description || !description.blocks || description.blocks.length == 0) {
-      setError(true);
+      setError('Description is required.');
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
@@ -173,7 +142,12 @@ const Create = () => {
     if (!isAuthenticated) return;
 
     try {
-      const update = await composeClient.executeQuery(
+      await validationSchema.validate({
+        name: name,
+        tagline: tagline,
+        categories: categories,
+      });
+      await composeClient.executeQuery(
         `
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
         createSpace(
@@ -220,8 +194,11 @@ const Create = () => {
           'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
         );
       router.push('/spaces');
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      if (err.message) {
+        setError(err.message);
+      }
     }
   };
 
@@ -276,7 +253,7 @@ const Create = () => {
         >
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography variant="subtitleSB" color="white">
+              <Typography variant="subtitleMB" color="text.secondary">
                 Space Profile
               </Typography>
             </Box>
@@ -287,8 +264,8 @@ const Create = () => {
               gap="20px"
             >
               <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
-                <Typography variant="subtitleSB" color="white">
-                  Space Name
+                <Typography variant="subtitle2" color="white">
+                  Space Name*
                 </Typography>
                 <ZuInput
                   onChange={(e) => setName(e.target.value)}
@@ -296,8 +273,8 @@ const Create = () => {
                 />
               </Box>
               <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
-                <Typography variant="subtitleSB" color="white">
-                  Space Tagline
+                <Typography variant="subtitle2" color="white">
+                  Space Tagline*
                 </Typography>
                 <ZuInput
                   onChange={(e) => setTagline(e.target.value)}
@@ -306,7 +283,7 @@ const Create = () => {
               </Box>
               <Stack spacing="10px">
                 <Typography variant="subtitleSB" color="white">
-                  Space Description
+                  Space Description*
                 </Typography>
                 <Typography color="white" variant="caption">
                   This is a description greeting for new members. You can also
@@ -388,7 +365,7 @@ const Create = () => {
                     fontWeight={700}
                     fontFamily="Inter"
                   >
-                    Community Categories
+                    Community Categories (Max: 15)*
                   </Typography>
                   <Typography
                     color="white"
@@ -824,7 +801,7 @@ const Create = () => {
           </Box>
           {error && (
             <Typography color={'red'} textAlign={'end'}>
-              Please check Description.
+              {error}
             </Typography>
           )}
         </Box>
