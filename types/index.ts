@@ -99,9 +99,17 @@ export interface Space {
   members?: {
     id: string;
   }[];
-  admin?: {
+  admin: {
     id: string;
   }[];
+  events: {
+    edges: {
+      node: {
+        startTime: string;
+        endTime: string;
+      }
+    }[]
+  }
 }
 
 export interface SpaceEdge {

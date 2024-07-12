@@ -39,6 +39,7 @@ import {
 import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
+import MiniDashboard from './components/MiniDashboard';
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,8 @@ const Home: React.FC = () => {
     createProfile,
   } = useCeramicContext();
 
+  console.log('profile: ', profile?.id)
+
   const getSpaces = async () => {
     try {
       const response: any = await composeClient.executeQuery(`
@@ -83,6 +86,9 @@ const Home: React.FC = () => {
             edges {
               node {
                 id
+                admin {
+                  id
+                }
                 avatar
                 banner
                 description
@@ -101,12 +107,21 @@ const Home: React.FC = () => {
                 members{
                   id
                 }
+                events(first: 1) {
+                  edges {
+                    node {
+                      startTime
+                      endTime
+                    }
+                  }
+                }
               }
             }
           }
         }
       `);
       if ('spaceIndex' in response.data) {
+        console.log('response.data: ', response.data);
         const spaceData: SpaceData = response.data as SpaceData;
         const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
           (edge) => edge.node,
@@ -345,6 +360,16 @@ const Home: React.FC = () => {
               overflowX: 'hidden',
             }}
           >
+            {
+              profile && spaces && spaces.length > 0 && <MiniDashboard 
+                imageUrl={spaces[0].avatar} 
+                spaceName={spaces[0].name} 
+                startTime={spaces[0].events.edges[0].node.startTime} 
+                endTime={spaces[0].events.edges[0].node.endTime}
+                showManage={profile.id === spaces[0].admin[0].id}
+              />
+            }
+            
             <Box
               display="flex"
               flexDirection="column"
@@ -355,6 +380,7 @@ const Home: React.FC = () => {
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
+                marginTop: '20px'
               }}
             >
               <Typography
