@@ -43,10 +43,9 @@ import getLatLngFromAddress from '@/utils/osm';
 
 interface IAbout {
   eventData: Event | undefined;
-  setEventData: Dispatch<SetStateAction<Event | undefined>>;
 }
 
-const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
+const About: React.FC<IAbout> = ({ eventData }) => {
   const [location, setLocation] = useState<string>('');
 
   const [whitelist, setWhitelist] = useState<boolean>(false);
@@ -89,75 +88,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
     lng: 0,
   });
 
-  const getEventDetailInfo = async () => {
-    try {
-      const response: CeramicResponseType<EventEdge> =
-        (await composeClient.executeQuery(
-          `
-        query MyQuery($id: ID!) {
-          node (id: $id) {
-            ...on Event {
-              createdAt
-              description
-              endTime
-              external_url
-              gated
-              id
-              image_url
-              max_participant
-              meeting_url
-              min_participant
-              participant_count
-              profileId
-              spaceId
-              startTime
-              status
-              tagline
-              timezone
-              title
-              space {
-                id
-                name
-                gated
-                avatar
-                banner
-                description
-              }
-              profile {
-                username
-                avatar
-              }
-              customLinks {
-                title
-                links
-              }
-              contractID
-              contracts{
-                type
-                contractAddress
-                description
-                image_url
-                status
-              }
-              tracks
-            }
-          }
-        }
-      `,
-          {
-            id: eventId,
-          },
-        )) as CeramicResponseType<EventEdge>;
-      if (response.data) {
-        if (response.data.node) {
-          setEventData(response.data.node);
-        }
-      }
-    } catch (err) {
-      console.log('Failed to fetch event: ', err);
-    }
-  };
-
   const getLocation = async () => {
     try {
       const { data } = await supabase
@@ -179,7 +109,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getEventDetailInfo();
         await getLocation();
       } catch (err) {
         console.log(err);
@@ -230,7 +159,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
         {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
         {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
         {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
-        {/*{whitelist && (
+        {whitelist && (
           <>
             {!isVerify &&
               !isAgree &&
@@ -300,6 +229,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                   setIsAgree={setIsSponsorAgree}
                   eventContractID={eventData?.contractID}
                   setFilteredResults={setFilteredResults}
+                  event={eventData}
                 />
               )}
             {isSponsorAgree &&
@@ -338,7 +268,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 />
               )}
           </>
-        )}*/}
+        )}
       </Box>
     );
   };

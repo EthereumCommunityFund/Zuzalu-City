@@ -9,7 +9,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const connector = createConnector('lighthouse', { token });
+    const connector = createConnector('NFT.storage', { token });
 
     const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
     let { data: imageData = '', type } = reqBody;
