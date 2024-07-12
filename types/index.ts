@@ -99,7 +99,7 @@ export interface Space {
   members?: {
     id: string;
   }[];
-  admin: {
+  admin?: {
     id: string;
   }[];
   events: {

@@ -101,7 +101,7 @@ export default function MiniDashboard({
                     }}
                     startIcon={<ClockIcon />}
                 >
-                    Today's Schedule
+                    {`Today's Schedule`}
                 </ZuButton>
                 <ZuButton
                     sx={{
@@ -122,7 +122,7 @@ export default function MiniDashboard({
                     }}
                     startIcon={<TicketIcon />}
                 >
-                    My RSVPs
+                    {'My RSVPs'}
                 </ZuButton>
                 <ZuButton
                     sx={{
@@ -143,7 +143,7 @@ export default function MiniDashboard({
                     }}
                     startIcon={<ChatsIcon />}
                 >
-                    Join Conversation
+                    {'Join Conversation'}
                 </ZuButton>
                 <ZuButton
                     sx={{
@@ -164,7 +164,7 @@ export default function MiniDashboard({
                     }}
                     startIcon={<ArrowTopRightSquareIcon />}
                 >
-                    About ZuVillage
+                    {'About ZuVillage'}
                 </ZuButton>
                 {
                     showManage && <ZuButton
@@ -187,7 +187,7 @@ export default function MiniDashboard({
                         }}
                         startIcon={<SettingIcon color="#FFC77D" />}
                     >
-                        Manage The Event
+                        {'Manage The Event'}
                     </ZuButton>
                 }
 
