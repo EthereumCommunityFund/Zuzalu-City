@@ -40,7 +40,7 @@ export default function WarningModal({ showModal, setShowModal }: Proptypes) {
           }}
         >
           <Typography fontSize={'20px'} color={'white'}>
-            Please do Login to Create Space.
+            Login to Create a Space
           </Typography>
           <ZuButton onClick={() => setShowModal(false)}>OK</ZuButton>
         </Stack>
