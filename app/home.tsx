@@ -361,12 +361,12 @@ const Home: React.FC = () => {
             }}
           >
             {
-              profile && spaces && spaces.length > 0 && spaces[0].admin && <MiniDashboard 
+              profile && spaces && spaces.length > 0 && <MiniDashboard 
                 imageUrl={spaces[0].avatar} 
                 spaceName={spaces[0].name} 
                 startTime={spaces[0].events.edges[0].node.startTime} 
                 endTime={spaces[0].events.edges[0].node.endTime}
-                showManage={profile.id === spaces[0].admin[0].id}
+                showManage={profile.id === spaces[0].profileId}
               />
             }
             
