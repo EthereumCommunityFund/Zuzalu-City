@@ -26,10 +26,17 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
 import Checkbox from '@mui/material/Checkbox';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
+import Modal from '@/app/spaces/components/Modal/Modal';
 
 const validationSchema = yup.object({
-  name: yup.string().required('Name is required.'),
-  tagline: yup.string().required('Tagline is required.'),
+  name: yup
+    .string()
+    .min(3, 'Name must be at least 3 characters.')
+    .required('Name is required.'),
+  tagline: yup
+    .string()
+    .min(3, 'Tagline must be at least 3 characters.')
+    .required('Tagline is required.'),
   categories: yup
     .array()
     .min(1, 'Categories are required.')
@@ -39,6 +46,7 @@ const validationSchema = yup.object({
 
 const Create = () => {
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
   const [avatarURL, setAvatarURL] = useState<string>();
@@ -48,6 +56,7 @@ const Create = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [socialLinks, setSocialLinks] = useState<number[]>([0]);
   const [customLinks, setCustomLinks] = useState<number[]>([0]);
+  const [submitting, setSubmitting] = useState(false);
 
   const { ceramic, composeClient, isAuthenticated, profile } =
     useCeramicContext();
@@ -56,7 +65,6 @@ const Create = () => {
   const adminId = ceramic?.did?.parent || '';
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
-  const [file, setFile] = useState('');
   const [uploading, setUploading] = useState({
     avatar: false,
     banner: false,
@@ -94,7 +102,6 @@ const Create = () => {
   const handleImageChange = (e: any, type: string) => {
     const file = e.target.files[0];
     if (!file) return;
-    setFile(file);
     uploadFile(file, type);
   };
 
@@ -155,12 +162,13 @@ const Create = () => {
     if (!isAuthenticated) return;
 
     try {
+      setSubmitting(true);
       await validationSchema.validate({
         name: name,
         tagline: tagline,
         categories: categories,
       });
-      await composeClient.executeQuery(
+      const result = await composeClient.executeQuery(
         `
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
         createSpace(
@@ -202,16 +210,17 @@ const Create = () => {
           },
         },
       );
-      typeof window !== 'undefined' &&
-        window.alert(
-          'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
-        );
-      router.push('/spaces');
+      if (result.errors?.length) {
+        throw new Error('Error creating space.');
+      }
+      setShowModal(true);
     } catch (err: any) {
       console.log(err);
       if (err.message) {
         setError(err.message);
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -255,6 +264,14 @@ const Create = () => {
 
   return (
     <Stack>
+      <Modal
+        text="Submitted! Create process probably complete after few minute. Please check it in Space List page."
+        showModal={showModal}
+        onConfirm={() => {
+          setShowModal(false);
+          router.push('/spaces');
+        }}
+      />
       <Header />
       <Stack direction="row" justifyContent="center">
         <Box
@@ -760,7 +777,7 @@ const Create = () => {
                 },
               }}
               startIcon={<SpacePlusIcon color="#67DBFF" />}
-              disabled={!name}
+              disabled={!name || submitting}
               onClick={createSpace}
             >
               Create Space

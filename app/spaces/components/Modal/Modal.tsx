@@ -1,20 +1,20 @@
 import { ZuButton } from '@/components/core';
-import { ClickAwayListener, Stack, Typography } from '@mui/material';
-import { Dispatch, SetStateAction } from 'react';
+import { Box, ClickAwayListener, Stack, Typography } from '@mui/material';
 
 interface Proptypes {
+  text: string;
   showModal: boolean;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
+  onConfirm: () => void;
 }
 
-export default function WarningModal({ showModal, setShowModal }: Proptypes) {
+export default function Modal({ showModal, onConfirm, text }: Proptypes) {
   return showModal ? (
     <Stack
       sx={{
         width: '100vw',
         height: '100vh',
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        position: 'absolute',
+        position: 'fixed',
         top: '0px',
         left: '0px',
         inset: '0',
@@ -26,7 +26,7 @@ export default function WarningModal({ showModal, setShowModal }: Proptypes) {
         margin: '0px',
       }}
     >
-      <ClickAwayListener onClickAway={() => setShowModal(false)}>
+      <ClickAwayListener onClickAway={onConfirm}>
         <Stack
           sx={{
             padding: '20px',
@@ -37,12 +37,15 @@ export default function WarningModal({ showModal, setShowModal }: Proptypes) {
             flexDirection: 'column',
             alignItems: 'center',
             gap: '30px',
+            maxWidth: '600px',
           }}
         >
           <Typography fontSize={'20px'} color={'white'}>
-            Login to Create a Space
+            {text}
           </Typography>
-          <ZuButton onClick={() => setShowModal(false)}>OK</ZuButton>
+          <Box display="flex" justifyContent="flex-end" width="100%">
+            <ZuButton onClick={onConfirm}>OK</ZuButton>
+          </Box>
         </Stack>
       </ClickAwayListener>
     </Stack>
