@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
@@ -115,12 +115,18 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               borderRadius="40px"
             /> */}
             <Image
-              src={event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
-              loader={() => event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
+              src={
+                event.space?.avatar ||
+                'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+              }
+              loader={() =>
+                event.space?.avatar ||
+                'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+              }
               width={18}
               height={18}
               alt={event.title}
-              style={{ borderRadius: "100%" }}
+              style={{ borderRadius: '100%' }}
             />
             <Typography
               color="white"
@@ -201,6 +207,50 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           )}
         </Box>
       </Box> */}
+    </Box>
+  );
+};
+
+export const EventCardSkeleton = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  return (
+    <Box
+      padding="10px"
+      display="flex"
+      gap={isMobile ? '10px' : '14px'}
+      sx={{ cursor: 'pointer' }}
+      width={'100%'}
+      boxSizing={'border-box'}
+      position={'relative'}
+    >
+      <Skeleton
+        variant="rectangular"
+        width={isMobile ? '80px' : '140px'}
+        height={isMobile ? '80px' : '140px'}
+      />
+      <Box display="flex" flexDirection="column" gap="10px" flexGrow={1}>
+        <Box
+          display="flex"
+          flexDirection={isMobile ? 'column' : 'row'}
+          alignItems={isMobile ? 'initial' : 'center'}
+          gap="10px"
+        >
+          <Typography color="white" variant="caption">
+            BY:
+          </Typography>
+          <Skeleton variant="circular" width={18} height={18} />
+          <Skeleton variant="text" width={100} />
+        </Box>
+        <Box display="flex" flexDirection="column">
+          <Skeleton variant="text" width={isMobile ? '100%' : '80%'} />
+          <Skeleton variant="text" width={isMobile ? '60%' : '70%'} />
+        </Box>
+        <Box display="flex" alignItems="center" gap="6px" sx={{ opacity: 0.5 }}>
+          <MapIcon size={4} />
+          <Skeleton variant="text" width={100} />
+        </Box>
+      </Box>
     </Box>
   );
 };

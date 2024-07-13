@@ -1512,11 +1512,15 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   slotProps={{
                     day: {
                       highlightedDays: sessions
-                        .filter((event) => {
-                          // filter event.startTime month equal to selected month
+                        .filter((session) => {
+                          // filter session.startTime month equal to selected month
                           return (
-                            dayjs(event.startTime).month() ===
-                            selectedDate.month()
+                            dayjs(session.startTime).month() ===
+                              selectedDate.month() &&
+                            dayjs(session.startTime).year() ===
+                              selectedDate.year() &&
+                            dayjs(session.startTime).date() !==
+                              selectedDate.date()
                           );
                         })
                         .map((session) => {

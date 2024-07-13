@@ -1516,7 +1516,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           // filter session.startTime month equal to selected month
                           return (
                             dayjs(session.startTime).month() ===
-                            selectedDate.month()
+                              selectedDate.month() &&
+                            dayjs(session.startTime).year() ===
+                              selectedDate.year() &&
+                            dayjs(session.startTime).date() !==
+                              selectedDate.date()
                           );
                         })
                         .map((session) => {
