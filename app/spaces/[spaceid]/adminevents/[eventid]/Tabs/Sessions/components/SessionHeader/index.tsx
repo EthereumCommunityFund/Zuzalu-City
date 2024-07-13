@@ -9,12 +9,25 @@ interface SessionHeaderProps {
 }
 
 const SessionHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => { },
+  onToggle = (anchor: Anchor, open: boolean) => {},
 }) => {
   return (
-    <Stack direction={'row'} justifyContent={'space-between'} pb="30px" borderBottom="1px solid #383838">
-      <Typography variant="h5">Event Sessions</Typography>
-      <ZuButton startIcon={<PlusIcon />} onClick={() => onToggle("right", true)}>Add a Session</ZuButton>
+    <Stack
+      direction={'row'}
+      justifyContent={'space-between'}
+      pb="30px"
+      borderBottom="1px solid #383838"
+    >
+      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+        Event Sessions
+      </Typography>
+      <ZuButton
+        startIcon={<PlusIcon size={4} />}
+        sx={{ padding: '6px 10px' }}
+        onClick={() => onToggle('right', true)}
+      >
+        Add a Session
+      </ZuButton>
     </Stack>
   );
 };

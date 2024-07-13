@@ -1,6 +1,5 @@
 'use client';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-
 // Base styles
 import { Colors } from './base/colors';
 import { Typography } from './base/typography';
@@ -18,6 +17,13 @@ let theme = createTheme({
   },
   typography: { ...Typography },
   components: {
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#373737',
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         contained: {
@@ -64,6 +70,16 @@ let theme = createTheme({
             ...Typography.buttonLSB,
             padding: '10px 14px',
           },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        icon: {
+          color: 'rgba(255, 255, 255, 0.6)',
+        },
+        outlined: {
+          backgroundColor: '#373737',
         },
       },
     },

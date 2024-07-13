@@ -29,14 +29,6 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   members = [],
   categories = '',
 }) => {
-  function isValidJSON(str: string): boolean {
-    try {
-      JSON.parse(str);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
   return (
     <Link href={`/spaces/${id}`} style={{ textDecoration: 'none' }}>
       <Stack
@@ -50,7 +42,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
         }}
         border="1px solid rgba(255, 255, 255, 0.1)"
         position="relative"
-        height={288}
+        // height={250}
         maxHeight={288}
       >
         <Box
@@ -68,24 +60,19 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           height={60}
           width={60}
           position="absolute"
-          top={70}
-          left={13}
+          top={68}
+          left={12}
           borderRadius={30}
         />
         <Stack padding="10px" spacing="10px" marginTop="20px">
           <Typography color="white" gutterBottom variant="subtitleS">
             {title}
           </Typography>
-          <Stack
-            sx={{
-              maxHeight: '44px',
-              overflow: 'auto',
-            }}
-          >
+          <Stack sx={{ maxHeight: '44px', overflow: 'auto' }}>
             <Typography
               variant="bodyM"
               color="white"
-              sx={{ wordWrap: 'break-word' }}
+              sx={{ wordWrap: 'break-word', opacity: 0.6, lineHeight: '22px' }}
             >
               {description &&
                 JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
@@ -93,7 +80,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             </Typography>
           </Stack>
           <Stack direction="row">
-            <Typography color="white" variant="caption">
+            <Typography color="white" variant="caption" sx={{ opacity: 0.5 }}>
               {categories &&
                 categories
                   .split(', ')

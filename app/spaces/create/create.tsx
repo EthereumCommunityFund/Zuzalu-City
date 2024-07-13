@@ -1,96 +1,82 @@
 'use client';
-import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Stack,
   Box,
   Typography,
   Button,
-  Input,
   Select,
   MenuItem,
   OutlinedInput,
   Chip,
-  IconButton,
   TextField,
+  ListItemText,
 } from '@mui/material';
+import * as yup from 'yup';
 import TextEditor from '@/components/editor/editor';
 import { ZuInput } from '@/components/core';
 import { Header } from './components';
 import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
-import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { OutputData } from '@editorjs/editorjs';
 import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
-import CloseIcon from '@mui/icons-material/Close';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
-import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
+import Checkbox from '@mui/material/Checkbox';
+import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
+import SelectCheckItem from '@/components/select/selectCheckItem';
 
-interface Space {
-  id: string;
-  avatar?: string;
-  banner?: string;
-  description?: string;
-  name: string;
-  profileId?: string;
-  tagline?: string;
-  website?: string;
-  twitter?: string;
-  telegram?: string;
-  nostr?: string;
-  lens?: string;
-  github?: string;
-  discord?: string;
-  ens?: string;
-}
-
-interface Inputs {
-  name: string;
-  tagline: string;
-}
+const validationSchema = yup.object({
+  name: yup
+    .string()
+    .min(3, 'Name must be at least 3 characters.')
+    .required('Name is required.'),
+  tagline: yup
+    .string()
+    .min(3, 'Tagline must be at least 3 characters.')
+    .required('Tagline is required.'),
+  categories: yup
+    .array()
+    .min(1, 'Categories are required.')
+    .max(15, 'Categories select up to 15 items.')
+    .required('Categories are required.'),
+});
 
 const Create = () => {
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const [avatar, setAvatar] = useState<SelectedFile>();
   const [avatarURL, setAvatarURL] = useState<string>();
-  const [banner, setBanner] = useState<SelectedFile>();
   const [bannerURL, setBannerURL] = useState<string>();
   const [description, setDescription] = useState<OutputData>();
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [socialLinks, setSocialLinks] = useState<number[]>([0]);
   const [customLinks, setCustomLinks] = useState<number[]>([0]);
+  const [submitting, setSubmitting] = useState(false);
 
-  const {
-    ceramic,
-    composeClient,
-    isAuthenticated,
-    authenticate,
-    logout,
-    showAuthPrompt,
-    hideAuthPrompt,
-    isAuthPromptVisible,
-    newUser,
-    profile,
-    username,
-    createProfile,
-  } = useCeramicContext();
+  const { ceramic, composeClient, isAuthenticated, profile } =
+    useCeramicContext();
 
   const profileId = profile?.id || '';
   const adminId = ceramic?.did?.parent || '';
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
-  const [file, setFile] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const inputFile = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState({
+    avatar: false,
+    banner: false,
+  });
 
-  const uploadFile = async (fileToUpload: File, image: string) => {
+  const uploadFile = async (fileToUpload: File, type: string) => {
     try {
-      setUploading(true);
+      setUploading((v) => ({
+        ...v,
+        [type]: true,
+      }));
       const data = new FormData();
       data.set('file', fileToUpload);
       const res = await fetch('/api/pinata', {
@@ -98,29 +84,33 @@ const Create = () => {
         body: data,
       });
       const resData = await res.json();
-      if (image === 'Avatar') {
+      if (type === 'avatar') {
         setAvatarURL(resData.url);
       } else {
         setBannerURL(resData.url);
       }
-      setUploading(false);
     } catch (e) {
       console.log(e);
-      setUploading(false);
       alert('Trouble uploading file');
+    } finally {
+      setUploading((v) => ({
+        ...v,
+        [type]: false,
+      }));
     }
   };
 
-  const handleImageChange = (e: any) => {
-    setFile(e.target.files[0]);
-    uploadFile(e.target.files[0], e.target.id);
+  const handleImageChange = (e: any, type: string) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    uploadFile(file, type);
   };
 
   const createSpace = async () => {
     let strDesc: any = JSON.stringify(description);
 
     if (!description || !description.blocks || description.blocks.length == 0) {
-      setError(true);
+      setError('Description is required.');
       return;
     }
     strDesc = strDesc.replaceAll('"', '\\"');
@@ -173,7 +163,13 @@ const Create = () => {
     if (!isAuthenticated) return;
 
     try {
-      const update = await composeClient.executeQuery(
+      setSubmitting(true);
+      await validationSchema.validate({
+        name: name,
+        tagline: tagline,
+        categories: categories,
+      });
+      const result = await composeClient.executeQuery(
         `
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
         createSpace(
@@ -215,13 +211,17 @@ const Create = () => {
           },
         },
       );
-      typeof window !== 'undefined' &&
-        window.alert(
-          'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
-        );
-      router.push('/spaces');
-    } catch (err) {
+      if (result.errors?.length) {
+        throw new Error('Error creating space.');
+      }
+      setShowModal(true);
+    } catch (err: any) {
       console.log(err);
+      if (err.message) {
+        setError(err.message);
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -265,6 +265,16 @@ const Create = () => {
 
   return (
     <Stack>
+      <Dialog
+        title="Space Created"
+        message="Create process probably complete after few minute. Please check it in Space List page."
+        showModal={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={() => {
+          setShowModal(false);
+          router.push('/spaces');
+        }}
+      />
       <Header />
       <Stack direction="row" justifyContent="center">
         <Box
@@ -276,7 +286,7 @@ const Create = () => {
         >
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography variant="subtitleSB" color="white">
+              <Typography variant="subtitleMB" color="text.secondary">
                 Space Profile
               </Typography>
             </Box>
@@ -284,11 +294,11 @@ const Create = () => {
               padding="20px"
               display="flex"
               flexDirection="column"
-              gap="20px"
+              gap="30px"
             >
               <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
-                <Typography variant="subtitleSB" color="white">
-                  Space Name
+                <Typography variant="subtitle2" color="white">
+                  Space Name*
                 </Typography>
                 <ZuInput
                   onChange={(e) => setName(e.target.value)}
@@ -296,8 +306,8 @@ const Create = () => {
                 />
               </Box>
               <Box display={'flex'} flexDirection={'column'} gap={'10px'}>
-                <Typography variant="subtitleSB" color="white">
-                  Space Tagline
+                <Typography variant="subtitle2" color="white">
+                  Space Tagline*
                 </Typography>
                 <ZuInput
                   onChange={(e) => setTagline(e.target.value)}
@@ -305,10 +315,10 @@ const Create = () => {
                 />
               </Box>
               <Stack spacing="10px">
-                <Typography variant="subtitleSB" color="white">
-                  Space Description
+                <Typography variant="subtitle2" color="white">
+                  Space Description*
                 </Typography>
-                <Typography color="white" variant="caption">
+                <Typography color="text.secondary" variant="body2">
                   This is a description greeting for new members. You can also
                   update descriptions.
                 </Typography>
@@ -320,7 +330,7 @@ const Create = () => {
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
                     color: 'white',
-                    padding: '12px 12px 12px 80px',
+                    padding: '12px 12px 12px 40px',
                     borderRadius: '10px',
                     height: 'auto',
                     minHeight: '270px',
@@ -330,45 +340,7 @@ const Create = () => {
                     },
                   }}
                 />
-                <Stack direction="row" justifyContent="space-between">
-                  {/* <Stack
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      gap: '6px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <svg
-                      width="20"
-                      height="15"
-                      viewBox="0 0 20 15"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g clipPath="url(#clip0_4575_7884)">
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M4.80085 4.06177H2.83984V11.506H4.88327V7.3727L6.82879 10.0394L8.68199 7.3727V11.506H10.6226V4.06177H8.68199L6.82879 6.81714L4.80085 4.06177ZM1.55636 0.794922H18.4436C19.3028 0.794922 20 1.59076 20 2.57247V13.0174C20 13.9989 19.3032 14.7949 18.4436 14.7949H1.55636C0.697166 14.7949 0 13.9991 0 13.0174V2.57247C0 1.59091 0.696805 0.794922 1.55636 0.794922ZM14.0078 4.10603H13.9884V7.92826H12.1206L15 11.506L17.8795 7.90628H15.9347V4.10603H14.0078Z"
-                          fill="white"
-                        />
-                      </g>
-                      <defs>
-                        <clipPath id="clip0_4575_7884">
-                          <rect
-                            width="20"
-                            height="14"
-                            fill="white"
-                            transform="translate(0 0.794922)"
-                          />
-                        </clipPath>
-                      </defs>
-                    </svg>
-                    <Typography color="white" variant="caption">
-                      Markdown Available
-                    </Typography>
-                  </Stack> */}
+                <Stack direction="row" justifyContent="flex-end">
                   <Typography variant="caption" color="white">
                     {5000 -
                       (description
@@ -382,19 +354,10 @@ const Create = () => {
               </Stack>
               <Box display={'flex'} flexDirection={'column'} gap={'20px'}>
                 <Box>
-                  <Typography
-                    color="white"
-                    fontSize="18px"
-                    fontWeight={700}
-                    fontFamily="Inter"
-                  >
-                    Community Categories
+                  <Typography variant="subtitle2" color="white">
+                    Community Categories (Max: 15)*
                   </Typography>
-                  <Typography
-                    color="white"
-                    variant="caption"
-                    sx={{ opacity: '0.6' }}
-                  >
+                  <Typography color="text.secondary" variant="body2">
                     Search or create categories related to your space
                   </Typography>
                 </Box>
@@ -404,7 +367,8 @@ const Create = () => {
                     value={categories}
                     style={{ width: '100%' }}
                     onChange={handleChange}
-                    input={<OutlinedInput label="Name" />}
+                    input={<OutlinedInput label="Categories" />}
+                    renderValue={(selected) => selected.join(', ')}
                     MenuProps={{
                       PaperProps: {
                         style: {
@@ -416,7 +380,15 @@ const Create = () => {
                     {SPACE_CATEGORIES.map((category, index) => {
                       return (
                         <MenuItem value={category.value} key={index}>
-                          {category.label}
+                          <SelectCheckItem
+                            label={category.label}
+                            isChecked={
+                              categories.findIndex(
+                                (item) => item === category.value,
+                              ) > -1
+                            }
+                            key={index}
+                          />
                         </MenuItem>
                       );
                     })}
@@ -455,15 +427,15 @@ const Create = () => {
           </Box>
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography variant="subtitleSB" color="white">
+              <Typography variant="subtitleMB" color="text.secondary">
                 Space Avatar & Banner
               </Typography>
             </Box>
             <Stack spacing="10px" padding="20px">
-              <Typography variant="subtitleSB" color="white">
+              <Typography variant="subtitle2" color="white">
                 Space Avatar
               </Typography>
-              <Typography variant="bodyS" color="white">
+              <Typography color="text.secondary" variant="body2">
                 Recommend min of 200x200px (1:1 Ratio)
               </Typography>
               <Box
@@ -473,24 +445,24 @@ const Create = () => {
                   gap: '10px',
                 }}
               >
-                <ZuInput
-                  type="file"
-                  id="Avatar"
-                  ref={inputFile}
-                  onChange={handleImageChange}
-                />
-                {/*<Button
-                  disabled={uploading}
-                  onClick={() => inputFile.current && inputFile.current.click()}
+                <Button
+                  component="label"
+                  tabIndex={-1}
+                  disabled={uploading.avatar}
                   sx={{
                     color: 'white',
                     borderRadius: '10px',
                     backgroundColor: '#373737',
                     border: '1px solid #383838',
+                    width: '140px',
                   }}
                 >
-                  {uploading ? 'Uploading...' : 'Upload'}
-                </Button>*/}
+                  {uploading.avatar ? 'Uploading...' : 'Upload Image'}
+                  <VisuallyHiddenInput
+                    type="file"
+                    onChange={(e) => handleImageChange(e, 'avatar')}
+                  />
+                </Button>
                 <PreviewFile
                   sx={{
                     width: '150px',
@@ -502,10 +474,10 @@ const Create = () => {
               </Box>
             </Stack>
             <Stack spacing="10px" padding="20px">
-              <Typography variant="subtitleSB" color="white">
+              <Typography variant="subtitle2" color="white">
                 Space Banner
               </Typography>
-              <Typography variant="bodyS" color="white">
+              <Typography color="text.secondary" variant="body2">
                 Recommend min of 730x220 (1:1 Ratio)
               </Typography>
               <Box
@@ -515,12 +487,24 @@ const Create = () => {
                   gap: '10px',
                 }}
               >
-                <ZuInput
-                  type="file"
-                  id="Banner"
-                  ref={inputFile}
-                  onChange={handleImageChange}
-                />
+                <Button
+                  component="label"
+                  tabIndex={-1}
+                  disabled={uploading.banner}
+                  sx={{
+                    color: 'white',
+                    borderRadius: '10px',
+                    backgroundColor: '#373737',
+                    border: '1px solid #383838',
+                    width: '140px',
+                  }}
+                >
+                  {uploading.banner ? 'Uploading...' : 'Upload Image'}
+                  <VisuallyHiddenInput
+                    type="file"
+                    onChange={(e) => handleImageChange(e, 'banner')}
+                  />
+                </Button>
                 <PreviewFile
                   sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
                   file={bannerURL}
@@ -530,12 +514,7 @@ const Create = () => {
           </Box>
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
-              <Typography
-                color="white"
-                fontSize="18px"
-                fontWeight={700}
-                fontFamily="Inter"
-              >
+              <Typography variant="subtitleMB" color="text.secondary">
                 Links
               </Typography>
             </Box>
@@ -547,12 +526,7 @@ const Create = () => {
               gap={'30px'}
               ref={socialLinksRef}
             >
-              <Typography
-                fontSize={'18px'}
-                fontWeight={700}
-                lineHeight={'120%'}
-                color={'white'}
-              >
+              <Typography variant="subtitleSB" color="text.secondary">
                 Social Links
               </Typography>
               {socialLinks.map((item, index) => {
@@ -569,11 +543,7 @@ const Create = () => {
                       gap={'10px'}
                       flex={1}
                     >
-                      <Typography
-                        fontSize={'16px'}
-                        fontWeight={700}
-                        color={'white'}
-                      >
+                      <Typography variant="subtitle2" color="white">
                         Select Social
                       </Typography>
                       <Select
@@ -607,11 +577,7 @@ const Create = () => {
                       gap={'10px'}
                       flex={1}
                     >
-                      <Typography
-                        fontSize={'16px'}
-                        fontWeight={700}
-                        color={'white'}
-                      >
+                      <Typography variant="subtitle2" color="white">
                         URL
                       </Typography>
                       <TextField
@@ -645,7 +611,7 @@ const Create = () => {
                           color: 'white',
                         }}
                       >
-                        <CancelIcon />
+                        <CancelIcon sx={{ fontSize: 20 }} />
                       </Box>
                     </Box>
                   </Box>
@@ -665,7 +631,9 @@ const Create = () => {
                 onClick={handleAddSocialLink}
               >
                 <AddCircleIcon />
-                <Typography color="white">Add Social Link</Typography>
+                <Typography variant="buttonMSB" color="white">
+                  Add Social Link
+                </Typography>
               </Button>
             </Box>
             <Box
@@ -676,12 +644,7 @@ const Create = () => {
               borderTop={'1px solid rgba(255, 255, 255, 0.10)'}
               ref={customLinksRef}
             >
-              <Typography
-                fontSize={'18px'}
-                fontWeight={700}
-                lineHeight={'120%'}
-                color={'white'}
-              >
+              <Typography variant="subtitleSB" color="text.secondary">
                 Custom Links
               </Typography>
               {customLinks.map((item, index) => {
@@ -698,11 +661,7 @@ const Create = () => {
                       gap={'10px'}
                       flex={1}
                     >
-                      <Typography
-                        fontSize={'16px'}
-                        fontWeight={700}
-                        color={'white'}
-                      >
+                      <Typography variant="subtitle2" color="white">
                         Link Title
                       </Typography>
                       <TextField
@@ -722,11 +681,7 @@ const Create = () => {
                       gap={'10px'}
                       flex={1}
                     >
-                      <Typography
-                        fontSize={'16px'}
-                        fontWeight={700}
-                        color={'white'}
-                      >
+                      <Typography variant="subtitle2" color="white">
                         URL
                       </Typography>
                       <TextField
@@ -760,7 +715,7 @@ const Create = () => {
                           color: 'white',
                         }}
                       >
-                        <CancelIcon />
+                        <CancelIcon sx={{ fontSize: 20 }} />
                       </Box>
                     </Box>
                   </Box>
@@ -781,7 +736,9 @@ const Create = () => {
                 onClick={handleAddCustomLink}
               >
                 <AddCircleIcon />
-                <Typography color="white">Add Custom Link</Typography>
+                <Typography variant="buttonMSB" color="white">
+                  Add Custom Link
+                </Typography>
               </Button>
             </Box>
           </Box>
@@ -796,7 +753,7 @@ const Create = () => {
                 border: '1px solid #383838',
                 flex: 1,
               }}
-              startIcon={<XMarkIcon />}
+              startIcon={<XMarkIcon size={5} />}
             >
               Discard
             </Button>
@@ -816,7 +773,7 @@ const Create = () => {
                 },
               }}
               startIcon={<SpacePlusIcon color="#67DBFF" />}
-              disabled={!name}
+              disabled={!name || submitting}
               onClick={createSpace}
             >
               Create Space
@@ -824,7 +781,7 @@ const Create = () => {
           </Box>
           {error && (
             <Typography color={'red'} textAlign={'end'}>
-              Please check Description.
+              {error}
             </Typography>
           )}
         </Box>
