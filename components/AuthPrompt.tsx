@@ -5,17 +5,11 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
-import { useCeramicContext } from '../context/CeramicContext';
+import { useCeramicContext } from '@/context/CeramicContext';
 import { useAccount, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import { Box, Button, OutlinedInput, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, OutlinedInput } from '@mui/material';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 const AuthPrompt: React.FC<{}> = () => {
