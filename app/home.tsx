@@ -474,7 +474,7 @@ const Home: React.FC = () => {
               </Box>
               {/* <Carousel items={spaces} /> */}
               <Carousel items={spaces} />
-              <LotteryCard />
+              {/*<LotteryCard />*/}
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   position="relative"
