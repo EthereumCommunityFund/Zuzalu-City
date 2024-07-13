@@ -13,7 +13,6 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "leaflet": "^1.9.0",
     "@4everland/upload-pin": "^1.1.1",
     "@aws-sdk/client-s3": "^3.575.0",
     "@ceramicnetwork/http-client": "^5.10.0",
@@ -66,6 +65,7 @@
     "jsonwebtoken": "^9.0.2",
     "key-did-provider-ed25519": "^4.0.2",
     "key-did-resolver": "^4.0.0",
+    "leaflet": "^1.9.0",
     "lodash": "^4.17.21",
     "next": "^14.2.3",
     "next-qrcode": "^2.5.1",
@@ -85,7 +85,8 @@
     "tailwindcss": "^3.4.3",
     "viem": "^2.9.31",
     "wagmi": "^2.8.0",
-    "web3-utils": "^4.3.0"
+    "web3-utils": "^4.3.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
