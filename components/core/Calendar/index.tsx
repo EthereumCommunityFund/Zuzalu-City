@@ -3,6 +3,7 @@ import { styled } from '@mui/material';
 
 const ZuCalendar = styled(DateCalendar)({
   // backgroundColor: '#424242',
+  color: 'white',
   borderRadius: '14px',
   border: '1px solid rgba(255,255,255,0.1)',
   '& .MuiDayCalendar-weekDayLabel': {
@@ -13,7 +14,7 @@ const ZuCalendar = styled(DateCalendar)({
   },
   '& .MuiPickersDay-dayWithMargin': {
     fontFamily: 'Inter',
-    color: 'white',
+    color: '#ccc',
     fontSize: '16px',
     fontWeight: 500,
   },
