@@ -26,7 +26,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
 import Checkbox from '@mui/material/Checkbox';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
-import Modal from '@/app/spaces/components/Modal/Modal';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 const validationSchema = yup.object({
   name: yup
@@ -264,9 +264,11 @@ const Create = () => {
 
   return (
     <Stack>
-      <Modal
-        text="Submitted! Create process probably complete after few minute. Please check it in Space List page."
+      <Dialog
+        title="Space Created"
+        message="Create process probably complete after few minute. Please check it in Space List page."
         showModal={showModal}
+        onClose={() => setShowModal(false)}
         onConfirm={() => {
           setShowModal(false);
           router.push('/spaces');

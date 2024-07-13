@@ -5,7 +5,7 @@ import { Stack, Typography, useTheme } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { SpacePlusIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
-import Modal from '../Modal/Modal';
+import Dialog from '../Modal/Dialog';
 
 const SpaceHeader = () => {
   const [showModal, setShowModal] = React.useState(false);
@@ -38,9 +38,11 @@ const SpaceHeader = () => {
       <ZuButton startIcon={<SpacePlusIcon />} onClick={createButtonHandler}>
         Create a Space
       </ZuButton>
-      <Modal
-        text="Login to Create a Space"
+      <Dialog
+        title="Warning"
+        message="Login to Create a Space"
         showModal={showModal}
+        onClose={() => setShowModal(false)}
         onConfirm={() => setShowModal(false)}
       />
     </Stack>

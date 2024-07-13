@@ -16,6 +16,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import { Box, Button, OutlinedInput, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 const AuthPrompt: React.FC<{}> = () => {
   const { isConnected, address } = useAccount();
@@ -110,6 +111,7 @@ const AuthPrompt: React.FC<{}> = () => {
                   authenticateCalled.current = false;
                 }}
                 variant="contained"
+                fullWidth
               >
                 Finish
               </Button>,
@@ -178,55 +180,15 @@ const AuthPrompt: React.FC<{}> = () => {
     };
 
     return (
-      <Dialog
-        open={isAuthPromptVisible}
-        onClose={hideAuthPrompt}
-        PaperProps={{
-          style: {
-            width: '40%',
-            height: 'auto',
-            padding: '20px 16px',
-            backgroundColor: 'rgba(34, 34, 34, 0.9)',
-            borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.10)',
-            backdropFilter: 'blur(40px)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            gap: '24px',
-          },
-        }}
-      >
-        <DialogTitle
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          {title}
-          <IconButton
-            onClick={hideAuthPrompt}
-            style={{ color: 'white', marginRight: '-16px' }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent
-          style={{ paddingLeft: '24px', width: '100%', color: 'white' }}
-        >
-          <DialogContentText style={{ color: 'white' }}>
-            {message}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions
-          style={{ justifyContent: 'center', width: '100%', padding: 0 }}
-        >
-          {actions}
-        </DialogActions>
-      </Dialog>
+      <>
+        <Dialog
+          title={title}
+          message={message}
+          showModal={isAuthPromptVisible}
+          onClose={hideAuthPrompt}
+          actions={actions}
+        />
+      </>
     );
   } else {
     return null;
