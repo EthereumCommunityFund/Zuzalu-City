@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 import Checkbox from '@mui/material/Checkbox';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import SelectCheckItem from '@/components/select/selectCheckItem';
 
 const validationSchema = yup.object({
   name: yup
@@ -378,24 +379,16 @@ const Create = () => {
                   >
                     {SPACE_CATEGORIES.map((category, index) => {
                       return (
-                        <MenuItem value={category.value} key={index}>
-                          <Box
-                            display="flex"
-                            flexDirection="row"
-                            alignItems="center"
-                            justifyContent="space-between"
-                            width="100%"
-                          >
-                            <ListItemText primary={category.label} />
-                            <Checkbox
-                              checked={
-                                categories.findIndex(
-                                  (item) => item === category.value,
-                                ) > -1
-                              }
-                            />
-                          </Box>
-                        </MenuItem>
+                        <SelectCheckItem
+                          value={category.value}
+                          label={category.label}
+                          isChecked={
+                            categories.findIndex(
+                              (item) => item === category.value,
+                            ) > -1
+                          }
+                          key={index}
+                        />
                       );
                     })}
                   </Select>
