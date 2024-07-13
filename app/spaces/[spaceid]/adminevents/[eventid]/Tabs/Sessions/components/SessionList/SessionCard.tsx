@@ -50,23 +50,27 @@ const SessionCard: React.FC<SessionCardProps> = ({
           <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
             Speakers:
           </Typography>
-          {JSON.parse(session.speakers).map((speaker: any, index: number) => (
-            <Stack
-              key={`Speaker-${index}`}
-              direction={'row'}
-              spacing={0.5}
-              alignItems={'center'}
-            >
-              <Box
-                component={'img'}
-                height={20}
-                width={20}
-                borderRadius={10}
-                src={speaker.avatar || '/16.jpg'}
-              />
-              <Typography variant="bodyS">{speaker.username}</Typography>
-            </Stack>
-          ))}
+          {session.speakers
+            ? JSON.parse(session.speakers).map(
+                (speaker: any, index: number) => (
+                  <Stack
+                    key={`Speaker-${index}`}
+                    direction={'row'}
+                    spacing={0.5}
+                    alignItems={'center'}
+                  >
+                    <Box
+                      component={'img'}
+                      height={20}
+                      width={20}
+                      borderRadius={10}
+                      src={speaker.avatar || '/16.jpg'}
+                    />
+                    <Typography variant="bodyS">{speaker.username}</Typography>
+                  </Stack>
+                ),
+              )
+            : null}
         </Stack>
         <Stack direction={'row'} alignItems={'center'} spacing={1}>
           <MapIcon size={4} />

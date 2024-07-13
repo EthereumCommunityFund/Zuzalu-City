@@ -379,16 +379,17 @@ const Create = () => {
                   >
                     {SPACE_CATEGORIES.map((category, index) => {
                       return (
-                        <SelectCheckItem
-                          value={category.value}
-                          label={category.label}
-                          isChecked={
-                            categories.findIndex(
-                              (item) => item === category.value,
-                            ) > -1
-                          }
-                          key={index}
-                        />
+                        <MenuItem value={category.value} key={index}>
+                          <SelectCheckItem
+                            label={category.label}
+                            isChecked={
+                              categories.findIndex(
+                                (item) => item === category.value,
+                              ) > -1
+                            }
+                            key={index}
+                          />
+                        </MenuItem>
                       );
                     })}
                   </Select>

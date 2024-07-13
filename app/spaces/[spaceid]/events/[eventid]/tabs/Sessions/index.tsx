@@ -569,7 +569,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     height: 'auto',
                     minHeight: '270px',
                     color: 'white',
-                    padding: '12px 12px 12px 80px',
+                    padding: '12px 12px 12px 40px',
                     borderRadius: '10px',
                   }}
                   setData={setSessionDescription}
@@ -1687,7 +1687,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
                     color: 'white',
-                    padding: '12px 12px 12px 80px',
+                    padding: '12px 12px 12px 40px',
                     borderRadius: '10px',
                   }}
                   value={JSON.parse(

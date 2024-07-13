@@ -13,22 +13,18 @@ import {
   Select,
   Chip,
   MenuItem,
-  Radio,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { TimeStepOptions, TimeView } from '@mui/x-date-pickers/models';
+import { TimeView } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { SessionHeader, SessionAdd, SessionList } from './components';
-import { ZuButton, ZuInput, ZuSwitch } from 'components/core';
+import { SessionHeader, SessionList } from './components';
+import { ZuButton, ZuInput } from 'components/core';
 import {
   XMarkIcon,
   PlusCircleIcon,
-  ArchiveBoxIcon,
   ArrowDownIcon,
-  ChevronDownIcon,
   PlusIcon,
   MinusIcon,
 } from 'components/icons';
@@ -49,15 +45,16 @@ import {
 import { OutputData } from '@editorjs/editorjs';
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
+import {
+  FormLabel,
+  FormLabelDesc,
+  FormTitle,
+} from '@/components/typography/formTypography';
+import SelectCheckItem from '@/components/select/selectCheckItem';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isBetween);
-
-const Custom_Option: TimeStepOptions = {
-  hours: 1,
-  minutes: 30,
-};
 
 const Sessions = () => {
   const params = useParams();
@@ -427,7 +424,6 @@ const Sessions = () => {
       !sessionStartTime ||
       !sessionEndTime ||
       !sessionName ||
-      !sessoinStatus ||
       !sessionTags ||
       !sessionTrack ||
       !sessionDescription ||
@@ -441,7 +437,7 @@ const Sessions = () => {
 
     const format = person ? 'person' : 'online';
 
-    const { data } = await supabase.from('sessions').insert({
+    const result = await supabase.from('sessions').insert({
       title: sessionName,
       description: strDesc,
       experience_level: sessionExperienceLevel,
@@ -483,12 +479,19 @@ const Sessions = () => {
             borderBottom="1px solid #383838"
             paddingX={3}
             gap={2}
+            sx={{
+              position: 'sticky',
+              top: 0,
+              backgroundColor: '#222222',
+              zIndex: 10,
+            }}
           >
             <ZuButton
-              startIcon={<XMarkIcon />}
+              startIcon={<XMarkIcon size={5} />}
               onClick={() => toggleDrawer('right', false)}
               sx={{
                 backgroundColor: 'transparent',
+                fontWeight: 'bold',
               }}
             >
               Close
@@ -501,16 +504,17 @@ const Sessions = () => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Typography variant="subtitleMB">Create a Session</Typography>
-              <ZuButton
-                startIcon={<ArchiveBoxIcon size={5} />}
-                sx={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-              >
-                Save Draft
-              </ZuButton>
+              <FormTitle>Create a Session</FormTitle>
+              {/*<ZuButton*/}
+              {/*  startIcon={<ArchiveBoxIcon size={5} />}*/}
+              {/*  sx={{*/}
+              {/*    fontSize: '14px',*/}
+              {/*    fontWeight: 600,*/}
+              {/*    paddingLeft: '12px',*/}
+              {/*  }}*/}
+              {/*>*/}
+              {/*  Save Draft*/}
+              {/*</ZuButton>*/}
             </Stack>
             <Stack
               direction={'column'}
@@ -519,19 +523,19 @@ const Sessions = () => {
               padding="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleMB">Session Details</Typography>
+              <FormTitle>Session Details</FormTitle>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Name*</Typography>
+                <FormLabel>Session Name*</FormLabel>
                 <ZuInput
                   onChange={(e) => setSessionName(e.target.value)}
                   placeholder="Standard Pass"
                 />
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Select a Track*</Typography>
-                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                <FormLabel>Select a Track*</FormLabel>
+                <FormLabelDesc>
                   Attach a relevant track this session relates to
-                </Typography>
+                </FormLabelDesc>
                 <Select
                   value={sessionTrack}
                   style={{ width: '100%' }}
@@ -556,10 +560,10 @@ const Sessions = () => {
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">Session Tags</Typography>
-                  <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  <FormLabel>Session Tags</FormLabel>
+                  <FormLabelDesc>
                     Search or create categories related to your space
-                  </Typography>
+                  </FormLabelDesc>
                 </Stack>
                 <Box>
                   <Select
@@ -568,6 +572,7 @@ const Sessions = () => {
                     style={{ width: '100%' }}
                     onChange={handleChange}
                     input={<OutlinedInput label="Name" />}
+                    renderValue={(selected) => selected.join(', ')}
                     MenuProps={{
                       PaperProps: {
                         style: {
@@ -579,7 +584,14 @@ const Sessions = () => {
                     {SPACE_CATEGORIES.map((tag, index) => {
                       return (
                         <MenuItem value={tag.value} key={index}>
-                          {tag.label}
+                          <SelectCheckItem
+                            label={tag.label}
+                            isChecked={
+                              sessionTags.findIndex(
+                                (item) => item === tag.value,
+                              ) > -1
+                            }
+                          />
                         </MenuItem>
                       );
                     })}
@@ -614,10 +626,10 @@ const Sessions = () => {
                 </Box>
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Description*</Typography>
-                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                <FormLabel>Session Description*</FormLabel>
+                <FormLabelDesc>
                   Write an introduction for this session
-                </Typography>
+                </FormLabelDesc>
                 <TextEditor
                   holder="session_description"
                   sx={{
@@ -626,27 +638,27 @@ const Sessions = () => {
                     height: 'auto',
                     minHeight: '270px',
                     color: 'white',
-                    padding: '12px 12px 12px 80px',
+                    padding: '12px 12px 12px 20px',
                     borderRadius: '10px',
                   }}
                   setData={setSessionDescription}
                 />
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Type</Typography>
-                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                <FormLabel>Session Type</FormLabel>
+                <FormLabelDesc>
                   Choose a type for your session to relay its nature to guests
-                </Typography>
+                </FormLabelDesc>
                 <ZuInput
                   onChange={(e) => setSessionType(e.target.value)}
                   placeholder="Meetup, Activity, Party, etc.."
                 />
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Experience Level</Typography>
-                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                <FormLabel>Experience Level</FormLabel>
+                <FormLabelDesc>
                   Select a level experience may be needed for this session
-                </Typography>
+                </FormLabelDesc>
                 <Select
                   value={sessionExperienceLevel}
                   style={{ width: '100%' }}
@@ -670,10 +682,10 @@ const Sessions = () => {
                 </Select>
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Live-Stream Link</Typography>
-                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                <FormLabel>Live-Stream Link</FormLabel>
+                <FormLabelDesc>
                   Enter a link for where this session will be streamed
-                </Typography>
+                </FormLabelDesc>
                 <ZuInput
                   onChange={(e) => setSessionLiveStreamLink(e.target.value)}
                   placeholder="https://"
@@ -687,9 +699,9 @@ const Sessions = () => {
               padding="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleMB">Location & Booking</Typography>
+              <FormTitle>Location & Booking</FormTitle>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Session Format*</Typography>
+                <FormLabel>Session Format*</FormLabel>
                 <Box display="flex" justifyContent="space-between" gap="20px">
                   <Box
                     bgcolor={person ? '#484E45' : '#373737'}
@@ -699,14 +711,12 @@ const Sessions = () => {
                     alignItems="center"
                     gap="10px"
                     flex={1}
+                    onClick={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
                   >
-                    <BpCheckbox
-                      checked={person}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
+                    <BpCheckbox checked={person} />
                     <Stack>
                       <Typography
                         color="white"
@@ -733,14 +743,12 @@ const Sessions = () => {
                     alignItems="center"
                     gap="10px"
                     flex={1}
+                    onClick={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
                   >
-                    <BpCheckbox
-                      checked={online}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
+                    <BpCheckbox checked={online} />
                     <Stack>
                       <Typography
                         color="white"
@@ -764,10 +772,10 @@ const Sessions = () => {
               {person && (
                 <Stack spacing="30px">
                   <Stack spacing="10px">
-                    <Typography variant="bodyBB">Select Location*</Typography>
-                    <Typography variant="bodyS">
+                    <FormLabel>Select Location*</FormLabel>
+                    <FormLabelDesc>
                       Book a location to host this session
-                    </Typography>
+                    </FormLabelDesc>
                     <Select
                       value={sessionLocation}
                       onChange={(e) => {
@@ -798,7 +806,7 @@ const Sessions = () => {
                       </MenuItem>
                     </Select>
                     {sessionLocation && sessionLocation !== 'Custom' && (
-                      <Stack>
+                      <Stack spacing="10px">
                         <Stack alignItems="center">
                           <ArrowDownIcon />
                         </Stack>
@@ -808,7 +816,10 @@ const Sessions = () => {
                           spacing="10px"
                           padding="10px"
                         >
-                          <Typography variant="caption">
+                          <Typography
+                            variant="caption"
+                            color="rgba(255, 255, 255, 0.8)"
+                          >
                             Your are booking at:
                           </Typography>
                           <Stack
@@ -826,13 +837,14 @@ const Sessions = () => {
                               src="/20.png"
                             />
                             <Stack spacing="4px">
-                              <Typography variant="bodyBB">
-                                {sessionLocation}
-                              </Typography>
-                              <Typography variant="bodyS">
+                              <FormLabel>{sessionLocation}</FormLabel>
+                              <FormLabelDesc>
                                 Sessions booked: {bookedSessions.length}
-                              </Typography>
-                              <Typography variant="caption">
+                              </FormLabelDesc>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 Capacity: {selectedRoom?.capacity}
                               </Typography>
                             </Stack>
@@ -841,17 +853,15 @@ const Sessions = () => {
                       </Stack>
                     )}
                     {sessionLocation && sessionLocation === 'Custom' && (
-                      <Stack>
+                      <Stack spacing="10px">
                         <Stack alignItems="center">
                           <ArrowDownIcon />
                         </Stack>
                         <Stack spacing="10px">
-                          <Typography variant="bodyBB">
-                            Custom Location
-                          </Typography>
-                          <Typography variant="bodyS">
+                          <FormLabel>Custom Location</FormLabel>
+                          <FormLabelDesc>
                             Write name of the location
-                          </Typography>
+                          </FormLabelDesc>
                           <ZuInput
                             placeholder="Type location name"
                             onChange={(e) => setCustomLocation(e.target.value)}
@@ -859,9 +869,9 @@ const Sessions = () => {
                           <ZuButton
                             endIcon={
                               !isDirections ? (
-                                <PlusIcon size={5} />
+                                <PlusIcon size={4} />
                               ) : (
-                                <MinusIcon size={5} />
+                                <MinusIcon size={4} />
                               )
                             }
                             onClick={() => setIsDirections((prev) => !prev)}
@@ -906,11 +916,11 @@ const Sessions = () => {
                   </Stack>
                   <Stack spacing="20px">
                     <Stack spacing="10px">
-                      <Typography variant="bodyBB">Book a Date*</Typography>
-                      <Typography variant="bodyS">
+                      <FormLabel>Book a Date*</FormLabel>
+                      <FormLabelDesc>
                         View and select the available dates and times for this
                         location
-                      </Typography>
+                      </FormLabelDesc>
                       <DatePicker
                         onChange={(newValue) => {
                           if (newValue !== null) handleDateChange(newValue);
@@ -949,7 +959,7 @@ const Sessions = () => {
                     </Stack>
                     <Stack direction="row" spacing="20px">
                       <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">Start Time</Typography>
+                        <Typography variant="bodyBB">Start Time*</Typography>
                         <TimePicker
                           value={sessionStartTime}
                           ampm={false}
@@ -996,7 +1006,7 @@ const Sessions = () => {
                         />
                       </Stack>
                       <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">End Time</Typography>
+                        <Typography variant="bodyBB">End Time*</Typography>
                         <TimePicker
                           value={sessionEndTime}
                           ampm={false}
@@ -1047,7 +1057,7 @@ const Sessions = () => {
                         dayjs().set('hour', 0).set('minute', 0) &&
                       sessionEndTime !==
                         dayjs().set('hour', 0).set('minute', 0) && (
-                        <Stack spacing="10px">
+                        <Stack spacing="20px">
                           <Stack alignItems="center">
                             <ArrowDownIcon />
                           </Stack>
@@ -1057,7 +1067,10 @@ const Sessions = () => {
                             border="1px solid rgba(255, 255, 255, 0.10)"
                             borderRadius="10px"
                           >
-                            <Typography variant="caption">
+                            <Typography
+                              variant="caption"
+                              color="rgba(255, 255, 255, 0.8)"
+                            >
                               Date & times your are booking:
                             </Typography>
                             <Stack
@@ -1073,16 +1086,30 @@ const Sessions = () => {
                                   ', ' +
                                   `${sessionDate.format('YYYY')}`}
                               </Typography>
-                              <Typography variant="bodyS">
-                                Start Time:{' '}
-                                {`${sessionStartTime.format('HH')}` +
-                                  `${sessionStartTime.format('A')}`}
-                              </Typography>
-                              <Typography variant="bodyS">
-                                End Time: :{' '}
-                                {`${sessionEndTime.format('HH')}` +
-                                  `${sessionEndTime.format('A')}`}
-                              </Typography>
+                              <Box display="flex" alignItems="center" gap="4px">
+                                <Typography
+                                  variant="bodyS"
+                                  color="text.secondary"
+                                >
+                                  Start Time:{' '}
+                                </Typography>
+                                <Typography variant="body2">
+                                  {`${sessionStartTime.format('HH')}` +
+                                    `${sessionStartTime.format('A')}`}
+                                </Typography>
+                              </Box>
+                              <Box display="flex" alignItems="center" gap="4px">
+                                <Typography
+                                  variant="bodyS"
+                                  color="text.secondary"
+                                >
+                                  End Time:{' '}
+                                </Typography>
+                                <Typography variant="body2">
+                                  {`${sessionEndTime.format('HH')}` +
+                                    `${sessionEndTime.format('A')}`}
+                                </Typography>
+                              </Box>
                             </Stack>
                           </Stack>
                         </Stack>
@@ -1093,10 +1120,10 @@ const Sessions = () => {
               {online && (
                 <Stack spacing="30px">
                   <Stack spacing="10px">
-                    <Typography variant="bodyBB">Virtual Location</Typography>
-                    <Typography variant="bodyS">
+                    <FormLabel>Virtual Location</FormLabel>
+                    <FormLabelDesc>
                       Provide a URL where this session will be hosted
-                    </Typography>
+                    </FormLabelDesc>
                     <ZuInput
                       onChange={(e) => setSessionVideoURL(e.target.value)}
                       placeholder="https://"
@@ -1104,10 +1131,10 @@ const Sessions = () => {
                   </Stack>
                   <Stack spacing="20px">
                     <Stack spacing="10px">
-                      <Typography variant="bodyBB">Select a Date</Typography>
-                      <Typography variant="bodyS">
+                      <FormLabel>Select a Date</FormLabel>
+                      <FormLabelDesc>
                         Pick a date for this session
-                      </Typography>
+                      </FormLabelDesc>
                       <DatePicker
                         onChange={(newValue) => {
                           if (newValue !== null) handleDateChange(newValue);
@@ -1250,13 +1277,11 @@ const Sessions = () => {
               padding="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleMB">Session Participants</Typography>
+              <FormTitle>Session Participants</FormTitle>
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">Organizers*</Typography>
-                  <Typography variant="bodyS">
-                    Type or search a person
-                  </Typography>
+                  <FormLabel>Organizers*</FormLabel>
+                  <FormLabelDesc>Type or search a person</FormLabelDesc>
                 </Stack>
                 <Box>
                   <Select
@@ -1265,6 +1290,7 @@ const Sessions = () => {
                     style={{ width: '100%' }}
                     onChange={handleOrganizerChange}
                     input={<OutlinedInput label="Name" />}
+                    renderValue={(selected) => selected.join(', ')}
                     MenuProps={{
                       PaperProps: {
                         style: {
@@ -1279,7 +1305,14 @@ const Sessions = () => {
                           value={i.username}
                           key={`Organizer_Index${index}`}
                         >
-                          {i.username}
+                          <SelectCheckItem
+                            label={i.username}
+                            isChecked={
+                              organizers.findIndex(
+                                (item) => item === i.username,
+                              ) > -1
+                            }
+                          />
                         </MenuItem>
                       );
                     })}
@@ -1344,10 +1377,8 @@ const Sessions = () => {
               </Stack> */}
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">Speakers</Typography>
-                  <Typography variant="bodyS">
-                    Type or search a person
-                  </Typography>
+                  <FormLabel>Speakers</FormLabel>
+                  <FormLabelDesc>Type or search a person</FormLabelDesc>
                 </Stack>
                 <Box>
                   <Select
@@ -1356,6 +1387,7 @@ const Sessions = () => {
                     style={{ width: '100%' }}
                     onChange={handleSpeakerChange}
                     input={<OutlinedInput label="Name" />}
+                    renderValue={(selected) => selected.join(', ')}
                     MenuProps={{
                       PaperProps: {
                         style: {
@@ -1370,7 +1402,14 @@ const Sessions = () => {
                           value={i.username}
                           key={`Speaker_Index${index}`}
                         >
-                          {i.username}
+                          <SelectCheckItem
+                            label={i.username}
+                            isChecked={
+                              speakers.findIndex(
+                                (item) => item === i.username,
+                              ) > -1
+                            }
+                          />
                         </MenuItem>
                       );
                     })}
@@ -1444,12 +1483,12 @@ const Sessions = () => {
                 </Stack> */}
               </Stack>
             </Stack>
-            <Box display="flex" gap="20px">
+            <Box display="flex" gap="20px" marginBottom="20px">
               <ZuButton
                 sx={{
                   flex: 1,
                 }}
-                startIcon={<XMarkIcon />}
+                startIcon={<XMarkIcon size={5} />}
                 onClick={() => toggleDrawer('right', false)}
               >
                 Discard
@@ -1460,7 +1499,7 @@ const Sessions = () => {
                   backgroundColor: 'rgba(103, 219, 255, 0.10)',
                   flex: 1,
                 }}
-                startIcon={<PlusCircleIcon color="#67DBFF" />}
+                startIcon={<PlusCircleIcon color="#67DBFF" size={5} />}
                 onClick={createSession}
               >
                 Add Session
@@ -1479,16 +1518,8 @@ const Sessions = () => {
         sessions={sessions}
         setSelectedSession={setSelectedSession}
       />
-      {/* <SessionAdd /> */}
       <SwipeableDrawer
         hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '50px',
-            height: 'calc(100% - 50px)',
-            boxShadow: 'none',
-          },
-        }}
         anchor="right"
         open={state['right']}
         onClose={() => toggleDrawer('right', false)}
