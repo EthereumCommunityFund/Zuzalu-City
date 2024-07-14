@@ -18,6 +18,7 @@ import { SearchIcon } from '@/components/icons';
 import { ZuSelect } from '@/components/core';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { Space, SpaceData } from '@/types';
+import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 
 const Home = () => {
   const theme = useTheme();
@@ -172,39 +173,55 @@ const Home = () => {
             justifyContent: 'start',
           }}
         >
-          {spaces.map((item, index) => (
-            <Grid
-              item
-              key={`SpaceHeader-Card${index}`}
-              xs={12}
-              sm={6}
-              md={4}
-              xl={3}
-              sx={{ display: 'flex', justifyContent: 'center' }}
-            >
-              <SpaceCard
-                id={item.id}
-                logoImage={
-                  item.avatar !== 'undefined' &&
-                    item.avatar &&
-                    !item.avatar.includes('blob')
-                    ? item.avatar
-                    : '/1.webp'
-                }
-                bgImage={
-                  item.banner !== 'undefined' &&
-                    item.banner &&
-                    !item.banner.includes('blob')
-                    ? item.banner
-                    : '/5.webp'
-                }
-                title={item.name}
-                description={item.description}
-                members={item.members}
-                categories={item.category}
-              />
-            </Grid>
-          ))}
+          {spaces.length > 0
+            ? spaces.map((item, index) => (
+                <Grid
+                  item
+                  key={item.id}
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  xl={3}
+                  sx={{ display: 'flex', justifyContent: 'center' }}
+                >
+                  <SpaceCard
+                    id={item.id}
+                    logoImage={
+                      item.avatar !== 'undefined' &&
+                      item.avatar &&
+                      !item.avatar.includes('blob')
+                        ? item.avatar
+                        : '/1.webp'
+                    }
+                    bgImage={
+                      item.banner !== 'undefined' &&
+                      item.banner &&
+                      !item.banner.includes('blob')
+                        ? item.banner
+                        : '/5.webp'
+                    }
+                    title={item.name}
+                    description={item.description}
+                    members={item.members}
+                    categories={item.category}
+                  />
+                </Grid>
+              ))
+            : Array.from({ length: 12 }).map((_, index) => {
+                return (
+                  <Grid
+                    item
+                    key={index}
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    xl={3}
+                    sx={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    <SpaceCardSkeleton />
+                  </Grid>
+                );
+              })}
         </Stack>
       </Stack>
       {/*<SidebarLeft />*/}
