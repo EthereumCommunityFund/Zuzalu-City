@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Box, Stack, Typography, Button, Skeleton } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
@@ -145,13 +145,15 @@ const Home = () => {
     });
   }, []);
 
-  function getPastEvents(events: Event[]) {
+  const getPastEvents = useCallback((events: Event[]) => {
     return events.filter((event) => dayjs(event.endTime).isBefore(dateNowUtc));
-  }
+  }, []);
 
-  function getUpcomingEvents(events: Event[]) {
-    return events.filter((event) => dayjs(event.startTime).isAfter(dateNowUtc));
-  }
+  const getUpcomingEvents = useCallback((events: Event[]) => {
+    return events.filter((event) =>
+      dayjs(event.startTime).isSameOrAfter(dateNowUtc),
+    );
+  }, []);
 
   return (
     <Stack direction="row" height="calc(100vh - 50px)" width="100%">
@@ -193,9 +195,7 @@ const Home = () => {
           </ZuButton>
           <ZuButton
             startIcon={<Cog6Icon size={5} />}
-            sx={{
-              fontSize: '14px',
-            }}
+            sx={{ fontSize: '14px' }}
             onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
           >
             Manage Event
