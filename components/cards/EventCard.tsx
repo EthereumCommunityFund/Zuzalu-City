@@ -211,9 +211,11 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   );
 };
 
-export const EventCardMonthGroup: React.FC<React.PropsWithChildren<{}>> = ({
-  children,
-}) => {
+export const EventCardMonthGroup: React.FC<
+  React.PropsWithChildren<{
+    bgColor?: 'transparent' | string;
+  }>
+> = ({ children, bgColor = 'rgba(34, 34, 34, 0.80)' }) => {
   return (
     <Box
       component={'div'}
@@ -227,7 +229,7 @@ export const EventCardMonthGroup: React.FC<React.PropsWithChildren<{}>> = ({
       sx={{
         borderRadius: '40px',
         border: '1px solid rgba(255, 255, 255, 0.10)',
-        backgroundColor: 'rgba(34, 34, 34, 0.80)',
+        backgroundColor: bgColor,
         backdropFilter: 'blur(10px)',
       }}
     >

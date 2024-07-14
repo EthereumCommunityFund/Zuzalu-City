@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Box, Stack, Typography, Button } from '@mui/material';
+import { Box, Stack, Typography, Button, Skeleton } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
 import { ZuButton } from 'components/core';
 import {
@@ -16,17 +16,20 @@ import { Event, EventData, Space, SpaceData } from '@/types';
 import SubSidebar from '@/components/layout/Sidebar/SubSidebar';
 import {
   EventCardMonthGroup,
+  EventCardSkeleton,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
+import { dayjs } from '@/utils/dayjs';
 
 const Home = () => {
   const router = useRouter();
   const params = useParams();
   const spaceId = params.spaceid.toString();
-  const date = new Date();
+  const dateNowUtc = dayjs(new Date()).utc();
 
   const [space, setSpace] = useState<Space>();
   const [events, setEvents] = useState<Event[]>([]);
+  const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const {
     ceramic,
     composeClient,
@@ -89,6 +92,7 @@ const Home = () => {
   };
 
   const getEvents = async () => {
+    setIsEventsLoading(true);
     try {
       const response: any = await composeClient.executeQuery(`
       query {
@@ -132,19 +136,22 @@ const Home = () => {
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
+    setIsEventsLoading(false);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getSpace();
-        await getEvents();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+    Promise.all([getSpace(), getEvents()]).catch((e) => {
+      console.error('An error occurred:', e);
+    });
   }, []);
+
+  function getPastEvents(events: Event[]) {
+    return events.filter((event) => dayjs(event.endTime).isBefore(dateNowUtc));
+  }
+
+  function getUpcomingEvents(events: Event[]) {
+    return events.filter((event) => dayjs(event.startTime).isAfter(dateNowUtc));
+  }
 
   return (
     <Stack direction="row" height="calc(100vh - 50px)" width="100%">
@@ -194,36 +201,54 @@ const Home = () => {
             Manage Event
           </ZuButton>
         </Stack>
-        {Object.entries(groupEventsByMonth(events)).map(
-          ([month, eventsList]) => {
-            return (
-              <div key={month}>
-                <Stack padding="20px" spacing={3}>
-                  <Typography variant="subtitleSB">
-                    Upcoming Events ({events.length})
-                  </Typography>
-                  <EventCardMonthGroup>{month}</EventCardMonthGroup>
-                </Stack>
-                <Stack paddingX="20px">
-                  {eventsList.map((event, index) => (
-                    <EventCard key={`EventCard-${event.id}`} event={event} />
-                  ))}
-                </Stack>
-              </div>
-            );
-          },
-        )}
 
-        <Stack padding="20px" spacing={3}>
-          <Typography variant="subtitleSB">Past Events(00)</Typography>
-          <Stack paddingX="20px">
-            {events
-              .filter((event) => date.getDate() > Date.parse(event.endTime))
-              .map((event, index) => (
-                <EventCard key={`Past EventCard-${index}`} event={event} />
+        {isEventsLoading ? (
+          <>
+            <Stack padding="20px" spacing={3}>
+              <Typography variant="subtitleSB">Upcoming Events</Typography>
+              <EventCardMonthGroup bgColor={'transparent'}>
+                <Skeleton width={60}></Skeleton>
+              </EventCardMonthGroup>
+            </Stack>
+            <Stack paddingX="20px">
+              <EventCardSkeleton />
+              <EventCardSkeleton />
+            </Stack>
+          </>
+        ) : (
+          <>
+            {Object.entries(groupEventsByMonth(getUpcomingEvents(events))).map(
+              ([month, eventsList]) => {
+                return (
+                  <div key={month}>
+                    <Stack padding="20px" spacing={3}>
+                      <Typography variant="subtitleSB">
+                        Upcoming Events ({getUpcomingEvents(events).length})
+                      </Typography>
+                      <EventCardMonthGroup bgColor={'transparent'}>
+                        {month}
+                      </EventCardMonthGroup>
+                    </Stack>
+                    <Stack paddingX="20px">
+                      {eventsList.map((event) => (
+                        <EventCard key={event.id} event={event} />
+                      ))}
+                    </Stack>
+                  </div>
+                );
+              },
+            )}
+
+            <Stack padding="20px" spacing={3}>
+              <Typography variant="subtitleSB">
+                Past Events ({getPastEvents(events).length})
+              </Typography>
+              {getPastEvents(events).map((event) => (
+                <EventCard key={event.id} event={event} />
               ))}
-          </Stack>
-        </Stack>
+            </Stack>
+          </>
+        )}
       </Stack>
     </Stack>
   );
