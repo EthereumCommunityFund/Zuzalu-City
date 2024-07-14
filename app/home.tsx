@@ -53,7 +53,7 @@ const Home: React.FC = () => {
   const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const [eventsForCalendar, setEventsForCalendar] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>();
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
   const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
     dayjs(new Date()),
@@ -165,15 +165,14 @@ const Home: React.FC = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
-        console.log(fetchedEvents, 333);
         setEvents(fetchedEvents);
+        setIsEventsLoading(false);
       } else {
         console.error('Invalid data structure:', response.data);
       }
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
-    setIsEventsLoading(false);
   };
 
   const getEventsByDate = async () => {
@@ -235,11 +234,12 @@ const Home: React.FC = () => {
         } else {
           console.error('Invalid data structure:', response.data);
         }
+        setIsEventsLoading(false);
       }
     } catch (error) {
+      setIsEventsLoading(false);
       console.error('Failed to fetch events:', error);
     }
-    setIsEventsLoading(false);
   };
 
   const getEventsInMonth = async () => {

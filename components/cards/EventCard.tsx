@@ -94,7 +94,13 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       padding="10px"
       display="flex"
       gap={isMobile ? '10px' : '14px'}
-      sx={{ cursor: 'pointer' }}
+      sx={{
+        cursor: 'pointer',
+        transition: 'background-color 0.3s',
+        ':hover': {
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        },
+      }}
       width={'100%'}
       boxSizing={'border-box'}
       position={'relative'}
