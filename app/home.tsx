@@ -496,14 +496,12 @@ const Home: React.FC = () => {
                         return (
                           <div key={month}>
                             <EventCardMonthGroup>{month}</EventCardMonthGroup>
-                            <Box>
-                              {eventsList.map((event, index) => (
-                                <EventCard
-                                  key={`EventCard-${index}`}
-                                  event={event}
-                                />
-                              ))}
-                            </Box>
+                            {eventsList.map((event, index) => (
+                              <EventCard
+                                key={`EventCard-${index}`}
+                                event={event}
+                              />
+                            ))}
                           </div>
                         );
                       },

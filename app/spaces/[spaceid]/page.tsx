@@ -25,12 +25,16 @@ import { RightArrowCircleSmallIcon } from 'components/icons/RightArrowCircleSmal
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { MOCK_DATA } from 'mock';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, Event, SpaceEventData } from '@/types';
 import { Sidebar } from '@/components/layout';
-import { groupEventsByMonth } from '@/components/cards/EventCard';
+import {
+  EventCardMonthGroup,
+  EventCardSkeleton,
+  groupEventsByMonth,
+} from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import TextEditor from '@/components/editor/editor';
 // import { SubSidebar } from '@/components/layout';
@@ -454,7 +458,7 @@ export default function SpaceDetailPage() {
               </SidebarButton>
             )}
           </Box>
-          {events.length > 0 && (
+          {events.length > 0 ? (
             <Box
               sx={{
                 padding: '20px',
@@ -473,11 +477,7 @@ export default function SpaceDetailPage() {
                 }}
               >
                 <Box
-                  sx={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#919191',
-                  }}
+                  sx={{ fontSize: '18px', fontWeight: '700', color: '#919191' }}
                 >
                   Upcoming Events ({events.length})
                 </Box>
@@ -523,39 +523,15 @@ export default function SpaceDetailPage() {
                   ([key, value], index) => {
                     return (
                       <div key={key + index}>
-                        <Box
-                          sx={{
-                            width: '100%',
-                            boxSizing: 'border-box',
-                            fontSize: '18px',
-                            fontWeight: '600',
-                            paddingLeft: '14px',
-                            paddingRight: '14px',
-                            paddingTop: '8px',
-                            paddingBottom: '8px',
-                            border: '1px solid #ffffff1a',
-                            borderRadius: '50px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'sticky',
-                            backdropFilter: 'blur(40px)',
-                            top: '10px',
-                            backgroundColor: '#222222cc',
-                          }}
-                        >
-                          {key}
-                        </Box>
-                        <Box>
-                          {value.map((event, index) => {
-                            return (
-                              <EventCard
-                                key={`EventCard-${event.id}`}
-                                event={event}
-                              />
-                            );
-                          })}
-                        </Box>
+                        <EventCardMonthGroup>{key}</EventCardMonthGroup>
+                        {value.map((event, index) => {
+                          return (
+                            <EventCard
+                              key={`EventCard-${event.id}`}
+                              event={event}
+                            />
+                          );
+                        })}
                       </div>
                     );
                   },
@@ -605,6 +581,14 @@ export default function SpaceDetailPage() {
                 {/*</Box>*/}
               </Box>
             </Box>
+          ) : (
+            <>
+              <EventCardMonthGroup>
+                <Skeleton width={60}></Skeleton>
+              </EventCardMonthGroup>
+              <EventCardSkeleton />
+              <EventCardSkeleton />
+            </>
           )}
         </Box>
       </Box>
