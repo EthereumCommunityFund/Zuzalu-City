@@ -37,7 +37,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
         bgcolor="#292929"
         sx={{
           ':hover': {
-            bgcolor: '#2d2d2d',
+            backgroundColor: '#2d2d2d',
           },
         }}
         border="1px solid rgba(255, 255, 255, 0.1)"
@@ -63,6 +63,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           top={68}
           left={12}
           borderRadius={30}
+          sx={{
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          }}
         />
         <Stack padding="10px" spacing="10px" marginTop="20px">
           <Typography color="white" gutterBottom variant="subtitleS">
