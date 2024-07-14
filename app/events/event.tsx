@@ -40,8 +40,7 @@ const EventsPage: React.FC = () => {
 
   const getEvents = async () => {
     setIsEventsLoading(true);
-    try {
-      const response: any = await composeClient.executeQuery(`
+    const response: any = await composeClient.executeQuery(`
       query {
         eventIndex(first: 10) {
           edges {
@@ -73,34 +72,39 @@ const EventsPage: React.FC = () => {
         }
       }
     `);
-      if ('eventIndex' in response.data) {
-        const eventData: EventData = response.data as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
-          (edge) => edge.node,
-        );
-        const searchedEvents: Event[] = fetchedEvents.filter((item) => {
-          return item?.title.toLowerCase().includes(searchVal?.toLowerCase());
-        });
-        if (searchedEvents?.length > 0) {
-          setEvents(searchedEvents);
-        } else {
-          setEvents(fetchedEvents);
-        }
+    if ('eventIndex' in response.data) {
+      const eventData: EventData = response.data as EventData;
+      const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+        (edge) => edge.node,
+      );
+      const searchedEvents: Event[] = fetchedEvents.filter((item) => {
+        return item?.title.toLowerCase().includes(searchVal?.toLowerCase());
+      });
+      if (searchedEvents?.length > 0) {
+        setEvents(searchedEvents);
       } else {
-        console.error('Invalid data structure:', response.data);
+        setEvents(fetchedEvents);
       }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
+    } else {
+      console.error('Invalid data structure:', response.data);
     }
-    setIsEventsLoading(false);
   };
 
   useEffect(() => {
-    getEvents().catch((error) => console.error('An error occurred:', error));
+    getEvents()
+      .catch((error) => console.error('Failed to fetch events:', error))
+      .finally(() => {
+        setIsEventsLoading(false);
+      });
   }, []);
 
+  // TODO: Implement search functionality
   const onSearch = () => {
-    getEvents().catch((error) => console.error('An error occurred:', error));
+    getEvents()
+      .catch((error) => console.error('Failed to fetch events:', error))
+      .finally(() => {
+        setIsEventsLoading(false);
+      });
   };
 
   const debounceGetEventsCity = debounce(getEvents, 1000);
@@ -108,9 +112,11 @@ const EventsPage: React.FC = () => {
   useEffect(() => {
     if (searchVal) {
       // @ts-ignore
-      debounceGetEventsCity().catch((error) =>
-        console.error('An error occurred:', error),
-      );
+      debounceGetEventsCity()
+        .catch((error) => console.error('An error occurred:', error))
+        .finally(() => {
+          setIsEventsLoading(false);
+        });
     }
   }, [searchVal]);
 

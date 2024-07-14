@@ -17,15 +17,15 @@ import SubSidebar from '@/components/layout/Sidebar/SubSidebar';
 import {
   EventCardMonthGroup,
   EventCardSkeleton,
+  filterPastEvents,
+  filterUpcomingEvents,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
-import { dayjs } from '@/utils/dayjs';
 
 const Home = () => {
   const router = useRouter();
   const params = useParams();
   const spaceId = params.spaceid.toString();
-  const dateNowUtc = dayjs(new Date()).utc();
 
   const [space, setSpace] = useState<Space>();
   const [events, setEvents] = useState<Event[]>([]);
@@ -145,16 +145,6 @@ const Home = () => {
     });
   }, []);
 
-  const getPastEvents = useCallback((events: Event[]) => {
-    return events.filter((event) => dayjs(event.endTime).isBefore(dateNowUtc));
-  }, []);
-
-  const getUpcomingEvents = useCallback((events: Event[]) => {
-    return events.filter((event) =>
-      dayjs(event.startTime).isSameOrAfter(dateNowUtc),
-    );
-  }, []);
-
   return (
     <Stack direction="row" height="calc(100vh - 50px)" width="100%">
       <IconSidebar />
@@ -217,33 +207,33 @@ const Home = () => {
           </>
         ) : (
           <>
-            {Object.entries(groupEventsByMonth(getUpcomingEvents(events))).map(
-              ([month, eventsList]) => {
-                return (
-                  <div key={month}>
-                    <Stack padding="20px" spacing={3}>
-                      <Typography variant="subtitleSB">
-                        Upcoming Events ({getUpcomingEvents(events).length})
-                      </Typography>
-                      <EventCardMonthGroup bgColor={'transparent'}>
-                        {month}
-                      </EventCardMonthGroup>
-                    </Stack>
-                    <Stack paddingX="20px">
-                      {eventsList.map((event) => (
-                        <EventCard key={event.id} event={event} />
-                      ))}
-                    </Stack>
-                  </div>
-                );
-              },
-            )}
+            {Object.entries(
+              groupEventsByMonth(filterUpcomingEvents(events)),
+            ).map(([month, eventsList]) => {
+              return (
+                <div key={month}>
+                  <Stack padding="20px" spacing={3}>
+                    <Typography variant="subtitleSB">
+                      Upcoming Events ({filterUpcomingEvents(events).length})
+                    </Typography>
+                    <EventCardMonthGroup bgColor={'transparent'}>
+                      {month}
+                    </EventCardMonthGroup>
+                  </Stack>
+                  <Stack paddingX="20px">
+                    {eventsList.map((event) => (
+                      <EventCard key={event.id} event={event} />
+                    ))}
+                  </Stack>
+                </div>
+              );
+            })}
 
             <Stack padding="20px" spacing={3}>
               <Typography variant="subtitleSB">
-                Past Events ({getPastEvents(events).length})
+                Past Events ({filterPastEvents(events).length})
               </Typography>
-              {getPastEvents(events).map((event) => (
+              {filterPastEvents(events).map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
             </Stack>

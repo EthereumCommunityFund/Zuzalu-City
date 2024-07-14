@@ -53,16 +53,10 @@ const Home: React.FC = () => {
   const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const [eventsForCalendar, setEventsForCalendar] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(new Date()));
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>();
 
-  const [dateForCalendar, setDateForCalendar] = useState<Dayjs | null>(
-    dayjs(
-      new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }),
-    ),
+  const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
+    dayjs(new Date()),
   );
 
   const {
@@ -126,8 +120,8 @@ const Home: React.FC = () => {
   };
 
   const getEvents = async () => {
-    setIsEventsLoading(true);
     try {
+      setIsEventsLoading(true);
       const response: any = await composeClient.executeQuery(`
       query {
         eventIndex(first: 20) {
@@ -171,6 +165,7 @@ const Home: React.FC = () => {
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
           (edge) => edge.node,
         );
+        console.log(fetchedEvents, 333);
         setEvents(fetchedEvents);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -182,12 +177,9 @@ const Home: React.FC = () => {
   };
 
   const getEventsByDate = async () => {
-    setIsEventsLoading(true);
     try {
       // TODO: clean selectedDate
       if (selectedDate) {
-        const selectedUtc = selectedDate.utc().format('YYYY-MM-DD');
-
         const getEventsByDate_QUERY = `
           query ($input:EventFiltersInput!) {
           eventIndex(filters:$input, first: 20){
@@ -221,13 +213,14 @@ const Home: React.FC = () => {
           }
         }
       `;
+        setIsEventsLoading(true);
         const response: any = await composeClient.executeQuery(
           getEventsByDate_QUERY,
           {
             input: {
               where: {
                 startTime: {
-                  equalTo: `${selectedUtc}T00:00:00Z`,
+                  equalTo: selectedDate.format('YYYY-MM-DD') + 'T00:00:00Z',
                 },
               },
             },
@@ -250,8 +243,7 @@ const Home: React.FC = () => {
   };
 
   const getEventsInMonth = async () => {
-    try {
-      const getEventsByDate_QUERY = `
+    const getEventsByDate_QUERY = `
         query ($input:EventFiltersInput!) {
         eventIndex(filters:$input, first: 20){
           edges {
@@ -284,52 +276,39 @@ const Home: React.FC = () => {
         }
       }
     `;
-      const response: any = await composeClient.executeQuery(
-        getEventsByDate_QUERY,
-        {
-          input: {
-            where: {
-              startTime: {
-                lessThanOrEqualTo: dateForCalendar
-                  ?.endOf('month')
-                  .format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                greaterThanOrEqualTo: dateForCalendar
-                  ?.startOf('month')
-                  .format('YYYY-MM-DDTHH:mm:ss[Z]'),
-              },
+    const response: any = await composeClient.executeQuery(
+      getEventsByDate_QUERY,
+      {
+        input: {
+          where: {
+            startTime: {
+              lessThanOrEqualTo: dateForCalendar
+                ?.endOf('month')
+                .format('YYYY-MM-DDTHH:mm:ss[Z]'),
+              greaterThanOrEqualTo: dateForCalendar
+                ?.startOf('month')
+                .format('YYYY-MM-DDTHH:mm:ss[Z]'),
             },
           },
         },
+      },
+    );
+    if (response && response.data && 'eventIndex' in response.data) {
+      const eventData: EventData = response.data as EventData;
+      const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+        (edge) => edge.node,
       );
-      if (response && response.data && 'eventIndex' in response.data) {
-        const eventData: EventData = response.data as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setEventsForCalendar(fetchedEvents);
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
+      setEventsForCalendar(fetchedEvents);
+    } else {
+      console.error('Invalid data structure:', response.data);
     }
-  };
-
-  const handleMonthChange = (date: Dayjs) => {
-    setDateForCalendar(date);
   };
 
   useEffect(() => {
     document.title = 'Zuzalu City';
-    const fetchData = async () => {
-      try {
-        await getSpaces();
-        await getEvents();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+    Promise.all([getSpaces(), getEvents()]).catch((error) => {
+      console.error('An error occurred:', error);
+    });
   }, []);
 
   useEffect(() => {
@@ -339,7 +318,9 @@ const Home: React.FC = () => {
   }, [selectedDate]);
 
   useEffect(() => {
-    getEventsInMonth();
+    getEventsInMonth().catch((e) => {
+      console.error('Failed to fetch events:', error);
+    });
   }, [dateForCalendar]);
 
   return (
@@ -563,7 +544,6 @@ const Home: React.FC = () => {
                       */}
                       <Box>
                         <ZuCalendar
-                          value={selectedDate}
                           onChange={(val) => {
                             setSelectedDate(val);
                           }}
@@ -575,19 +555,28 @@ const Home: React.FC = () => {
                                   // filter event.startTime month equal to selected month
                                   return (
                                     dayjs(event.startTime).month() ===
-                                      selectedDate.month() &&
+                                      dateForCalendar.month() &&
                                     dayjs(event.startTime).year() ===
-                                      selectedDate.year() &&
-                                    dayjs(event.startTime).date() !==
-                                      selectedDate.date()
+                                      dateForCalendar.year()
                                   );
                                 })
+                                .filter((event) => {
+                                  if (selectedDate) {
+                                    return (
+                                      dayjs(event.startTime).date() !==
+                                      selectedDate.date()
+                                    );
+                                  }
+                                  return true;
+                                })
+
                                 .map((event) => {
                                   return dayjs(event.startTime).date();
                                 }),
                             } as any,
                           }}
-                          onMonthChange={(val) => handleMonthChange(val)}
+                          onMonthChange={(val) => setDateForCalendar(val)}
+                          onYearChange={(val) => setDateForCalendar(val)}
                         />
                       </Box>
                     </Box>

@@ -8,9 +8,20 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
+import { dayjs } from '@/utils/dayjs';
 
-type EventCardProps = {
-  event: Event;
+type EventCardProps = { event: Event };
+
+const dateNowUtc = dayjs(new Date()).utc();
+
+export const filterPastEvents = (events: Event[]) => {
+  return events.filter((event) => dayjs(event.endTime).isBefore(dateNowUtc));
+};
+
+export const filterUpcomingEvents = (events: Event[]) => {
+  return events.filter((event) =>
+    dayjs(event.startTime).isSameOrAfter(dateNowUtc),
+  );
 };
 
 export const formatDateToMonth = (timestamp: string | number | Date) => {

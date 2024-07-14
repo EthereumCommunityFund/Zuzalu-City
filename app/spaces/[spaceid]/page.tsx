@@ -25,7 +25,7 @@ import { RightArrowCircleSmallIcon } from 'components/icons/RightArrowCircleSmal
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { MOCK_DATA } from 'mock';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, Event, SpaceEventData } from '@/types';
@@ -33,6 +33,7 @@ import { Sidebar } from '@/components/layout';
 import {
   EventCardMonthGroup,
   EventCardSkeleton,
+  filterUpcomingEvents,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
@@ -58,8 +59,7 @@ export default function SpaceDetailPage() {
 
   const getSpaceByID = async () => {
     setIsEventsLoading(true);
-    try {
-      const GET_SPACE_QUERY = `
+    const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {
         node(id: $id) {
           ...on Space {
@@ -112,41 +112,38 @@ export default function SpaceDetailPage() {
         }
       }
       `;
-      const spaceId = params.spaceid.toString();
+    const spaceId = params.spaceid.toString();
 
-      const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
-        id: spaceId,
-      });
-      const spaceData: Space = response.data.node as Space;
-      setSpace(spaceData);
-      const eventData: SpaceEventData = response.data.node
-        .events as SpaceEventData;
-      const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
-      setEvents(fetchedEvents);
-      return spaceData;
-    } catch (error) {
-      console.error('Failed to fetch space:', error);
-    }
-    setIsEventsLoading(false);
+    const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+      id: spaceId,
+    });
+    const spaceData: Space = response.data.node as Space;
+    setSpace(spaceData);
+    const eventData: SpaceEventData = response.data.node
+      .events as SpaceEventData;
+    const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
+    setEvents(fetchedEvents);
+    return spaceData;
   };
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setCurrentHref(window.location.href);
-        const space = await getSpaceByID();
-        document.title = space?.name + ' - ' + 'Zuzalu City';
-        const admins =
-          space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
-        const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        if (admins.includes(userDID)) {
-          setIsAdmin(true);
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
+      setCurrentHref(window.location.href);
+      const space = await getSpaceByID();
+      document.title = space?.name + ' - ' + 'Zuzalu City';
+      const admins = space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
+      const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+      if (admins.includes(userDID)) {
+        setIsAdmin(true);
       }
     };
 
-    fetchData();
+    fetchData()
+      .catch((error) => {
+        console.error('An error occurred:', error);
+      })
+      .finally(() => {
+        setIsEventsLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -495,7 +492,7 @@ export default function SpaceDetailPage() {
                       color: '#919191',
                     }}
                   >
-                    Upcoming Events ({events.length})
+                    Upcoming Events ({filterUpcomingEvents(events).length})
                   </Box>
                   <SidebarButton
                     onClick={() => {
@@ -535,23 +532,18 @@ export default function SpaceDetailPage() {
                     gap: '10px',
                   }}
                 >
-                  {Object.entries(groupEventsByMonth(events)).map(
-                    ([key, value], index) => {
-                      return (
-                        <div key={key + index}>
-                          <EventCardMonthGroup>{key}</EventCardMonthGroup>
-                          {value.map((event, index) => {
-                            return (
-                              <EventCard
-                                key={`EventCard-${event.id}`}
-                                event={event}
-                              />
-                            );
-                          })}
-                        </div>
-                      );
-                    },
-                  )}
+                  {Object.entries(
+                    groupEventsByMonth(filterUpcomingEvents(events)),
+                  ).map(([key, value], index) => {
+                    return (
+                      <Fragment key={key + index}>
+                        <EventCardMonthGroup>{key}</EventCardMonthGroup>
+                        {value.map((event) => {
+                          return <EventCard key={event.id} event={event} />;
+                        })}
+                      </Fragment>
+                    );
+                  })}
                 </Box>
                 <Box
                   sx={{
