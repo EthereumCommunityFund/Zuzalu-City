@@ -224,7 +224,14 @@ export default function SpaceDetailPage() {
                 className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
               />
             ) : (
-              <Skeleton variant="rectangular" width={'100%'} height={'100%'} />
+              <Skeleton
+                variant="rectangular"
+                width={'100%'}
+                height={'100%'}
+                sx={{
+                  borderRadius: '10px',
+                }}
+              />
             )}
             <Box
               sx={{
