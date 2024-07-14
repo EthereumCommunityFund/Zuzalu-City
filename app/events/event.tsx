@@ -34,10 +34,12 @@ const EventsPage: React.FC = () => {
   const [selected, setSelected] = useState('Events');
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [events, setEvents] = useState<Event[]>([]);
+  const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const [searchVal, setSearchVal] = useState('');
   const { composeClient } = useCeramicContext();
 
   const getEvents = async () => {
+    setIsEventsLoading(true);
     try {
       const response: any = await composeClient.executeQuery(`
       query {
@@ -71,7 +73,6 @@ const EventsPage: React.FC = () => {
         }
       }
     `);
-
       if ('eventIndex' in response.data) {
         const eventData: EventData = response.data as EventData;
         const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
@@ -91,30 +92,27 @@ const EventsPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
+    setIsEventsLoading(false);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getEvents();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+    getEvents().catch((error) => console.error('An error occurred:', error));
   }, []);
 
   const onSearch = () => {
-    getEvents();
+    getEvents().catch((error) => console.error('An error occurred:', error));
   };
+
+  const debounceGetEventsCity = debounce(getEvents, 1000);
 
   useEffect(() => {
     if (searchVal) {
-      debounceGetEventsCity();
+      // @ts-ignore
+      debounceGetEventsCity().catch((error) =>
+        console.error('An error occurred:', error),
+      );
     }
   }, [searchVal]);
-
-  const debounceGetEventsCity = debounce(getEvents, 1000);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -226,7 +224,16 @@ const EventsPage: React.FC = () => {
               justifyContent: 'center',
             }}
           >
-            {events?.length > 0 ? (
+            {isEventsLoading ? (
+              <>
+                <EventCardMonthGroup>
+                  <Skeleton width={60}></Skeleton>
+                </EventCardMonthGroup>
+                <EventCardSkeleton />
+                <EventCardSkeleton />
+              </>
+            ) : (
+              events.length > 0 &&
               Object.entries(groupEventsByMonth(events)).map(
                 ([month, events], index) => {
                   return (
@@ -264,14 +271,6 @@ const EventsPage: React.FC = () => {
                   );
                 },
               )
-            ) : (
-              <>
-                <EventCardMonthGroup>
-                  <Skeleton width={60}></Skeleton>
-                </EventCardMonthGroup>
-                <EventCardSkeleton />
-                <EventCardSkeleton />
-              </>
             )}
           </Stack>
         </Stack>

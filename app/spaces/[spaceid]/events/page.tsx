@@ -14,7 +14,10 @@ import { EventCard } from '@/components/cards';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import SubSidebar from '@/components/layout/Sidebar/SubSidebar';
-import { groupEventsByMonth } from '@/components/cards/EventCard';
+import {
+  EventCardMonthGroup,
+  groupEventsByMonth,
+} from '@/components/cards/EventCard';
 
 const Home = () => {
   const router = useRouter();
@@ -197,18 +200,9 @@ const Home = () => {
               <div key={month}>
                 <Stack padding="20px" spacing={3}>
                   <Typography variant="subtitleSB">
-                    Upcoming Events({events.length})
+                    Upcoming Events ({events.length})
                   </Typography>
-                  <Typography
-                    color="white"
-                    border="2px solid #383838"
-                    align="center"
-                    paddingY="8px"
-                    borderRadius="40px"
-                    variant="subtitleS"
-                  >
-                    {month}
-                  </Typography>
+                  <EventCardMonthGroup>{month}</EventCardMonthGroup>
                 </Stack>
                 <Stack paddingX="20px">
                   {eventsList.map((event, index) => (
