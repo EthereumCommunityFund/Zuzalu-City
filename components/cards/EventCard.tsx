@@ -294,4 +294,6 @@ export const EventCardSkeleton = () => {
   );
 };
 
+export { EventCard };
+
 export default EventCard;

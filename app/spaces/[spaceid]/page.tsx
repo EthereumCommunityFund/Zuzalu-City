@@ -459,13 +459,20 @@ export default function SpaceDetailPage() {
             )}
           </Box>
           {isEventsLoading ? (
-            <>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+              }}
+            >
               <EventCardMonthGroup>
                 <Skeleton width={60}></Skeleton>
               </EventCardMonthGroup>
               <EventCardSkeleton />
               <EventCardSkeleton />
-            </>
+            </Box>
           ) : (
             events.length && (
               <Box
@@ -529,7 +536,7 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '10px',
+                    gap: '20px',
                   }}
                 >
                   {Object.entries(

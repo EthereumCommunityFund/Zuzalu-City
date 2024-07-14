@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import {
   Box,
   Typography,
@@ -224,8 +224,7 @@ const EventsPage: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               flexWrap: 'wrap',
-              rowGap: '30px',
-              columnGap: '40px',
+              gap: '20px',
               padding: '20px',
               justifyContent: 'center',
             }}
@@ -243,37 +242,22 @@ const EventsPage: React.FC = () => {
               Object.entries(groupEventsByMonth(events)).map(
                 ([month, events], index) => {
                   return (
-                    <div key={month + index}>
+                    <Fragment key={month + index}>
                       <EventCardMonthGroup>{month}</EventCardMonthGroup>
-                      <Box>
-                        {events.map((event, index) => (
-                          <Grid
-                            item
-                            key={`EventHeader-Card${index}`}
-                            xs={12}
-                            sm={6}
-                            md={4}
-                            xl={3}
-                            sx={{ display: 'flex', justifyContent: 'center' }}
-                          >
-                            <EventCard
-                              key={`EventCard-${index}`}
-                              event={event}
-                            />
-                          </Grid>
-                        ))}
-                        {/*<Grid*/}
-                        {/*  key={`Lottery-Card`}*/}
-                        {/*  xs={12}*/}
-                        {/*  sm={6}*/}
-                        {/*  md={4}*/}
-                        {/*  xl={3}*/}
-                        {/*  sx={{ display: 'flex', justifyContent: 'center' }}*/}
-                        {/*>*/}
-                        {/*  <LotteryCard />*/}
-                        {/*</Grid>*/}
-                      </Box>
-                    </div>
+                      {events.map((event) => (
+                        <EventCard key={event.id} event={event} />
+                      ))}
+                      {/*<Grid*/}
+                      {/*  key={`Lottery-Card`}*/}
+                      {/*  xs={12}*/}
+                      {/*  sm={6}*/}
+                      {/*  md={4}*/}
+                      {/*  xl={3}*/}
+                      {/*  sx={{ display: 'flex', justifyContent: 'center' }}*/}
+                      {/*>*/}
+                      {/*  <LotteryCard />*/}
+                      {/*</Grid>*/}
+                    </Fragment>
                   );
                 },
               )

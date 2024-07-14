@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -18,7 +18,6 @@ import {
   RightArrowIcon,
   EventIcon,
 } from 'components/icons';
-import { EventCard } from '@/components/cards';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MOCK_DATA } from 'mock';
@@ -31,6 +30,7 @@ import { Event, EventData, Space, SpaceData } from '@/types';
 import LotteryCard from '@/components/cards/LotteryCard';
 import Link from 'next/link';
 import {
+  EventCard,
   EventCardMonthGroup,
   EventCardSkeleton,
   formatDateToMonth,
@@ -319,7 +319,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     getEventsInMonth().catch((e) => {
-      console.error('Failed to fetch events:', error);
+      console.error('Failed to fetch events:', e);
     });
   }, [dateForCalendar]);
 
@@ -423,9 +423,7 @@ const Home: React.FC = () => {
                   display="flex"
                   flexDirection="column"
                   gap="20px"
-                  sx={{
-                    inset: '0',
-                  }}
+                  sx={{ inset: '0' }}
                 >
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box display="flex" justifyContent="space-between">
@@ -475,7 +473,7 @@ const Home: React.FC = () => {
                     Object.entries(groupEventsByMonth(events)).map(
                       ([month, eventsList]) => {
                         return (
-                          <div key={month}>
+                          <Fragment key={month}>
                             <EventCardMonthGroup>{month}</EventCardMonthGroup>
                             {eventsList.map((event, index) => (
                               <EventCard
@@ -483,7 +481,7 @@ const Home: React.FC = () => {
                                 event={event}
                               />
                             ))}
-                          </div>
+                          </Fragment>
                         );
                       },
                     )

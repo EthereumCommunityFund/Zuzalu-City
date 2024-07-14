@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Box, Stack, Typography, Button, Skeleton } from '@mui/material';
 import { Header, Sidebar, IconSidebar } from './components';
@@ -193,51 +193,60 @@ const Home = () => {
         </Stack>
 
         {isEventsLoading ? (
-          <>
-            <Stack padding="20px" spacing={3}>
-              <Typography variant="subtitleSB">Upcoming Events</Typography>
-              <EventCardMonthGroup bgColor={'transparent'}>
-                <Skeleton width={60}></Skeleton>
-              </EventCardMonthGroup>
-            </Stack>
-            <Stack paddingX="20px">
-              <EventCardSkeleton />
-              <EventCardSkeleton />
-            </Stack>
-          </>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              padding: '20px',
+            }}
+          >
+            <Typography variant="subtitleSB">Upcoming Events</Typography>
+            <EventCardMonthGroup bgColor={'transparent'}>
+              <Skeleton width={60}></Skeleton>
+            </EventCardMonthGroup>
+            <EventCardSkeleton />
+            <EventCardSkeleton />
+            <Typography variant="subtitleSB">Past Events</Typography>
+            <EventCardMonthGroup bgColor={'transparent'}>
+              <Skeleton width={60}></Skeleton>
+            </EventCardMonthGroup>
+            <EventCardSkeleton />
+            <EventCardSkeleton />
+          </Box>
         ) : (
-          <>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              padding: '20px',
+            }}
+          >
             {Object.entries(
               groupEventsByMonth(filterUpcomingEvents(events)),
             ).map(([month, eventsList]) => {
               return (
-                <div key={month}>
-                  <Stack padding="20px" spacing={3}>
-                    <Typography variant="subtitleSB">
-                      Upcoming Events ({filterUpcomingEvents(events).length})
-                    </Typography>
-                    <EventCardMonthGroup bgColor={'transparent'}>
-                      {month}
-                    </EventCardMonthGroup>
-                  </Stack>
-                  <Stack paddingX="20px">
-                    {eventsList.map((event) => (
-                      <EventCard key={event.id} event={event} />
-                    ))}
-                  </Stack>
-                </div>
+                <Fragment key={month}>
+                  <Typography variant="subtitleSB">
+                    Upcoming Events ({filterUpcomingEvents(events).length})
+                  </Typography>
+                  <EventCardMonthGroup bgColor={'transparent'}>
+                    {month}
+                  </EventCardMonthGroup>
+                  {eventsList.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </Fragment>
               );
             })}
-
-            <Stack padding="20px" spacing={3}>
-              <Typography variant="subtitleSB">
-                Past Events ({filterPastEvents(events).length})
-              </Typography>
-              {filterPastEvents(events).map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </Stack>
-          </>
+            <Typography variant="subtitleSB">
+              Past Events ({filterPastEvents(events).length})
+            </Typography>
+            {filterPastEvents(events).map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </Box>
         )}
       </Stack>
     </Stack>
