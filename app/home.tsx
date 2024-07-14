@@ -38,6 +38,7 @@ import {
 } from '@/components/cards/EventCard';
 import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
+import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 
 const queryClient = new QueryClient();
 
@@ -413,8 +414,18 @@ const Home: React.FC = () => {
                   Most Active Spaces
                 </Typography>
               </Box>
-              {/* <Carousel items={spaces} /> */}
-              <Carousel items={spaces} />
+              {spaces.length > 0 ? (
+                <Carousel items={spaces} />
+              ) : (
+                <Box display={'flex'} gap={'10px'}>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                </Box>
+              )}
+
+              {/**/}
               <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
@@ -455,6 +466,9 @@ const Home: React.FC = () => {
                       <EventCardMonthGroup>
                         <Skeleton width={60}></Skeleton>
                       </EventCardMonthGroup>
+                      <EventCardSkeleton />
+                      <EventCardSkeleton />
+                      <EventCardSkeleton />
                       <EventCardSkeleton />
                       <EventCardSkeleton />
                     </>
