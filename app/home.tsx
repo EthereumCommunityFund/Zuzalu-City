@@ -31,6 +31,7 @@ import { Event, EventData, Space, SpaceData } from '@/types';
 import LotteryCard from '@/components/cards/LotteryCard';
 import Link from 'next/link';
 import {
+  EventCardMonthGroup,
   EventCardSkeleton,
   formatDateToMonth,
   groupEventsByMonth,
@@ -472,21 +473,9 @@ const Home: React.FC = () => {
                   </Box>
                   {isEventsLoading ? (
                     <>
-                      <Box
-                        component={'div'}
-                        width={'100%'}
-                        color="white"
-                        border="1px solid #383838"
-                        justifyContent="center"
-                        alignContent={'center'}
-                        paddingY="8px"
-                        borderRadius="40px"
-                        bgcolor="rgba(34, 34, 34, 0.8)"
-                        fontWeight={700}
-                        display={'flex'}
-                      >
+                      <EventCardMonthGroup>
                         <Skeleton width={60}></Skeleton>
-                      </Box>
+                      </EventCardMonthGroup>
                       <EventCardSkeleton />
                       <EventCardSkeleton />
                     </>
@@ -506,21 +495,7 @@ const Home: React.FC = () => {
                       ([month, eventsList]) => {
                         return (
                           <div key={month}>
-                            <Box
-                              component={'div'}
-                              width={'100%'}
-                              color="white"
-                              border="1px solid #383838"
-                              justifyContent="center"
-                              alignContent={'center'}
-                              paddingY="8px"
-                              borderRadius="40px"
-                              bgcolor="rgba(34, 34, 34, 0.8)"
-                              fontWeight={700}
-                              display={'flex'}
-                            >
-                              {month}
-                            </Box>
+                            <EventCardMonthGroup>{month}</EventCardMonthGroup>
                             <Box>
                               {eventsList.map((event, index) => (
                                 <EventCard

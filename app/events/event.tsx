@@ -10,6 +10,7 @@ import {
   OutlinedInput,
   InputAdornment,
   Button,
+  Skeleton,
 } from '@mui/material';
 import debounce from 'lodash/debounce';
 import { Sidebar } from 'components/layout';
@@ -22,7 +23,11 @@ import { useCeramicContext } from '../../context/CeramicContext';
 import { Event, EventData } from '@/types';
 import { EventIcon, SearchIcon } from '@/components/icons';
 import EventHeader from './components/EventHeader';
-import { groupEventsByMonth } from '@/components/cards/EventCard';
+import {
+  EventCardMonthGroup,
+  EventCardSkeleton,
+  groupEventsByMonth,
+} from '@/components/cards/EventCard';
 
 const EventsPage: React.FC = () => {
   const theme = useTheme();
@@ -221,54 +226,52 @@ const EventsPage: React.FC = () => {
               justifyContent: 'center',
             }}
           >
-            {Object.entries(groupEventsByMonth(events)).map(
-              ([month, events], index) => {
-                return (
-                  <div key={month + index}>
-                    <Typography
-                      sx={{
-                        position: 'sticky',
-                        top: 60,
-                      }}
-                      display="block"
-                      color="white"
-                      border="1px solid #383838"
-                      align="center"
-                      paddingY="8px"
-                      borderRadius="40px"
-                      variant="subtitleS"
-                      bgcolor="rgba(34, 34, 34, 0.8)"
-                    >
-                      {month}
-                    </Typography>
-                    <Box>
-                      {events.map((event, index) => (
-                        <Grid
-                          item
-                          key={`EventHeader-Card${index}`}
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          xl={3}
-                          sx={{ display: 'flex', justifyContent: 'center' }}
-                        >
-                          <EventCard key={`EventCard-${index}`} event={event} />
-                        </Grid>
-                      ))}
-                      {/*<Grid*/}
-                      {/*  key={`Lottery-Card`}*/}
-                      {/*  xs={12}*/}
-                      {/*  sm={6}*/}
-                      {/*  md={4}*/}
-                      {/*  xl={3}*/}
-                      {/*  sx={{ display: 'flex', justifyContent: 'center' }}*/}
-                      {/*>*/}
-                      {/*  <LotteryCard />*/}
-                      {/*</Grid>*/}
-                    </Box>
-                  </div>
-                );
-              },
+            {events?.length > 0 ? (
+              Object.entries(groupEventsByMonth(events)).map(
+                ([month, events], index) => {
+                  return (
+                    <div key={month + index}>
+                      <EventCardMonthGroup>{month}</EventCardMonthGroup>
+                      <Box>
+                        {events.map((event, index) => (
+                          <Grid
+                            item
+                            key={`EventHeader-Card${index}`}
+                            xs={12}
+                            sm={6}
+                            md={4}
+                            xl={3}
+                            sx={{ display: 'flex', justifyContent: 'center' }}
+                          >
+                            <EventCard
+                              key={`EventCard-${index}`}
+                              event={event}
+                            />
+                          </Grid>
+                        ))}
+                        {/*<Grid*/}
+                        {/*  key={`Lottery-Card`}*/}
+                        {/*  xs={12}*/}
+                        {/*  sm={6}*/}
+                        {/*  md={4}*/}
+                        {/*  xl={3}*/}
+                        {/*  sx={{ display: 'flex', justifyContent: 'center' }}*/}
+                        {/*>*/}
+                        {/*  <LotteryCard />*/}
+                        {/*</Grid>*/}
+                      </Box>
+                    </div>
+                  );
+                },
+              )
+            ) : (
+              <>
+                <EventCardMonthGroup>
+                  <Skeleton width={60}></Skeleton>
+                </EventCardMonthGroup>
+                <EventCardSkeleton />
+                <EventCardSkeleton />
+              </>
             )}
           </Stack>
         </Stack>

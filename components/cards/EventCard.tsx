@@ -211,6 +211,28 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   );
 };
 
+export const EventCardMonthGroup: React.FC<React.PropsWithChildren<{}>> = ({
+  children,
+}) => {
+  return (
+    <Box
+      component={'div'}
+      width={'100%'}
+      color="white"
+      border="1px solid #383838"
+      justifyContent="center"
+      alignContent={'center'}
+      paddingY="8px"
+      borderRadius="40px"
+      bgcolor="rgba(34, 34, 34, 0.8)"
+      fontWeight={700}
+      display={'flex'}
+    >
+      {children}
+    </Box>
+  );
+};
+
 export const EventCardSkeleton = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -228,6 +250,7 @@ export const EventCardSkeleton = () => {
         variant="rectangular"
         width={isMobile ? '80px' : '140px'}
         height={isMobile ? '80px' : '140px'}
+        sx={{ borderRadius: '10px' }}
       />
       <Box display="flex" flexDirection="column" gap="10px" flexGrow={1}>
         <Box
