@@ -28,6 +28,7 @@ const Home = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   const { composeClient } = useCeramicContext();
+
   const getSpaces = async () => {
     try {
       const response: any = await composeClient.executeQuery(`
@@ -75,24 +76,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getSpaces();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+    getSpaces().catch((error) => {
+      console.error('An error occurred:', error);
+    });
   }, []);
-
-  function isValidJSON(str: string): boolean {
-    try {
-      JSON.parse(str);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
 
   return (
     <Stack
