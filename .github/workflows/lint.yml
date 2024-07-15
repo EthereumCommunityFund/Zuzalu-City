@@ -92,7 +92,7 @@ jobs:
               body = `${commentIdentifier}\n**Prettier check passed!** 🎉`;
             } else {
               const PRETTIER_OUTPUT = fs.readFileSync('prettier_output.txt', 'utf8');
-              body = `${commentIdentifier}\n**Prettier check failed for the following files:**\n\n\`\`\`\n${PRETTIER_OUTPUT}\n\`\`\``;
+              body = `${commentIdentifier}\n**Prettier check failed for the following files:**\n\n\`\`\`\n${PRETTIER_OUTPUT.trim()}\n\`\`\``;
             }
 
             const { data: comments } = await github.rest.issues.listComments({
@@ -117,6 +117,10 @@ jobs:
                 issue_number: context.issue.number,
                 body: body,
               });
+            }
+            
+            if (process.env.PRETTIER_OUTCOME !== 'success') {
+              process.exit(1);
             }
 
       - name: Run Next Lint
