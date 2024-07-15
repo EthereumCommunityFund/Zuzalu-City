@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Alert, Box, Snackbar, Stack, Typography, useTheme } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Snackbar,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { ZuButton } from 'components/core';
 import { EventIcon, LockIcon, MapIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -17,7 +24,7 @@ interface PropTypes {
 const OverviewDetail = ({ eventData }: PropTypes) => {
   const params = useParams();
   const eventId = params.eventid.toString();
-  const {breakpoints} = useTheme();
+  const { breakpoints } = useTheme();
 
   // const [eventData, setEventData] = React.useState<Event>();
   // const { composeClient } = useCeramicContext();
@@ -89,8 +96,8 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
       sx={{
         [breakpoints.down('md')]: {
           flexDirection: 'column',
-          alignItems: 'center'
-        }
+          alignItems: 'center',
+        },
       }}
     >
       <Stack
@@ -102,7 +109,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           position: 'absolute',
           top: '0px',
           left: '0px',
-          zIndex: '0'
+          zIndex: '0',
         }}
       ></Stack>
       <Box
@@ -112,10 +119,21 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
         height={320}
         width={320}
         sx={{
-          zIndex: '1'
+          zIndex: '1',
         }}
       />
-      <Stack direction="column" flex={1} spacing={2}>
+      <Stack 
+        direction="column"
+        flex={1}
+        spacing={2}
+        zIndex={'1'}
+        sx={{
+          width: '',
+          [breakpoints.down('md')]: {
+            width: '100%',
+          },
+        }}
+      >
         <Stack direction="row" spacing={2}>
           <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
             Edit Event Details
@@ -213,10 +231,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
             GATED
           </ZuButton>
         )}
-        <Stack
-          width="100%"
-          spacing={'6px'}
-        >
+        <Stack width="100%" spacing={'6px'}>
           <ZuButton sx={{ backgroundColor: '#2F4541', width: '100%' }}>
             Edit Event Details
           </ZuButton>
@@ -224,10 +239,10 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
             <Link
               href={'/events/' + eventId}
               style={{
-                flex: 1
+                flex: 1,
               }}
             >
-              <ZuButton sx={{ backgroundColor: '#2F4541', width: '100%'}}>
+              <ZuButton sx={{ backgroundColor: '#2F4541', width: '100%' }}>
                 View Event
               </ZuButton>
             </Link>
@@ -255,7 +270,6 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
             </CopyToClipboard>
           </Stack>
         </Stack>
-
       </Stack>
     </Stack>
   ) : (

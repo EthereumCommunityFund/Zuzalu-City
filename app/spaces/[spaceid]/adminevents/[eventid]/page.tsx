@@ -12,9 +12,7 @@ const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
   const [event, setEvent] = React.useState<Event>();
 
-  const {
-    composeClient,
-  } = useCeramicContext();
+  const { composeClient } = useCeramicContext();
 
   const pathname = useParams();
 
@@ -73,8 +71,7 @@ const Home: React.FC = () => {
     } catch (err) {
       console.log('ERROR: FETCH EVENT: ', err);
     }
-  }
-
+  };
 
   const isMobile = useMediaQuery('(max-width:768px)');
   const renderPage = () => {

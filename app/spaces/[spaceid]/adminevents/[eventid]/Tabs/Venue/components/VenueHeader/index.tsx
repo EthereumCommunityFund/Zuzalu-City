@@ -6,14 +6,13 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface SessionHeaderProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
-  count: number
+  count: number;
 }
 
 const VenueHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => { },
-  count = 0
+  onToggle = (anchor: Anchor, open: boolean) => {},
+  count = 0,
 }) => {
-
   const { breakpoints } = useTheme();
 
   return (
@@ -27,13 +26,13 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
         <Typography variant="h5">Venue Spaces</Typography>
         <Typography variant="bodyB">Total Spaces: {count}</Typography>
       </Stack>
-      <Stack 
-        direction={'row'} 
+      <Stack
+        direction={'row'}
         gap={2}
         sx={{
           [breakpoints.down('md')]: {
-            flexDirection: 'column'
-          }
+            flexDirection: 'column',
+          },
         }}
       >
         <Stack

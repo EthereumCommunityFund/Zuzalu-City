@@ -159,5 +159,5 @@ export {
   QueueListIcon,
   ChevronDoubleRightIcon,
   MicrophoneIcon,
-  TagIcon
+  TagIcon,
 };

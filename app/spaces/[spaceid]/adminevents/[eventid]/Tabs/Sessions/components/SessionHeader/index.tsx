@@ -11,7 +11,6 @@ interface SessionHeaderProps {
 const SessionHeader: React.FC<SessionHeaderProps> = ({
   onToggle = (anchor: Anchor, open: boolean) => {},
 }) => {
-
   const { breakpoints } = useTheme();
 
   return (

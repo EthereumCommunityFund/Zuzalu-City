@@ -11,7 +11,7 @@ import {
   Select,
   MenuItem,
   Chip,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -183,29 +183,38 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const debounceGetEventsCity = debounce(getVenues, 1000);
 
   const List = (anchor: Anchor) => {
-
     const { breakpoints } = useTheme();
 
-    const [monday, setMonday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [tuesday, setTuesday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [wednesday, setWednesday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [thursday, setThursday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
-    const [friday, setFriday] = useState<AvailableType[]>([{
-      startTime: '',
-      endTime: ''
-    }]);
+    const [monday, setMonday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [tuesday, setTuesday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [wednesday, setWednesday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [thursday, setThursday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [friday, setFriday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
 
     const createVenue = async () => {
       try {
@@ -238,8 +247,8 @@ const Home: React.FC<IVenue> = ({ event }) => {
             width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
             backgroundColor: '#222222',
             [breakpoints.down('md')]: {
-              width: '100%'
-            }
+              width: '100%',
+            },
           }}
           role="presentation"
           zIndex="100"

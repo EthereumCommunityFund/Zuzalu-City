@@ -338,7 +338,17 @@ const About: React.FC<IAbout> = ({ eventData }) => {
               spacing="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleSB" sx={{opacity: '0.6', textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)'}} fontSize={'18px'} fontWeight={700}>EVENT SPONSORS</Typography>
+              <Typography
+                variant="subtitleSB"
+                sx={{
+                  opacity: '0.6',
+                  textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)',
+                }}
+                fontSize={'18px'}
+                fontWeight={700}
+              >
+                EVENT SPONSORS
+              </Typography>
               <Box display="flex" gap="20px" flexWrap="wrap">
                 <Stack alignItems="center" spacing="4px">
                   <Box

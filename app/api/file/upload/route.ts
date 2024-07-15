@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createConnector, type Uploader3Connector } from '@lxdao/uploader3-connector';
+import {
+  createConnector,
+  type Uploader3Connector,
+} from '@lxdao/uploader3-connector';
 
 const token = `${process?.env?.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process?.env?.NEXT_PUBLIC_CONNECTOR_TOKEN}`;
 
@@ -9,7 +12,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const connector = createConnector('NFT.storage', { token });
+    const connector = createConnector('lighthouse', { token });
 
     const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
     let { data: imageData = '', type } = reqBody;
@@ -45,7 +48,7 @@ export async function POST(req: Request) {
     console.error(e);
     return NextResponse.json(
       { error: e.message, stack: e.stack },
-      { status: 401 }
+      { status: 401 },
     );
   }
 }

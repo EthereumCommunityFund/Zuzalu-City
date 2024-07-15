@@ -464,7 +464,6 @@ const Sessions = () => {
   };
 
   const List = (anchor: Anchor) => {
-
     const { breakpoints } = useTheme();
 
     return (
@@ -474,8 +473,8 @@ const Sessions = () => {
             width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
             backgroundColor: '#222222',
             [breakpoints.down('md')]: {
-              width: '100%'
-            }
+              width: '100%',
+            },
           }}
           role="presentation"
           zIndex="100"
@@ -655,13 +654,13 @@ const Sessions = () => {
               <FormTitle>Location & Booking</FormTitle>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Format*</Typography>
-                <Box 
-                  display="flex" 
+                <Box
+                  display="flex"
                   gap="20px"
                   sx={{
                     [breakpoints.down('md')]: {
-                      flexDirection: 'column'
-                    }
+                      flexDirection: 'column',
+                    },
                   }}
                 >
                   <Box
@@ -1471,11 +1470,7 @@ const Sessions = () => {
   };
 
   return (
-    <Stack
-      direction={'column'}
-      gap={6}
-      padding={'30px'}
-    >
+    <Stack direction={'column'} gap={6} padding={'30px'}>
       <SessionHeader onToggle={toggleDrawer} />
       <SessionList
         sessions={sessions}

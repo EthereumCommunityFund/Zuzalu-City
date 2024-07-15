@@ -28,7 +28,7 @@ const EventName = ({
   organizer,
   tagline,
   avatar,
-  status
+  status,
 }: PropTypes) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -45,16 +45,8 @@ const EventName = ({
 
   return (
     <Stack spacing="10px">
-      <Stack
-        width={'100%'}
-        alignItems={'center'}
-        justifyContent={'center'}
-      >
-        <Stack
-          width={'100%'}
-          alignItems={'center'}
-          justifyContent={'center'}
-        >
+      <Stack width={'100%'} alignItems={'center'} justifyContent={'center'}>
+        <Stack width={'100%'} alignItems={'center'} justifyContent={'center'}>
           <Box
             component="img"
             width={isMobile ? '350px' : '500px'}
@@ -74,21 +66,14 @@ const EventName = ({
         }}
         gap={'10px'}
       >
-        <Stack
-          padding={'10px'}
-          gap={'20px'}
-        >
+        <Stack padding={'10px'} gap={'20px'}>
           <Stack
             direction={'row'}
             gap={'10px'}
             alignItems={'center'}
             sx={{ paddingTop: '20px' }}
           >
-            <Stack
-              direction="row"
-              spacing="5px"
-              alignItems="center"
-            >
+            <Stack direction="row" spacing="5px" alignItems="center">
               <Typography color="rgba(255, 255, 255, 0.80)" variant="caption">
                 BY:
               </Typography>
@@ -104,16 +89,14 @@ const EventName = ({
               </Typography>
             </Stack>
             <Typography>/</Typography>
-            <Stack
-              direction="row"
-              spacing="5px"
-              alignItems="center"
-            >
+            <Stack direction="row" spacing="5px" alignItems="center">
               <GroupIcon size={7} />
-              <Typography color="rgba(255, 255, 255, 0.80)" variant="bodyS" textTransform={'uppercase'}>
-                {
-                  `${status} event`
-                }
+              <Typography
+                color="rgba(255, 255, 255, 0.80)"
+                variant="bodyS"
+                textTransform={'uppercase'}
+              >
+                {`${status} event`}
               </Typography>
             </Stack>
           </Stack>
@@ -121,13 +104,23 @@ const EventName = ({
             <Typography color="white" variant="subtitleLB">
               {eventName}
             </Typography>
-            <Typography color="white" variant="bodyM" sx={{ opacity: 0.6 }} fontSize={'14px'}>
+            <Typography
+              color="white"
+              variant="bodyM"
+              sx={{ opacity: 0.6 }}
+              fontSize={'14px'}
+            >
               {tagline}
             </Typography>
           </Stack>
         </Stack>
 
-        <Stack direction="row" spacing={1} alignItems="center" sx={{opacity: '0.6'}}>
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          sx={{ opacity: '0.6' }}
+        >
           <Stack
             direction="row"
             padding={1}
@@ -142,7 +135,12 @@ const EventName = ({
             {convertDateStringFormat(endTime)}
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{opacity: '0.6'}}>
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          sx={{ opacity: '0.6' }}
+        >
           <Stack
             direction="row"
             padding={1}

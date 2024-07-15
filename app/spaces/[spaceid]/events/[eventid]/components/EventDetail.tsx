@@ -3,7 +3,6 @@ import { Stack, Typography, Box, useTheme } from '@mui/material';
 import { RightArrowIcon } from 'components/icons';
 
 const EventDetail = () => {
-
   const { breakpoints } = useTheme();
 
   return (
@@ -12,8 +11,8 @@ const EventDetail = () => {
       sx={{
         padding: '0px',
         [breakpoints.down('md')]: {
-          padding: '0px 10px 20px 10px'
-        }
+          padding: '0px 10px 20px 10px',
+        },
       }}
     >
       <Typography
@@ -32,7 +31,11 @@ const EventDetail = () => {
           Type: Meet-up
         </Typography>
       </Stack>
-      <Stack spacing="10px" paddingBottom={'20px'} borderBottom={'1px solid rgba(255, 255, 255, 0.10)'}>
+      <Stack
+        spacing="10px"
+        paddingBottom={'20px'}
+        borderBottom={'1px solid rgba(255, 255, 255, 0.10)'}
+      >
         <Typography color="white" variant="bodyBB" paddingBottom="20px">
           Links
         </Typography>

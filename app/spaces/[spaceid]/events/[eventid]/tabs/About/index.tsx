@@ -1,8 +1,23 @@
 'use client';
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Typography, Box, SwipeableDrawer, useTheme } from '@mui/material';
-import { EventName, EventAbout, EventRegister, EventDetail, Initial, Disclaimer, Email, Payment } from '@/components/event';
+import {
+  Stack,
+  Typography,
+  Box,
+  SwipeableDrawer,
+  useTheme,
+} from '@mui/material';
+import {
+  EventName,
+  EventAbout,
+  EventRegister,
+  EventDetail,
+  Initial,
+  Disclaimer,
+  Email,
+  Payment,
+} from '@/components/event';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon, LockIcon } from '@/components/icons';
 import {
@@ -312,8 +327,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
             [breakpoints.down('md')]: {
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '20px'
-            }
+              gap: '20px',
+            },
           }}
         >
           <Stack
@@ -326,11 +341,11 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
                 width: '540px',
               },
               [breakpoints.down('md')]: {
-                width: '100%'
+                width: '100%',
               },
               [breakpoints.down('sm')]: {
-                px: '10px'
-              }
+                px: '10px',
+              },
             }}
           >
             {/* <Stack spacing="4px">

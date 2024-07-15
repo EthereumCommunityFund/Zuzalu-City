@@ -175,7 +175,7 @@ export const SponsorAgree: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src={event?.image_url ? event.image_url : "/14.webp"}
+            src={event?.image_url ? event.image_url : '/14.webp'}
           />
           <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
@@ -197,7 +197,12 @@ export const SponsorAgree: React.FC<IProps> = ({
             <Typography variant="subtitleMB" sx={{ opacity: 0.8 }}>
               Sponsor Disclaimer
             </Typography>
-            <Typography variant="bodyB" sx={{ opacity: 0.7 }} height="550px" overflow={'auto'}>
+            <Typography
+              variant="bodyB"
+              sx={{ opacity: 0.7 }}
+              height="550px"
+              overflow={'auto'}
+            >
               By confirming your attendance, you agree to the following points:
               ZuVillage is an experimental digital community that gathers in
               real life at a private event. By sending the contributions or by
@@ -502,7 +507,7 @@ export const SponsorTransaction: React.FC<IProps> = ({
   setIsMint,
   setIsTransaction,
   handleClose,
-  event
+  event,
 }) => {
   const [isWait, setIsWait] = useState<boolean>(false);
 
@@ -520,7 +525,7 @@ export const SponsorTransaction: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src={event?.image_url ? event.image_url : "/14.webp"}
+            src={event?.image_url ? event.image_url : '/14.webp'}
           />
           <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
@@ -597,7 +602,7 @@ export const SponsorComplete: React.FC<IProps> = ({
   handleClose,
   tokenId,
   ticketMinted,
-  event
+  event,
 }) => {
   const [view, setView] = useState<boolean>(false);
   return (
@@ -614,7 +619,7 @@ export const SponsorComplete: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src={event?.image_url ? event.image_url : "/14.webp"}
+            src={event?.image_url ? event.image_url : '/14.webp'}
           />
           <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>

@@ -8,7 +8,7 @@ interface PropTypes {
   spaceName?: string;
 }
 
-const Navbar = ({spaceName = ''}: PropTypes) => {
+const Navbar = ({ spaceName = '' }: PropTypes) => {
   const router = useRouter();
   const params = useParams();
 
@@ -44,9 +44,7 @@ const Navbar = ({spaceName = ''}: PropTypes) => {
         fontSize="18px"
         fontWeight={700}
       >
-        {
-          spaceName
-        }
+        {spaceName}
       </Typography>
     </Box>
   );

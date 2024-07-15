@@ -53,7 +53,12 @@ const EventDetail: React.FC<IEventDetail> = ({
         paddingBottom={'20px'}
         borderBottom={'1px solid rgba(255, 255, 255, 0.10)'}
       >
-        <Typography color="white" variant="bodyBB" paddingBottom="20px" sx={{opacity: '0.7'}}>
+        <Typography
+          color="white"
+          variant="bodyBB"
+          paddingBottom="20px"
+          sx={{ opacity: '0.7' }}
+        >
           Links
         </Typography>
         {links?.length !== 0 && (
@@ -87,13 +92,30 @@ const EventDetail: React.FC<IEventDetail> = ({
         )}
       </Stack>
       <Stack spacing="5px">
-        <Typography color="white" variant="bodyBB" paddingBottom="20px" fontSize={'16px'} fontWeight={700} sx={{opacity: '0.7'}}>
+        <Typography
+          color="white"
+          variant="bodyBB"
+          paddingBottom="20px"
+          fontSize={'16px'}
+          fontWeight={700}
+          sx={{ opacity: '0.7' }}
+        >
           Location
         </Typography>
-        <Typography color="white" variant="bodyMB" fontSize={'14px'} fontWeight={600}>
+        <Typography
+          color="white"
+          variant="bodyMB"
+          fontSize={'14px'}
+          fontWeight={600}
+        >
           City, Country
         </Typography>
-        <Typography color="white" variant="bodyS" fontSize={'13px'} sx={{opacity: '0.8'}}>
+        <Typography
+          color="white"
+          variant="bodyS"
+          fontSize={'13px'}
+          sx={{ opacity: '0.8' }}
+        >
           Apply to see address
         </Typography>
         <Box>

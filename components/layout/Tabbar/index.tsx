@@ -22,7 +22,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
       top={'50px'}
       zIndex={3}
       sx={{
-        scrollbarWidth: 'none'
+        scrollbarWidth: 'none',
       }}
     >
       <Typography

@@ -108,9 +108,7 @@ const Home = () => {
         setTabName={setTabName}
         canViewSessions={sessionView}
       />
-      {tabName === 'About' && (
-        <About eventData={eventData} />
-      )}
+      {tabName === 'About' && <About eventData={eventData} />}
       {tabName === 'Sessions' && <Sessions eventData={eventData} />}
     </Stack>
   );
