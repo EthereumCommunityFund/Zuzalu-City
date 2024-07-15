@@ -36,6 +36,14 @@ import { Venue, Event } from '@/types';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
+import {
+  FormLabel,
+  FormLabelDesc,
+  FormTitle,
+} from '@/components/typography/formTypography';
+import SelectCheckItem from '@/components/select/selectCheckItem';
+import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
+import Space from '@/app/spaces/space';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Custom_Option: TimeStepOptions = {
@@ -247,12 +255,19 @@ const Home: React.FC<IVenue> = ({ event }) => {
             borderBottom="1px solid #383838"
             paddingX={3}
             gap={2}
+            sx={{
+              position: 'sticky',
+              top: 0,
+              backgroundColor: '#222222',
+              zIndex: 10,
+            }}
           >
             <ZuButton
-              startIcon={<XMarkIcon />}
+              startIcon={<XMarkIcon size={5} />}
               onClick={() => toggleDrawer('right', false)}
               sx={{
                 backgroundColor: 'transparent',
+                fontWeight: 'bold',
               }}
             >
               Close
@@ -265,16 +280,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Typography variant="subtitleMB">Create a Venue</Typography>
-              <ZuButton
-                startIcon={<ArchiveBoxIcon size={5} />}
-                sx={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-              >
-                Save Draft
-              </ZuButton>
+              <FormTitle>Create a Venue</FormTitle>
             </Stack>
             <Stack
               direction={'column'}
@@ -283,9 +289,9 @@ const Home: React.FC<IVenue> = ({ event }) => {
               padding="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleMB">Venue Space Details</Typography>
+              <FormTitle>Venue Space Details</FormTitle>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Space Name*</Typography>
+                <FormLabel>Space Name*</FormLabel>
                 <ZuInput
                   placeholder="Standard Pass"
                   onChange={(e) => setName(e.target.value)}
@@ -293,10 +299,10 @@ const Home: React.FC<IVenue> = ({ event }) => {
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">Space Tags</Typography>
-                  <Typography variant="bodyS">
+                  <FormLabel>Space Tags</FormLabel>
+                  <FormLabelDesc>
                     Search or create categories related to your space
-                  </Typography>
+                  </FormLabelDesc>
                 </Stack>
                 <Box>
                   <Select
@@ -305,6 +311,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     style={{ width: '100%' }}
                     onChange={handleChange}
                     input={<OutlinedInput label="Name" />}
+                    renderValue={(selected) => selected.join(', ')}
                     MenuProps={{
                       PaperProps: {
                         style: {
@@ -316,7 +323,12 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     {VENUE_TAGS.map((tag, index) => {
                       return (
                         <MenuItem value={tag.value} key={index}>
-                          {tag.label}
+                          <SelectCheckItem
+                            label={tag.label}
+                            isChecked={
+                              tags.findIndex((item) => item === tag.value) > -1
+                            }
+                          />
                         </MenuItem>
                       );
                     })}
@@ -346,38 +358,12 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     );
                   })}
                 </Box>
-                {/* <Stack direction="row" spacing="10px">
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Typography variant="bodyMB">
-                      Live-stream Available
-                    </Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Typography variant="bodyMB">External Venue</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                </Stack> */}
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Space Image</Typography>
-                <Typography variant="bodyS">
+                <FormLabel>Space Image</FormLabel>
+                <FormLabelDesc>
                   Recommend min of 200x200px (1:1 Ratio)
-                </Typography>
+                </FormLabelDesc>
                 <Box
                   sx={{
                     display: 'flex',
@@ -385,12 +371,24 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     gap: '10px',
                   }}
                 >
-                  <ZuInput
-                    type="file"
-                    id="Avatar"
-                    ref={inputFile}
-                    onChange={handleImageChange}
-                  />
+                  <Button
+                    component="label"
+                    tabIndex={-1}
+                    disabled={uploading}
+                    sx={{
+                      color: 'white',
+                      borderRadius: '10px',
+                      backgroundColor: '#373737',
+                      border: '1px solid #383838',
+                      width: '140px',
+                    }}
+                  >
+                    {uploading ? 'Uploading...' : 'Upload Image'}
+                    <VisuallyHiddenInput
+                      type="file"
+                      onChange={handleImageChange}
+                    />
+                  </Button>
                   <PreviewFile
                     sx={{
                       width: '200px',
@@ -402,7 +400,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 </Box>
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Space Capacity*</Typography>
+                <FormLabel>Space Capacity*</FormLabel>
                 <ZuInput
                   type="number"
                   onChange={(e) => setCapacity(Number(e.target.value))}
@@ -416,11 +414,15 @@ const Home: React.FC<IVenue> = ({ event }) => {
               padding="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleMB">Available Bookings</Typography>
-              <Typography variant="bodyBB">
-                {/* Your event timeframe: Month, 00, 2024 - Month, 00, 2024 */}
-                {`Your event timeframe: ${dayjs(event?.startTime).format('MMMM')}, ${dayjs(event?.startTime).date()}, ${dayjs(event?.startTime).year()} - ${dayjs(event?.endTime).format('MMMM')}, ${dayjs(event?.endTime).date()}, ${dayjs(event?.endTime).year()}`}
-              </Typography>
+              <FormTitle>Available Bookings</FormTitle>
+              <Stack spacing="4px" direction={'row'}>
+                <Typography variant="bodyBB" color="text.secondary">
+                  Your event timeframe:
+                </Typography>
+                <Typography variant="bodyBB">
+                  {`${dayjs(event?.startTime).format('MMMM')}, ${dayjs(event?.startTime).date()}, ${dayjs(event?.startTime).year()} - ${dayjs(event?.endTime).format('MMMM')}, ${dayjs(event?.endTime).date()}, ${dayjs(event?.endTime).year()}`}
+                </Typography>
+              </Stack>
               <Stack spacing="20px">
                 <Stack direction="row" spacing="20px">
                   <Stack
@@ -785,13 +787,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
       />
       <SwipeableDrawer
         hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '50px',
-            height: 'calc(100% - 50px)',
-            boxShadow: 'none',
-          },
-        }}
         anchor="right"
         open={state['right']}
         onClose={() => toggleDrawer('right', false)}
