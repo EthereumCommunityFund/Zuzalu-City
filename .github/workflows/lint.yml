@@ -65,11 +65,15 @@ jobs:
           CHANGED_FILES="${{ steps.changed-files.outputs.changedFiles }}"
           echo "Running Prettier on changed files:"
           echo "$CHANGED_FILES"
-          output=$(npx prettier --check $CHANGED_FILES || true)
+          npx prettier --check 'app/page.tsx' > prettier_output.txt 2>&1 || true
+          output=$(cat prettier_output.txt)
           echo "$output"
           echo "$output" > prettier_output.txt
           if echo "$output" | grep -q "Run Prettier to fix"; then
+            echo "Prettier check failed."
             exit 1
+          else
+            echo "Prettier check passed."
           fi
         continue-on-error: true
 
