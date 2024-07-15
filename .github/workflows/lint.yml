@@ -17,13 +17,27 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { data: files } = await github.rest.pulls.listFiles({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-            });
+            const getAllChangedFiles = async (github, context) => {
+              let changedFiles = [];
+              let page = 1;
+              while (true) {
+                const { data: files } = await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                  per_page: 100,
+                  page: page,
+                });
+                if (files.length === 0) {
+                  break;
+                }
+                changedFiles = changedFiles.concat(files.map(f => f.filename));
+                page++;
+              }
+              return changedFiles;
+            };
 
-            const changedFiles = files.map(f => f.filename).filter(f => /\.(js|jsx|ts|tsx|json|css|md)$/.test(f));
+            const changedFiles = await getAllChangedFiles(github, context).filter(f => /\.(js|jsx|ts|tsx|json|css|md)$/.test(f));
 
             if (changedFiles.length === 0) {
               core.setOutput('skip', 'true');
