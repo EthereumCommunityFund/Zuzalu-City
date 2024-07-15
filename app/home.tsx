@@ -361,15 +361,15 @@ const Home: React.FC = () => {
             }}
           >
             {
-              profile && spaces && spaces.length > 0 && <MiniDashboard 
-                imageUrl={spaces[0].avatar} 
-                spaceName={spaces[0].name} 
-                startTime={spaces[0].events.edges[0].node.startTime} 
+              profile && spaces && spaces.length > 0 && spaces[0].members?.includes({ id: profile.id }) && < MiniDashboard
+                imageUrl={spaces[0].avatar}
+                spaceName={spaces[0].name}
+                startTime={spaces[0].events.edges[0].node.startTime}
                 endTime={spaces[0].events.edges[0].node.endTime}
                 showManage={profile.id === spaces[0].profileId}
               />
             }
-            
+
             <Box
               display="flex"
               flexDirection="column"
@@ -593,9 +593,9 @@ const Home: React.FC = () => {
                                   // filter event.startTime month equal to selected month
                                   return (
                                     dayjs(event.startTime).month() ===
-                                      dateForCalendar.month() &&
+                                    dateForCalendar.month() &&
                                     dayjs(event.startTime).year() ===
-                                      dateForCalendar.year()
+                                    dateForCalendar.year()
                                   );
                                 })
                                 .filter((event) => {
