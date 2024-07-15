@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -18,7 +18,6 @@ import {
   RightArrowIcon,
   EventIcon,
 } from 'components/icons';
-import { EventCard } from '@/components/cards';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MOCK_DATA } from 'mock';
@@ -31,12 +30,15 @@ import { Event, EventData, Space, SpaceData } from '@/types';
 import LotteryCard from '@/components/cards/LotteryCard';
 import Link from 'next/link';
 import {
+  EventCard,
+  EventCardMonthGroup,
   EventCardSkeleton,
   formatDateToMonth,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
 import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
+import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 
 const queryClient = new QueryClient();
 
@@ -52,16 +54,10 @@ const Home: React.FC = () => {
   const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const [eventsForCalendar, setEventsForCalendar] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(new Date()));
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
-  const [dateForCalendar, setDateForCalendar] = useState<Dayjs | null>(
-    dayjs(
-      new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }),
-    ),
+  const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
+    dayjs(new Date()),
   );
 
   const {
@@ -125,8 +121,8 @@ const Home: React.FC = () => {
   };
 
   const getEvents = async () => {
-    setIsEventsLoading(true);
     try {
+      setIsEventsLoading(true);
       const response: any = await composeClient.executeQuery(`
       query {
         eventIndex(first: 20) {
@@ -171,22 +167,19 @@ const Home: React.FC = () => {
           (edge) => edge.node,
         );
         setEvents(fetchedEvents);
+        setIsEventsLoading(false);
       } else {
         console.error('Invalid data structure:', response.data);
       }
     } catch (error) {
       console.error('Failed to fetch events:', error);
     }
-    setIsEventsLoading(false);
   };
 
   const getEventsByDate = async () => {
-    setIsEventsLoading(true);
     try {
       // TODO: clean selectedDate
       if (selectedDate) {
-        const selectedUtc = selectedDate.utc().format('YYYY-MM-DD');
-
         const getEventsByDate_QUERY = `
           query ($input:EventFiltersInput!) {
           eventIndex(filters:$input, first: 20){
@@ -220,13 +213,14 @@ const Home: React.FC = () => {
           }
         }
       `;
+        setIsEventsLoading(true);
         const response: any = await composeClient.executeQuery(
           getEventsByDate_QUERY,
           {
             input: {
               where: {
                 startTime: {
-                  equalTo: `${selectedUtc}T00:00:00Z`,
+                  equalTo: selectedDate.format('YYYY-MM-DD') + 'T00:00:00Z',
                 },
               },
             },
@@ -241,16 +235,16 @@ const Home: React.FC = () => {
         } else {
           console.error('Invalid data structure:', response.data);
         }
+        setIsEventsLoading(false);
       }
     } catch (error) {
+      setIsEventsLoading(false);
       console.error('Failed to fetch events:', error);
     }
-    setIsEventsLoading(false);
   };
 
   const getEventsInMonth = async () => {
-    try {
-      const getEventsByDate_QUERY = `
+    const getEventsByDate_QUERY = `
         query ($input:EventFiltersInput!) {
         eventIndex(filters:$input, first: 20){
           edges {
@@ -283,52 +277,39 @@ const Home: React.FC = () => {
         }
       }
     `;
-      const response: any = await composeClient.executeQuery(
-        getEventsByDate_QUERY,
-        {
-          input: {
-            where: {
-              startTime: {
-                lessThanOrEqualTo: dateForCalendar
-                  ?.endOf('month')
-                  .format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                greaterThanOrEqualTo: dateForCalendar
-                  ?.startOf('month')
-                  .format('YYYY-MM-DDTHH:mm:ss[Z]'),
-              },
+    const response: any = await composeClient.executeQuery(
+      getEventsByDate_QUERY,
+      {
+        input: {
+          where: {
+            startTime: {
+              lessThanOrEqualTo: dateForCalendar
+                ?.endOf('month')
+                .format('YYYY-MM-DDTHH:mm:ss[Z]'),
+              greaterThanOrEqualTo: dateForCalendar
+                ?.startOf('month')
+                .format('YYYY-MM-DDTHH:mm:ss[Z]'),
             },
           },
         },
+      },
+    );
+    if (response && response.data && 'eventIndex' in response.data) {
+      const eventData: EventData = response.data as EventData;
+      const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+        (edge) => edge.node,
       );
-      if (response && response.data && 'eventIndex' in response.data) {
-        const eventData: EventData = response.data as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setEventsForCalendar(fetchedEvents);
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
+      setEventsForCalendar(fetchedEvents);
+    } else {
+      console.error('Invalid data structure:', response.data);
     }
-  };
-
-  const handleMonthChange = (date: Dayjs) => {
-    setDateForCalendar(date);
   };
 
   useEffect(() => {
     document.title = 'Zuzalu City';
-    const fetchData = async () => {
-      try {
-        await getSpaces();
-        await getEvents();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+    Promise.all([getSpaces(), getEvents()]).catch((error) => {
+      console.error('An error occurred:', error);
+    });
   }, []);
 
   useEffect(() => {
@@ -338,7 +319,9 @@ const Home: React.FC = () => {
   }, [selectedDate]);
 
   useEffect(() => {
-    getEventsInMonth();
+    getEventsInMonth().catch((e) => {
+      console.error('Failed to fetch events:', e);
+    });
   }, [dateForCalendar]);
 
   return (
@@ -431,8 +414,18 @@ const Home: React.FC = () => {
                   Most Active Spaces
                 </Typography>
               </Box>
-              {/* <Carousel items={spaces} /> */}
-              <Carousel items={spaces} />
+              {spaces.length > 0 ? (
+                <Carousel items={spaces} />
+              ) : (
+                <Box display={'flex'} gap={'10px'}>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                  <SpaceCardSkeleton></SpaceCardSkeleton>
+                </Box>
+              )}
+
+              {/**/}
               <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
@@ -441,9 +434,7 @@ const Home: React.FC = () => {
                   display="flex"
                   flexDirection="column"
                   gap="20px"
-                  sx={{
-                    inset: '0',
-                  }}
+                  sx={{ inset: '0' }}
                 >
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box display="flex" justifyContent="space-between">
@@ -472,21 +463,12 @@ const Home: React.FC = () => {
                   </Box>
                   {isEventsLoading ? (
                     <>
-                      <Box
-                        component={'div'}
-                        width={'100%'}
-                        color="white"
-                        border="1px solid #383838"
-                        justifyContent="center"
-                        alignContent={'center'}
-                        paddingY="8px"
-                        borderRadius="40px"
-                        bgcolor="rgba(34, 34, 34, 0.8)"
-                        fontWeight={700}
-                        display={'flex'}
-                      >
+                      <EventCardMonthGroup>
                         <Skeleton width={60}></Skeleton>
-                      </Box>
+                      </EventCardMonthGroup>
+                      <EventCardSkeleton />
+                      <EventCardSkeleton />
+                      <EventCardSkeleton />
                       <EventCardSkeleton />
                       <EventCardSkeleton />
                     </>
@@ -505,31 +487,15 @@ const Home: React.FC = () => {
                     Object.entries(groupEventsByMonth(events)).map(
                       ([month, eventsList]) => {
                         return (
-                          <div key={month}>
-                            <Box
-                              component={'div'}
-                              width={'100%'}
-                              color="white"
-                              border="1px solid #383838"
-                              justifyContent="center"
-                              alignContent={'center'}
-                              paddingY="8px"
-                              borderRadius="40px"
-                              bgcolor="rgba(34, 34, 34, 0.8)"
-                              fontWeight={700}
-                              display={'flex'}
-                            >
-                              {month}
-                            </Box>
-                            <Box>
-                              {eventsList.map((event, index) => (
-                                <EventCard
-                                  key={`EventCard-${index}`}
-                                  event={event}
-                                />
-                              ))}
-                            </Box>
-                          </div>
+                          <Fragment key={month}>
+                            <EventCardMonthGroup>{month}</EventCardMonthGroup>
+                            {eventsList.map((event, index) => (
+                              <EventCard
+                                key={`EventCard-${index}`}
+                                event={event}
+                              />
+                            ))}
+                          </Fragment>
                         );
                       },
                     )
@@ -590,7 +556,6 @@ const Home: React.FC = () => {
                       */}
                       <Box>
                         <ZuCalendar
-                          value={selectedDate}
                           onChange={(val) => {
                             setSelectedDate(val);
                           }}
@@ -602,19 +567,28 @@ const Home: React.FC = () => {
                                   // filter event.startTime month equal to selected month
                                   return (
                                     dayjs(event.startTime).month() ===
-                                      selectedDate.month() &&
+                                      dateForCalendar.month() &&
                                     dayjs(event.startTime).year() ===
-                                      selectedDate.year() &&
-                                    dayjs(event.startTime).date() !==
-                                      selectedDate.date()
+                                      dateForCalendar.year()
                                   );
                                 })
+                                .filter((event) => {
+                                  if (selectedDate) {
+                                    return (
+                                      dayjs(event.startTime).date() !==
+                                      selectedDate.date()
+                                    );
+                                  }
+                                  return true;
+                                })
+
                                 .map((event) => {
                                   return dayjs(event.startTime).date();
                                 }),
                             } as any,
                           }}
-                          onMonthChange={(val) => handleMonthChange(val)}
+                          onMonthChange={(val) => setDateForCalendar(val)}
+                          onYearChange={(val) => setDateForCalendar(val)}
                         />
                       </Box>
                     </Box>

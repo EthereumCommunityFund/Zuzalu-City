@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import Link from 'next/link';
-import { Typography, Button, Box, Stack } from '@mui/material';
+import { Typography, Button, Box, Stack, Skeleton } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
 import TextEditor from '../editor/editor';
 import { SPACE_CATEGORIES } from '@/constant';
@@ -37,12 +37,12 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
         bgcolor="#292929"
         sx={{
           ':hover': {
-            bgcolor: '#2d2d2d',
+            backgroundColor: '#2d2d2d',
           },
         }}
         border="1px solid rgba(255, 255, 255, 0.1)"
         position="relative"
-        // height={250}
+        minHeight={252}
         maxHeight={288}
       >
         <Box
@@ -63,6 +63,9 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
           top={68}
           left={12}
           borderRadius={30}
+          sx={{
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          }}
         />
         <Stack padding="10px" spacing="10px" marginTop="20px">
           <Typography color="white" gutterBottom variant="subtitleS">
@@ -133,6 +136,57 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
         </Stack>
       </Stack>
     </Link>
+  );
+};
+
+export const SpaceCardSkeleton: React.FC = () => {
+  return (
+    <Stack
+      width={290}
+      borderRadius="10px"
+      bgcolor="#292929"
+      sx={{
+        ':hover': {
+          bgcolor: '#2d2d2d',
+        },
+      }}
+      border="1px solid rgba(255, 255, 255, 0.1)"
+      position="relative"
+      minHeight={252}
+    >
+      <Skeleton
+        variant="rectangular"
+        height={106}
+        sx={{
+          borderRadius: '10px 10px 0 0',
+        }}
+      />
+      <Box
+        width={60}
+        height={60}
+        sx={{
+          backgroundColor: '#2b2b2b',
+          position: 'absolute',
+          top: 68,
+          left: 12,
+          padding: '5px',
+          borderRadius: 30,
+        }}
+      >
+        <Skeleton variant="circular" width={50} height={50} />
+      </Box>
+      <Stack padding="10px" spacing="10px" marginTop="20px">
+        <Typography color="white" gutterBottom variant="subtitleS">
+          <Skeleton width={'40%'}></Skeleton>
+        </Typography>
+        <Typography variant="bodyM" color="white" sx={{ opacity: 0.6 }}>
+          <Skeleton width={'90%'}></Skeleton>
+        </Typography>
+        <Typography color="white" variant="caption" sx={{ opacity: 0.5 }}>
+          <Skeleton width={'60%'}></Skeleton>
+        </Typography>
+      </Stack>
+    </Stack>
   );
 };
 
