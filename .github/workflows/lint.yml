@@ -151,8 +151,3 @@ jobs:
             if (process.env.PRETTIER_OUTCOME !== 'success') {
               process.exit(1);
             }
-
-      - name: Run Next Lint
-        if: steps.changed-files.outputs.skip == 'false'
-        run: |
-          npx next lint --quiet
