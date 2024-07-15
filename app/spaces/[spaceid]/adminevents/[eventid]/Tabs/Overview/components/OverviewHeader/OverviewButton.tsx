@@ -17,7 +17,7 @@ const BUTTON_GROUP = [
 
 type OverviewButtonProps = {
   type: number;
-  onClick: () => void
+  onClick: () => void;
 };
 
 const OverviewButton: React.FC<OverviewButtonProps> = ({ type, onClick }) => {

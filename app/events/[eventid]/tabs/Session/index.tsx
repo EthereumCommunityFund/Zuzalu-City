@@ -229,7 +229,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     setSessionEndTime(dayjs().set('hour', 0).set('minute', 0));
   };
 
-
   const isDateInRange = (
     date: Dayjs,
     startDate?: string,

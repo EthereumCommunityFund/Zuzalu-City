@@ -13,7 +13,7 @@ interface CurrentEventsProps {
 }
 
 const CurrentEvents: React.FC<CurrentEventsProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => { },
+  onToggle = (anchor: Anchor, open: boolean) => {},
   events = [],
 }) => {
   return (
@@ -39,10 +39,7 @@ const CurrentEvents: React.FC<CurrentEventsProps> = ({
           Prototype Note: First card is click-able
         </Typography>
         {events.map((event, index) => (
-          <EventMCard
-            key={`EventMCard-Index${index}`}
-            event={event}
-          />
+          <EventMCard key={`EventMCard-Index${index}`} event={event} />
         ))}
       </Stack>
     </Stack>

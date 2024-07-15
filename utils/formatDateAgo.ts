@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 const formatDateAgo = (createdAt: string) => {
   const diffInDays = dayjs().diff(createdAt, 'day');

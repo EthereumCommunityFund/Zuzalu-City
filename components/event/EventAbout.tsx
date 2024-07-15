@@ -14,7 +14,9 @@ const EventAbout = ({ description }: EventAboutTypes) => {
   const [isContentLarge, setIsContentLarge] = useState(false);
 
   useEffect(() => {
-    const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+    const editorContent = document.querySelector(
+      '.codex-editor__redactor',
+    ) as HTMLElement;
     if (editorContent) {
       setContentHeight(editorContent.scrollHeight);
       setIsContentLarge(editorContent.scrollHeight > 300);
@@ -52,15 +54,21 @@ const EventAbout = ({ description }: EventAboutTypes) => {
           }}
         />
       </Stack>
-      {isContentLarge && <ZuButton
-        startIcon={
-          !showMore ? <ChevronDownIcon size={4} /> : <ChevronUpIcon size={4} />
-        }
-        sx={{ backgroundColor: '#313131', width: '100%' }}
-        onClick={() => setShowMore((prev) => !prev)}
-      >
-        {!showMore ? 'Show More' : 'Show Less'}
-      </ZuButton>}
+      {isContentLarge && (
+        <ZuButton
+          startIcon={
+            !showMore ? (
+              <ChevronDownIcon size={4} />
+            ) : (
+              <ChevronUpIcon size={4} />
+            )
+          }
+          sx={{ backgroundColor: '#313131', width: '100%' }}
+          onClick={() => setShowMore((prev) => !prev)}
+        >
+          {!showMore ? 'Show More' : 'Show Less'}
+        </ZuButton>
+      )}
     </Stack>
   );
 };

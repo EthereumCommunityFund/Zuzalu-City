@@ -115,12 +115,18 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               borderRadius="40px"
             /> */}
             <Image
-              src={event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
-              loader={() => event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
+              src={
+                event.space?.avatar ||
+                'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+              }
+              loader={() =>
+                event.space?.avatar ||
+                'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+              }
               width={18}
               height={18}
               alt={event.title}
-              style={{ borderRadius: "100%" }}
+              style={{ borderRadius: '100%' }}
             />
             <Typography
               color="white"

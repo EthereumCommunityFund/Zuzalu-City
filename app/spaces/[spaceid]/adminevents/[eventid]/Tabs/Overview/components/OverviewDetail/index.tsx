@@ -11,7 +11,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import TextEditor from '@/components/editor/editor';
 
 interface PropTypes {
-  eventData?: Event
+  eventData?: Event;
 }
 
 const OverviewDetail = ({ eventData }: PropTypes) => {
@@ -95,9 +95,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
             Edit Event Details
           </ZuButton>
-          <Link
-            href={'/events/' + eventId}
-          >
+          <Link href={'/events/' + eventId}>
             <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
               View Event
             </ZuButton>
@@ -129,7 +127,13 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           <Typography variant="caption" color="white">
             BY:
           </Typography>
-          <Box component="img" src={eventData.space?.avatar} height={18} width={18} borderRadius={40} />
+          <Box
+            component="img"
+            src={eventData.space?.avatar}
+            height={18}
+            width={18}
+            borderRadius={40}
+          />
           <Typography variant="bodyS" color="white">
             {eventData.space && eventData.space.name}
           </Typography>
@@ -145,7 +149,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           {eventData.title}
         </Typography>
         <TextEditor
-          holder='event-detail-editor'
+          holder="event-detail-editor"
           readonly={true}
           value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
           sx={{
@@ -189,7 +193,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           </ZuButton>
         )}
       </Stack>
-    </Stack >
+    </Stack>
   ) : (
     <></>
   );

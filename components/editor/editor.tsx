@@ -1,5 +1,12 @@
 'use client';
-import React, { useEffect, useRef, Fragment, FC, useState, SetStateAction } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  Fragment,
+  FC,
+  useState,
+  SetStateAction,
+} from 'react';
 import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
@@ -36,7 +43,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   setShowMore,
   isContentLarge,
   setIsContentLarge,
-  setContentHeight = () => { },
+  setContentHeight = () => {},
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -91,7 +98,9 @@ const TextEditor: FC<TextEditorPropTypes> = ({
           }
         },
         onReady: () => {
-          const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+          const editorContent = document.querySelector(
+            '.codex-editor__redactor',
+          ) as HTMLElement;
           if (editorContent) {
             setContentHeight(editorContent.scrollHeight);
             applyCustomStyles(editorContent.scrollHeight <= 300);
@@ -119,7 +128,9 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   };
 
   useEffect(() => {
-    const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+    const editorContent = document.querySelector(
+      '.codex-editor__redactor',
+    ) as HTMLElement;
     if (editorContent) {
       applyCustomStyles(showMore || editorContent.scrollHeight <= 300);
     }
