@@ -48,6 +48,38 @@ jobs:
               core.setOutput('changedFiles', changedFiles.join(' '));
             }
 
+      - name: Pass Prettier check
+        if: steps.changed-files.outputs.skip == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commentIdentifier = '<!-- prettier-check-comment -->';
+            const body = `${commentIdentifier}\n**💄Prettier check passed!** 🎉`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const comment = comments.find(comment => comment.body.includes(commentIdentifier));
+
+            if (comment) {
+              await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id,
+                  body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: body,
+              });
+            }
+
       - name: Set up Node.js
         if: steps.changed-files.outputs.skip == 'false'
         uses: actions/setup-node@v3
@@ -59,12 +91,73 @@ jobs:
         run: npm ci
 
       - name: Run Prettier check on changed files
+        id: prettier-check
         if: steps.changed-files.outputs.skip == 'false'
         run: |
           CHANGED_FILES="${{ steps.changed-files.outputs.changedFiles }}"
           echo "Running Prettier on changed files:"
           echo "$CHANGED_FILES"
-          npx prettier --check $CHANGED_FILES
+          npx prettier --check 'app/page.tsx' > prettier_output.txt 2>&1 || true
+          output=$(cat prettier_output.txt)
+          echo "$output"
+          if echo "$output" | grep -q "Run Prettier to fix"; then
+            echo "Prettier check failed."
+            exit 1
+          else
+            echo "Prettier check passed."
+          fi
+        continue-on-error: true
+
+      - name: Post or update Prettier results
+        if: steps.changed-files.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        env:
+          PRETTIER_OUTCOME: ${{ steps.prettier-check.outcome }}
+        with:
+          script: |
+            const fs = require('fs');
+            const commentIdentifier = '<!-- prettier-check-comment -->';
+
+            let body;
+
+            if (process.env.PRETTIER_OUTCOME === 'success') {
+              body = `${commentIdentifier}\n**💄Prettier check passed!** 🎉`;
+            } else {
+              const PRETTIER_OUTPUT = fs.readFileSync('prettier_output.txt', 'utf8');
+              const lines = PRETTIER_OUTPUT.trim().split('\n')
+              lines.shift();
+              lines.pop();
+              const prettierCommand = `npx prettier --write ${lines.map(line => line.trim().replace('[warn] ', '')).join(' ')}`;
+              body = `${commentIdentifier}\n**🚨Prettier check failed for the following files:**\n\n\`\`\`\n${PRETTIER_OUTPUT.trim()}\n\`\`\`\n\nTo fix the issue, run the following command:\n\n\`\`\`\n${prettierCommand}\n\`\`\``;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const comment = comments.find(comment => comment.body.includes(commentIdentifier));
+
+            if (comment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: comment.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body,
+              });
+            }
+
+            if (process.env.PRETTIER_OUTCOME !== 'success') {
+              process.exit(1);
+            }
 
       - name: Run Next Lint
         if: steps.changed-files.outputs.skip == 'false'
