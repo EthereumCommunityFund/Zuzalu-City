@@ -8,9 +8,20 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
+import { dayjs } from '@/utils/dayjs';
 
-type EventCardProps = {
-  event: Event;
+type EventCardProps = { event: Event };
+
+const dateNowUtc = dayjs(new Date()).utc();
+
+export const filterPastEvents = (events: Event[]) => {
+  return events.filter((event) => dayjs(event.endTime).isBefore(dateNowUtc));
+};
+
+export const filterUpcomingEvents = (events: Event[]) => {
+  return events.filter((event) =>
+    dayjs(event.startTime).isSameOrAfter(dateNowUtc),
+  );
 };
 
 export const formatDateToMonth = (timestamp: string | number | Date) => {
@@ -83,7 +94,13 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       padding="10px"
       display="flex"
       gap={isMobile ? '10px' : '14px'}
-      sx={{ cursor: 'pointer' }}
+      sx={{
+        cursor: 'pointer',
+        transition: 'background-color 0.3s',
+        ':hover': {
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        },
+      }}
       width={'100%'}
       boxSizing={'border-box'}
       position={'relative'}
@@ -211,6 +228,33 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   );
 };
 
+export const EventCardMonthGroup: React.FC<
+  React.PropsWithChildren<{
+    bgColor?: 'transparent' | string;
+  }>
+> = ({ children, bgColor = 'rgba(34, 34, 34, 0.80)' }) => {
+  return (
+    <Box
+      component={'div'}
+      width={'100%'}
+      color="#ccc"
+      justifyContent="center"
+      alignContent={'center'}
+      paddingY="8px"
+      fontWeight={700}
+      display={'flex'}
+      sx={{
+        borderRadius: '40px',
+        border: '1px solid rgba(255, 255, 255, 0.10)',
+        backgroundColor: bgColor,
+        backdropFilter: 'blur(10px)',
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
 export const EventCardSkeleton = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -228,6 +272,7 @@ export const EventCardSkeleton = () => {
         variant="rectangular"
         width={isMobile ? '80px' : '140px'}
         height={isMobile ? '80px' : '140px'}
+        sx={{ borderRadius: '10px' }}
       />
       <Box display="flex" flexDirection="column" gap="10px" flexGrow={1}>
         <Box
@@ -254,5 +299,7 @@ export const EventCardSkeleton = () => {
     </Box>
   );
 };
+
+export { EventCard };
 
 export default EventCard;
