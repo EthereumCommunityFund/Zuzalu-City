@@ -68,7 +68,6 @@ jobs:
           npx prettier --check 'app/page.tsx' > prettier_output.txt 2>&1 || true
           output=$(cat prettier_output.txt)
           echo "$output"
-          echo "$output" > prettier_output.txt
           if echo "$output" | grep -q "Run Prettier to fix"; then
             echo "Prettier check failed."
             exit 1
