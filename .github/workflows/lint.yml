@@ -37,7 +37,9 @@ jobs:
               return changedFiles;
             };
 
-            const changedFiles = await getAllChangedFiles(github, context).filter(f => /\.(js|jsx|ts|tsx|json|css|md)$/.test(f));
+            const changedFiles = await getAllChangedFiles(github, context).then(files => {
+              return files.filter(f => /\.(js|jsx|ts|tsx|json|css|md)$/.test(f))
+            })
 
             if (changedFiles.length === 0) {
               core.setOutput('skip', 'true');
