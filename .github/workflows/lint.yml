@@ -1,0 +1,46 @@
+name: lint-check
+
+on: [pull_request]
+
+jobs:
+  prettier-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Get list of changed files
+        id: changed-files
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            changedFiles:
+              - '*.js'
+              - '*.jsx'
+              - '*.ts'
+              - '*.tsx'
+              - '*.json'
+              - '*.css'
+              - '*.md'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prettier check on changed files
+        run: |
+          CHANGED_FILES=$(echo "${{ steps.changed-files.outputs.changedFiles }}" | tr ',' '\n' | grep -v '^$' || true)
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Running Prettier on changed files:"
+            echo "$CHANGED_FILES"
+            npx prettier --check $CHANGED_FILES
+          else
+            echo "No files to check."
+          fi
