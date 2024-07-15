@@ -366,7 +366,7 @@ const Home: React.FC = () => {
                 spaceName={spaces[0].name}
                 startTime={spaces[0].events.edges[0].node.startTime}
                 endTime={spaces[0].events.edges[0].node.endTime}
-                showManage={profile.id === spaces[0].profileId}
+                showManage={spaces[0].admin?.includes({id: profile.id}) ?? false}
               />
             }
 
