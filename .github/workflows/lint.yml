@@ -65,22 +65,27 @@ jobs:
           CHANGED_FILES="${{ steps.changed-files.outputs.changedFiles }}"
           echo "Running Prettier on changed files:"
           echo "$CHANGED_FILES"
-          npx prettier --check $CHANGED_FILES
+          prettier_output=$(npx prettier --check $CHANGED_FILES || true)
+          echo "PRETTIER_OUTPUT<<EOF" >> $GITHUB_ENV
+          echo "$prettier_output" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: Post or update Prettier results
         if: steps.changed-files.outputs.skip == 'false'
         uses: actions/github-script@v7
+        env:
+          PRETTIER_OUTCOME: ${{ steps.prettier-check.outcome }}
+          PRETTIER_OUTPUT: ${{ env.PRETTIER_OUTPUT }}
         with:
           script: |
             const commentIdentifier = '<!-- prettier-check-comment -->';
             let body;
 
-            if (steps.prettier-check.outcome === 'success') {
+            if (process.env.PRETTIER_OUTCOME === 'success') {
               body = `${commentIdentifier}\n**Prettier check passed!** 🎉`;
             } else {
-              const prettierOutput = require('child_process').execSync('npx prettier --check $CHANGED_FILES', { encoding: 'utf-8' });
-              body = `${commentIdentifier}\n**Prettier check failed for the following files:**\n\n\`\`\`\n${prettierOutput}\n\`\`\``;
+              body = `${commentIdentifier}\n**Prettier check failed for the following files:**\n\n\`\`\`\n${process.env.PRETTIER_OUTPUT}\n\`\`\``;
             }
 
             const { data: comments } = await github.rest.issues.listComments({
