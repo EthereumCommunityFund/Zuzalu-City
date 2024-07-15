@@ -3,7 +3,7 @@ name: lint-check
 on: [pull_request]
 
 jobs:
-  prettier-check:
+  lint-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.changed-files.outputs.skip == 'false'
-        run: npm install prettier@3.x
+        run: npm ci
 
       - name: Run Prettier check on changed files
         if: steps.changed-files.outputs.skip == 'false'
@@ -49,3 +49,8 @@ jobs:
           echo "Running Prettier on changed files:"
           echo "$CHANGED_FILES"
           npx prettier --check $CHANGED_FILES
+
+      - name: Run Next Lint
+        if: steps.changed-files.outputs.skip == 'false'
+        run: |
+          npx next lint --quiet
