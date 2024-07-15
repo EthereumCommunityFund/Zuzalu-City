@@ -1,0 +1,56 @@
+name: lint-check
+
+on: [pull_request]
+
+jobs:
+  lint-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Get list of changed files
+        id: changed-files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const changedFiles = files.map(f => f.filename).filter(f => /\.(js|jsx|ts|tsx|json|css|md)$/.test(f));
+
+            if (changedFiles.length === 0) {
+              core.setOutput('skip', 'true');
+            } else {
+              core.setOutput('skip', 'false');
+              core.setOutput('changedFiles', changedFiles.join(' '));
+            }
+
+      - name: Set up Node.js
+        if: steps.changed-files.outputs.skip == 'false'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        if: steps.changed-files.outputs.skip == 'false'
+        run: npm ci
+
+      - name: Run Prettier check on changed files
+        if: steps.changed-files.outputs.skip == 'false'
+        run: |
+          CHANGED_FILES="${{ steps.changed-files.outputs.changedFiles }}"
+          echo "Running Prettier on changed files:"
+          echo "$CHANGED_FILES"
+          npx prettier --check $CHANGED_FILES
+
+      - name: Run Next Lint
+        if: steps.changed-files.outputs.skip == 'false'
+        run: |
+          npx next lint --quiet
