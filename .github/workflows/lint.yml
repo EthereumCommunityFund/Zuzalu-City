@@ -65,11 +65,18 @@ jobs:
           CHANGED_FILES="${{ steps.changed-files.outputs.changedFiles }}"
           echo "Running Prettier on changed files:"
           echo "$CHANGED_FILES"
-          prettier_output=$(npx prettier --check $CHANGED_FILES || true)
-          echo "PRETTIER_OUTPUT<<EOF" >> $GITHUB_ENV
-          echo "$prettier_output" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          output=$(npx prettier --check $CHANGED_FILES || true)
+          echo "$output"
+          echo "$output" > prettier_output.txt
+          if echo "$output" | grep -q "Run Prettier to fix"; then
+            exit 1
+          fi
         continue-on-error: true
+
+      - name: Set Prettier output to environment variable
+        if: steps.changed-files.outputs.skip == 'false'
+        run: |
+          echo "PRETTIER_OUTPUT=$(cat prettier_output.txt)" >> $GITHUB_ENV
 
       - name: Post or update Prettier results
         if: steps.changed-files.outputs.skip == 'false'
