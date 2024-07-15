@@ -104,7 +104,7 @@ const Home = () => {
       <Subbar
         tabName={tabName}
         setTabName={setTabName}
-        canViewSessions={sessionView}
+        canViewSessions={true}
       />
       {tabName === 'About' && (
         <About eventData={eventData} setEventData={setEventData} />

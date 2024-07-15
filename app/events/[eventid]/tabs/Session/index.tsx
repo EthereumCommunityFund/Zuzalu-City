@@ -127,7 +127,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
 
-  const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>([]);
+  const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
+    [],
+  );
 
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -151,6 +153,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
     dayjs().set('hour', 0).set('minute', 0),
   );
+
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
     dayjs().set('hour', 0).set('minute', 0),
   );
@@ -158,7 +161,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<any>>([]);
   const [speakers, setSpeakers] = useState<Array<string>>([]);
-  const [sessionLocation, setSessionLocation] = useState<string>();
+  const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
 
@@ -201,28 +204,31 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     if (date && person) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
       const selectedDay = date.format('YYYY-MM-DD');
-
+      if (sessionLocation == '') {
+        console.log('please select sessionLocation');
+        return;
+      }
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
-      console.log("ava", available[dayName.toLowerCase()])
+      console.log('available', available);
+
+      console.log('available_dayName', available[dayName.toLowerCase()]);
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
 
-      console.log("booked", bookedSessions)
-
-      const bookedSessionsDay = bookedSessions.filter(session => {
+      const bookedSessionsDay = bookedSessions.filter((session) => {
         const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+
         return sessionStartDay === selectedDay;
       });
-
-      console.log("booked", bookedSessionsDay)
 
       setBookedSessionsForDay(bookedSessionsDay);
     }
     setSessionDate(date);
+    setSessionStartTime(dayjs().set('hour', 0).set('minute', 0));
+    setSessionEndTime(dayjs().set('hour', 0).set('minute', 0));
   };
 
-  console.log('event', eventData?.startTime)
 
   const isDateInRange = (
     date: Dayjs,
@@ -235,25 +241,62 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     );
   };
 
-  const isTimeAvailable = (date: Dayjs, available?: any): boolean => {
-    const formattedTime = date.format('HH:mm');
+  const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
+    if (sessionDate == null) return true;
+    const sessionDateDay = sessionDate.format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
+    if (today >= sessionDateDay) {
+      return false;
+    } else {
+      const formattedTime = date.format('HH:mm');
 
-    const isWithinBookedSession = bookedSessionsForDay.some(session => {
-      const sessionStartTime = dayjs(session.startTime).format('HH:mm');
-      const sessionEndTime = dayjs(session.endTime).format('HH:mm');
-      return formattedTime >= sessionStartTime && formattedTime < sessionEndTime;
-    });
+      const isWithinBookedSession = bookedSessionsForDay.some((session) => {
+        const sessionStartTime = dayjs(session.startTime).format('HH:mm');
+        const sessionEndTime = dayjs(session.endTime).format('HH:mm');
 
-    console.log("book", bookedSessionsForDay)
+        if (isStart) {
+          return (
+            formattedTime >= sessionStartTime && formattedTime < sessionEndTime
+          );
+        } else {
+          return (
+            formattedTime > sessionStartTime && formattedTime <= sessionEndTime
+          );
+        }
+      });
 
-    const isMinuteIntervalValid = date.minute() % 30 === 0;
-    const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
-      const startTime = dayjs(slot.startTime).format('HH:mm');
-      const endTime = dayjs(slot.endTime).format('HH:mm');
-      return formattedTime >= startTime && formattedTime < endTime;
-    });
+      const isMinuteIntervalValid = date.minute() % 30 === 0;
+      const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
+        let startTime;
+        let endTime;
+        if (isStart) {
+          startTime = dayjs.utc(slot.startTime).format('HH:mm');
+          endTime = dayjs.utc(slot.endTime).format('HH:mm');
+          if (endTime >= startTime) {
+            return formattedTime >= startTime && formattedTime < endTime;
+          } else {
+            return !(formattedTime < startTime && formattedTime >= endTime);
+          }
+        } else {
+          if (
+            sessionStartTime.hour() === 0 &&
+            sessionStartTime.minute() === 0
+          ) {
+            startTime = dayjs.utc(slot.endTime).format('HH:mm');
+          } else {
+            startTime = sessionStartTime.format('HH:mm');
+          }
+          endTime = dayjs.utc(slot.endTime).format('HH:mm');
+          if (endTime >= startTime) {
+            return formattedTime >= startTime && formattedTime <= endTime;
+          } else {
+            return !(formattedTime < startTime && formattedTime > endTime);
+          }
+        }
+      });
 
-    return isMinuteIntervalValid && isWithinAvailableSlot;
+      return isWithinAvailableSlot && !isWithinBookedSession;
+    }
   };
 
   const getPeople = async () => {
@@ -430,6 +473,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     fetchData();
   }, [sessionLocation]);
+  console.log('session', { sessions }, 'venues', { venues });
 
   useEffect(() => {
     const contentHeight = contentRef.current?.scrollHeight ?? 0;
@@ -869,7 +913,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, true);
                             }
                             return false;
                           }}
@@ -920,7 +964,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, false);
                             }
                             return false;
                           }}
