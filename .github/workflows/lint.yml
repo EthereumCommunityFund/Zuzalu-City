@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.changed-files.outputs.skip == 'false'
-        run: npm ci
+        run: npm install prettier@3.x
 
       - name: Run Prettier check on changed files
         if: steps.changed-files.outputs.skip == 'false'
