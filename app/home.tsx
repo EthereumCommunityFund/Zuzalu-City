@@ -361,12 +361,12 @@ const Home: React.FC = () => {
             }}
           >
             {
-              profile && spaces && spaces.length > 0 && spaces[0].members?.includes({ id: profile.id }) && < MiniDashboard
+              ceramic && spaces && spaces.length > 0 && spaces[0].members?.map((member) => member.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || '')) && <MiniDashboard
                 imageUrl={spaces[0].avatar}
                 spaceName={spaces[0].name}
                 startTime={spaces[0].events.edges[0].node.startTime}
                 endTime={spaces[0].events.edges[0].node.endTime}
-                showManage={spaces[0].admin?.includes({id: profile.id}) ?? false}
+                showManage={spaces[0].admin?.map((ad) => ad.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || '')) ?? false}
               />
             }
 
