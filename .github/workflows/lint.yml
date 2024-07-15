@@ -76,26 +76,23 @@ jobs:
           fi
         continue-on-error: true
 
-      - name: Set Prettier output to environment variable
-        if: steps.changed-files.outputs.skip == 'false'
-        run: |
-          echo "PRETTIER_OUTPUT=$(cat prettier_output.txt)" >> $GITHUB_ENV
-
       - name: Post or update Prettier results
         if: steps.changed-files.outputs.skip == 'false'
         uses: actions/github-script@v7
         env:
           PRETTIER_OUTCOME: ${{ steps.prettier-check.outcome }}
-          PRETTIER_OUTPUT: ${{ env.PRETTIER_OUTPUT }}
         with:
           script: |
+            const fs = require('fs');
             const commentIdentifier = '<!-- prettier-check-comment -->';
+            
             let body;
 
             if (process.env.PRETTIER_OUTCOME === 'success') {
               body = `${commentIdentifier}\n**Prettier check passed!** 🎉`;
             } else {
-              body = `${commentIdentifier}\n**Prettier check failed for the following files:**\n\n\`\`\`\n${process.env.PRETTIER_OUTPUT}\n\`\`\``;
+              const PRETTIER_OUTPUT = fs.readFileSync('prettier_output.txt', 'utf8');
+              body = `${commentIdentifier}\n**Prettier check failed for the following files:**\n\n\`\`\`\n${PRETTIER_OUTPUT}\n\`\`\``;
             }
 
             const { data: comments } = await github.rest.issues.listComments({
