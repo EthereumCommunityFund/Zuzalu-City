@@ -8,12 +8,20 @@ import SelectCheckItem from '@/components/select/selectCheckItem';
 
 const filter = createFilterOptions<FilmOptionType>();
 
-export default function SelectCategories() {
+interface IProps {
+  onChange: (value: string[]) => void;
+}
+
+export default function SelectCategories({ onChange }: IProps) {
   const [value, setValue] = React.useState<FilmOptionType[]>([]);
 
-  const handleChange = useCallback((value: FilmOptionType[]) => {
-    setValue(value);
-  }, []);
+  const handleChange = useCallback(
+    (value: FilmOptionType[]) => {
+      setValue(value);
+      onChange(value.map((item) => item.value) || []);
+    },
+    [onChange],
+  );
 
   return (
     <Autocomplete
@@ -42,10 +50,7 @@ export default function SelectCategories() {
       handleHomeEndKeys
       options={SPACE_CATEGORIES}
       getOptionLabel={(option) => {
-        if (typeof option === 'string') {
-          return option;
-        }
-        if (option.value) {
+        if ((option as any).isAdd) {
           return option.value;
         }
         return option.label;
