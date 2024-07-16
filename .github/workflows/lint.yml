@@ -31,7 +31,8 @@ jobs:
                 if (files.length === 0) {
                   break;
                 }
-                changedFiles = changedFiles.concat(files.map(f => f.filename));
+                const notDeletedFiles = files.filter(f => f.status !== 'removed')
+                changedFiles.push(...notDeletedFiles.map(f => f.filename))
                 page++;
               }
               return changedFiles;
