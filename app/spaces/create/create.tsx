@@ -28,6 +28,7 @@ import Checkbox from '@mui/material/Checkbox';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SelectCheckItem from '@/components/select/selectCheckItem';
+import SelectCategories from '@/components/select/selectCategories';
 
 const validationSchema = yup.object({
   name: yup
@@ -362,37 +363,38 @@ const Create = () => {
                   </Typography>
                 </Box>
                 <Box>
-                  <Select
-                    multiple
-                    value={categories}
-                    style={{ width: '100%' }}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Categories" />}
-                    renderValue={(selected) => selected.join(', ')}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {SPACE_CATEGORIES.map((category, index) => {
-                      return (
-                        <MenuItem value={category.value} key={index}>
-                          <SelectCheckItem
-                            label={category.label}
-                            isChecked={
-                              categories.findIndex(
-                                (item) => item === category.value,
-                              ) > -1
-                            }
-                            key={index}
-                          />
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
+                  {/*<Select*/}
+                  {/*  multiple*/}
+                  {/*  value={categories}*/}
+                  {/*  style={{ width: '100%' }}*/}
+                  {/*  onChange={handleChange}*/}
+                  {/*  input={<OutlinedInput label="Categories" />}*/}
+                  {/*  renderValue={(selected) => selected.join(', ')}*/}
+                  {/*  MenuProps={{*/}
+                  {/*    PaperProps: {*/}
+                  {/*      style: {*/}
+                  {/*        backgroundColor: '#222222',*/}
+                  {/*      },*/}
+                  {/*    },*/}
+                  {/*  }}*/}
+                  {/*>*/}
+                  {/*  {SPACE_CATEGORIES.map((category, index) => {*/}
+                  {/*    return (*/}
+                  {/*      <MenuItem value={category.value} key={index}>*/}
+                  {/*        <SelectCheckItem*/}
+                  {/*          label={category.label}*/}
+                  {/*          isChecked={*/}
+                  {/*            categories.findIndex(*/}
+                  {/*              (item) => item === category.value,*/}
+                  {/*            ) > -1*/}
+                  {/*          }*/}
+                  {/*          key={index}*/}
+                  {/*        />*/}
+                  {/*      </MenuItem>*/}
+                  {/*    );*/}
+                  {/*  })}*/}
+                  {/*</Select>*/}
+                  <SelectCategories />
                 </Box>
                 <Box
                   display={'flex'}
