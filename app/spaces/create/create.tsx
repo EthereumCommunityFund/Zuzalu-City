@@ -281,8 +281,8 @@ const Create = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          padding={3}
-          width="800px"
+          padding={'24px'}
+          width="762px"
         >
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
@@ -330,14 +330,10 @@ const Create = () => {
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
                     color: 'white',
-                    padding: '12px 12px 12px 40px',
+                    padding: '12px',
                     borderRadius: '10px',
                     height: 'auto',
                     minHeight: '270px',
-                    overflow: 'auto',
-                    '& > div > div': {
-                      paddingBottom: '0px !important',
-                    },
                   }}
                 />
                 <Stack direction="row" justifyContent="flex-end">
