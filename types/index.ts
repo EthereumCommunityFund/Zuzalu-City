@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from 'react';
 
 export type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -252,5 +252,5 @@ export interface ZuAutoCompleteProps {
     value: string;
     label: string;
   }>;
-  setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>
+  setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>;
 }

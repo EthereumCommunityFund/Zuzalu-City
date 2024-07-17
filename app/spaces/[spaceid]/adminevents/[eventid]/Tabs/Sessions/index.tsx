@@ -82,7 +82,9 @@ const Sessions = () => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<Array<{ value: string; label: string; }>>([]);
+  const [sessionTags, setSessionTags] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');

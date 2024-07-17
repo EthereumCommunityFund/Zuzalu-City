@@ -1,7 +1,18 @@
 import * as React from 'react';
-import { Stack, Typography, OutlinedInput, InputAdornment, useTheme } from '@mui/material';
+import {
+  Stack,
+  Typography,
+  OutlinedInput,
+  InputAdornment,
+  useTheme,
+} from '@mui/material';
 import ZuButton from 'components/core/Button';
-import { PlusIcon, PlusCircleIcon, InformationIcon, SearchIcon } from 'components/icons';
+import {
+  PlusIcon,
+  PlusCircleIcon,
+  InformationIcon,
+  SearchIcon,
+} from 'components/icons';
 import { Venue } from '@/types';
 import VenueCard from './VenueCard';
 
@@ -13,7 +24,11 @@ interface VenueListProps {
   setSearchValue: React.Dispatch<React.SetStateAction<string>> | any;
 }
 
-const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue }) => {
+const VenueList: React.FC<VenueListProps> = ({
+  venues,
+  onToggle,
+  setSearchValue,
+}) => {
   const theme = useTheme();
 
   return (
@@ -43,14 +58,16 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue 
           padding="20px 10px"
           borderRadius={2}
           onClick={() => onToggle('right', true)}
-          sx={{ cursor: "pointer" }}
+          sx={{ cursor: 'pointer' }}
         >
           <PlusCircleIcon color="#6c6c6c" size={15} />
           <Typography variant="subtitle2">No Spaces</Typography>
-          <Typography variant="body2" sx={{ opacity: 0.5 }}>Add a Space</Typography>
+          <Typography variant="body2" sx={{ opacity: 0.5 }}>
+            Add a Space
+          </Typography>
         </Stack>
-      )
-        : (<Stack spacing="20px">
+      ) : (
+        <Stack spacing="20px">
           <Stack
             sx={{
               flexDirection: 'column',
@@ -68,8 +85,7 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue 
               //   }
               // }}
               sx={{
-                backgroundColor:
-                  '#313131',
+                backgroundColor: '#313131',
                 paddingX: '15px',
                 paddingY: '13px',
                 borderRadius: '10px',
@@ -94,7 +110,8 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue 
           {venues?.map((venue, index) => (
             <VenueCard key={`VenueCard-${index}`} venue={venue} />
           ))}
-        </Stack>)}
+        </Stack>
+      )}
     </Stack>
   );
 };

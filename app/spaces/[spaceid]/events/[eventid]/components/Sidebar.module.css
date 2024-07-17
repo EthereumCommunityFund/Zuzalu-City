@@ -1,6 +1,6 @@
 .spaceButton {
   position: relative;
-  --banner-bg: "url('/5.webp')"
+  --banner-bg: "url('/5.webp')";
 }
 
 .spaceButton:before {

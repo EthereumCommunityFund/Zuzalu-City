@@ -123,7 +123,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<Array<{ value: string; label: string; }>>([]);
+  const [sessionTags, setSessionTags] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
@@ -924,9 +926,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Stack>
                     {sessionDate &&
                       sessionStartTime !==
-                      dayjs().set('hour', 0).set('minute', 0) &&
+                        dayjs().set('hour', 0).set('minute', 0) &&
                       sessionEndTime !==
-                      dayjs().set('hour', 0).set('minute', 0) && (
+                        dayjs().set('hour', 0).set('minute', 0) && (
                         <Stack spacing="10px">
                           <Stack alignItems="center">
                             <ArrowDownIcon />
@@ -1517,11 +1519,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           // filter session.startTime month equal to selected month
                           return (
                             dayjs(session.startTime).month() ===
-                            calendarDate.month() &&
+                              calendarDate.month() &&
                             dayjs(session.startTime).year() ===
-                            calendarDate.year() &&
+                              calendarDate.year() &&
                             dayjs(session.startTime).date() !==
-                            selectedDate.date()
+                              selectedDate.date()
                           );
                         })
                         .map((session) => {
