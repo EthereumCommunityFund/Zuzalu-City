@@ -29,6 +29,7 @@ interface TextEditorPropTypes extends BoxProps {
   setIsContentLarge?: React.Dispatch<SetStateAction<boolean>> | any;
   setContentHeight?: (height: number) => void;
   limit?: number;
+  fullWidth?: boolean;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
@@ -43,6 +44,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   isContentLarge,
   setIsContentLarge,
   setContentHeight = () => {},
+  fullWidth = false,
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -145,7 +147,12 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       {children ? (
         children
       ) : (
-        <Box id={holder} {...props} onClick={handleClick}></Box>
+        <Box
+          id={holder}
+          className={fullWidth ? 'fullWidth' : ''}
+          {...props}
+          onClick={handleClick}
+        ></Box>
       )}
     </Fragment>
   );
