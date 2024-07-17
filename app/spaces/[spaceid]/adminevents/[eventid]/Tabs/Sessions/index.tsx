@@ -43,7 +43,7 @@ import {
   Venue,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 import {
   FormLabel,
