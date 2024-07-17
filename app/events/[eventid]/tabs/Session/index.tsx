@@ -399,7 +399,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -556,7 +556,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     height: 'auto',
                     minHeight: '270px',
                     color: 'white',
-                    padding: '12px 12px 12px 40px',
+                    padding: '12px',
                     borderRadius: '10px',
                   }}
                   setData={setSessionDescription}
@@ -1900,10 +1900,14 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         <SwipeableDrawer
           hideBackdrop={true}
           sx={{
+            position: 'relative',
+            zIndex: 1,
             '& .MuiDrawer-paper': {
               marginTop: '50px',
               height: 'calc(100% - 50px)',
               boxShadow: 'none',
+              backgroundColor: 'transparent',
+              paddingLeft: '80px', // Leave space for editorjs to operate
             },
           }}
           anchor="right"
