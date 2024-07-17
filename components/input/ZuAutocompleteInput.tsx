@@ -1,22 +1,9 @@
 import { Autocomplete, Box, Chip, OutlinedInput, Popper, Stack, TextField, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { ZuAutoCompleteProps } from "@/types";
 
-interface PropTypes {
-    optionVals: Array<{
-        value: string;
-        label: string;
-    }>;
-    val: Array<{
-        value: string;
-        label: string;
-    }>;
-    setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>
-}
-
-export default function ZuAutoCompleteInput({ optionVals }: PropTypes) {
-
-    const [val, setVal] = useState<any>([]);
+export default function ZuAutoCompleteInput({ optionVals, val, setVal }: ZuAutoCompleteProps) {
 
     const valHtml = val.map((option: any, index: number) => {
         // This is to handle new options added by the user (allowed by freeSolo prop).
