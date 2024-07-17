@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -43,7 +43,7 @@ import {
   Venue,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 import {
   FormLabel,
@@ -91,13 +91,9 @@ const Sessions = () => {
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
-  const [sessionDate, setSessionDate] = useState<Dayjs>(dayjs());
-  const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
-    dayjs().set('hour', 0).set('minute', 0),
-  );
-  const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
-    dayjs().set('hour', 0).set('minute', 0),
-  );
+  const [sessionDate, setSessionDate] = useState<Dayjs | null>(null);
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(null);
+  const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(null);
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
   const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
@@ -247,10 +243,11 @@ const Sessions = () => {
   const handleDateChange = (date: Dayjs) => {
     if (date) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
-      const available = JSON.parse(
-        venues.filter((item) => item.name === sessionLocation)[0].bookings,
-      );
-      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+      const venue = venues.filter((item) => item.name === sessionLocation)[0];
+      if (venue) {
+        const available = JSON.parse(venue.bookings);
+        setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+      }
     }
     setSessionDate(date);
   };
@@ -266,16 +263,22 @@ const Sessions = () => {
     );
   };
 
-  const isTimeAvailable = (date: Dayjs, available?: any): boolean => {
-    const formattedTime = date.format('HH:mm');
+  const isTimeAvailable = (date: Dayjs, isStartTime = true): boolean => {
     const isMinuteIntervalValid = date.minute() % 30 === 0;
-    const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
-      const startTime = dayjs(slot.startTime).format('HH:mm');
-      const endTime = dayjs(slot.endTime).format('HH:mm');
-      return formattedTime >= startTime && formattedTime < endTime;
-    });
 
-    return isMinuteIntervalValid && isWithinAvailableSlot;
+    if (isStartTime) {
+      if (!sessionEndTime) return isMinuteIntervalValid;
+      return (
+        isMinuteIntervalValid &&
+        date.isBefore(dayjs(sessionEndTime).subtract(1, 'minute'))
+      );
+    }
+
+    if (!sessionStartTime) return isMinuteIntervalValid;
+    return (
+      isMinuteIntervalValid &&
+      date.isAfter(dayjs(sessionStartTime).add(1, 'minute'))
+    );
   };
 
   const getEventDetailInfo = async () => {
@@ -418,6 +421,7 @@ const Sessions = () => {
     strDesc = strDesc.replaceAll('"', '\\"');
     const error =
       !eventId ||
+      !sessionDate ||
       !sessionStartTime ||
       !sessionEndTime ||
       !sessionName ||
@@ -579,7 +583,7 @@ const Sessions = () => {
                     height: 'auto',
                     minHeight: '270px',
                     color: 'white',
-                    padding: '12px 12px 12px 20px',
+                    padding: '12px',
                     borderRadius: '10px',
                   }}
                   setData={setSessionDescription}
@@ -956,7 +960,7 @@ const Sessions = () => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, false);
                             }
                             return false;
                           }}
@@ -993,68 +997,66 @@ const Sessions = () => {
                         />
                       </Stack>
                     </Stack>
-                    {sessionDate &&
-                      sessionStartTime !==
-                        dayjs().set('hour', 0).set('minute', 0) &&
-                      sessionEndTime !==
-                        dayjs().set('hour', 0).set('minute', 0) && (
-                        <Stack spacing="20px">
-                          <Stack alignItems="center">
-                            <ArrowDownIcon />
-                          </Stack>
-                          <Stack
-                            spacing="10px"
-                            padding="10px"
-                            border="1px solid rgba(255, 255, 255, 0.10)"
-                            borderRadius="10px"
+                    {sessionDate && sessionStartTime && sessionEndTime && (
+                      <Stack spacing="20px">
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack
+                          spacing="10px"
+                          padding="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          borderRadius="10px"
+                        >
+                          <Typography
+                            variant="caption"
+                            color="rgba(255, 255, 255, 0.8)"
                           >
-                            <Typography
-                              variant="caption"
-                              color="rgba(255, 255, 255, 0.8)"
-                            >
-                              Date & times your are booking:
+                            Date & times your are booking:
+                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            spacing="10px"
+                          >
+                            <Typography variant="bodyBB">
+                              {`${sessionDate.format('MMMM')}` +
+                                ' ' +
+                                `${sessionDate.format('DD')}` +
+                                ', ' +
+                                `${sessionDate.format('YYYY')}`}
                             </Typography>
-                            <Stack
-                              borderRadius="10px"
-                              padding="10px"
-                              bgcolor="#313131"
-                              spacing="10px"
-                            >
-                              <Typography variant="bodyBB">
-                                {`${sessionDate.format('MMMM')}` +
-                                  ' ' +
-                                  `${sessionDate.format('DD')}` +
-                                  ', ' +
-                                  `${sessionDate.format('YYYY')}`}
+                            <Box display="flex" alignItems="center" gap="4px">
+                              <Typography
+                                variant="bodyS"
+                                color="text.secondary"
+                              >
+                                Start Time:{' '}
                               </Typography>
-                              <Box display="flex" alignItems="center" gap="4px">
-                                <Typography
-                                  variant="bodyS"
-                                  color="text.secondary"
-                                >
-                                  Start Time:{' '}
-                                </Typography>
-                                <Typography variant="body2">
-                                  {`${sessionStartTime.format('HH')}` +
-                                    `${sessionStartTime.format('A')}`}
-                                </Typography>
-                              </Box>
-                              <Box display="flex" alignItems="center" gap="4px">
-                                <Typography
-                                  variant="bodyS"
-                                  color="text.secondary"
-                                >
-                                  End Time:{' '}
-                                </Typography>
-                                <Typography variant="body2">
-                                  {`${sessionEndTime.format('HH')}` +
-                                    `${sessionEndTime.format('A')}`}
-                                </Typography>
-                              </Box>
-                            </Stack>
+                              <Typography variant="body2">
+                                {`${sessionStartTime.format('HH')}:` +
+                                  `${sessionStartTime.format('mm')}` +
+                                  `${sessionStartTime.format('A')}`}
+                              </Typography>
+                            </Box>
+                            <Box display="flex" alignItems="center" gap="4px">
+                              <Typography
+                                variant="bodyS"
+                                color="text.secondary"
+                              >
+                                End Time:{' '}
+                              </Typography>
+                              <Typography variant="body2">
+                                {`${sessionEndTime.format('HH')}:` +
+                                  `${sessionStartTime.format('mm')}` +
+                                  `${sessionEndTime.format('A')}`}
+                              </Typography>
+                            </Box>
                           </Stack>
                         </Stack>
-                      )}
+                      </Stack>
+                    )}
                   </Stack>
                 </Stack>
               )}
@@ -1072,7 +1074,7 @@ const Sessions = () => {
                   </Stack>
                   <Stack spacing="20px">
                     <Stack spacing="10px">
-                      <FormLabel>Select a Date</FormLabel>
+                      <FormLabel>Select a Date*</FormLabel>
                       <FormLabelDesc>
                         Pick a date for this session
                       </FormLabelDesc>
@@ -1114,7 +1116,7 @@ const Sessions = () => {
                     </Stack>
                     <Stack direction="row" spacing="20px">
                       <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">Start Time</Typography>
+                        <Typography variant="bodyBB">Start Time*</Typography>
                         <TimePicker
                           value={sessionStartTime}
                           ampm={false}
@@ -1161,7 +1163,7 @@ const Sessions = () => {
                         />
                       </Stack>
                       <Stack spacing="10px" flex={1}>
-                        <Typography variant="bodyBB">End Time</Typography>
+                        <Typography variant="bodyBB">End Time*</Typography>
                         <TimePicker
                           value={sessionEndTime}
                           ampm={false}
@@ -1170,7 +1172,7 @@ const Sessions = () => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, false);
                             }
                             return false;
                           }}

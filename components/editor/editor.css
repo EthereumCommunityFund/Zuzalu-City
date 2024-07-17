@@ -6,3 +6,7 @@
   padding-bottom: 0 !important;
   overflow: hidden;
 }
+
+.fullWidth .codex-editor * {
+  max-width: unset !important;
+}

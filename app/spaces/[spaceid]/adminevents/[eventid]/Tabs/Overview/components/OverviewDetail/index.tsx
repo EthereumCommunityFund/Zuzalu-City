@@ -151,6 +151,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
         <TextEditor
           holder="event-detail-editor"
           readonly={true}
+          fullWidth
           value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
           sx={{
             fontFamily: 'Inter',
@@ -160,6 +161,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
             height: 'auto',
             overflow: 'auto',
             padding: '0px',
+            opacity: 0.8,
           }}
         />
         {eventData.timezone && (

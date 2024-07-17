@@ -32,6 +32,7 @@ const EventAbout = ({ description }: EventAboutTypes) => {
         <TextEditor
           holder="event-description"
           readonly
+          fullWidth
           value={JSON.parse(description.replaceAll('\\"', '"'))}
           showMore={showMore}
           setContentHeight={(height: number) => {
@@ -45,6 +46,7 @@ const EventAbout = ({ description }: EventAboutTypes) => {
             height: 'auto',
             overflow: 'auto',
             padding: '0px',
+            opacity: 0.8,
           }}
         />
       </Stack>
