@@ -381,10 +381,6 @@ const Sessions = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const handleChange = (value: string[]) => {
-    setSessionTags(value);
-  };
-
   const handleSpeakerChange = (e: any) => {
     setSpeakers(
       typeof e.target.value === 'string'
