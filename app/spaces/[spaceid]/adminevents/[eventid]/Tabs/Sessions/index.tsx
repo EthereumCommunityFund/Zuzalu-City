@@ -579,7 +579,7 @@ const Sessions = () => {
                     height: 'auto',
                     minHeight: '270px',
                     color: 'white',
-                    padding: '12px 12px 12px 20px',
+                    padding: '12px',
                     borderRadius: '10px',
                   }}
                   setData={setSessionDescription}
