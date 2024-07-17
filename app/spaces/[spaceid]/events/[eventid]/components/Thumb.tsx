@@ -26,6 +26,7 @@ const Thumb: React.FC<TabbarProps> = ({
         position: 'sticky',
         top: '61px',
         zIndex: 1,
+        backgroundColor: '#222222',
       }}
     >
       <Stack direction="row" spacing={2} height="45px">
