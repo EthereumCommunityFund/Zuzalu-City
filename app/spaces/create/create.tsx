@@ -28,6 +28,7 @@ import Checkbox from '@mui/material/Checkbox';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SelectCheckItem from '@/components/select/selectCheckItem';
+import SelectCategories from '@/components/select/selectCategories';
 
 const validationSchema = yup.object({
   name: yup
@@ -225,12 +226,8 @@ const Create = () => {
     }
   };
 
-  const handleChange = (e: any) => {
-    setCategories(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
+  const handleChange = (value: string[]) => {
+    setCategories(value);
   };
 
   const handleAddSocialLink = () => {
@@ -281,8 +278,8 @@ const Create = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          padding={3}
-          width="800px"
+          padding={'24px'}
+          width="762px"
         >
           <Box bgcolor="#2d2d2d" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
@@ -330,14 +327,10 @@ const Create = () => {
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
                     color: 'white',
-                    padding: '12px 12px 12px 40px',
+                    padding: '12px',
                     borderRadius: '10px',
                     height: 'auto',
                     minHeight: '270px',
-                    overflow: 'auto',
-                    '& > div > div': {
-                      paddingBottom: '0px !important',
-                    },
                   }}
                 />
                 <Stack direction="row" justifyContent="flex-end">
@@ -362,65 +355,7 @@ const Create = () => {
                   </Typography>
                 </Box>
                 <Box>
-                  <Select
-                    multiple
-                    value={categories}
-                    style={{ width: '100%' }}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Categories" />}
-                    renderValue={(selected) => selected.join(', ')}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {SPACE_CATEGORIES.map((category, index) => {
-                      return (
-                        <MenuItem value={category.value} key={index}>
-                          <SelectCheckItem
-                            label={category.label}
-                            isChecked={
-                              categories.findIndex(
-                                (item) => item === category.value,
-                              ) > -1
-                            }
-                            key={index}
-                          />
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {categories.map((category, index) => {
-                    return (
-                      <Chip
-                        label={
-                          SPACE_CATEGORIES.find(
-                            (item) => item.value === category,
-                          )?.label
-                        }
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = categories.filter(
-                            (item) => item !== category,
-                          );
-                          setCategories(newArray);
-                        }}
-                        key={index}
-                      />
-                    );
-                  })}
+                  <SelectCategories onChange={handleChange} />
                 </Box>
               </Box>
             </Box>

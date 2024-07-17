@@ -103,7 +103,12 @@ const EventDetail: React.FC<IEventDetail> = ({
               center={location}
               zoom={7}
               scrollWheelZoom={false}
-              style={{ width: '100%', height: '182px', borderRadius: '10px' }}
+              style={{
+                width: '100%',
+                height: '182px',
+                borderRadius: '10px',
+                zIndex: 0,
+              }}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

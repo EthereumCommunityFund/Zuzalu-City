@@ -5,9 +5,14 @@ import React from 'react';
 interface IProps {
   label: string;
   isChecked: boolean;
+  showCheck?: boolean;
 }
 
-export default function SelectCheckItem({ isChecked, label }: IProps) {
+export default function SelectCheckItem({
+  isChecked,
+  label,
+  showCheck = true,
+}: IProps) {
   return (
     <Box
       display="flex"
@@ -17,7 +22,7 @@ export default function SelectCheckItem({ isChecked, label }: IProps) {
       width="100%"
     >
       <ListItemText primary={label} />
-      <Checkbox checked={isChecked} />
+      {showCheck ? <Checkbox checked={isChecked} /> : null}
     </Box>
   );
 }

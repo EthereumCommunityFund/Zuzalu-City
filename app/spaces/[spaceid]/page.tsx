@@ -419,12 +419,6 @@ export default function SpaceDetailPage() {
                       height: 'auto',
                       overflow: 'auto',
                       padding: '0px',
-                      '& > div > div': {
-                        paddingBottom: '0px !important',
-                      },
-                      '& .ce-block__content': {
-                        maxWidth: '100% !important', // Adjust the margin value as needed
-                      },
                     }}
                   />
                 </Box>
