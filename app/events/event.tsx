@@ -217,7 +217,7 @@ const EventsPage: React.FC = () => {
               flexWrap: 'wrap',
               rowGap: '30px',
               columnGap: '40px',
-              padding: '20px',
+              padding: '0 20px 20px',
               justifyContent: 'center',
             }}
           >
@@ -225,22 +225,28 @@ const EventsPage: React.FC = () => {
               ([month, events], index) => {
                 return (
                   <div key={month + index}>
-                    <Typography
+                    <Box
                       sx={{
                         position: 'sticky',
-                        top: 60,
+                        top: 50,
+                        backgroundColor: '#222',
+                        padding: '20px 0',
+                        zIndex: 10,
                       }}
-                      display="block"
-                      color="white"
-                      border="1px solid #383838"
-                      align="center"
-                      paddingY="8px"
-                      borderRadius="40px"
-                      variant="subtitleS"
-                      bgcolor="rgba(34, 34, 34, 0.8)"
                     >
-                      {month}
-                    </Typography>
+                      <Typography
+                        display="block"
+                        color="white"
+                        border="1px solid #383838"
+                        align="center"
+                        paddingY="8px"
+                        borderRadius="40px"
+                        variant="subtitleS"
+                        bgcolor="rgba(34, 34, 34, 0.8)"
+                      >
+                        {month}
+                      </Typography>
+                    </Box>
                     <Box>
                       {events.map((event, index) => (
                         <Grid
