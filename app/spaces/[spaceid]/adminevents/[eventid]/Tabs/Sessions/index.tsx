@@ -51,6 +51,7 @@ import {
   FormTitle,
 } from '@/components/typography/formTypography';
 import SelectCheckItem from '@/components/select/selectCheckItem';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -80,7 +81,7 @@ const Sessions = () => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<Array<string>>([]);
+  const [sessionTags, setSessionTags] = useState<Array<{ value: string; label: string; }>>([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
@@ -446,7 +447,7 @@ const Sessions = () => {
       endTime: sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       profileId,
       eventId,
-      tags: sessionTags.join(','),
+      tags: sessionTags.map((item) => item.label).join(','),
       type: sessionType,
       status: sessoinStatus,
       format,
@@ -565,65 +566,11 @@ const Sessions = () => {
                     Search or create categories related to your space
                   </FormLabelDesc>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={sessionTags}
-                    style={{ width: '100%' }}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Name" />}
-                    renderValue={(selected) => selected.join(', ')}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {SPACE_CATEGORIES.map((tag, index) => {
-                      return (
-                        <MenuItem value={tag.value} key={index}>
-                          <SelectCheckItem
-                            label={tag.label}
-                            isChecked={
-                              sessionTags.findIndex(
-                                (item) => item === tag.value,
-                              ) > -1
-                            }
-                          />
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {sessionTags.map((tag, index) => {
-                    return (
-                      <Chip
-                        label={
-                          SPACE_CATEGORIES.find((item) => item.value === tag)
-                            ?.label
-                        }
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = sessionTags.filter(
-                            (item) => item !== tag,
-                          );
-                          setSessionTags(newArray);
-                        }}
-                        key={index}
-                      />
-                    );
-                  })}
-                </Box>
+                <ZuAutoCompleteInput
+                  optionVals={SPACE_CATEGORIES}
+                  val={sessionTags}
+                  setVal={setSessionTags}
+                />
               </Stack>
               <Stack spacing="10px">
                 <FormLabel>Session Description*</FormLabel>
@@ -1054,9 +1001,9 @@ const Sessions = () => {
                     </Stack>
                     {sessionDate &&
                       sessionStartTime !==
-                        dayjs().set('hour', 0).set('minute', 0) &&
+                      dayjs().set('hour', 0).set('minute', 0) &&
                       sessionEndTime !==
-                        dayjs().set('hour', 0).set('minute', 0) && (
+                      dayjs().set('hour', 0).set('minute', 0) && (
                         <Stack spacing="20px">
                           <Stack alignItems="center">
                             <ArrowDownIcon />
