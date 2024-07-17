@@ -52,6 +52,7 @@ import {
 } from '@/components/typography/formTypography';
 import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -81,7 +82,7 @@ const Sessions = () => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<Array<string>>([]);
+  const [sessionTags, setSessionTags] = useState<Array<{ value: string; label: string; }>>([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
@@ -447,7 +448,7 @@ const Sessions = () => {
       endTime: sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       profileId,
       eventId,
-      tags: sessionTags.join(','),
+      tags: sessionTags.map((item) => item.label).join(','),
       type: sessionType,
       status: sessoinStatus,
       format,
@@ -566,9 +567,11 @@ const Sessions = () => {
                     Search or create categories related to your space
                   </FormLabelDesc>
                 </Stack>
-                <Box>
-                  <SelectCategories onChange={handleChange} />
-                </Box>
+                <ZuAutoCompleteInput
+                  optionVals={SPACE_CATEGORIES}
+                  val={sessionTags}
+                  setVal={setSessionTags}
+                />
               </Stack>
               <Stack spacing="10px">
                 <FormLabel>Session Description*</FormLabel>

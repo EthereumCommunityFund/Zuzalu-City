@@ -75,6 +75,7 @@ import { supaCreateSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
 import SlotDate from '@/components/calendar/SlotDate';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -122,7 +123,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<Array<string>>([]);
+  const [sessionTags, setSessionTags] = useState<Array<{ value: string; label: string; }>>([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
@@ -491,8 +492,14 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     Search or create categories related to your space
                   </Typography>
                 </Stack>
-                <Box>
-                  <Select
+                <ZuAutoCompleteInput
+                  optionVals={SPACE_CATEGORIES}
+                  val={sessionTags}
+                  setVal={setSessionTags}
+                />
+                {/* 
+                    <Box>
+                    <Select
                     multiple
                     value={sessionTags}
                     style={{ width: '100%' }}
@@ -541,7 +548,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       />
                     );
                   })}
-                </Box>
+                </Box> */}
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Description*</Typography>
@@ -917,9 +924,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Stack>
                     {sessionDate &&
                       sessionStartTime !==
-                        dayjs().set('hour', 0).set('minute', 0) &&
+                      dayjs().set('hour', 0).set('minute', 0) &&
                       sessionEndTime !==
-                        dayjs().set('hour', 0).set('minute', 0) && (
+                      dayjs().set('hour', 0).set('minute', 0) && (
                         <Stack spacing="10px">
                           <Stack alignItems="center">
                             <ArrowDownIcon />
@@ -1510,11 +1517,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           // filter session.startTime month equal to selected month
                           return (
                             dayjs(session.startTime).month() ===
-                              calendarDate.month() &&
+                            calendarDate.month() &&
                             dayjs(session.startTime).year() ===
-                              calendarDate.year() &&
+                            calendarDate.year() &&
                             dayjs(session.startTime).date() !==
-                              selectedDate.date()
+                            selectedDate.date()
                           );
                         })
                         .map((session) => {
