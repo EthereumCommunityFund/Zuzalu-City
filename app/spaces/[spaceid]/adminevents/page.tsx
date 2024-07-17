@@ -477,7 +477,7 @@ const Home = () => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -551,14 +551,11 @@ const Home = () => {
                       backgroundColor: '#ffffff0d',
                       fontFamily: 'Inter',
                       color: 'white',
-                      padding: '12px 12px 12px 40px',
+                      padding: '12px',
                       borderRadius: '10px',
                       height: 'auto',
                       minHeight: '270px',
                       overflow: 'auto',
-                      '& > div > div': {
-                        paddingBottom: '0px !important',
-                      },
                     }}
                   />
                   <Stack direction="row" justifyContent="flex-end">
