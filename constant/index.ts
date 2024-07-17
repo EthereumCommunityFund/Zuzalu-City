@@ -2,6 +2,9 @@ import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 import { createPublicClient, createWalletClient, getContract } from 'viem';
 import { http } from 'wagmi';
 import { scrollSepolia } from 'wagmi/chains';
+import { EdDSAPublicKey } from '@pcd/eddsa-pcd';
+import { EdDSATicketPCDTypeName } from '@pcd/eddsa-ticket-pcd';
+import { PipelineEdDSATicketZuAuthConfig } from '@pcd/passport-interface';
 
 export const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia3BicWVtYnRiZHVwaWRrYmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQ3MTc1NjMsImV4cCI6MjAzMDI5MzU2M30.ZvO6KbDesswcZ77B-vAKI7lzSCiGjcfEN0vHfRo-tFs';
@@ -148,5 +151,30 @@ export const EXPREIENCE_LEVEL_TYPES: {
   {
     key: 'advanced',
     value: 'Advanced',
+  },
+];
+
+export interface SessionData {
+  watermark?: string;
+  user?: Record<string, any>;
+}
+
+export const ironOptions = {
+  cookieName: 'zuauth_example',
+  password: process.env.SECRET_COOKIE_PASSWORD as string,
+  cookieOptions: {
+    secure: process.env.NEXT_PUBLIC_ENV === 'production',
+  },
+};
+
+export const Zuconfig: PipelineEdDSATicketZuAuthConfig[] = [
+  {
+    pcdType: EdDSATicketPCDTypeName,
+    publicKey: [
+      '1ebfb986fbac5113f8e2c72286fe9362f8e7d211dbc68227a468d7b919e75003',
+      '10ec38f11baacad5535525bbe8e343074a483c051aa1616266f3b1df3fb7d204',
+    ] as EdDSAPublicKey,
+    eventId: '6f5f194b-97b5-5fe9-994d-0998f3eacc75',
+    eventName: 'ZuVillage Georgia',
   },
 ];
