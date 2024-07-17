@@ -29,10 +29,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { TimeView } from '@mui/x-date-pickers/models';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import isBetween from 'dayjs/plugin/isBetween';
-import timezone from 'dayjs/plugin/timezone';
+import dayjs, { Dayjs } from '@/utils/dayjs';
 import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
 import { OutputData } from '@editorjs/editorjs';
 import {
@@ -77,6 +74,7 @@ import { SessionSupabaseData } from '@/types';
 import { supaCreateSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
+import SlotDate from '@/components/calendar/SlotDate';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -86,10 +84,6 @@ const Custom_Option: TimeStepOptions = {
 interface ISessions {
   eventData: Event | undefined;
 }
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(isBetween);
 
 const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const theme = useTheme();
@@ -114,15 +108,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [isContentLarge, setIsContentLarge] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
-    dayjs(
-      new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }),
-    ),
-  );
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(new Date()));
+  const [calendarDate, setCalendarDate] = useState<Dayjs>(dayjs(new Date()));
 
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
@@ -1509,21 +1496,38 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   </Stack>
                 </Stack>
                 <ZuCalendar
-                  value={selectedDate}
+                  defaultValue={selectedDate}
                   onChange={(val) => {
                     setSelectedDate(val);
                   }}
-                  // slots={{
-                  //   day: SlotDates,
-                  // }}
+                  slots={{
+                    day: SlotDate,
+                  }}
                   slotProps={{
                     day: {
-                      highlightedDays: sessions.map((session) => {
-                        return new Date(session.startTime).getDate();
-                      }),
+                      highlightedDays: sessions
+                        .filter((session) => {
+                          // filter session.startTime month equal to selected month
+                          return (
+                            dayjs(session.startTime).month() ===
+                              calendarDate.month() &&
+                            dayjs(session.startTime).year() ===
+                              calendarDate.year() &&
+                            dayjs(session.startTime).date() !==
+                              selectedDate.date()
+                          );
+                        })
+                        .map((session) => {
+                          return dayjs(session.startTime).date();
+                        }),
                     } as any,
                   }}
-                  // onMonthChange={(val) => handleMonthChange(val)}
+                  onMonthChange={(date) => {
+                    setCalendarDate(date);
+                  }}
+                  onYearChange={(date) => {
+                    setCalendarDate(date);
+                  }}
                 />
               </Stack>
             </Grid>

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import {
   Box,
   Typography,
@@ -10,6 +10,7 @@ import {
   OutlinedInput,
   InputAdornment,
   Button,
+  Skeleton,
 } from '@mui/material';
 import debounce from 'lodash/debounce';
 import { Sidebar } from 'components/layout';
@@ -22,19 +23,24 @@ import { useCeramicContext } from '../../context/CeramicContext';
 import { Event, EventData } from '@/types';
 import { EventIcon, SearchIcon } from '@/components/icons';
 import EventHeader from './components/EventHeader';
-import { groupEventsByMonth } from '@/components/cards/EventCard';
+import {
+  EventCardMonthGroup,
+  EventCardSkeleton,
+  groupEventsByMonth,
+} from '@/components/cards/EventCard';
 
 const EventsPage: React.FC = () => {
   const theme = useTheme();
   const [selected, setSelected] = useState('Events');
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const [events, setEvents] = useState<Event[]>([]);
+  const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const [searchVal, setSearchVal] = useState('');
   const { composeClient } = useCeramicContext();
 
   const getEvents = async () => {
-    try {
-      const response: any = await composeClient.executeQuery(`
+    setIsEventsLoading(true);
+    const response: any = await composeClient.executeQuery(`
       query {
         eventIndex(first: 10) {
           edges {
@@ -66,50 +72,53 @@ const EventsPage: React.FC = () => {
         }
       }
     `);
-
-      if ('eventIndex' in response.data) {
-        const eventData: EventData = response.data as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
-          (edge) => edge.node,
-        );
-        const searchedEvents: Event[] = fetchedEvents.filter((item) => {
-          return item?.title.toLowerCase().includes(searchVal?.toLowerCase());
-        });
-        if (searchedEvents?.length > 0) {
-          setEvents(searchedEvents);
-        } else {
-          setEvents(fetchedEvents);
-        }
+    if ('eventIndex' in response.data) {
+      const eventData: EventData = response.data as EventData;
+      const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+        (edge) => edge.node,
+      );
+      const searchedEvents: Event[] = fetchedEvents.filter((item) => {
+        return item?.title.toLowerCase().includes(searchVal?.toLowerCase());
+      });
+      if (searchedEvents?.length > 0) {
+        setEvents(searchedEvents);
       } else {
-        console.error('Invalid data structure:', response.data);
+        setEvents(fetchedEvents);
       }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
+    } else {
+      console.error('Invalid data structure:', response.data);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getEvents();
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
+    getEvents()
+      .catch((error) => console.error('Failed to fetch events:', error))
+      .finally(() => {
+        setIsEventsLoading(false);
+      });
   }, []);
 
+  // TODO: Implement search functionality
   const onSearch = () => {
-    getEvents();
+    getEvents()
+      .catch((error) => console.error('Failed to fetch events:', error))
+      .finally(() => {
+        setIsEventsLoading(false);
+      });
   };
+
+  const debounceGetEventsCity = debounce(getEvents, 1000);
 
   useEffect(() => {
     if (searchVal) {
-      debounceGetEventsCity();
+      // @ts-ignore
+      debounceGetEventsCity()
+        .catch((error) => console.error('An error occurred:', error))
+        .finally(() => {
+          setIsEventsLoading(false);
+        });
     }
   }, [searchVal]);
-
-  const debounceGetEventsCity = debounce(getEvents, 1000);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -215,51 +224,28 @@ const EventsPage: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               flexWrap: 'wrap',
-              rowGap: '30px',
-              columnGap: '40px',
-              padding: '0 20px 20px',
+              gap: '20px',
+              padding: '20px',
               justifyContent: 'center',
             }}
           >
-            {Object.entries(groupEventsByMonth(events)).map(
-              ([month, events], index) => {
-                return (
-                  <div key={month + index}>
-                    <Box
-                      sx={{
-                        position: 'sticky',
-                        top: 50,
-                        backgroundColor: '#222',
-                        padding: '20px 0',
-                        zIndex: 10,
-                      }}
-                    >
-                      <Typography
-                        display="block"
-                        color="white"
-                        border="1px solid #383838"
-                        align="center"
-                        paddingY="8px"
-                        borderRadius="40px"
-                        variant="subtitleS"
-                        bgcolor="rgba(34, 34, 34, 0.8)"
-                      >
-                        {month}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      {events.map((event, index) => (
-                        <Grid
-                          item
-                          key={`EventHeader-Card${index}`}
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          xl={3}
-                          sx={{ display: 'flex', justifyContent: 'center' }}
-                        >
-                          <EventCard key={`EventCard-${index}`} event={event} />
-                        </Grid>
+            {isEventsLoading ? (
+              <>
+                <EventCardMonthGroup>
+                  <Skeleton width={60}></Skeleton>
+                </EventCardMonthGroup>
+                <EventCardSkeleton />
+                <EventCardSkeleton />
+              </>
+            ) : (
+              events.length > 0 &&
+              Object.entries(groupEventsByMonth(events)).map(
+                ([month, events], index) => {
+                  return (
+                    <Fragment key={month + index}>
+                      <EventCardMonthGroup>{month}</EventCardMonthGroup>
+                      {events.map((event) => (
+                        <EventCard key={event.id} event={event} />
                       ))}
                       {/*<Grid*/}
                       {/*  key={`Lottery-Card`}*/}
@@ -271,10 +257,10 @@ const EventsPage: React.FC = () => {
                       {/*>*/}
                       {/*  <LotteryCard />*/}
                       {/*</Grid>*/}
-                    </Box>
-                  </div>
-                );
-              },
+                    </Fragment>
+                  );
+                },
+              )
             )}
           </Stack>
         </Stack>
