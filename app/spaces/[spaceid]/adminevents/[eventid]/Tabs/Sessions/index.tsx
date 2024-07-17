@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -43,7 +43,7 @@ import {
   Venue,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 import {
   FormLabel,
@@ -52,7 +52,6 @@ import {
 } from '@/components/typography/formTypography';
 import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
-import { dateTime } from '@didtools/siwx/dist/parsing/siwx-message';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
