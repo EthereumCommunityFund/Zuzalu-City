@@ -23,7 +23,7 @@ function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(false);;;;
 
   useEffect(() => {
     setIsClient(true);
