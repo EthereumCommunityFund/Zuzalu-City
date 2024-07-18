@@ -122,7 +122,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           zIndex: '1',
         }}
       />
-      <Stack 
+      <Stack
         direction="column"
         flex={1}
         spacing={2}
