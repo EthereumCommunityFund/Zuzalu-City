@@ -6,7 +6,6 @@ import { PlusIcon, PlusCircleIcon } from 'components/icons';
 const SessionAdd = () => {
   return (
     <Stack direction="column" spacing={0.5}>
-      
       <Stack
         direction="column"
         alignItems="center"

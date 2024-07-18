@@ -24,8 +24,10 @@ type SessionsListProps = {
   setSelectedSession: React.Dispatch<React.SetStateAction<Session>> | any;
 };
 
-const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSession, }) => {
-
+const SessionList: React.FC<SessionsListProps> = ({
+  sessions = [],
+  setSelectedSession,
+}) => {
   const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
   const [searchString, setSearchString] = React.useState<string>('');
   const [filteredSessions, setFilteredSessions] = React.useState<Session[]>([]);
@@ -39,13 +41,18 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
         .select('*')
         .eq('eventId', eventId)
         .ilike('title', `%${searchString}%`)
-        .ilike('startTime', selectedDate ? `%${dayjs(
-          selectedDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          }),
-        ).format('YYYY-MM-DDT')}%` : '%%')
+        .ilike(
+          'startTime',
+          selectedDate
+            ? `%${dayjs(
+                selectedDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                }),
+              ).format('YYYY-MM-DDT')}%`
+            : '%%',
+        );
       if (data) {
         setFilteredSessions(data);
       }
@@ -54,14 +61,18 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
     }
   };
 
-
   React.useEffect(() => {
-    getSessions(searchString, selectedDate)
-  }, [selectedDate, searchString])
+    getSessions(searchString, selectedDate);
+  }, [selectedDate, searchString]);
 
-  return (
-    sessions.length > 0 ? <Stack direction={'column'} spacing={2}>
-      <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} paddingTop={'20px'}>
+  return sessions.length > 0 ? (
+    <Stack direction={'column'} spacing={2}>
+      <Stack
+        direction={'row'}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+        paddingTop={'20px'}
+      >
         <Typography>{sessions.length} sessions</Typography>
         <Stack direction={'row'} spacing={2} alignItems={'center'}>
           <Stack
@@ -85,16 +96,16 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
         startAdornment={
           <Stack
             sx={{
-              paddingRight: '10px'
+              paddingRight: '10px',
             }}
           >
             <SearchIcon />
           </Stack>
         }
-        placeholder='Search Sessions'
+        placeholder="Search Sessions"
         sx={{
           border: '1px solid rgba(255, 255, 255, 0.10)',
-          borderRadius: '10px'
+          borderRadius: '10px',
         }}
         value={searchString}
         onChange={(e) => setSearchString(e.target.value)}
@@ -105,10 +116,10 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
       />
 
       <Divider
-        variant='fullWidth'
-        orientation='horizontal'
+        variant="fullWidth"
+        orientation="horizontal"
         sx={{
-          borderBottom: '2px solid #383838'
+          borderBottom: '2px solid #383838',
         }}
       />
 
@@ -121,9 +132,7 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
         color={'rgba(255, 255, 255, 0.60)'}
         marginTop={'2px !important'}
       >
-        {
-          format(selectedDate, 'E · dd MMM yyyy')
-        }
+        {format(selectedDate, 'E · dd MMM yyyy')}
       </Typography>
       <Stack spacing={2} divider={<Divider sx={{ borderColor: '#383838' }} />}>
         {/* <SessionCard />
@@ -138,7 +147,8 @@ const SessionList: React.FC<SessionsListProps> = ({ sessions = [], setSelectedSe
         ))}
       </Stack>
     </Stack>
-      : <SessionAdd />
+  ) : (
+    <SessionAdd />
   );
 };
 

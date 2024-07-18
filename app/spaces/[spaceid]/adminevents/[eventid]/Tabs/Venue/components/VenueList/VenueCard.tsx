@@ -11,7 +11,12 @@ type VenueCardProps = {
   tags: string;
 };
 
-const VenueCard: React.FC<VenueCardProps> = ({ name, avatar, bookings, tags }) => {
+const VenueCard: React.FC<VenueCardProps> = ({
+  name,
+  avatar,
+  bookings,
+  tags,
+}) => {
   return (
     <Stack
       direction="row"
@@ -31,25 +36,39 @@ const VenueCard: React.FC<VenueCardProps> = ({ name, avatar, bookings, tags }) =
         width="40px"
         height="40px"
         borderRadius="6px"
-        src={avatar ? avatar : "/7.jpg"}
+        src={avatar ? avatar : '/7.jpg'}
       />
       <Stack spacing="10px" flex="1">
         <Typography variant="bodyBB">{name}</Typography>
         <Stack direction="row" spacing="10px">
-          {
-            tags.split(",").length > 0 && tags.split(",").map((tag, index) => {
-              return <Stack bgcolor="#424242" padding="3px 8px" borderRadius="4px" key={index}>
-                <Typography variant="caption">{
-                VENUE_TAGS.filter((tagItem) => tagItem.value === tag)[0].label
-              }
-              </Typography>
-              </Stack>
-            })
-          }
+          {tags.split(',').length > 0 &&
+            tags.split(',').map((tag, index) => {
+              return (
+                <Stack
+                  bgcolor="#424242"
+                  padding="3px 8px"
+                  borderRadius="4px"
+                  key={index}
+                >
+                  <Typography variant="caption">
+                    {
+                      VENUE_TAGS.filter((tagItem) => tagItem.value === tag)[0]
+                        .label
+                    }
+                  </Typography>
+                </Stack>
+              );
+            })}
         </Stack>
-        <Typography variant="bodyS">Sessions Booked: Capacity: {
-          formatAmount(Object.values(JSON.parse(bookings)).filter((value: any) => value.length > 0 && value[0].startTime).length, 2)
-        }</Typography>
+        <Typography variant="bodyS">
+          Sessions Booked: Capacity:{' '}
+          {formatAmount(
+            Object.values(JSON.parse(bookings)).filter(
+              (value: any) => value.length > 0 && value[0].startTime,
+            ).length,
+            2,
+          )}
+        </Typography>
       </Stack>
       <Stack
         direction="row"

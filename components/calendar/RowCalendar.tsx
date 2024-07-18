@@ -5,18 +5,17 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { format, addDays, subDays, isSameDay } from 'date-fns';
 
 interface PropTypes {
-  selectedDate: Date
-  setSelectedDate: Dispatch<SetStateAction<Date>>
+  selectedDate: Date;
+  setSelectedDate: Dispatch<SetStateAction<Date>>;
 }
 
-const CalendarNavigator = ({selectedDate, setSelectedDate}: PropTypes) => {
-
+const CalendarNavigator = ({ selectedDate, setSelectedDate }: PropTypes) => {
   const handlePrevDay = () => {
-    setSelectedDate(prevDate => subDays(prevDate, 1));
+    setSelectedDate((prevDate) => subDays(prevDate, 1));
   };
 
   const handleNextDay = () => {
-    setSelectedDate(prevDate => addDays(prevDate, 1));
+    setSelectedDate((prevDate) => addDays(prevDate, 1));
   };
 
   const handleDateClick = (date: Date) => {
@@ -37,11 +36,11 @@ const CalendarNavigator = ({selectedDate, setSelectedDate}: PropTypes) => {
             fontWeight: isSelected ? 'bold' : 'normal',
             cursor: 'pointer',
             flex: 1,
-            textAlign: 'center'
+            textAlign: 'center',
           }}
         >
           {format(date, 'E · dd MMM yyyy')}
-        </Typography>
+        </Typography>,
       );
     }
     return dates;

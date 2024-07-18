@@ -7,12 +7,12 @@ import { Anchor } from '@/types';
 
 interface SessionHeaderProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
-  sessionAmount?: number
+  sessionAmount?: number;
 }
 
 const SessionHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => { },
-  sessionAmount = 0
+  onToggle = (anchor: Anchor, open: boolean) => {},
+  sessionAmount = 0,
 }) => {
   const { breakpoints } = useTheme();
 
@@ -20,12 +20,22 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
     <Stack direction={'column'} spacing={3}>
       <Stack direction={'row'} justifyContent={'space-between'}>
         <Typography variant="h5">Event Schedule</Typography>
-        {
-          sessionAmount > 0 && <ZuButton startIcon={<PlusIcon />} onClick={() => onToggle('right', true)}>Add a Session</ZuButton>
-        }
+        {sessionAmount > 0 && (
+          <ZuButton
+            startIcon={<PlusIcon />}
+            onClick={() => onToggle('right', true)}
+          >
+            Add a Session
+          </ZuButton>
+        )}
       </Stack>
-      {
-        sessionAmount === 0 && <Stack direction={'row'} spacing={2} sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }} paddingBottom={'20px'}>
+      {sessionAmount === 0 && (
+        <Stack
+          direction={'row'}
+          spacing={2}
+          sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.10)' }}
+          paddingBottom={'20px'}
+        >
           <Stack
             direction="row"
             alignItems="center"
@@ -58,7 +68,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
             spacing={1}
             flex={1}
             sx={{
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             <PersonAddAlt1Icon />
@@ -72,8 +82,7 @@ const SessionHeader: React.FC<SessionHeaderProps> = ({
             </Stack>
           </Stack>
         </Stack>
-      }
-
+      )}
     </Stack>
   );
 };

@@ -71,7 +71,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
     right: false,
   });
 
-  const [venues, setVenues] = useState<VenueDTO[]>([])
+  const [venues, setVenues] = useState<VenueDTO[]>([]);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -849,7 +849,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
 
   useEffect(() => {
     getVenues();
-  }, [])
+  }, []);
 
   return (
     <Stack spacing="30px" padding="30px">

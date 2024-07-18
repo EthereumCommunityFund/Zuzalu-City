@@ -7,12 +7,12 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface SessionHeaderProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
-  spaceAmount?: number
+  spaceAmount?: number;
 }
 
 const VenueHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => { },
-  spaceAmount = 0
+  onToggle = (anchor: Anchor, open: boolean) => {},
+  spaceAmount = 0,
 }) => {
   const { breakpoints } = useTheme();
 
@@ -25,7 +25,9 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
     >
       <Stack direction={'row'} justifyContent={'space-between'}>
         <Typography variant="h5">Venue Spaces</Typography>
-        <Typography variant="body2">Total Spaces: {formatAmount(spaceAmount)}</Typography>
+        <Typography variant="body2">
+          Total Spaces: {formatAmount(spaceAmount)}
+        </Typography>
       </Stack>
       {
         spaceAmount === 0 && <Stack direction={'row'} spacing={2} sx={{

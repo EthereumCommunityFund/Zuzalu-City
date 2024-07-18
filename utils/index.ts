@@ -55,23 +55,44 @@ export const formatAmount = (amount: number, digits?: number) => {
   } else {
     return amountStr;
   }
-}
+};
 
 export const formatUTCTimezone = (date: Dayjs) => {
   let currentDate = new Date(date.format('YYYY-MM-DDTHH:mm:ss[Z]'));
 
   const timeDiff = date.utcOffset();
   if (timeDiff < 0) {
-    currentDate = new Date(new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)).getTime() - (24 * 60 * 60 * 1000 + timeDiff * 60 * 1000));
+    currentDate = new Date(
+      new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).getTime() -
+        (24 * 60 * 60 * 1000 + timeDiff * 60 * 1000),
+    );
   } else {
-    currentDate = new Date(new Date(currentDate.getTime() - (24 * 60 * 60 * 1000)).getTime() - (timeDiff * 60 * 1000))
+    currentDate = new Date(
+      new Date(currentDate.getTime() - 24 * 60 * 60 * 1000).getTime() -
+        timeDiff * 60 * 1000,
+    );
   }
   const utcYear = currentDate.getFullYear();
-  const uctMM = String(currentDate.getMonth() + 1).length === 1 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
-  const utcDD = String(currentDate.getDate() + 1).length === 1 ? `0${currentDate.getDate() + 1}` : currentDate.getDate() + 1;
-  const utcHH = String(currentDate.getHours()).length === 1 ? `0${currentDate.getHours()}` : currentDate.getHours();
-  const utcMM = String(currentDate.getMinutes()).length === 1 ? `0${currentDate.getMinutes()}` : currentDate.getMinutes();
-  const utcSS = String(currentDate.getSeconds()).length === 1 ? `0${currentDate.getSeconds()}` : currentDate.getSeconds();
+  const uctMM =
+    String(currentDate.getMonth() + 1).length === 1
+      ? `0${currentDate.getMonth() + 1}`
+      : currentDate.getMonth() + 1;
+  const utcDD =
+    String(currentDate.getDate() + 1).length === 1
+      ? `0${currentDate.getDate() + 1}`
+      : currentDate.getDate() + 1;
+  const utcHH =
+    String(currentDate.getHours()).length === 1
+      ? `0${currentDate.getHours()}`
+      : currentDate.getHours();
+  const utcMM =
+    String(currentDate.getMinutes()).length === 1
+      ? `0${currentDate.getMinutes()}`
+      : currentDate.getMinutes();
+  const utcSS =
+    String(currentDate.getSeconds()).length === 1
+      ? `0${currentDate.getSeconds()}`
+      : currentDate.getSeconds();
 
   return `${utcYear}-${uctMM}-${utcDD}T${utcHH}:${utcMM}:${utcSS}Z`;
-}
+};

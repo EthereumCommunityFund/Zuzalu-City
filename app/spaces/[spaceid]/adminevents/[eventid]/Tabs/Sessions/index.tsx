@@ -119,7 +119,6 @@ const Sessions = () => {
 
   const getSessions = async () => {
     try {
-
       const query = `
         query MyQuery ($filter: SessionFiltersInput) {
           sessionIndex(first: 20, filters: $filter) {
@@ -164,7 +163,7 @@ const Sessions = () => {
         }
       `;
 
-      const response: any = await composeClient.executeQuery(query, {})
+      const response: any = await composeClient.executeQuery(query, {});
       if ('sessionIndex' in response.data) {
         const sessionData: SessionData = response.data as SessionData;
         const fetchedSessions: Session[] = sessionData.sessionIndex.edges.map(

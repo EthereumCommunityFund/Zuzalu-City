@@ -52,7 +52,7 @@ const Venue: React.FC = () => {
     right: false,
   });
 
-  const [venues, setVenues] = React.useState<VenueDTO[]>([])
+  const [venues, setVenues] = React.useState<VenueDTO[]>([]);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -782,20 +782,19 @@ const Venue: React.FC = () => {
   const getVenues = async () => {
     try {
       const result = await supabase.from('venue').select();
-      if(result.error) {
+      if (result.error) {
         console.log('ERROR: SUPABASE: GET VENUES: ', result.error);
-        return ;
+        return;
       }
-      setVenues(result.data)
+      setVenues(result.data);
     } catch (err) {
-      console.log('ERROR: SUPABASE: GET VENUES: ', err)
+      console.log('ERROR: SUPABASE: GET VENUES: ', err);
     }
-
-  }
+  };
 
   React.useEffect(() => {
     getVenues();
-  }, [])
+  }, []);
 
   return (
     <Stack spacing="30px">

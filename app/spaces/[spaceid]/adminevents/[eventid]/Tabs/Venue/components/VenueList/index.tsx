@@ -7,7 +7,12 @@ import {
   useTheme,
 } from '@mui/material';
 import ZuButton from 'components/core/Button';
-import { PlusIcon, PlusCircleIcon, SearchIcon, InformationIcon } from 'components/icons';
+import {
+  PlusIcon,
+  PlusCircleIcon,
+  SearchIcon,
+  InformationIcon,
+} from 'components/icons';
 import { VenueDTO } from '@/types';
 import VenueCard from './VenueCard';
 
@@ -20,7 +25,12 @@ interface VenueListProps {
   searchValue: string;
 }
 
-const VenueList: React.FC<VenueListProps> = ({ venues, onToggle, setSearchValue, searchValue }) => {
+const VenueList: React.FC<VenueListProps> = ({
+  venues,
+  onToggle,
+  setSearchValue,
+  searchValue,
+}) => {
   const theme = useTheme();
 
   return (
