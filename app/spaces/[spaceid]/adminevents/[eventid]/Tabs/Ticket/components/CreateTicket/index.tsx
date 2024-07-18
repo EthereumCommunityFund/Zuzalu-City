@@ -799,7 +799,7 @@ export const CreateTicket = ({
                   width: '200px',
                   height: '200px',
                 }}
-                file={ticketImageURL}
+                src={ticketImageURL}
               />
             </Box>
           </Stack>

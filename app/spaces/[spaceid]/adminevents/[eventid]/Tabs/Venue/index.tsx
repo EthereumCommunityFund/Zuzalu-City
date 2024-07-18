@@ -401,7 +401,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    file={avatarURL}
+                    src={avatarURL}
                   />
                 </Box>
               </Stack>

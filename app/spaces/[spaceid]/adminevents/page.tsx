@@ -608,7 +608,7 @@ const Home = () => {
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    file={avatarURL}
+                    src={avatarURL}
                   />
                 </Box>
               </Stack>

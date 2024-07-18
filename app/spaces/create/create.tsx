@@ -404,7 +404,7 @@ const Create = () => {
                     height: '150px',
                     borderRadius: '60%',
                   }}
-                  file={avatarURL}
+                  src={avatarURL}
                 />
               </Box>
             </Stack>
@@ -442,7 +442,7 @@ const Create = () => {
                 </Button>
                 <PreviewFile
                   sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
-                  file={bannerURL}
+                  src={bannerURL}
                 />
               </Box>
             </Stack>

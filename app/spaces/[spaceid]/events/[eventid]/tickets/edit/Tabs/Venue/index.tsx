@@ -222,7 +222,7 @@ const Venue: React.FC = () => {
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    file={avatarURL}
+                    src={avatarURL}
                   />
                 </Box>
               </Stack>
