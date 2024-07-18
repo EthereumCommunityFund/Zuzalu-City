@@ -1,18 +1,20 @@
 import * as React from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, useTheme } from '@mui/material';
 import { GroupIcon, NewspaperIcon, PlusCircleIcon } from 'components/icons';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface SessionHeaderProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
-  count: number
+  count: number;
 }
 
 const VenueHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => { },
-  count = 0
+  onToggle = (anchor: Anchor, open: boolean) => {},
+  count = 0,
 }) => {
+  const { breakpoints } = useTheme();
+
   return (
     <Stack
       direction={'column'}
@@ -24,7 +26,15 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
         <Typography variant="h5">Venue Spaces</Typography>
         <Typography variant="bodyB">Total Spaces: {count}</Typography>
       </Stack>
-      <Stack direction={'row'} spacing={2}>
+      <Stack
+        direction={'row'}
+        gap={2}
+        sx={{
+          [breakpoints.down('md')]: {
+            flexDirection: 'column',
+          },
+        }}
+      >
         <Stack
           direction="row"
           alignItems="center"

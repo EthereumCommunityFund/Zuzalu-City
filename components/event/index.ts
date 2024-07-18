@@ -4,4 +4,13 @@ import EventDetail from './EventDetail';
 import EventName from './EventName';
 import { Initial, Disclaimer, Email, Payment } from './Register';
 
-export { EventAbout, EventDetail, EventRegister, EventName, Initial, Disclaimer, Email, Payment };
+export {
+  EventAbout,
+  EventDetail,
+  EventRegister,
+  EventName,
+  Initial,
+  Disclaimer,
+  Email,
+  Payment,
+};

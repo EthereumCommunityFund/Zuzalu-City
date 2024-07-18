@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 export type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export type IconProps = {
@@ -102,6 +104,14 @@ export interface Space {
   admin?: {
     id: string;
   }[];
+  events: {
+    edges: {
+      node: {
+        startTime: string;
+        endTime: string;
+      };
+    }[];
+  };
 }
 
 export interface SpaceEdge {
@@ -239,4 +249,16 @@ export interface IProps {
   setTokenId?: React.Dispatch<React.SetStateAction<string>> | any;
   ticketMinted?: any[];
   setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
+}
+
+export interface ZuAutoCompleteProps {
+  optionVals: Array<{
+    value: string;
+    label: string;
+  }>;
+  val: Array<{
+    value: string;
+    label: string;
+  }>;
+  setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>;
 }

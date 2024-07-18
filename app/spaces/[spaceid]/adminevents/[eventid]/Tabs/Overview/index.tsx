@@ -14,7 +14,7 @@ interface PropTypes {
 
 const Overview = ({ event }: PropTypes) => {
   return (
-    <Stack direction="column" spacing={4} paddingBottom={5}>
+    <Stack direction="column" spacing={4} padding={'30px'}>
       <OverviewHeader event={event} />
       <OverviewDetail eventData={event} />
       <OverviewInvite event={event} />

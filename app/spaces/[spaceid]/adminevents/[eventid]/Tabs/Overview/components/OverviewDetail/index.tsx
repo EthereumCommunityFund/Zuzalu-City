@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Alert, Box, Snackbar, Stack, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Snackbar,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { ZuButton } from 'components/core';
 import { EventIcon, LockIcon, MapIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -17,6 +24,7 @@ interface PropTypes {
 const OverviewDetail = ({ eventData }: PropTypes) => {
   const params = useParams();
   const eventId = params.eventid.toString();
+  const { breakpoints } = useTheme();
 
   // const [eventData, setEventData] = React.useState<Event>();
   // const { composeClient } = useCeramicContext();
@@ -79,18 +87,53 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
       marginY={4}
       padding={2}
       direction="row"
-      spacing={2}
+      gap={2}
       bgcolor="#283734"
       borderRadius={3}
+      position={'relative'}
+      overflow={'hidden'}
+      boxSizing={'content-box'}
+      sx={{
+        [breakpoints.down('md')]: {
+          flexDirection: 'column',
+          alignItems: 'center',
+        },
+      }}
     >
+      <Stack
+        sx={{
+          backgroundImage: `url(${eventData.image_url ? eventData.image_url : '/12.webp'})`,
+          width: '100%',
+          height: '100%',
+          filter: 'blur(10px)',
+          position: 'absolute',
+          top: '0px',
+          left: '0px',
+          zIndex: '0',
+        }}
+      ></Stack>
       <Box
         component="img"
         src={eventData.image_url ? eventData.image_url : '/12.webp'}
         borderRadius={3}
-        height={450}
-        width={450}
+        height={320}
+        width={320}
+        sx={{
+          zIndex: '1',
+        }}
       />
-      <Stack direction="column" flex={1} spacing={2}>
+      <Stack
+        direction="column"
+        flex={1}
+        spacing={2}
+        zIndex={'1'}
+        sx={{
+          width: '',
+          [breakpoints.down('md')]: {
+            width: '100%',
+          },
+        }}
+      >
         <Stack direction="row" spacing={2}>
           <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
             Edit Event Details
@@ -151,6 +194,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
         <TextEditor
           holder="event-detail-editor"
           readonly={true}
+          fullWidth
           value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
           sx={{
             fontFamily: 'Inter',
@@ -160,6 +204,7 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
             height: 'auto',
             overflow: 'auto',
             padding: '0px',
+            opacity: 0.8,
           }}
         />
         {eventData.timezone && (
@@ -186,6 +231,45 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
             GATED
           </ZuButton>
         )}
+        <Stack width="100%" spacing={'6px'}>
+          <ZuButton sx={{ backgroundColor: '#2F4541', width: '100%' }}>
+            Edit Event Details
+          </ZuButton>
+          <Stack direction="row" spacing={2}>
+            <Link
+              href={'/events/' + eventId}
+              style={{
+                flex: 1,
+              }}
+            >
+              <ZuButton sx={{ backgroundColor: '#2F4541', width: '100%' }}>
+                View Event
+              </ZuButton>
+            </Link>
+            <CopyToClipboard
+              text={`${window.origin}/events/${eventId}`}
+              onCopy={() => {
+                setShowCopyToast(true);
+              }}
+            >
+              <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
+                Share Event
+                <Snackbar
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  open={showCopyToast}
+                  autoHideDuration={800}
+                  onClose={() => {
+                    setShowCopyToast(false);
+                  }}
+                >
+                  <Alert severity="success" variant="filled">
+                    Copy share link to clipboard
+                  </Alert>
+                </Snackbar>
+              </ZuButton>
+            </CopyToClipboard>
+          </Stack>
+        </Stack>
       </Stack>
     </Stack>
   ) : (

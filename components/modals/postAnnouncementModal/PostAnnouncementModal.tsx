@@ -9,6 +9,7 @@ interface ModalProps {
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }
 
+// TODO: no usages, Pay attention to the style of EditorText when using it
 export const PostAnnouncementModal = ({
   showModal,
   setShowModal,
@@ -116,7 +117,7 @@ export const PostAnnouncementModal = ({
                 backgroundColor: 'rgba(255, 255, 255, 0.02)',
                 fontFamily: 'Inter',
                 color: 'white',
-                padding: '20px',
+                padding: '12px',
                 borderRadius: '10px',
                 height: 'auto',
                 minHeight: '270px',

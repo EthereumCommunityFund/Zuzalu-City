@@ -138,16 +138,17 @@ const EventMCard: React.FC<EventMCardProps> = ({
         sx={{ opacity: 0.7 }}
       >
         {/* {event.description} */}
-        {
-          (event.description === null) && "NULL"
-        }
-        {
-          (event.description !== null && !isValidJSON(event.description.replaceAll('\\"', '"'))) && event.description
-        }
-        {
-          (event.description === null || !isValidJSON(event.description.replaceAll('\\"', '"')) || JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] === undefined) ?
-            "JSON ERROR" : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0].data.text
-        }
+        {event.description === null && 'NULL'}
+        {event.description !== null &&
+          !isValidJSON(event.description.replaceAll('\\"', '"')) &&
+          event.description}
+        {event.description === null ||
+        !isValidJSON(event.description.replaceAll('\\"', '"')) ||
+        JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
+          undefined
+          ? 'JSON ERROR'
+          : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0].data
+              .text}
       </Typography>
       <Box display="flex" alignItems="center" gap="10px">
         <Button

@@ -601,7 +601,6 @@ export const CreateTicket = ({
         body: data,
       });
       const resData = await res.json();
-      console.log(resData);
       setTicketImageURL(resData.url);
       setUploading(false);
     } catch (e) {

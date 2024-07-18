@@ -8,7 +8,7 @@ interface PropTypes {
   spaceName?: string;
 }
 
-const Navbar = ({spaceName = ''}: PropTypes) => {
+const Navbar = ({ spaceName = '' }: PropTypes) => {
   const router = useRouter();
   const params = useParams();
 
@@ -20,6 +20,7 @@ const Navbar = ({spaceName = ''}: PropTypes) => {
       gap="20px"
       alignItems="center"
       borderBottom="1px solid #383838"
+      paddingX={'20px'}
     >
       <Button
         onClick={() =>
@@ -43,9 +44,7 @@ const Navbar = ({spaceName = ''}: PropTypes) => {
         fontSize="18px"
         fontWeight={700}
       >
-        {
-          spaceName
-        }
+        {spaceName}
       </Typography>
     </Box>
   );

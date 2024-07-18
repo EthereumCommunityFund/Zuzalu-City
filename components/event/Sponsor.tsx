@@ -37,6 +37,7 @@ export const SponsorAgree: React.FC<IProps> = ({
   setIsAgree,
   eventContractID,
   setFilteredResults,
+  event,
 }) => {
   const [isConnect, setIsConnect] = useState<boolean>(true);
   const [validate, setValidate] = useState<boolean>(true);
@@ -48,7 +49,7 @@ export const SponsorAgree: React.FC<IProps> = ({
 
   const readFromContract = async () => {
     try {
-      // setVerifying(true);
+      setVerifying(true);
       const getTicketAddresses = (await client.readContract({
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI as Abi,
@@ -174,16 +175,16 @@ export const SponsorAgree: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src="/14.webp"
+            src={event?.image_url ? event.image_url : '/14.webp'}
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
           moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px" height="100vh">
+      <Stack padding="20px">
         <Stack
           padding="20px"
           border="1px solid #383838"
@@ -196,7 +197,12 @@ export const SponsorAgree: React.FC<IProps> = ({
             <Typography variant="subtitleMB" sx={{ opacity: 0.8 }}>
               Sponsor Disclaimer
             </Typography>
-            <Typography variant="bodyB" sx={{ opacity: 0.7 }} height="550px">
+            <Typography
+              variant="bodyB"
+              sx={{ opacity: 0.7 }}
+              height="550px"
+              overflow={'auto'}
+            >
               By confirming your attendance, you agree to the following points:
               ZuVillage is an experimental digital community that gathers in
               real life at a private event. By sending the contributions or by
@@ -388,9 +394,9 @@ export const SponsorMint: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src="/14.webp"
+            src={event?.image_url ? event.image_url : '/14.webp'}
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
@@ -501,6 +507,7 @@ export const SponsorTransaction: React.FC<IProps> = ({
   setIsMint,
   setIsTransaction,
   handleClose,
+  event,
 }) => {
   const [isWait, setIsWait] = useState<boolean>(false);
 
@@ -518,16 +525,16 @@ export const SponsorTransaction: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src="/14.webp"
+            src={event?.image_url ? event.image_url : '/14.webp'}
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
           moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px" height="100vh">
+      <Stack padding="20px" height="100%">
         {isWait ? (
           <Stack
             padding="20px"
@@ -595,6 +602,7 @@ export const SponsorComplete: React.FC<IProps> = ({
   handleClose,
   tokenId,
   ticketMinted,
+  event,
 }) => {
   const [view, setView] = useState<boolean>(false);
   return (
@@ -611,9 +619,9 @@ export const SponsorComplete: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src="/14.webp"
+            src={event?.image_url ? event.image_url : '/14.webp'}
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution

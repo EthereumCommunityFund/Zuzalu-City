@@ -87,12 +87,14 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               {categories &&
                 categories
                   .split(', ')
-                  .map(
-                    (category) =>
-                      SPACE_CATEGORIES.filter(
-                        (cat) => cat.value === category,
-                      )[0]?.label,
-                  )
+                  .map((category) => {
+                    const matchedCategory = SPACE_CATEGORIES.filter(
+                      (cat) => cat.value === category,
+                    );
+                    return matchedCategory.length > 0
+                      ? matchedCategory[0].label
+                      : category;
+                  })
                   .join(', ')}
             </Typography>
           </Stack>

@@ -75,6 +75,8 @@ import { supaCreateSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
 import SlotDate from '@/components/calendar/SlotDate';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
+import SelectCategories from '@/components/select/selectCategories';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -264,12 +266,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     }
   };
 
-  const handleChange = (e: any) => {
-    setSessionTags(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
   };
 
   const handleSpeakerChange = (e: any) => {
@@ -399,7 +397,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -491,57 +489,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     Search or create categories related to your space
                   </Typography>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={sessionTags}
-                    style={{ width: '100%' }}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {SPACE_CATEGORIES.map((tag, index) => {
-                      return (
-                        <MenuItem value={tag.value} key={index}>
-                          {tag.label}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {sessionTags.map((tag, index) => {
-                    return (
-                      <Chip
-                        label={
-                          SPACE_CATEGORIES.find((item) => item.value === tag)
-                            ?.label
-                        }
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = sessionTags.filter(
-                            (item) => item !== tag,
-                          );
-                          setSessionTags(newArray);
-                        }}
-                        key={index}
-                      />
-                    );
-                  })}
-                </Box>
+                <SelectCategories onChange={handleChange} />
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Description*</Typography>
@@ -556,7 +504,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     height: 'auto',
                     minHeight: '270px',
                     color: 'white',
-                    padding: '12px 12px 12px 40px',
+                    padding: '12px',
                     borderRadius: '10px',
                   }}
                   setData={setSessionDescription}
@@ -1899,10 +1847,14 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         <SwipeableDrawer
           hideBackdrop={true}
           sx={{
+            position: 'relative',
+            zIndex: 1,
             '& .MuiDrawer-paper': {
               marginTop: '50px',
               height: 'calc(100% - 50px)',
               boxShadow: 'none',
+              backgroundColor: 'transparent',
+              paddingLeft: '80px', // Leave space for editorjs to operate
             },
           }}
           anchor="right"

@@ -405,6 +405,7 @@ export default function SpaceDetailPage() {
                     {space.name}
                   </Box>
                   <TextEditor
+                    fullWidth={true}
                     holder="space-detail-editor"
                     readonly={true}
                     value={JSON.parse(space.description.replaceAll('\\"', '"'))}
@@ -419,6 +420,7 @@ export default function SpaceDetailPage() {
                       height: 'auto',
                       overflow: 'auto',
                       padding: '0px',
+                      opacity: 0.8,
                     }}
                   />
                 </Box>
@@ -474,7 +476,7 @@ export default function SpaceDetailPage() {
               <EventCardSkeleton />
               <EventCardSkeleton />
             </Box>
-          ) : events.length ? (
+          ) : events.length > 0 ? (
             <Box
               sx={{
                 padding: '20px',
@@ -596,7 +598,9 @@ export default function SpaceDetailPage() {
                 {/*</Box>*/}
               </Box>
             </Box>
-          ) : null}
+          ) : (
+            <></>
+          )}
         </Box>
       </Box>
     </Box>

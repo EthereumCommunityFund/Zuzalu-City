@@ -25,28 +25,26 @@ const EventAbout = ({ description }: EventAboutTypes) => {
 
   return (
     <Stack bgcolor="#292929" padding="10px" borderRadius="10px">
-      <Stack padding="10px">
-        <Typography color="white" variant="subtitleSB" sx={{ opacity: 0.6 }}>
+      <Stack padding="10px" spacing="20px">
+        <Typography
+          color="white"
+          variant="subtitleSB"
+          sx={{
+            opacity: '0.6',
+            textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)',
+          }}
+          fontSize={'18px'}
+          fontWeight={700}
+        >
           ABOUT THIS EVENT
         </Typography>
-        <TextEditor
-          holder="event-description"
-          readonly
-          value={JSON.parse(description.replaceAll('\\"', '"'))}
-          showMore={showMore}
-          setContentHeight={(height: number) => {
-            setContentHeight(height);
-            setIsContentLarge(height > 300);
-          }}
-          sx={{
-            fontFamily: 'Inter',
-            color: 'white',
-            borderRadius: '10px',
-            height: 'auto',
-            overflow: 'auto',
-            padding: '0px',
-          }}
-        />
+        <Stack sx={{ opacity: '0.8' }}>
+          <TextEditor
+            holder="event-description"
+            value={JSON.parse(description.replaceAll('\\"', '"'))}
+            showMore={showMore}
+          />
+        </Stack>
       </Stack>
       {isContentLarge && (
         <ZuButton
