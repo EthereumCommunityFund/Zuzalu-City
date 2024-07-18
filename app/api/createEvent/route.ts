@@ -110,7 +110,6 @@ export async function POST(req: Request) {
         },
       },
     );
-    console.log(update.data.createEvent.document.id);
     const { data: locationData, error: locationError } = await supabase
       .from('locations')
       .insert({

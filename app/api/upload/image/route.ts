@@ -5,5 +5,5 @@ export async function GET() {
 }
 
 export async function POST() {
-  return NextResponse.json({ message: 'post'}, { status: 200 });
+  return NextResponse.json({ message: 'post' }, { status: 200 });
 }

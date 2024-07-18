@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 export type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export type IconProps = {
@@ -108,6 +110,14 @@ export interface Space {
   superAdmin?: {
     id: string;
   }[];
+  events: {
+    edges: {
+      node: {
+        startTime: string;
+        endTime: string;
+      };
+    }[];
+  };
 }
 
 export interface SpaceEdge {
@@ -269,4 +279,16 @@ export interface CreateEventRequest {
   tracks: string[];
   person: boolean;
   locations: string[];
+}
+
+export interface ZuAutoCompleteProps {
+  optionVals: Array<{
+    value: string;
+    label: string;
+  }>;
+  val: Array<{
+    value: string;
+    label: string;
+  }>;
+  setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>;
 }

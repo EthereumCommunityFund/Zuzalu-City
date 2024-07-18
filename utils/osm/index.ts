@@ -1,8 +1,9 @@
 import * as Nominatim from 'nominatim-browser';
 import { LatLngLiteral } from 'leaflet';
 
-
-const getLatLngFromAddress = async (address: string): Promise<LatLngLiteral | undefined> => {
+const getLatLngFromAddress = async (
+  address: string,
+): Promise<LatLngLiteral | undefined> => {
   try {
     const res = await Nominatim.geocode({
       q: address,
@@ -10,7 +11,7 @@ const getLatLngFromAddress = async (address: string): Promise<LatLngLiteral | un
     if (res && res.length > 0) {
       return {
         lat: parseFloat(res[0].lat),
-        lng: parseFloat(res[0].lon)
+        lng: parseFloat(res[0].lon),
       };
     } else {
       throw new Error('No results found');
@@ -22,5 +23,3 @@ const getLatLngFromAddress = async (address: string): Promise<LatLngLiteral | un
 };
 
 export default getLatLngFromAddress;
-
-

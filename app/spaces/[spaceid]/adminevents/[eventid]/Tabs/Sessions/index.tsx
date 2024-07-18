@@ -13,6 +13,8 @@ import {
   Select,
   Chip,
   MenuItem,
+  Radio,
+  useTheme,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -43,7 +45,7 @@ import {
   Venue,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 import {
   FormLabel,
@@ -52,6 +54,7 @@ import {
 } from '@/components/typography/formTypography';
 import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -240,6 +243,10 @@ const Sessions = () => {
     setSelectedRoom(selectedRoom);
   };
 
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
+  };
+
   const handleDateChange = (date: Dayjs) => {
     if (date) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
@@ -380,10 +387,6 @@ const Sessions = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const handleChange = (value: string[]) => {
-    setSessionTags(value);
-  };
-
   const handleSpeakerChange = (e: any) => {
     setSpeakers(
       typeof e.target.value === 'string'
@@ -462,12 +465,17 @@ const Sessions = () => {
   };
 
   const List = (anchor: Anchor) => {
+    const { breakpoints } = useTheme();
+
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
           sx={{
             width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
             backgroundColor: '#222222',
+            [breakpoints.down('md')]: {
+              width: '100%',
+            },
           }}
           role="presentation"
           zIndex="100"
@@ -566,9 +574,7 @@ const Sessions = () => {
                     Search or create categories related to your space
                   </FormLabelDesc>
                 </Stack>
-                <Box>
-                  <SelectCategories onChange={handleChange} />
-                </Box>
+                <SelectCategories onChange={handleChange} />
               </Stack>
               <Stack spacing="10px">
                 <FormLabel>Session Description*</FormLabel>
@@ -646,8 +652,16 @@ const Sessions = () => {
             >
               <FormTitle>Location & Booking</FormTitle>
               <Stack spacing="10px">
-                <FormLabel>Session Format*</FormLabel>
-                <Box display="flex" justifyContent="space-between" gap="20px">
+                <Typography variant="bodyBB">Session Format*</Typography>
+                <Box
+                  display="flex"
+                  gap="20px"
+                  sx={{
+                    [breakpoints.down('md')]: {
+                      flexDirection: 'column',
+                    },
+                  }}
+                >
                   <Box
                     bgcolor={person ? '#484E45' : '#373737'}
                     borderRadius="10px"
@@ -1455,7 +1469,7 @@ const Sessions = () => {
   };
 
   return (
-    <Stack direction={'column'} spacing="40px">
+    <Stack direction={'column'} gap={6} padding={'30px'}>
       <SessionHeader onToggle={toggleDrawer} />
       <SessionList
         sessions={sessions}

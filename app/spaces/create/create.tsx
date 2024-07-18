@@ -348,7 +348,7 @@ const Create = () => {
               <Box display={'flex'} flexDirection={'column'} gap={'20px'}>
                 <Box>
                   <Typography variant="subtitle2" color="white">
-                    Community Categories (Max: 15)*
+                    Community Tags (Max: 15)*
                   </Typography>
                   <Typography color="text.secondary" variant="body2">
                     Search or create categories related to your space

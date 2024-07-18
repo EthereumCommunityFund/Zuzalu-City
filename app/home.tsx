@@ -39,6 +39,7 @@ import {
 import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
+import MiniDashboard from './components/MiniDashboard';
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,9 @@ const Home: React.FC = () => {
             edges {
               node {
                 id
+                admin {
+                  id
+                }
                 avatar
                 banner
                 description
@@ -100,6 +104,14 @@ const Home: React.FC = () => {
                 category
                 members{
                   id
+                }
+                events(first: 1) {
+                  edges {
+                    node {
+                      startTime
+                      endTime
+                    }
+                  }
                 }
               }
             }
@@ -306,6 +318,14 @@ const Home: React.FC = () => {
     }
   };
 
+  const targetSpaceExist =
+    spaces &&
+    spaces.length > 0 &&
+    spaces
+      .filter((space) => space.id === process.env.MAIN_SPACE_ID)[0]
+      ?.members?.map((member) => member.id.toLowerCase())
+      .includes(ceramic.did?.parent.toString().toLowerCase() || '');
+
   useEffect(() => {
     document.title = 'Zuzalu City';
     Promise.all([getSpaces(), getEvents()]).catch((error) => {
@@ -346,6 +366,41 @@ const Home: React.FC = () => {
               overflowX: 'hidden',
             }}
           >
+            {ceramic && targetSpaceExist && (
+              <MiniDashboard
+                imageUrl={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].avatar
+                }
+                spaceName={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].name
+                }
+                startTime={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].events?.edges[0].node.startTime
+                }
+                endTime={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].events.edges[0].node.endTime
+                }
+                showManage={
+                  spaces
+                    .filter(
+                      (space) => space.id === process.env.MAIN_SPACE_ID,
+                    )[0]
+                    .admin?.map((ad) => ad.id.toLowerCase())
+                    .includes(
+                      ceramic.did?.parent.toString().toLowerCase() || '',
+                    ) ?? false
+                }
+              />
+            )}
+
             <Box
               display="flex"
               flexDirection="column"
@@ -356,6 +411,7 @@ const Home: React.FC = () => {
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
+                marginTop: '20px',
               }}
             >
               <Typography
