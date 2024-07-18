@@ -6,12 +6,12 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface SessionHeaderProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
-  count: number
+  count: number;
 }
 
 const VenueHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => { },
-  count = 0
+  onToggle = (anchor: Anchor, open: boolean) => {},
+  count = 0,
 }) => {
   return (
     <Stack

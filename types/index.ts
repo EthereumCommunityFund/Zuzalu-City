@@ -107,9 +107,9 @@ export interface Space {
       node: {
         startTime: string;
         endTime: string;
-      }
-    }[]
-  }
+      };
+    }[];
+  };
 }
 
 export interface SpaceEdge {

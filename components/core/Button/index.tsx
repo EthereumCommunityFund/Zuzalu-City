@@ -30,8 +30,8 @@ const ZuButton = styled(Button)(({ theme }) => ({
     color: '#2d2d2d',
   },
   '&.MuiButton-startIcon': {
-    margin: 0
-  }
+    margin: 0,
+  },
 }));
 
 export default ZuButton;

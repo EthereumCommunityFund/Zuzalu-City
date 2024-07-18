@@ -40,7 +40,7 @@ import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import MiniDashboard from './components/MiniDashboard';
- 
+
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -317,7 +317,13 @@ const Home: React.FC = () => {
     }
   };
 
-  const targetSpaceExist = spaces && spaces.length > 0 && spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].members?.map((member) => member.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || ''))
+  const targetSpaceExist =
+    spaces &&
+    spaces.length > 0 &&
+    spaces
+      .filter((space) => space.id === process.env.MAIN_SPACE_ID)[0]
+      .members?.map((member) => member.id.toLowerCase())
+      .includes(ceramic.did?.parent.toString().toLowerCase() || '');
 
   useEffect(() => {
     document.title = 'Zuzalu City';
@@ -359,15 +365,40 @@ const Home: React.FC = () => {
               overflowX: 'hidden',
             }}
           >
-            {
-              ceramic && targetSpaceExist && <MiniDashboard
-                imageUrl={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].avatar}
-                spaceName={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].name}
-                startTime={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].events?.edges[0].node.startTime}
-                endTime={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].events.edges[0].node.endTime}
-                showManage={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].admin?.map((ad) => ad.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || '')) ?? false}
+            {ceramic && targetSpaceExist && (
+              <MiniDashboard
+                imageUrl={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].avatar
+                }
+                spaceName={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].name
+                }
+                startTime={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].events?.edges[0].node.startTime
+                }
+                endTime={
+                  spaces.filter(
+                    (space) => space.id === process.env.MAIN_SPACE_ID,
+                  )[0].events.edges[0].node.endTime
+                }
+                showManage={
+                  spaces
+                    .filter(
+                      (space) => space.id === process.env.MAIN_SPACE_ID,
+                    )[0]
+                    .admin?.map((ad) => ad.id.toLowerCase())
+                    .includes(
+                      ceramic.did?.parent.toString().toLowerCase() || '',
+                    ) ?? false
+                }
               />
-            }
+            )}
 
             <Box
               display="flex"
@@ -379,7 +410,7 @@ const Home: React.FC = () => {
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
-                marginTop: '20px'
+                marginTop: '20px',
               }}
             >
               <Typography
@@ -592,9 +623,9 @@ const Home: React.FC = () => {
                                   // filter event.startTime month equal to selected month
                                   return (
                                     dayjs(event.startTime).month() ===
-                                    dateForCalendar.month() &&
+                                      dateForCalendar.month() &&
                                     dayjs(event.startTime).year() ===
-                                    dateForCalendar.year()
+                                      dateForCalendar.year()
                                   );
                                 })
                                 .filter((event) => {
