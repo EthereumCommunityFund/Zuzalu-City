@@ -156,9 +156,14 @@ const AuthPrompt: React.FC<{}> = () => {
   }, [isConnected]);
 
   useEffect(() => {
-    if (isConnected && localStorage.getItem('username')) {
+    if (
+      isConnected &&
+      localStorage.getItem('username') &&
+      !authenticateCalled.current
+    ) {
       const authenticateUser = async () => {
         try {
+          authenticateCalled.current = true;
           await authenticate();
         } catch (error) {
           console.error('Authentication failed:', error);
