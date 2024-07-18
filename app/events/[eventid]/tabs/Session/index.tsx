@@ -1353,12 +1353,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       key={`Sesssion-GroupByDate-${date}`}
                     >
                       <Typography
-                        borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
                         padding="8px 10px"
                         variant="bodySB"
-                        bgcolor="rgba(255, 255, 255, 0.05)"
+                        bgcolor="rgba(49, 49, 49)"
                         borderRadius="10px"
-                        sx={{ opacity: 0.6 }}
+                        sx={{ position: 'sticky', top: '100px', zIndex: 10 }}
                       >
                         {date}
                       </Typography>

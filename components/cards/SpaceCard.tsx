@@ -91,7 +91,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
                     (category) =>
                       SPACE_CATEGORIES.filter(
                         (cat) => cat.value === category,
-                      )[0].label,
+                      )[0]?.label,
                   )
                   .join(', ')}
             </Typography>
