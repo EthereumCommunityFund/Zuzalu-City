@@ -108,12 +108,8 @@ const OverviewHeader = ({ event }: PropTypes) => {
     }
   };
 
-  const handleChange = (e: any) => {
-    setSessionTags(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
   };
 
   const handleSpeakerChange = (e: any) => {

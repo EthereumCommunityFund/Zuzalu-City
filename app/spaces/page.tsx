@@ -5,4 +5,4 @@ const Home = () => {
   return <DynamicSpacesPage />;
 };
 
-export default Home
+export default Home;

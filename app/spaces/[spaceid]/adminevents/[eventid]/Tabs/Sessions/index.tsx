@@ -43,7 +43,7 @@ import {
   Venue,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
-import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 import {
   FormLabel,
@@ -52,6 +52,7 @@ import {
 } from '@/components/typography/formTypography';
 import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -240,6 +241,10 @@ const Sessions = () => {
     setSelectedRoom(selectedRoom);
   };
 
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
+  };
+
   const handleDateChange = (date: Dayjs) => {
     if (date) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
@@ -378,10 +383,6 @@ const Sessions = () => {
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
-  };
-
-  const handleChange = (value: string[]) => {
-    setSessionTags(value);
   };
 
   const handleSpeakerChange = (e: any) => {
@@ -566,9 +567,7 @@ const Sessions = () => {
                     Search or create categories related to your space
                   </FormLabelDesc>
                 </Stack>
-                <Box>
-                  <SelectCategories onChange={handleChange} />
-                </Box>
+                <SelectCategories onChange={handleChange} />
               </Stack>
               <Stack spacing="10px">
                 <FormLabel>Session Description*</FormLabel>

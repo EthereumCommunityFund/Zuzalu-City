@@ -5,14 +5,17 @@
  *
  */
 export function fileDownloadHandler(content: any, fileName: any) {
-    const file = new File([content], fileName, { type: 'text/markdown', endings: 'transparent' });
-    const url = URL.createObjectURL(file);
+  const file = new File([content], fileName, {
+    type: 'text/markdown',
+    endings: 'transparent',
+  });
+  const url = URL.createObjectURL(file);
 
-    const element = document.createElement('a');
-    document.body.appendChild(element);
-    element.href = url;
-    element.download = fileName;
-    element.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(element);
+  const element = document.createElement('a');
+  document.body.appendChild(element);
+  element.href = url;
+  element.download = fileName;
+  element.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(element);
 }
