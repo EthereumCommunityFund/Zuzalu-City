@@ -29,12 +29,16 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
           Total Spaces: {formatAmount(spaceAmount)}
         </Typography>
       </Stack>
-      {
-        spaceAmount === 0 && <Stack direction={'row'} spacing={2} sx={{
-          [breakpoints.down('md')]: {
-            flexDirection: 'column',
-          },
-        }}>
+      {spaceAmount === 0 && (
+        <Stack
+          direction={'row'}
+          spacing={2}
+          sx={{
+            [breakpoints.down('md')]: {
+              flexDirection: 'column',
+            },
+          }}
+        >
           <Stack
             direction="row"
             alignItems="center"
@@ -61,7 +65,7 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
             </Stack>
           </Stack>
         </Stack>
-      }
+      )}
     </Stack>
   );
 };
