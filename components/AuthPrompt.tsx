@@ -156,6 +156,19 @@ const AuthPrompt: React.FC<{}> = () => {
   }, [isConnected]);
 
   useEffect(() => {
+    if (isConnected && localStorage.getItem('username')) {
+      const authenticateUser = async () => {
+        try {
+          await authenticate();
+        } catch (error) {
+          console.error('Authentication failed:', error);
+        }
+      };
+      authenticateUser();
+    }
+  }, [authenticate, isConnected]);
+
+  useEffect(() => {
     setAuthState(newUser ? 'NEW_USER' : 'Logged_In');
   }, [newUser]);
 

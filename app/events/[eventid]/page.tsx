@@ -99,7 +99,8 @@ const Home = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [ceramic?.did?.parent, getEventDetailInfo]);
+
   return (
     <Stack color="white">
       <Thumbnail name={eventData?.title} />
