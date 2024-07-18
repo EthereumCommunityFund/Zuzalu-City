@@ -82,9 +82,7 @@ const Sessions = () => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<
-    Array<{ value: string; label: string }>
-  >([]);
+  const [sessionTags, setSessionTags] = useState<Array<string>>([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
@@ -242,6 +240,10 @@ const Sessions = () => {
     )[0];
     setSelectedRoom(selectedRoom);
   };
+
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
+  }
 
   const handleDateChange = (date: Dayjs) => {
     if (date) {
@@ -446,7 +448,7 @@ const Sessions = () => {
       endTime: sessionEndTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       profileId,
       eventId,
-      tags: sessionTags.map((item) => item.label).join(','),
+      tags: sessionTags.join(','),
       type: sessionType,
       status: sessoinStatus,
       format,
@@ -565,11 +567,7 @@ const Sessions = () => {
                     Search or create categories related to your space
                   </FormLabelDesc>
                 </Stack>
-                <ZuAutoCompleteInput
-                  optionVals={SPACE_CATEGORIES}
-                  val={sessionTags}
-                  setVal={setSessionTags}
-                />
+                <SelectCategories onChange={handleChange} />
               </Stack>
               <Stack spacing="10px">
                 <FormLabel>Session Description*</FormLabel>

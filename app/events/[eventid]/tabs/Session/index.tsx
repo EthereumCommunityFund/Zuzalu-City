@@ -76,6 +76,7 @@ import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
 import SlotDate from '@/components/calendar/SlotDate';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
+import SelectCategories from '@/components/select/selectCategories';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -123,9 +124,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<
-    Array<{ value: string; label: string }>
-  >([]);
+  const [sessionTags, setSessionTags] = useState<Array<string>>([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
@@ -267,12 +266,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     }
   };
 
-  const handleChange = (e: any) => {
-    setSessionTags(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
   };
 
   const handleSpeakerChange = (e: any) => {
@@ -338,7 +333,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         : null,
       profileId,
       eventId,
-      tags: sessionTags.map((item) => item.label).join(','),
+      tags: sessionTags.join(','),
       type: sessionType,
       format,
       track: sessionTrack,
@@ -494,11 +489,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     Search or create categories related to your space
                   </Typography>
                 </Stack>
-                <ZuAutoCompleteInput
-                  optionVals={SPACE_CATEGORIES}
-                  val={sessionTags}
-                  setVal={setSessionTags}
-                />
+                <SelectCategories onChange={handleChange} />
               </Stack>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Description*</Typography>

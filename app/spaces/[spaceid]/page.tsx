@@ -477,7 +477,7 @@ export default function SpaceDetailPage() {
               <EventCardSkeleton />
             </Box>
           ) : (
-            events.length && (
+            events.length > 0 ? (
               <Box
                 sx={{
                   padding: '20px',
@@ -599,7 +599,7 @@ export default function SpaceDetailPage() {
                   {/*</Box>*/}
                 </Box>
               </Box>
-            )
+            ) : <></>
           )}
         </Box>
       </Box>
