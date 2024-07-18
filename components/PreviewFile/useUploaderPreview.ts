@@ -20,8 +20,18 @@ export const useUploaderPreview = (link: string = '') => {
     setFile,
 
     getUrl() {
-      if (file && file.status === Uploader3FileStatus.done) {
-        return file.url;
+      if (file) {
+        if (file.status === Uploader3FileStatus.uploading) {
+          return file.thumbData || file.imageData;
+        } else if (file.status === Uploader3FileStatus.done) {
+          return file.url;
+        } else if (file.status === Uploader3FileStatus.cropped) {
+          return file.thumbData;
+        } else if (file.status === Uploader3FileStatus.notCropped) {
+          return file.previewUrl;
+        } else {
+          return file.previewUrl;
+        }
       }
       return url;
     },
