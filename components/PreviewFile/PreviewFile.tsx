@@ -5,7 +5,7 @@ import DownloadingRoundedIcon from '@mui/icons-material/DownloadingRounded';
 import styled from '@emotion/styled';
 
 const LoadingWrapper = styled.div`
-  display: ${(props: { isLoading: boolean; isError: boolean }) =>
+  display: ${(props: { isLoading?: boolean; isError?: boolean }) =>
     props.isLoading || props.isError ? 'flex' : 'none'};
   position: absolute;
   top: 0;
@@ -16,10 +16,10 @@ const LoadingWrapper = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
   align-items: center;
   justify-content: center;
-  color: ${(props: { isError: boolean }) => (props.isError ? 'red' : 'white')};
+  color: ${(props: { isError?: boolean }) => (props.isError ? 'red' : 'white')};
 
   .loading-icon {
-    ${(props: { isLoading: boolean }) => {
+    ${(props: { isLoading?: boolean }) => {
       if (props.isLoading) {
         return `animation: blink 1s infinite;`;
       }
