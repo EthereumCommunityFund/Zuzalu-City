@@ -322,7 +322,7 @@ const Home: React.FC = () => {
     spaces.length > 0 &&
     spaces
       .filter((space) => space.id === process.env.MAIN_SPACE_ID)[0]
-      .members?.map((member) => member.id.toLowerCase())
+      ?.members?.map((member) => member.id.toLowerCase())
       .includes(ceramic.did?.parent.toString().toLowerCase() || '');
 
   useEffect(() => {
