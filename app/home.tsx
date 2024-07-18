@@ -40,7 +40,7 @@ import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import MiniDashboard from './components/MiniDashboard';
-
+ 
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -75,8 +75,6 @@ const Home: React.FC = () => {
     username,
     createProfile,
   } = useCeramicContext();
-
-  console.log('profile: ', profile?.id)
 
   const getSpaces = async () => {
     try {
@@ -121,7 +119,6 @@ const Home: React.FC = () => {
         }
       `);
       if ('spaceIndex' in response.data) {
-        console.log('response.data: ', response.data);
         const spaceData: SpaceData = response.data as SpaceData;
         const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
           (edge) => edge.node,
@@ -320,6 +317,8 @@ const Home: React.FC = () => {
     }
   };
 
+  const targetSpaceExist = spaces && spaces.length > 0 && spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].members?.map((member) => member.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || ''))
+
   useEffect(() => {
     document.title = 'Zuzalu City';
     Promise.all([getSpaces(), getEvents()]).catch((error) => {
@@ -361,12 +360,12 @@ const Home: React.FC = () => {
             }}
           >
             {
-              ceramic && spaces && spaces.length > 0 && spaces[0].members?.map((member) => member.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || '')) && <MiniDashboard
-                imageUrl={spaces[0].avatar}
-                spaceName={spaces[0].name}
-                startTime={spaces[0].events.edges[0].node.startTime}
-                endTime={spaces[0].events.edges[0].node.endTime}
-                showManage={spaces[0].admin?.map((ad) => ad.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || '')) ?? false}
+              ceramic && targetSpaceExist && <MiniDashboard
+                imageUrl={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].avatar}
+                spaceName={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].name}
+                startTime={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].events?.edges[0].node.startTime}
+                endTime={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].events.edges[0].node.endTime}
+                showManage={spaces.filter((space) => space.id === process.env.MAIN_SPACE_ID)[0].admin?.map((ad) => ad.id.toLowerCase()).includes((ceramic.did?.parent.toString().toLowerCase() || '')) ?? false}
               />
             }
 
