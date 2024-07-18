@@ -20,6 +20,7 @@ const Navbar = ({ spaceName = '' }: PropTypes) => {
       gap="20px"
       alignItems="center"
       borderBottom="1px solid #383838"
+      paddingX={'20px'}
     >
       <Button
         onClick={() =>

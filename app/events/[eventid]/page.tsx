@@ -40,6 +40,7 @@ const Home = () => {
               timezone
               title
               tracks
+              contractID
               members{
               id
               }
@@ -80,6 +81,7 @@ const Home = () => {
       console.log('Failed to fetch event: ', err);
     }
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -106,9 +108,7 @@ const Home = () => {
         setTabName={setTabName}
         canViewSessions={sessionView}
       />
-      {tabName === 'About' && (
-        <About eventData={eventData} setEventData={setEventData} />
-      )}
+      {tabName === 'About' && <About eventData={eventData} />}
       {tabName === 'Sessions' && <Sessions eventData={eventData} />}
     </Stack>
   );

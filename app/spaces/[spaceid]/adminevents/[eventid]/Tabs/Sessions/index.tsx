@@ -13,6 +13,8 @@ import {
   Select,
   Chip,
   MenuItem,
+  Radio,
+  useTheme,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -463,12 +465,17 @@ const Sessions = () => {
   };
 
   const List = (anchor: Anchor) => {
+    const { breakpoints } = useTheme();
+
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box
           sx={{
             width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
             backgroundColor: '#222222',
+            [breakpoints.down('md')]: {
+              width: '100%',
+            },
           }}
           role="presentation"
           zIndex="100"
@@ -645,8 +652,16 @@ const Sessions = () => {
             >
               <FormTitle>Location & Booking</FormTitle>
               <Stack spacing="10px">
-                <FormLabel>Session Format*</FormLabel>
-                <Box display="flex" justifyContent="space-between" gap="20px">
+                <Typography variant="bodyBB">Session Format*</Typography>
+                <Box
+                  display="flex"
+                  gap="20px"
+                  sx={{
+                    [breakpoints.down('md')]: {
+                      flexDirection: 'column',
+                    },
+                  }}
+                >
                   <Box
                     bgcolor={person ? '#484E45' : '#373737'}
                     borderRadius="10px"
@@ -1454,7 +1469,7 @@ const Sessions = () => {
   };
 
   return (
-    <Stack direction={'column'} spacing="40px">
+    <Stack direction={'column'} gap={6} padding={'30px'}>
       <SessionHeader onToggle={toggleDrawer} />
       <SessionList
         sessions={sessions}
