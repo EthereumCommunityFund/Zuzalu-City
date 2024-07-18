@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
-  Stack,
   Box,
-  useTheme,
-  Typography,
   Button,
   Skeleton,
+  Stack,
+  Typography,
+  useTheme,
 } from '@mui/material';
 import { ZuInput } from '@/components/core';
 import TextEditor from '@/components/editor/editor';
@@ -14,7 +14,8 @@ import { OutputData } from '@editorjs/editorjs';
 import { Uploader3 } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Space, SpaceData } from '@/types';
+import { Space } from '@/types';
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 
 const Overview = () => {
   const theme = useTheme();
@@ -24,12 +25,9 @@ const Overview = () => {
   const [space, setSpace] = useState<Space>();
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const [avatarURL, setAvatarURL] = useState<string | undefined>(
-    space ? space.avatar : '',
-  );
-  const [bannerURL, setBannerURL] = useState<string | undefined>(
-    space ? space.banner : '',
-  );
+  const avatarUploader = useUploaderPreview('');
+  const bannerUploader = useUploaderPreview('');
+
   const [editorValue, setEditorValue] = useState<OutputData>();
   const [editor, setEditorInst] = useState<any>();
 
@@ -65,6 +63,8 @@ const Overview = () => {
       const editSpace: Space = response.data.node as Space;
       setSpace(editSpace);
       setName(editSpace.name);
+      avatarUploader.setUrl(editSpace.avatar);
+      bannerUploader.setUrl(editSpace.banner);
       const descriptionData = JSON.parse(
         editSpace.description.replaceAll('\\"', '"'),
       );
@@ -266,8 +266,11 @@ const Overview = () => {
                 size: { width: 400, height: 400 },
                 aspectRatio: 1,
               }} // must be false when accept is svg
-              onComplete={(result: any) => {
-                setAvatarURL(result?.url);
+              onUpload={(file) => {
+                avatarUploader.setFile(file);
+              }}
+              onComplete={(file) => {
+                avatarUploader.setFile(file);
               }}
             >
               <Button
@@ -283,12 +286,9 @@ const Overview = () => {
               </Button>
             </Uploader3>
             <PreviewFile
-              sx={{
-                width: '150px',
-                height: '150px',
-                borderRadius: '60%',
-              }}
-              file={avatarURL ? avatarURL : space?.avatar}
+              sx={{ width: '150px', height: '150px', borderRadius: '60%' }}
+              file={avatarUploader.file}
+              src={avatarUploader.url}
             />
           </Box>
         </Box>
@@ -321,8 +321,11 @@ const Overview = () => {
                 size: { width: 600, height: 400 },
                 aspectRatio: 740 / 200,
               }}
-              onComplete={(result: any) => {
-                setBannerURL(result?.url);
+              onUpload={(file) => {
+                bannerUploader.setFile(file);
+              }}
+              onComplete={(file) => {
+                bannerUploader.setFile(file);
               }}
             >
               <Button
@@ -339,7 +342,8 @@ const Overview = () => {
             </Uploader3>
             <PreviewFile
               sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
-              file={bannerURL ? bannerURL : space?.banner}
+              file={bannerUploader.file}
+              src={bannerUploader.url}
             />
           </Box>
         </Box>
