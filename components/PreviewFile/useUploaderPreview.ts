@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import type {
+import {
   CroppedFile,
   SelectedFile,
+  Uploader3FileStatus,
   UploadFile,
   UploadResult,
 } from '@lxdao/uploader3';
@@ -17,5 +18,12 @@ export const useUploaderPreview = (link: string = '') => {
     setUrl,
     file,
     setFile,
+
+    getUrl() {
+      if (file && file.status === Uploader3FileStatus.done) {
+        return file.url;
+      }
+      return url;
+    },
   };
 };

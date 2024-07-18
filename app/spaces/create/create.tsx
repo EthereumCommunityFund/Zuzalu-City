@@ -29,6 +29,8 @@ import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
+import { Uploader3 } from '@lxdao/uploader3';
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 
 const validationSchema = yup.object({
   name: yup
@@ -51,8 +53,8 @@ const Create = () => {
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const [avatarURL, setAvatarURL] = useState<string>();
-  const [bannerURL, setBannerURL] = useState<string>();
+  const avatarUploader = useUploaderPreview('');
+  const bannerUploader = useUploaderPreview('');
   const [description, setDescription] = useState<OutputData>();
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
@@ -67,45 +69,6 @@ const Create = () => {
   const adminId = ceramic?.did?.parent || '';
   const socialLinksRef = useRef<HTMLDivElement>(null);
   const customLinksRef = useRef<HTMLDivElement>(null);
-  const [uploading, setUploading] = useState({
-    avatar: false,
-    banner: false,
-  });
-
-  const uploadFile = async (fileToUpload: File, type: string) => {
-    try {
-      setUploading((v) => ({
-        ...v,
-        [type]: true,
-      }));
-      const data = new FormData();
-      data.set('file', fileToUpload);
-      const res = await fetch('/api/pinata', {
-        method: 'POST',
-        body: data,
-      });
-      const resData = await res.json();
-      if (type === 'avatar') {
-        setAvatarURL(resData.url);
-      } else {
-        setBannerURL(resData.url);
-      }
-    } catch (e) {
-      console.log(e);
-      alert('Trouble uploading file');
-    } finally {
-      setUploading((v) => ({
-        ...v,
-        [type]: false,
-      }));
-    }
-  };
-
-  const handleImageChange = (e: any, type: string) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    uploadFile(file, type);
-  };
 
   const createSpace = async () => {
     let strDesc: any = JSON.stringify(description);
@@ -202,10 +165,10 @@ const Create = () => {
               admin: adminId,
               profileId: profileId,
               avatar:
-                avatarURL ||
+                avatarUploader.getUrl() ||
                 'https://nftstorage.link/ipfs/bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe',
               banner:
-                bannerURL ||
+                bannerUploader.getUrl() ||
                 'https://nftstorage.link/ipfs/bafybeifqan4j2n7gygwkmekcty3dsp7v4rxbjimpo7nrktclwxgxreiyay',
               category: categories.join(', '),
             },
@@ -380,31 +343,41 @@ const Create = () => {
                   gap: '10px',
                 }}
               >
-                <Button
-                  component="label"
-                  tabIndex={-1}
-                  disabled={uploading.avatar}
-                  sx={{
-                    color: 'white',
-                    borderRadius: '10px',
-                    backgroundColor: '#373737',
-                    border: '1px solid #383838',
-                    width: '140px',
+                <Uploader3
+                  accept={['.gif', '.jpeg', '.gif', '.png']}
+                  api={'/api/file/upload'}
+                  multiple={false}
+                  crop={{
+                    size: { width: 400, height: 400 },
+                    aspectRatio: 1,
+                  }} // must be false when accept is svg
+                  onUpload={(file) => {
+                    avatarUploader.setFile(file);
+                  }}
+                  onComplete={(file) => {
+                    avatarUploader.setFile(file);
                   }}
                 >
-                  {uploading.avatar ? 'Uploading...' : 'Upload Image'}
-                  <VisuallyHiddenInput
-                    type="file"
-                    onChange={(e) => handleImageChange(e, 'avatar')}
-                  />
-                </Button>
+                  <Button
+                    component="span"
+                    sx={{
+                      color: 'white',
+                      borderRadius: '10px',
+                      backgroundColor: '#373737',
+                      border: '1px solid #383838',
+                    }}
+                  >
+                    Upload Image
+                  </Button>
+                </Uploader3>
                 <PreviewFile
                   sx={{
                     width: '150px',
                     height: '150px',
                     borderRadius: '60%',
                   }}
-                  src={avatarURL}
+                  src={avatarUploader.url}
+                  file={avatarUploader.file}
                 />
               </Box>
             </Stack>
@@ -422,27 +395,37 @@ const Create = () => {
                   gap: '10px',
                 }}
               >
-                <Button
-                  component="label"
-                  tabIndex={-1}
-                  disabled={uploading.banner}
-                  sx={{
-                    color: 'white',
-                    borderRadius: '10px',
-                    backgroundColor: '#373737',
-                    border: '1px solid #383838',
-                    width: '140px',
+                <Uploader3
+                  accept={['.gif', '.jpeg', '.gif', '.png']}
+                  api={'/api/file/upload'}
+                  multiple={false}
+                  crop={{
+                    size: { width: 600, height: 400 },
+                    aspectRatio: 740 / 200,
+                  }}
+                  onUpload={(file) => {
+                    bannerUploader.setFile(file);
+                  }}
+                  onComplete={(file) => {
+                    bannerUploader.setFile(file);
                   }}
                 >
-                  {uploading.banner ? 'Uploading...' : 'Upload Image'}
-                  <VisuallyHiddenInput
-                    type="file"
-                    onChange={(e) => handleImageChange(e, 'banner')}
-                  />
-                </Button>
+                  <Button
+                    component="span"
+                    sx={{
+                      color: 'white',
+                      borderRadius: '10px',
+                      backgroundColor: '#373737',
+                      border: '1px solid #383838',
+                    }}
+                  >
+                    Upload Image
+                  </Button>
+                </Uploader3>
                 <PreviewFile
                   sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
-                  src={bannerURL}
+                  src={bannerUploader.url}
+                  file={bannerUploader.file}
                 />
               </Box>
             </Stack>
