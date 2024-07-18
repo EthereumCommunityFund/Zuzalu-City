@@ -201,7 +201,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
           name,
           tags: tags.join(','),
           eventId,
-          avatar: avatarURL,
+          avatar: avatarUploader.getUrl(),
           bookings: JSON.stringify(bookings),
           capacity,
         });

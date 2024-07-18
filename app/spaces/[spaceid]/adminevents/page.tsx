@@ -408,7 +408,7 @@ const Home = () => {
                   spaceId: spaceId,
                   profileId: profileId,
                   image_url:
-                    avatarURL ||
+                    avatarUploader.getUrl() ||
                     'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
