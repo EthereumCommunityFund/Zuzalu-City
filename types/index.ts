@@ -104,6 +104,14 @@ export interface Space {
   admin?: {
     id: string;
   }[];
+  events: {
+    edges: {
+      node: {
+        startTime: string;
+        endTime: string;
+      };
+    }[];
+  };
 }
 
 export interface SpaceEdge {
