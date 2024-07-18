@@ -15,6 +15,7 @@ import {
 } from 'components/icons';
 import { VenueDTO } from '@/types';
 import VenueCard from './VenueCard';
+import { ZuInput } from '@/components/core';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -69,8 +70,18 @@ const VenueList: React.FC<VenueListProps> = ({
           </Typography>
         </Stack>
       ) : (
-        <Stack spacing="20px">
-          <Stack
+        <Stack paddingY="20px" spacing="10px">
+          <ZuInput
+            startAdornment={
+              <Stack
+                sx={{
+                  paddingRight: '10px'
+                }}
+              >
+                <SearchIcon />
+              </Stack>
+            }
+            placeholder='Search Venue Spaces'
             sx={{
               flexDirection: 'column',
               gap: '10px',

@@ -80,7 +80,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const [name, setName] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [capacity, setCapacity] = useState<number>(0);
-  const [venues, setVenues] = useState<Venue[]>([]);
   const validateTimeRanges = (ranges: AvailableType[]) => {
     const errors = ranges.map((range, index) => {
       const startTime = new Date(range.startTime).getTime();
