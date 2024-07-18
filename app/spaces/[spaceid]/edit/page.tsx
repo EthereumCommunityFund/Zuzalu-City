@@ -19,9 +19,9 @@ export default function SpaceEditPage() {
   };
 
   return (
-    <Stack flexDirection="row" width={'100%'}>
+    <Stack flexDirection="row" width={'100%'} height={'calc(100vh - 50px)'}>
       <SpaceEditSidebar tabName={tabName} setTabName={setTabName} />
-      {renderPage()}
+      <Stack sx={{ width: '100%', overflowY: 'auto' }}>{renderPage()}</Stack>
     </Stack>
   );
 }

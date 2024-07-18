@@ -119,6 +119,14 @@ const TextEditor: FC<TextEditorPropTypes> = ({
     };
   }, []);
 
+  // useEffect(() => {
+  //   if (ref.current) {
+  //     ref.current.isReady.then(() => {
+  //       ref.current.render(value);
+  //     });
+  //   }
+  // }, [value]);
+
   const applyCustomStyles = (isPrimary: boolean) => {
     const editorContent = document.querySelector(
       '.codex-editor__redactor',

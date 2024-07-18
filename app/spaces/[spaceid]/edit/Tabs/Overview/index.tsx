@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Box, useTheme, Typography, Button } from '@mui/material';
+import {
+  Stack,
+  Box,
+  useTheme,
+  Typography,
+  Button,
+  Skeleton,
+} from '@mui/material';
 import { ZuInput } from '@/components/core';
 import TextEditor from '@/components/editor/editor';
 import { OutputData } from '@editorjs/editorjs';
@@ -23,7 +30,7 @@ const Overview = () => {
   const [bannerURL, setBannerURL] = useState<string | undefined>(
     space ? space.banner : '',
   );
-  const [description, setDescription] = useState<OutputData>();
+  const [editorValue, setEditorValue] = useState<OutputData>();
   const [editor, setEditorInst] = useState<any>();
 
   const getSpace = async () => {
@@ -58,7 +65,10 @@ const Overview = () => {
       const editSpace: Space = response.data.node as Space;
       setSpace(editSpace);
       setName(editSpace.name);
-      setDescription(JSON.parse(editSpace.description.replaceAll('\\"', '"')));
+      const descriptionData = JSON.parse(
+        editSpace.description.replaceAll('\\"', '"'),
+      );
+      setEditorValue(descriptionData);
       setTagline(editSpace.tagline);
     } catch (error) {
       console.error('Failed to fetch spaces:', error);
@@ -72,7 +82,11 @@ const Overview = () => {
   }, []);
 
   return (
-    <Stack spacing="20px" padding="40px" sx={{ width: '100%', maxWidth: 800 }}>
+    <Stack
+      spacing="20px"
+      padding="40px"
+      sx={{ width: '100%', maxWidth: 762, margin: '0 auto' }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -148,22 +162,33 @@ const Overview = () => {
           This is a description greeting for new members. You can also update
           descriptions.
         </Typography>
-        <TextEditor
-          holder="space_description"
-          placeholder="Write Space Description"
-          sx={{
-            width: '100%',
-            height: 'auto',
-            minHeight: '270px',
-            backgroundColor: '#ffffff0d',
-            fontFamily: 'Inter',
-            color: 'white',
-            padding: '10px',
-            borderRadius: '10px',
-          }}
-          value={description}
-          setData={setDescription}
-        />
+        {/* why?  first render is empty */}
+        {editorValue ? (
+          <TextEditor
+            holder="space_description"
+            placeholder="Write Space Description"
+            sx={{
+              backgroundColor: '#ffffff0d',
+              fontFamily: 'Inter',
+              color: 'white',
+              padding: '12px',
+              borderRadius: '10px',
+              height: 'auto',
+              minHeight: '270px',
+            }}
+            value={editorValue}
+            setData={setEditorValue}
+          />
+        ) : (
+          <Skeleton
+            variant="rectangular"
+            height={270}
+            sx={{
+              backgroundColor: '#ffffff0d',
+              borderRadius: '10px',
+            }}
+          />
+        )}
         {/* <Stack
           sx={{
             display: 'flex',
@@ -279,7 +304,7 @@ const Overview = () => {
             Space Main Banner
           </Typography>
           <Typography fontSize={'13px'} fontWeight={500} lineHeight={'140%'}>
-            Recommend size of 20 x 220 Accept PNG GIF or JPEG
+            Recommend min of 730x220 Accept PNG GIF or JPEG
           </Typography>
           <Box
             sx={{

@@ -413,7 +413,7 @@ const Create = () => {
                 Space Banner
               </Typography>
               <Typography color="text.secondary" variant="body2">
-                Recommend min of 730x220 (1:1 Ratio)
+                Recommend min of 730x220 Accept PNG GIF or JPEG
               </Typography>
               <Box
                 sx={{
