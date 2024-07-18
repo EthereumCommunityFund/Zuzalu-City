@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { Zuconfig } from '@/constant';
 import { zuAuthPopup } from '@pcd/zuauth/client';
+import { authenticate } from '@pcd/zuauth/server';
 
 type ZuAuthState =
   | 'logged out'
@@ -20,6 +21,7 @@ type ZuAuthState =
 
 interface ZuAuthContextType {
   pcdStr: string;
+  nullifierHash: string;
   authState: ZuAuthState;
   log: string;
   user: Record<string, string> | undefined;
@@ -29,6 +31,7 @@ interface ZuAuthContextType {
 
 const ZupassContext = createContext<ZuAuthContextType>({
   pcdStr: '',
+  nullifierHash: '',
   authState: 'logged out',
   log: '',
   user: undefined,
@@ -38,6 +41,7 @@ const ZupassContext = createContext<ZuAuthContextType>({
 
 export const ZupassProvider = ({ children }: any) => {
   const [pcdStr, setPcdStr] = useState<string>('');
+  const [nullifierHash, setNullifierHash] = useState<string>('');
   const [authState, setAuthState] = useState<ZuAuthState>('logged out');
   const [log, addLog] = useReducer((currentLog: string, toAdd: string) => {
     return `${currentLog}${currentLog === '' ? '' : '\n'}${toAdd}`;
@@ -64,18 +68,20 @@ export const ZupassProvider = ({ children }: any) => {
           watermark,
           config: Zuconfig,
         });
-
         if (result.type === 'pcd') {
           addLog('Received PCD');
           setPcdStr(result.pcdStr);
-
-          const loginResult = await fetch('/api/login', {
+          /*const loginResult = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pcd: result.pcdStr }),
           });
-
-          setUser((await loginResult.json()).user);
+          console.log('Response status:', loginResult.status);
+          console.log('here', loginResult);
+          setUser((await loginResult.json()).user);*/
+          const pcd = await authenticate(result.pcdStr, watermark, Zuconfig);
+          console.log(pcd);
+          setNullifierHash(pcd.claim.nullifierHash as string);
           addLog('Authenticated successfully');
           setAuthState('authenticated');
         } else if (result.type === 'popupBlocked') {
@@ -108,7 +114,7 @@ export const ZupassProvider = ({ children }: any) => {
 
   return (
     <ZupassContext.Provider
-      value={{ pcdStr, authState, log, user, auth, logout }}
+      value={{ pcdStr, authState, log, user, auth, logout, nullifierHash }}
     >
       {children}
     </ZupassContext.Provider>

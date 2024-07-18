@@ -160,7 +160,7 @@ export interface SessionData {
 }
 
 export const ironOptions = {
-  cookieName: 'zuauth_example',
+  cookieName: 'zuauth',
   password: process.env.SECRET_COOKIE_PASSWORD as string,
   cookieOptions: {
     secure: process.env.NEXT_PUBLIC_ENV === 'production',

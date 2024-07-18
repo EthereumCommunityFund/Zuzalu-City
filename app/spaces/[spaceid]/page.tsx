@@ -77,7 +77,10 @@ export default function SpaceDetailPage() {
             github
             discord
             ens
-            admin {
+            admins {
+              id
+            }
+            superAdmin {
               id
             }
             events(first: 10) {
@@ -130,9 +133,13 @@ export default function SpaceDetailPage() {
       setCurrentHref(window.location.href);
       const space = await getSpaceByID();
       document.title = space?.name + ' - ' + 'Zuzalu City';
-      const admins = space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
+      const admins =
+        space?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+      const superAdmins =
+        space?.superAdmin?.map((superAdmin) => superAdmin.id.toLowerCase()) ||
+        [];
       const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-      if (admins.includes(userDID)) {
+      if (admins.includes(userDID) || superAdmins.includes(userDID)) {
         setIsAdmin(true);
       }
     };

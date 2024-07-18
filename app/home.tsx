@@ -106,6 +106,7 @@ const Home: React.FC = () => {
           }
         }
       `);
+      console.log(response);
       if ('spaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
         const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(

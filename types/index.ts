@@ -57,6 +57,9 @@ export interface Event {
   members?: {
     id: string;
   }[];
+  superAdmin?: {
+    id: string;
+  }[];
 }
 
 export interface EventEdge {
@@ -99,7 +102,10 @@ export interface Space {
   members?: {
     id: string;
   }[];
-  admin?: {
+  admins?: {
+    id: string;
+  }[];
+  superAdmin?: {
     id: string;
   }[];
 }
@@ -239,4 +245,28 @@ export interface IProps {
   setTokenId?: React.Dispatch<React.SetStateAction<string>> | any;
   ticketMinted?: any[];
   setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
+}
+
+export interface SocialLinks {
+  [key: string]: string;
+}
+
+export interface CreateEventRequest {
+  name: string;
+  tagline: string;
+  participant: number;
+  max_participant: number;
+  min_participant: number;
+  external_url: string;
+  strDesc: string;
+  spaceId: string;
+  profileId: string;
+  avatarURL: string;
+  startTime: string;
+  endTime: string;
+  socialLinks: SocialLinks;
+  adminId: string;
+  tracks: string[];
+  person: boolean;
+  locations: string[];
 }

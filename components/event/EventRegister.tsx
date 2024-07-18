@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack, Typography, Box, Divider } from '@mui/material';
 import { ZuButton } from 'components/core';
 import {
@@ -11,7 +11,7 @@ import Ticket from './Ticket';
 import { ChevronUpIcon } from '../icons/ChevronUp';
 import BpCheckbox from './Checkbox';
 import { Anchor } from '@/types';
-
+import { useZupassContext } from '@/context/ZupassContext';
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
   setWhitelist?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -30,6 +30,17 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   const handleClick = () => {
     window.open(external_url, '_blank');
   };
+  const handleZupass = () => {
+    auth();
+  };
+  const { pcdStr, authState, log, user, auth, logout, nullifierHash } =
+    useZupassContext();
+
+  useEffect(() => {
+    if (nullifierHash) {
+      console.log(nullifierHash, 'my nullifierhash');
+    }
+  }, [nullifierHash]);
   return (
     <Stack
       borderRadius="10px"
@@ -223,6 +234,17 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             onClick={handleClick}
           >
             Register For Event
+          </ZuButton>
+          <ZuButton
+            sx={{
+              backgroundColor: '#373b36',
+              color: '#D7FFC4',
+              width: '100%',
+            }}
+            startIcon={<RightArrowCircleIcon color="#D7FFC4" />}
+            onClick={handleZupass}
+          >
+            Zupass Verify
           </ZuButton>
           {/*<Typography textAlign="center" variant="caption">
             OR
