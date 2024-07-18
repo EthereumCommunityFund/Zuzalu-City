@@ -222,8 +222,9 @@ const Venue: React.FC = () => {
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    src={avatarUploader.url}
-                    file={avatarUploader.file}
+                    src={avatarUploader.getUrl()}
+                    isError={avatarUploader.isError()}
+                    isLoading={avatarUploader.isLoading()}
                   />
                 </Box>
               </Stack>

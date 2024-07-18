@@ -24,10 +24,7 @@ import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
-import Checkbox from '@mui/material/Checkbox';
-import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
 import { Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
@@ -376,8 +373,9 @@ const Create = () => {
                     height: '150px',
                     borderRadius: '60%',
                   }}
-                  src={avatarUploader.url}
-                  file={avatarUploader.file}
+                  src={avatarUploader.getUrl()}
+                  isError={avatarUploader.isError()}
+                  isLoading={avatarUploader.isLoading()}
                 />
               </Box>
             </Stack>
@@ -424,8 +422,9 @@ const Create = () => {
                 </Uploader3>
                 <PreviewFile
                   sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
-                  src={bannerUploader.url}
-                  file={bannerUploader.file}
+                  src={bannerUploader.getUrl()}
+                  isError={bannerUploader.isError()}
+                  isLoading={bannerUploader.isLoading()}
                 />
               </Box>
             </Stack>

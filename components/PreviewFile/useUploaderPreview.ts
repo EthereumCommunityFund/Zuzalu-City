@@ -19,7 +19,7 @@ export const useUploaderPreview = (link: string = '') => {
     file,
     setFile,
 
-    getUrl() {
+    getUrl(defaultUrl: string = '') {
       if (file) {
         if (file.status === Uploader3FileStatus.uploading) {
           return file.thumbData || file.imageData;
@@ -33,7 +33,13 @@ export const useUploaderPreview = (link: string = '') => {
           return file.previewUrl;
         }
       }
-      return url;
+      return url || defaultUrl;
+    },
+    isLoading() {
+      return file?.status === Uploader3FileStatus.uploading;
+    },
+    isError() {
+      return file?.status === Uploader3FileStatus.error;
     },
   };
 };
