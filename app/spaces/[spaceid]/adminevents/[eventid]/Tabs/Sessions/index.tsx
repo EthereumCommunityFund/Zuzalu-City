@@ -243,7 +243,7 @@ const Sessions = () => {
 
   const handleChange = (val: string[]) => {
     setSessionTags(val);
-  }
+  };
 
   const handleDateChange = (date: Dayjs) => {
     if (date) {
