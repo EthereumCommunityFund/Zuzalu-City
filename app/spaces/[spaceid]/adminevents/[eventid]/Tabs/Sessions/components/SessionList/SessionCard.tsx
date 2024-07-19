@@ -13,7 +13,6 @@ interface SessionCardProps {
 const SessionCard: React.FC<SessionCardProps> = ({
   session,
   setSelectedSession,
-  timezone,
 }) => {
   return (
     <Stack
