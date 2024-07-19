@@ -1,7 +1,7 @@
 import { AddAdminRequest } from '@/types';
 import axiosInstance from '@/utils/axiosInstance';
 import axios from 'axios';
-export const updateZupassMember = async (addAdminInput: AddAdminRequest) => {
+export const updateAdmin = async (addAdminInput: AddAdminRequest) => {
   try {
     const response = await axiosInstance.post(
       '/api/event/updateAdmin',

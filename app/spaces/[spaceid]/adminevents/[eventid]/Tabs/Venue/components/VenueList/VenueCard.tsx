@@ -68,9 +68,9 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
             </Stack>
           ))}
         </Stack>
-        <Typography variant="bodyS">
+        {/*<Typography variant="bodyS">
           Sessions Booked: {sessions.length} Capacity: {venue.capacity}
-        </Typography>
+        </Typography>*/}
       </Stack>
       <Stack
         direction="row"

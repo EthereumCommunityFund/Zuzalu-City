@@ -10,7 +10,7 @@ import { RuntimeCompositeDefinition } from '@composedb/types';
 import { definition } from '@/composites/definition.js';
 import { ComposeClient } from '@composedb/client';
 
-const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
+export const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
 export const ceramicUrl =
   (isDev
     ? process.env.NEXT_PUBLIC_CERAMIC_URL_DEV

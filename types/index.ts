@@ -258,7 +258,8 @@ export interface IProps {
 }
 
 export interface SocialLinks {
-  [key: string]: string;
+  title: string;
+  links: string;
 }
 
 export interface CreateEventRequest {

@@ -52,6 +52,9 @@ export async function POST(req: NextRequest) {
             members {
               id
             }
+            superAdmin{
+            id
+            }
         }
       }
     }
@@ -67,7 +70,12 @@ export async function POST(req: NextRequest) {
       const members =
         response.data.node.members?.map((member) => member.id.toLowerCase()) ||
         [];
+      const superAdmins =
+        response.data.node.superAdmin?.map((superAdmin) =>
+          superAdmin.id.toLowerCase(),
+        ) || [];
       if (
+        !superAdmins.includes(userDID.toLowerCase()) &&
         !admins.includes(userDID.toLowerCase()) &&
         !members.includes(userDID.toLowerCase())
       ) {

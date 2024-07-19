@@ -82,16 +82,21 @@ const Create = () => {
       socialLinksRef.current.children.length > 1
     ) {
       for (let i = 0; i < socialLinksRef.current.children.length - 1; i++) {
-        const key =
-          socialLinksRef.current.children[i].children[0].querySelector(
-            'input',
-          )?.value;
-        const value =
-          socialLinksRef.current.children[i].children[1].querySelector(
-            'input',
-          )?.value;
-        if (key) {
-          socialLinks = { ...socialLinks, [key]: value };
+        const firstChild = socialLinksRef.current.children[i].children[0];
+        const secondChild = socialLinksRef.current.children[i].children[1];
+
+        if (firstChild && secondChild) {
+          const key =
+            socialLinksRef.current.children[i].children[0].querySelector(
+              'input',
+            )?.value;
+          const value =
+            socialLinksRef.current.children[i].children[1].querySelector(
+              'input',
+            )?.value;
+          if (key) {
+            socialLinks = { ...socialLinks, [key]: value };
+          }
         }
       }
     }
@@ -102,19 +107,24 @@ const Create = () => {
       customLinksRef.current.children.length > 1
     ) {
       for (let i = 0; i < customLinksRef.current.children.length - 1; i++) {
-        const key =
-          customLinksRef.current.children[i].children[0].querySelector(
-            'input',
-          )?.value;
-        const value =
-          customLinksRef.current.children[i].children[1].querySelector(
-            'input',
-          )?.value;
-        if (key) {
-          customLinks.push({
-            links: value,
-            title: key,
-          });
+        const firstChild = customLinksRef.current.children[i].children[0];
+        const secondChild = customLinksRef.current.children[i].children[1];
+
+        if (firstChild && secondChild) {
+          const key =
+            customLinksRef.current.children[i].children[0].querySelector(
+              'input',
+            )?.value;
+          const value =
+            customLinksRef.current.children[i].children[1].querySelector(
+              'input',
+            )?.value;
+          if (key) {
+            customLinks.push({
+              links: value,
+              title: key,
+            });
+          }
         }
       }
     }
@@ -138,9 +148,6 @@ const Create = () => {
             id
             name
             description
-            superAdmin {
-              id
-            }
             profileId
             avatar
             banner

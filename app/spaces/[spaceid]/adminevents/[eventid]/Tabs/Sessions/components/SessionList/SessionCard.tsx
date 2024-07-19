@@ -42,8 +42,8 @@ const SessionCard: React.FC<SessionCardProps> = ({
           </Typography>
         </Stack>
         <Typography variant="bodyB">
-          {dayjs(session.startTime).format('h:mm A')} -{' '}
-          {dayjs(session.endTime).format('h:mm A')}
+          {dayjs(session.startTime).utc().format('h:mm A')} -{' '}
+          {dayjs(session.endTime).utc().format('h:mm A')}
         </Typography>
         <Typography variant="subtitleSB">{session.title}</Typography>
         <Stack direction={'row'} spacing={1} alignItems="center">
