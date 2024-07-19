@@ -7,39 +7,29 @@ import {
   UploadResult,
 } from '@lxdao/uploader3';
 
-export const useUploaderPreview = (link: string = '') => {
-  const [url, setUrl] = useState<string | undefined>(link);
+export const useUploaderPreview = (src?: string) => {
+  const [url, setUrl] = useState<string | undefined>(src);
   const [file, setFile] = useState<
     SelectedFile | UploadFile | UploadResult | CroppedFile
   >();
 
-  return {
-    url,
-    setUrl,
-    file,
-    setFile,
-
-    getUrl(defaultUrl: string = '') {
-      if (file) {
-        if (file.status === Uploader3FileStatus.uploading) {
-          return file.thumbData || file.imageData;
-        } else if (file.status === Uploader3FileStatus.done) {
-          return file.url;
-        } else if (file.status === Uploader3FileStatus.cropped) {
-          return file.thumbData;
-        } else if (file.status === Uploader3FileStatus.notCropped) {
-          return file.previewUrl;
-        } else {
-          return file.previewUrl;
-        }
-      }
-      return url || defaultUrl;
-    },
-    isLoading() {
-      return file?.status === Uploader3FileStatus.uploading;
-    },
-    isError() {
-      return file?.status === Uploader3FileStatus.error;
-    },
+  const getUrl = (defaultUrl?: string) => {
+    if (!file) return url || defaultUrl;
+    switch (file.status) {
+      case Uploader3FileStatus.uploading:
+        return file.thumbData || file.imageData;
+      case Uploader3FileStatus.done:
+        return file.url;
+      case Uploader3FileStatus.cropped:
+      case Uploader3FileStatus.notCropped:
+        return file.thumbData || file.previewUrl;
+      default:
+        return file.previewUrl;
+    }
   };
+
+  const isLoading = () => file?.status === Uploader3FileStatus.uploading;
+  const isError = () => file?.status === Uploader3FileStatus.error;
+
+  return { url, setUrl, file, setFile, getUrl, isLoading, isError };
 };

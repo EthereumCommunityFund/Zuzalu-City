@@ -48,8 +48,8 @@ const Create = () => {
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const avatarUploader = useUploaderPreview('');
-  const bannerUploader = useUploaderPreview('');
+  const avatarUploader = useUploaderPreview();
+  const bannerUploader = useUploaderPreview();
   const [description, setDescription] = useState<OutputData>();
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<string[]>([]);

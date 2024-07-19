@@ -25,8 +25,8 @@ const Overview = () => {
   const [space, setSpace] = useState<Space>();
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const avatarUploader = useUploaderPreview('');
-  const bannerUploader = useUploaderPreview('');
+  const avatarUploader = useUploaderPreview();
+  const bannerUploader = useUploaderPreview();
 
   const [editorValue, setEditorValue] = useState<OutputData>();
   const [editor, setEditorInst] = useState<any>();

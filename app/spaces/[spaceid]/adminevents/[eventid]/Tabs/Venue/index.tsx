@@ -114,7 +114,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
     );
   };
 
-  const avatarUploader = useUploaderPreview('');
+  const avatarUploader = useUploaderPreview();
   const [searchValue, setSearchValue] = useState<string>('');
 
   const getVenues = async () => {

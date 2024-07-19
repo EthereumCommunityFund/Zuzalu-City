@@ -53,7 +53,7 @@ const Venue: React.FC = () => {
   };
 
   const List = (anchor: Anchor) => {
-    const avatarUploader = useUploaderPreview('');
+    const avatarUploader = useUploaderPreview();
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>

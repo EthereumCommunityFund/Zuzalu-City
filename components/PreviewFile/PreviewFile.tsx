@@ -2,71 +2,52 @@ import React from 'react';
 import { Img3 } from '@lxdao/img3';
 import { Stack } from '@mui/material';
 import DownloadingRoundedIcon from '@mui/icons-material/DownloadingRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import styled from '@emotion/styled';
+import { css } from '@emotion/css';
 
-const LoadingWrapper = styled('div')<{
-  isLoading?: boolean;
-  isError?: boolean;
-}>`
-  display: ${(props) => (props.isLoading || props.isError ? 'flex' : 'none')};
+const blink = css`
+  animation: blink-animation 1s infinite;
+  @keyframes blink-animation {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+`;
+
+const LoadingWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   z-index: 100;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
   align-items: center;
   justify-content: center;
-  color: ${(props) => (props.isError ? 'red' : 'white')};
-
-  .loading-icon {
-    ${(props) => {
-      if (props.isLoading) {
-        return `animation: blink 1s infinite;`;
-      }
-    }}
-  }
-
-  @keyframes blink {
-    0% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0.3;
-    }
-  }
 `;
 
 const tempSrc =
   'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png?scale-down-to=512';
 
-export const PreviewFile = (props: {
+export const PreviewFile = ({
+  src = tempSrc,
+  isLoading,
+  isError,
+  sx,
+}: {
   src?: string;
   isLoading?: boolean;
   isError?: boolean;
-  sx?: {
-    [key: string]: string;
-  };
-}) => {
-  const { sx, src, isLoading, isError } = props;
-
-  const imgSrc = src || tempSrc;
-
-  return (
-    <Stack sx={{ ...sx, backgroundColor: '#313131', position: 'relative' }}>
-      <LoadingWrapper isError={isError} isLoading={isLoading} style={{ ...sx }}>
-        <DownloadingRoundedIcon
-          className={'loading-icon'}
-          sx={{
-            fontSize: 40,
-            transform: 'rotate(180deg)',
-          }}
-        />
-      </LoadingWrapper>
+  sx?: { [key: string]: string };
+}) => (
+  <Stack sx={{ ...sx, backgroundColor: '#313131', position: 'relative' }}>
+    {src && (
       <Img3
         gateways={[
           'https://ipfs.io/ipfs/',
@@ -79,9 +60,22 @@ export const PreviewFile = (props: {
           position: 'absolute',
           objectFit: 'cover',
         }}
-        src={imgSrc}
-        alt={imgSrc}
+        src={src}
+        alt={src}
       />
-    </Stack>
-  );
-};
+    )}
+    {(isLoading || isError) && (
+      <LoadingWrapper style={{ ...sx }}>
+        {isLoading && (
+          <DownloadingRoundedIcon
+            className={blink}
+            color="success"
+            fontSize="large"
+            sx={{ transform: 'rotate(180deg)' }}
+          />
+        )}
+        {isError && <ErrorOutlineRoundedIcon fontSize="large" color="error" />}
+      </LoadingWrapper>
+    )}
+  </Stack>
+);
