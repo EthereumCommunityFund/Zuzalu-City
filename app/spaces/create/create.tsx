@@ -7,10 +7,7 @@ import {
   Button,
   Select,
   MenuItem,
-  OutlinedInput,
-  Chip,
   TextField,
-  ListItemText,
 } from '@mui/material';
 import * as yup from 'yup';
 import TextEditor from '@/components/editor/editor';
@@ -20,14 +17,12 @@ import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { OutputData } from '@editorjs/editorjs';
-import { SOCIAL_TYPES, SPACE_CATEGORIES } from '@/constant';
+import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
-import Checkbox from '@mui/material/Checkbox';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
 
 const validationSchema = yup.object({
@@ -119,17 +114,17 @@ const Create = () => {
     let socialLinks = {};
     let customLinks = [];
     if (
-      socialLinksRef.current &&
       socialLinksRef &&
-      socialLinksRef.current.children.length > 2
+      socialLinksRef.current &&
+      socialLinksRef.current.children.length > 1
     ) {
-      for (let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
+      for (let i = 0; i < socialLinksRef.current.children.length - 1; i++) {
         const key =
-          socialLinksRef.current.children[i + 1].children[0].querySelector(
+          socialLinksRef.current.children[i].children[0].querySelector(
             'input',
           )?.value;
         const value =
-          socialLinksRef.current.children[i + 1].children[1].querySelector(
+          socialLinksRef.current.children[i].children[1].querySelector(
             'input',
           )?.value;
         if (key) {
@@ -139,17 +134,17 @@ const Create = () => {
     }
 
     if (
-      customLinksRef.current &&
       customLinksRef &&
-      customLinksRef.current.children.length > 2
+      customLinksRef.current &&
+      customLinksRef.current.children.length > 1
     ) {
-      for (let i = 0; i < customLinksRef.current.children.length - 2; i++) {
+      for (let i = 0; i < customLinksRef.current.children.length - 1; i++) {
         const key =
-          customLinksRef.current.children[i + 1].children[0].querySelector(
+          customLinksRef.current.children[i].children[0].querySelector(
             'input',
           )?.value;
         const value =
-          customLinksRef.current.children[i + 1].children[1].querySelector(
+          customLinksRef.current.children[i].children[1].querySelector(
             'input',
           )?.value;
         if (key) {
@@ -519,7 +514,6 @@ const Create = () => {
                         variant="outlined"
                         placeholder="https://"
                         sx={{
-                          opacity: '0.6',
                           '& > div > input': {
                             padding: '8.5px 12px',
                           },
@@ -606,7 +600,6 @@ const Create = () => {
                           '& > div > input': {
                             padding: '8.5px 12px',
                           },
-                          opacity: '0.6',
                         }}
                       />
                     </Box>
@@ -626,7 +619,6 @@ const Create = () => {
                           '& > div > input': {
                             padding: '8.5px 12px',
                           },
-                          opacity: '0.6',
                         }}
                       />
                     </Box>
