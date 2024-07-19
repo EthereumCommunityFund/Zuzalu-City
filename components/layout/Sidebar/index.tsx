@@ -10,7 +10,7 @@ import {
   SpacePlusIcon,
 } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
-
+import { chainID } from '@/constant';
 interface SidebarProps {
   selected: string;
 }
@@ -109,9 +109,9 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
       </Box>
       {isAuthenticated &&
         (ceramic.did?.parent.toString().trim().toLowerCase() ===
-          'did:pkh:eip155:534351:0x9bc15fcfd4691fde75bb900d2bc62462c868f125' ||
+          `did:pkh:eip155:${chainID.toString()}:0x9bc15fcfd4691fde75bb900d2bc62462c868f125` ||
           ceramic.did?.parent.toString().trim().toLowerCase() ===
-            'did:pkh:eip155:534351:0x379e27606208521286e35c1122e3823d0112701f') && (
+            `did:pkh:eip155:${chainID.toString()}:0x379e27606208521286e35c1122e3823d0112701f`) && (
           <Box
             display="flex"
             flexDirection="column"
