@@ -138,7 +138,7 @@ const Create = () => {
             id
             name
             description
-            admin {
+            superAdmin {
               id
             }
             profileId
@@ -157,7 +157,7 @@ const Create = () => {
               name: name,
               description: strDesc,
               tagline: tagline,
-              admin: adminId,
+              superAdmin: adminId,
               profileId: profileId,
               avatar:
                 avatarUploader.getUrl() ||

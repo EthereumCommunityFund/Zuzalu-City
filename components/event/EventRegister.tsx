@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
-import { Stack, Typography, Box } from '@mui/material';
-import { Anchor } from '@/types';
+import React, { useEffect, useState, useRef } from 'react';
+import { Stack, Typography, Box, Divider } from '@mui/material';
+import { ZuButton } from 'components/core';
+import {
+  CheckCircleIcon,
+  ChevronDownIcon,
+  RightArrowCircleIcon,
+  ScrollIcon,
+} from 'components/icons';
+import Ticket from './Ticket';
+import { ChevronUpIcon } from '../icons/ChevronUp';
+import BpCheckbox from './Checkbox';
+import { Anchor, AddZupassMemberRequest } from '@/types';
+import { useZupassContext } from '@/context/ZupassContext';
 import { InitialStep } from './steps/InitialStep';
 import { FirstStep } from './steps/FirstStep';
+import { updateZupassMember } from '@/services/event/addZupassMember';
+import { useCeramicContext } from '@/context/CeramicContext';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
   setWhitelist?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setSponsor?: React.Dispatch<React.SetStateAction<boolean>> | any;
   external_url?: string;
+  eventId: string;
+  setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
 const EventRegister: React.FC<EventRegisterProps> = ({
@@ -16,12 +32,77 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   setWhitelist,
   setSponsor,
   external_url,
+  eventId,
+  setVerify,
 }) => {
   const [isOne, setIsOne] = useState<boolean>(false);
   const [isTwo, setIsTwo] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState<string>('');
+  const [modalText, setModalText] = useState<string>('');
+  const {
+    pcdStr,
+    authState,
+    log,
+    user,
+    auth,
+    logout,
+    nullifierHash,
+    setNullifierHash,
+  } = useZupassContext();
+  const hasProcessedNullifier = useRef(false);
+
   const handleClick = () => {
     window.open(external_url, '_blank');
   };
+  const { ceramic } = useCeramicContext();
+  const handleZupass = () => {
+    if (!ceramic?.did?.parent) {
+      setModalTitle('Please login');
+      setModalText('Please login to perform this action');
+      setShowModal(true);
+    } else {
+      auth();
+    }
+  };
+  useEffect(() => {
+    if (
+      nullifierHash &&
+      ceramic?.did?.parent &&
+      !hasProcessedNullifier.current
+    ) {
+      const addZupassMemberInput = {
+        eventId: eventId,
+        memberDID: ceramic?.did?.parent,
+        memberZupass: nullifierHash,
+      };
+      updateZupassMember(addZupassMemberInput)
+        .then((result) => {
+          console.log(result);
+          hasProcessedNullifier.current = true;
+          setNullifierHash('');
+          if (result.message === 'Successfully added into member list') {
+            setModalTitle('Successfully updated!');
+            setModalText(
+              'You are now a member of this event! Please check out the sessions',
+            );
+            setShowModal(true);
+            setVerify(true);
+          }
+        })
+        .catch((error) => {
+          const errorMessage =
+            typeof error === 'string'
+              ? error
+              : error instanceof Error
+                ? error.message
+                : 'An unknown error occurred';
+          setModalTitle('Error updating member:');
+          setModalText(errorMessage);
+          setShowModal(true);
+        });
+    }
+  }, [nullifierHash]);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const handleRegisterAsSponsor = () => {
     setSponsor(true);
@@ -40,6 +121,13 @@ const EventRegister: React.FC<EventRegisterProps> = ({
       border="1px solid #383838"
       bgcolor="#262626"
     >
+      <Dialog
+        title={modalTitle}
+        message={modalText}
+        showModal={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={() => setShowModal(false)}
+      />
       <Stack
         padding="10px 14px"
         borderBottom="1px solid #383838"
@@ -49,13 +137,207 @@ const EventRegister: React.FC<EventRegisterProps> = ({
         <Typography color="white" variant="subtitleS">
           Event Registration
         </Typography>
-        <Box display={'flex'} gap={'10px'} alignItems={'center'}>
-          <Typography
-            textTransform={'uppercase'}
-            fontSize={'10px'}
-            sx={{ opacity: '0.6' }}
+        <Typography color="white" variant="subtitleS" sx={{ fontSize: '10px' }}>
+          External Registration
+        </Typography>
+      </Stack>
+      <Stack spacing="20px" padding="10px 20px">
+        {/* <Stack spacing="4px">
+          <Typography color="white" variant="bodyMB">
+            Get Ticket: (single)
+          </Typography>
+          <Typography color="#FF9C66" variant="bodyS">
+            All tickets require an invite code to mint
+          </Typography>
+        </Stack>*/}
+        {/*<Stack spacing="10px">
+          <Stack
+            onClick={() => setIsOne((prev) => !prev)}
+            sx={{ cursor: 'pointer' }}
+            spacing="10px"
+            padding="10px"
+            direction="row"
+            borderRadius="10px"
+            bgcolor="#2a2a2a"
           >
-            Ticketing PROTOCOL:
+            {isOne ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />}
+            <Stack spacing="5px">
+              <Stack
+                alignItems="center"
+                justifyContent="space-between"
+                direction="row"
+              >
+                <Typography variant="bodyMB">Full Pass</Typography>
+                <Stack direction="row" alignItems="end" spacing="5px">
+                  <Typography variant="bodyMB">3000</Typography>
+                  <Typography variant="caption">USDT</Typography>
+                </Stack>
+              </Stack>
+              <Typography variant="bodyS">
+                This pass does not include accomodation.
+              </Typography>
+            </Stack>
+          </Stack>*/}
+        {/*{isOne && (
+            <Stack>
+              <Typography variant="bodyS" textAlign="center">
+                Select Accommodation Type:
+              </Typography>
+              <Stack divider={<Divider sx={{ border: '1px solid #383838' }} />}>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Private Room</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">+700</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
+                    </Stack>
+                    <Typography variant="bodyS">
+                      This pass guarantees a private room for the duration of
+                      your stay.
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Shared Room</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">0</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
+                    </Stack>
+                    <Typography variant="bodyS">
+                      This pass includes a shared room which may have 1-2
+                      roommates during your stay. You will fill out a Housing
+                      Form for preferences or to request specific roommates.
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
+          )}
+          <Stack
+            onClick={() => setIsTwo((prev) => !prev)}
+            sx={{ cursor: 'pointer' }}
+            spacing="10px"
+            padding="10px"
+            direction="row"
+            borderRadius="10px"
+            bgcolor="#2a2a2a"
+          >
+            {isTwo ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />}
+            <Stack spacing="5px">
+              <Stack
+                alignItems="center"
+                justifyContent="space-between"
+                direction="row"
+              >
+                <Typography variant="bodyMB">Week Pass</Typography>
+                <Stack direction="row" alignItems="end" spacing="5px">
+                  <Typography variant="bodyMB">1200</Typography>
+                  <Typography variant="caption">USDT</Typography>
+                </Stack>
+              </Stack>
+              <Typography variant="bodyS">
+                This pass does not include accomodation.
+              </Typography>
+            </Stack>
+          </Stack>*/}
+        {/*{isTwo && (
+            <Stack>
+              <Typography variant="bodyS" textAlign="center">
+                Select Accommodation Type:
+              </Typography>
+              <Stack divider={<Divider sx={{ border: '1px solid #383838' }} />}>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Private Room</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">+500</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
+                    </Stack>
+                    <Typography variant="bodyS">
+                      This pass guarantees a private room for the duration of
+                      your stay.
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Stack spacing="10px" padding="10px" direction="row">
+                  <BpCheckbox />
+                  <Stack spacing="5px">
+                    <Stack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      direction="row"
+                    >
+                      <Typography variant="bodyMB">Shared Room</Typography>
+                      <Stack direction="row" alignItems="end" spacing="5px">
+                        <Typography variant="bodyMB">+100</Typography>
+                        <Typography variant="caption">USDT</Typography>
+                      </Stack>
+                    </Stack>
+                    <Typography variant="bodyS">
+                      This pass includes a shared room which may have 1-2
+                      roommates during your stay. You will fill out a Housing
+                      Form for preferences or to request specific roommates.
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Stack>
+          )}
+        </Stack>*/}
+        <Stack spacing="20px">
+          <Typography
+            color="white"
+            variant="subtitleS"
+            sx={{ fontSize: '14px' }}
+          >
+            Apply to this event{' '}
+          </Typography>
+          <ZuButton
+            sx={{
+              backgroundColor: '#373b36',
+              color: '#D7FFC4',
+              width: '100%',
+            }}
+            startIcon={<RightArrowCircleIcon color="#D7FFC4" />}
+            onClick={handleClick}
+          >
+            Register For Event
+          </ZuButton>
+          <ZuButton
+            sx={{
+              backgroundColor: '#373b36',
+              color: '#D7FFC4',
+              width: '100%',
+            }}
+            startIcon={<RightArrowCircleIcon color="#D7FFC4" />}
+            onClick={handleZupass}
+          >
+            Zupass Verify
+          </ZuButton>
+          {/*<Typography textAlign="center" variant="caption">
+            OR
           </Typography>
           <Box
             display={'flex'}
@@ -94,8 +376,8 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             </Typography>
           </Box>
         </Box>
-      </Stack>
-      {currentStep === 0 && (
+      </Stack>*/}
+          {/*currentStep === 0 && (
         <InitialStep
           handleStep={handleStep}
           isOne={isOne}
@@ -106,13 +388,15 @@ const EventRegister: React.FC<EventRegisterProps> = ({
           setSponsor={setSponsor}
           setWhitelist={setWhitelist}
         />
-      )}
-      {currentStep === 1 && (
+      )*/}
+          {/*currentStep === 1 && (
         <FirstStep
           handleStep={handleStep}
           handleRegisterAsSponsor={handleRegisterAsSponsor}
         />
-      )}
+      )*/}
+        </Stack>
+      </Stack>
     </Stack>
   );
 };

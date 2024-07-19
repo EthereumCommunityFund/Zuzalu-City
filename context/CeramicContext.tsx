@@ -5,20 +5,7 @@ import { RuntimeCompositeDefinition } from '@composedb/types';
 import { definition } from '../composites/definition.js';
 import { authenticateCeramic } from '../utils/ceramicAuth';
 import { Profile, CreateProfileResult } from '@/types/index.js';
-/**
- * Configure ceramic Client & create context.
- */
-const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
-const ceramicUrl =
-  (isDev
-    ? process.env.NEXT_PUBLIC_CERAMIC_URL_DEV
-    : process.env.NEXT_PUBLIC_CERAMIC_URL_PROD) || 'http://localhost:7007';
-
-const ceramic = new CeramicClient(ceramicUrl);
-const composeClient = new ComposeClient({
-  ceramic: ceramicUrl,
-  definition: definition as RuntimeCompositeDefinition,
-});
+import { ceramic, composeClient } from '@/constant';
 
 interface CeramicContextType {
   ceramic: CeramicClient;

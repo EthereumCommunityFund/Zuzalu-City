@@ -33,7 +33,12 @@ import { PreviewFile } from '@/components';
 import {SelectedFile, Uploader3} from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
-import { Event, EventData, Space, SpaceEventData } from '@/types';
+import {
+  Event,
+  EventData,
+  Space,
+  SpaceEventData,
+} from '@/types';
 import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -46,6 +51,7 @@ import {
 } from '@/components/typography/formTypography';
 
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
+import { createEventKeySupa } from '@/services/event/createEvent';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -137,8 +143,11 @@ const Home = () => {
             github
             discord
             ens
-            admin {
+            admins {
               id
+            }
+            superAdmin{
+              id 
             }
             events(first: 10) {
               edges {
@@ -238,10 +247,13 @@ const Home = () => {
       try {
         await getEvents();
         const space = await getSpaceByID();
+        const superAdmins =
+          space?.superAdmin?.map((superAdmin) => superAdmin.id.toLowerCase()) ||
+          [];
         const admins =
-          space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
+          space?.admins?.map((admin) => admin.id.toLowerCase()) || [];
         const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        if (!admins.includes(userDID)) {
+        if (!admins.includes(userDID) && !superAdmins.includes(userDID)) {
           router.push('/');
         }
       } catch (error) {
@@ -352,7 +364,29 @@ const Home = () => {
         strDesc = strDesc.replaceAll('"', '\\"');
 
         try {
-          setLoading(true);
+            setLoading(true);
+          const eventCreationInput: CreateEventRequest = {
+            name: inputs.name,
+            strDesc: strDesc,
+            tagline: inputs.tagline,
+            spaceId: spaceId,
+            profileId: profileId,
+            avatarURL:
+              avatarUploader.getUrl() ||
+              'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
+            startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+            endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+            socialLinks: socialLinks,
+            participant: inputs.participant,
+            max_participant: inputs.max_participant,
+            min_participant: inputs.min_participant,
+            tracks: tracks,
+            adminId: adminId,
+            external_url: inputs.external_url,
+            person: person,
+            locations: locations,
+          };
+          /*const update: any = await composeClient.executeQuery(
           const update: any = await composeClient.executeQuery(
             `
          mutation CreateEventMutation($input: CreateEventInput!) {
@@ -379,7 +413,7 @@ const Home = () => {
                  links
                }
                tracks
-               admins{
+               superAdmin{
                id
                }
                external_url
@@ -407,7 +441,7 @@ const Home = () => {
                   min_participant: inputs.min_participant,
                   status: person ? 'In-Person' : 'Online',
                   tracks: tracks.join(','),
-                  admins: adminId,
+                  superAdmin: adminId,
                   external_url: inputs.external_url,
                 },
               },
@@ -423,7 +457,9 @@ const Home = () => {
           typeof window !== 'undefined' &&
             window.alert(
               'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
-            );
+            );*/
+
+          const data = await createEventKeySupa(eventCreationInput);
         } catch (err) {
           console.log(err);
         } finally {
