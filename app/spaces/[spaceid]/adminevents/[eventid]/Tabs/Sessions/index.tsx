@@ -43,6 +43,7 @@ import {
   Anchor,
   CeramicResponseType,
   Venue,
+  SessionSupabaseData,
 } from '@/types';
 import { OutputData } from '@editorjs/editorjs';
 import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
@@ -55,6 +56,8 @@ import {
 import SelectCheckItem from '@/components/select/selectCheckItem';
 import SelectCategories from '@/components/select/selectCategories';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
+import SelectSearchUser from '@/components/select/selectSearchUser';
+import { supaCreateSession } from '@/services/session';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -72,7 +75,6 @@ const Sessions = () => {
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [selectedSession, setSelectedSession] = useState<Session>();
   const [selectedRoom, setSelectedRoom] = useState<Venue>();
-
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -87,8 +89,6 @@ const Sessions = () => {
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
-  const [sessoinStatus, setSessionStatus] = useState<string>('');
-  const [sessionGated, setSessionGated] = useState<boolean>(false);
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
@@ -97,14 +97,17 @@ const Sessions = () => {
   const [sessionDate, setSessionDate] = useState<Dayjs | null>(null);
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs | null>(null);
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs | null>(null);
-  const [sessionOrganizers, setSessionOrganizers] = useState<Array<string>>([]);
+  const [sessionOrganizers, setSessionOrganizers] = useState<Array<Profile>>(
+    [],
+  );
   const [organizers, setOrganizers] = useState<Array<string>>([]);
-  const [sessionSpeakers, setSessionSpeakers] = useState<Array<string>>([]);
+  const [sessionSpeakers, setSessionSpeakers] = useState<Array<Profile>>([]);
   const [speakers, setSpeakers] = useState<Array<string>>([]);
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionTimezone, setSessionTimezone] = useState<string>('');
 
-  const { composeClient, profile, isAuthenticated } = useCeramicContext();
+  const { composeClient, profile, isAuthenticated, ceramic } =
+    useCeramicContext();
 
   const [directions, setDirections] = useState<string>('');
   const [customLocation, setCustomLocation] = useState<string>('');
@@ -387,32 +390,12 @@ const Sessions = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const handleSpeakerChange = (e: any) => {
-    setSpeakers(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
-
-    const speakers = e.target.value.map(
-      (speaker: any) =>
-        people.filter((i) => i.username === speaker)[0].author?.id,
-    );
-    setSessionSpeakers(speakers);
+  const handleSpeakerChange = (users: Profile[]) => {
+    setSessionSpeakers(users);
   };
 
-  const handleOrganizerChange = (e: any) => {
-    setOrganizers(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
-
-    const organizers = e.target.value.map(
-      (organizer: any) =>
-        people.filter((i) => i.username === organizer)[0].author?.id,
-    );
-    setSessionOrganizers(organizers);
+  const handleOrganizerChange = (users: Profile[]) => {
+    setSessionOrganizers(users);
   };
 
   const createSession = async () => {
@@ -441,7 +424,9 @@ const Sessions = () => {
 
     const format = person ? 'person' : 'online';
 
-    const result = await supabase.from('sessions').insert({
+    const adminId = ceramic?.did?.parent || '';
+
+    const formattedData: SessionSupabaseData = {
       title: sessionName,
       description: strDesc,
       experience_level: sessionExperienceLevel,
@@ -452,13 +437,21 @@ const Sessions = () => {
       eventId,
       tags: sessionTags.join(','),
       type: sessionType,
-      status: sessoinStatus,
       format,
       track: sessionTrack,
-      gated: sessionGated,
       timezone: dayjs.tz.guess().toString(),
       video_url: sessionVideoURL,
-    });
+      location: sessionLocation,
+      organizers: JSON.stringify(sessionOrganizers),
+      speakers: JSON.stringify(sessionSpeakers),
+      userDID: adminId,
+    };
+
+    try {
+      const data = await supaCreateSession(formattedData);
+    } catch (error) {
+      console.error('Error creating session:', error);
+    }
 
     toggleDrawer('right', false);
     await getSession();
@@ -1240,166 +1233,20 @@ const Sessions = () => {
                   <FormLabel>Organizers*</FormLabel>
                   <FormLabelDesc>Type or search a person</FormLabelDesc>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={organizers}
-                    style={{ width: '100%' }}
-                    onChange={handleOrganizerChange}
-                    input={<OutlinedInput label="Name" />}
-                    renderValue={(selected) => selected.join(', ')}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem
-                          value={i.username}
-                          key={`Organizer_Index${index}`}
-                        >
-                          <SelectCheckItem
-                            label={i.username}
-                            isChecked={
-                              organizers.findIndex(
-                                (item) => item === i.username,
-                              ) > -1
-                            }
-                          />
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {organizers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = organizers.filter(
-                            (item) => item !== i,
-                          );
-                          setOrganizers(newArray);
-                          const newDIDs = sessionOrganizers.filter(
-                            (_, ind) => ind !== index,
-                          );
-                          setSessionOrganizers(newDIDs);
-                        }}
-                        key={`Selected_Organizerr${index}`}
-                      />
-                    );
-                  })}
-                </Box>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleOrganizerChange}
+                />
               </Stack>
-              {/* <Stack spacing="20px">
-                <Stack
-                  pt="20px"
-                  borderTop="1px solid rgba(255, 255, 255, 0.10)"
-                >
-                  <ZuButton
-                    sx={{
-                      fontSize: '13px',
-                      fontWeight: 700,
-                    }}
-                    endIcon={<ChevronDownIcon size={4} />}
-                  >
-                    Hide Advanced Settings
-                  </ZuButton>
-                </Stack>
-                <Stack direction="row" spacing="10px">
-                  <ZuSwitch />
-                  <Stack spacing="10px">
-                    <Typography variant="bodyBB">
-                      Hide yourself as an organizer for this session
-                    </Typography>
-                    <Typography variant="bodyS">
-                      By default the creator of a session is listed as an
-                      organizer of it
-                    </Typography>
-                  </Stack>
-                </Stack>
-              </Stack> */}
               <Stack spacing="20px">
                 <Stack spacing="10px">
                   <FormLabel>Speakers</FormLabel>
                   <FormLabelDesc>Type or search a person</FormLabelDesc>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={speakers}
-                    style={{ width: '100%' }}
-                    onChange={handleSpeakerChange}
-                    input={<OutlinedInput label="Name" />}
-                    renderValue={(selected) => selected.join(', ')}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem
-                          value={i.username}
-                          key={`Speaker_Index${index}`}
-                        >
-                          <SelectCheckItem
-                            label={i.username}
-                            isChecked={
-                              speakers.findIndex(
-                                (item) => item === i.username,
-                              ) > -1
-                            }
-                          />
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {speakers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = speakers.filter(
-                            (item) => item !== i,
-                          );
-                          setSpeakers(newArray);
-                          const newDIDs = sessionSpeakers.filter(
-                            (_, ind) => ind !== index,
-                          );
-                          setSessionSpeakers(newDIDs);
-                        }}
-                        key={`Selected_Speaker${index}`}
-                      />
-                    );
-                  })}
-                </Box>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleSpeakerChange}
+                />
                 {/* <Stack direction="row" spacing="10px">
                   <Stack
                     direction="row"

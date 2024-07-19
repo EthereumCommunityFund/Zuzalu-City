@@ -274,7 +274,7 @@ export interface CreateEventRequest {
   avatarURL: string;
   startTime: string;
   endTime: string;
-  socialLinks: SocialLinks;
+  socialLinks: SocialLinks[];
   adminId: string;
   tracks: string[];
   person: boolean;

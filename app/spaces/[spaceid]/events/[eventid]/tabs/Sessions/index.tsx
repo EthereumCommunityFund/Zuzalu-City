@@ -77,6 +77,7 @@ import formatDateAgo from '@/utils/formatDateAgo';
 import SlotDate from '@/components/calendar/SlotDate';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
+import SelectSearchUser from '@/components/select/selectSearchUser';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -270,29 +271,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     setSessionTags(val);
   };
 
-  const handleSpeakerChange = (e: any) => {
-    setSpeakers(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
-
-    const speakers = e.target.value.map(
-      (speaker: any) => people.filter((i) => i.username === speaker)[0],
-    );
-    setSessionSpeakers(speakers);
+  const handleSpeakerChange = (users: Profile[]) => {
+    setSessionSpeakers(users);
   };
 
-  const handleOrganizerChange = (e: any) => {
-    setOrganizers(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
-    const organizers = e.target.value.map(
-      (organizer: any) => people.filter((i) => i.username === organizer)[0],
-    );
-    setSessionOrganizers(organizers);
+  const handleOrganizerChange = (users: Profile[]) => {
+    setSessionOrganizers(users);
   };
   const createSession = async () => {
     if (!isAuthenticated) {
@@ -1076,61 +1060,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={organizers}
-                    style={{ width: '100%' }}
-                    onChange={handleOrganizerChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem
-                          value={i.username}
-                          key={`Organizer_Index${index}`}
-                        >
-                          {i.username}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {organizers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = organizers.filter(
-                            (item) => item !== i,
-                          );
-                          setOrganizers(newArray);
-                          const newDIDs = sessionOrganizers.filter(
-                            (_, ind) => ind !== index,
-                          );
-                          setSessionOrganizers(newDIDs);
-                        }}
-                        key={`Selected_Organizerr${index}`}
-                      />
-                    );
-                  })}
-                </Box>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleOrganizerChange}
+                />
               </Stack>
               {/* <Stack spacing="20px">
                 <Stack
@@ -1167,61 +1100,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={speakers}
-                    style={{ width: '100%' }}
-                    onChange={handleSpeakerChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem
-                          value={i.username}
-                          key={`Speaker_Index${index}`}
-                        >
-                          {i.username}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {speakers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = speakers.filter(
-                            (item) => item !== i,
-                          );
-                          setSpeakers(newArray);
-                          const newDIDs = sessionSpeakers.filter(
-                            (_, ind) => ind !== index,
-                          );
-                          setSessionSpeakers(newDIDs);
-                        }}
-                        key={`Selected_Speaker${index}`}
-                      />
-                    );
-                  })}
-                </Box>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleSpeakerChange}
+                />
               </Stack>
             </Stack>
             <Box display="flex" gap="20px">
