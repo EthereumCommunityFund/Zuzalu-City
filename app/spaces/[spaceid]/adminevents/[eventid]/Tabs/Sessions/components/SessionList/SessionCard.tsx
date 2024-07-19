@@ -7,7 +7,6 @@ import { Session } from '@/types';
 interface SessionCardProps {
   session: Session;
   setSelectedSession?: React.Dispatch<React.SetStateAction<Session>> | any;
-  timezone: string;
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({
