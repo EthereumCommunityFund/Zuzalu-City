@@ -99,7 +99,7 @@ const Home = () => {
       }
     };
     fetchData();
-  }, [ceramic?.did?.parent, getEventDetailInfo]);
+  }, [ceramic?.did?.parent]);
 
   return (
     <Stack color="white">
