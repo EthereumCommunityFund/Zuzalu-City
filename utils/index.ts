@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import bs58 from 'bs58';
-import { Dayjs } from "dayjs";
+import { Dayjs } from 'dayjs';
 
 export const isMobile = (): boolean => {
   let flag: RegExpMatchArray | null = navigator.userAgent.match(

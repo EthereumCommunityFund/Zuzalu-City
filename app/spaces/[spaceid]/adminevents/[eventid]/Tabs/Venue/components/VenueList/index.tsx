@@ -71,17 +71,7 @@ const VenueList: React.FC<VenueListProps> = ({
         </Stack>
       ) : (
         <Stack paddingY="20px" spacing="10px">
-          <ZuInput
-            startAdornment={
-              <Stack
-                sx={{
-                  paddingRight: '10px',
-                }}
-              >
-                <SearchIcon />
-              </Stack>
-            }
-            placeholder="Search Venue Spaces"
+          <Stack
             sx={{
               flexDirection: 'column',
               gap: '10px',
