@@ -30,10 +30,11 @@ import { ZuButton, ZuInput } from 'components/core';
 import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
-import {SelectedFile, Uploader3} from '@lxdao/uploader3';
+import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import {
+  CreateEventRequest,
   Event,
   EventData,
   Space,
@@ -56,7 +57,7 @@ import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {useAccount} from "wagmi";
+import { useAccount } from 'wagmi';
 
 interface Inputs {
   name: string;
@@ -364,7 +365,7 @@ const Home = () => {
         strDesc = strDesc.replaceAll('"', '\\"');
 
         try {
-            setLoading(true);
+          setLoading(true);
           const eventCreationInput: CreateEventRequest = {
             name: inputs.name,
             strDesc: strDesc,
@@ -376,7 +377,7 @@ const Home = () => {
               'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
             startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
             endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-            socialLinks: socialLinks,
+            socialLinks: socialLinks ?? [],
             participant: inputs.participant,
             max_participant: inputs.max_participant,
             min_participant: inputs.min_participant,
