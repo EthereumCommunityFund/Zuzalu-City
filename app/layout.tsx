@@ -11,6 +11,8 @@ import { Header } from '@/components/layout';
 import AuthPrompt from '@/components/AuthPrompt';
 import AppContextProvider from '@/context/AppContext';
 import React, { useEffect, useState } from 'react';
+import { ZupassProvider } from '@/context/ZupassContext';
+
 const queryClient = new QueryClient();
 
 // export const metadata: Metadata = {
@@ -44,11 +46,13 @@ function RootLayout({
             <QueryClientProvider client={queryClient}>
               <CeramicProvider>
                 <WalletProvider>
-                  <AppContextProvider>
-                    <Header />
-                    {isClient && <AuthPrompt />}
-                    {children}
-                  </AppContextProvider>
+                  <ZupassProvider>
+                    <AppContextProvider>
+                      <Header />
+                      {isClient && <AuthPrompt />}
+                      {children}
+                    </AppContextProvider>
+                  </ZupassProvider>
                 </WalletProvider>
               </CeramicProvider>
             </QueryClientProvider>

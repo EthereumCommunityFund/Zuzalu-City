@@ -59,6 +59,9 @@ export interface Event {
   members?: {
     id: string;
   }[];
+  superAdmin?: {
+    id: string;
+  }[];
 }
 
 export interface EventEdge {
@@ -101,7 +104,10 @@ export interface Space {
   members?: {
     id: string;
   }[];
-  admin?: {
+  admins?: {
+    id: string;
+  }[];
+  superAdmin?: {
     id: string;
   }[];
   events: {
@@ -251,6 +257,30 @@ export interface IProps {
   setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
 }
 
+export interface SocialLinks {
+  [key: string]: string;
+}
+
+export interface CreateEventRequest {
+  name: string;
+  tagline: string;
+  participant: number;
+  max_participant: number;
+  min_participant: number;
+  external_url: string;
+  strDesc: string;
+  spaceId: string;
+  profileId: string;
+  avatarURL: string;
+  startTime: string;
+  endTime: string;
+  socialLinks: SocialLinks;
+  adminId: string;
+  tracks: string[];
+  person: boolean;
+  locations: string[];
+}
+
 export interface ZuAutoCompleteProps {
   optionVals: Array<{
     value: string;
@@ -261,4 +291,18 @@ export interface ZuAutoCompleteProps {
     label: string;
   }>;
   setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>;
+}
+
+export interface AddZupassMemberRequest {
+  eventId: string;
+  memberDID: string;
+  memberZupass: string;
+}
+export interface AddMemberRequest {
+  eventId: string;
+  memberAddress: string;
+}
+export interface AddAdminRequest {
+  eventId: string;
+  adminAddress: string;
 }

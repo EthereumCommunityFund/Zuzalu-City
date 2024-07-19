@@ -43,9 +43,10 @@ import getLatLngFromAddress from '@/utils/osm';
 
 interface IAbout {
   eventData: Event | undefined;
+  setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
-const About: React.FC<IAbout> = ({ eventData }) => {
+const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
   const [location, setLocation] = useState<string>('');
 
   const [whitelist, setWhitelist] = useState<boolean>(false);
@@ -451,6 +452,8 @@ const About: React.FC<IAbout> = ({ eventData }) => {
               setWhitelist={setWhitelist}
               setSponsor={setSponsor}
               external_url={eventData.external_url}
+              eventId={eventData.id}
+              setVerify={setVerify}
             />
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />

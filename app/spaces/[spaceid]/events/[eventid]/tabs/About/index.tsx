@@ -48,9 +48,10 @@ import { LatLngLiteral } from 'leaflet';
 interface IAbout {
   eventData: Event | undefined;
   setEventData: Dispatch<SetStateAction<Event | undefined>>;
+  setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
-const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
+const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
   const params = useParams();
   const eventId = params.eventid.toString();
   const { breakpoints } = useTheme();
@@ -88,7 +89,6 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
   const [isSponsorTransaction, setIsSponsorTransaction] =
     useState<boolean>(false);
   const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
-
   const getEventDetailInfo = async () => {
     try {
       const response: CeramicResponseType<EventEdge> =
@@ -463,6 +463,8 @@ const About: React.FC<IAbout> = ({ eventData, setEventData }) => {
               setWhitelist={setWhitelist}
               setSponsor={setSponsor}
               external_url={eventData.external_url}
+              eventId={eventData.id}
+              setVerify={setVerify}
             />
             {/* <Stack spacing="4px">List
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />

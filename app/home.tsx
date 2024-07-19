@@ -84,7 +84,10 @@ const Home: React.FC = () => {
             edges {
               node {
                 id
-                admin {
+                admins {
+                  id
+                }
+                superAdmin {
                   id
                 }
                 avatar
@@ -392,7 +395,7 @@ const Home: React.FC = () => {
                     .filter(
                       (space) => space.id === process.env.MAIN_SPACE_ID,
                     )[0]
-                    .admin?.map((ad) => ad.id.toLowerCase())
+                    .superAdmin?.map((ad) => ad.id.toLowerCase())
                     .includes(
                       ceramic.did?.parent.toString().toLowerCase() || '',
                     ) ?? false
@@ -481,8 +484,7 @@ const Home: React.FC = () => {
                 </Box>
               )}
 
-              {/**/}
-              <LotteryCard />
+              {/*<LotteryCard />*/}
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   position="relative"

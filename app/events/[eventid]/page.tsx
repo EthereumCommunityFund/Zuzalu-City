@@ -12,6 +12,7 @@ const Home = () => {
   const [eventData, setEventData] = useState<Event>();
   const { composeClient, ceramic } = useCeramicContext();
   const [sessionView, setSessionView] = useState<boolean>(false);
+  const [verify, setVerify] = useState<boolean>(false);
   const eventId = params.eventid.toString();
   const getEventDetailInfo = async () => {
     try {
@@ -99,7 +100,7 @@ const Home = () => {
       }
     };
     fetchData();
-  }, [ceramic?.did?.parent, getEventDetailInfo]);
+  }, [ceramic?.did?.parent, verify]);
 
   return (
     <Stack color="white">
@@ -109,7 +110,9 @@ const Home = () => {
         setTabName={setTabName}
         canViewSessions={sessionView}
       />
-      {tabName === 'About' && <About eventData={eventData} />}
+      {tabName === 'About' && (
+        <About eventData={eventData} setVerify={setVerify} />
+      )}
       {tabName === 'Sessions' && <Sessions eventData={eventData} />}
     </Stack>
   );

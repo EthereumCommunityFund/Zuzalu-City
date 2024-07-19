@@ -5,10 +5,6 @@ import { getResolver } from 'key-did-resolver';
 import { DID } from 'dids';
 import { DIDSession } from 'did-session';
 import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum';
-import { SolanaWebAuth, getAccountIdByNetwork } from '@didtools/pkh-solana';
-import { StreamID } from '@ceramicnetwork/streamid';
-//import { ModelInstanceDocument } from '@composedb/types';
-//import { makeCeramicDaemon } from "@ceramicnetwork/cli/lib/__tests__/make-ceramic-daemon";
 import { CeramicClient } from '@ceramicnetwork/http-client';
 
 const DID_SEED_KEY = 'ceramic:did_seed';
