@@ -63,6 +63,7 @@
     "dids": "^5.0.2",
     "encoding": "^0.1.13",
     "ethers": "^6.12.1",
+    "form-data": "^4.0.0",
     "jsonwebtoken": "^9.0.2",
     "key-did-provider-ed25519": "^4.0.2",
     "key-did-resolver": "^4.0.0",
