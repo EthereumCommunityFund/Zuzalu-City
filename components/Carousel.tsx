@@ -75,6 +75,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
           description={item.description}
           members={item.members}
           categories={item.category}
+          tagline={item.tagline}
         />
       ))}
     </Box>

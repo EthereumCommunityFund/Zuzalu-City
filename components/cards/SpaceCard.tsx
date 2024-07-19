@@ -17,6 +17,7 @@ export type SpaceCardProps = {
     id: string;
   }[];
   categories?: string;
+  tagline?: string;
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
@@ -28,6 +29,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   joined = false,
   members = [],
   categories = '',
+  tagline,
 }) => {
   return (
     <Link href={`/spaces/${id}`} style={{ textDecoration: 'none' }}>
@@ -77,9 +79,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               color="white"
               sx={{ wordWrap: 'break-word', opacity: 0.6, lineHeight: '22px' }}
             >
-              {description &&
-                JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
-                  .text}
+              {tagline}
             </Typography>
           </Stack>
           <Stack direction="row">
