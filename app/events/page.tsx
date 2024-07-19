@@ -5,4 +5,4 @@ const Home = () => {
   return <DynamicEventsPage />;
 };
 
-export default Home
+export default Home;

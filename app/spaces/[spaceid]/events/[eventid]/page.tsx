@@ -15,6 +15,7 @@ const Home = () => {
   const [tabName, setTabName] = useState<string>('About');
   const [eventData, setEventData] = useState<Event>();
   const [sessionView, setSessionView] = useState<boolean>(false);
+  const [verify, setVerify] = useState<boolean>(false);
   const { composeClient, ceramic } = useCeramicContext();
   const eventId = params.eventid.toString();
   const getEventDetailInfo = async () => {
@@ -48,6 +49,9 @@ const Home = () => {
               id
               }
               admins{
+              id
+              }
+              superAdmin{
               id
               }
               space {
@@ -90,10 +94,18 @@ const Home = () => {
         const eventDetails = await getEventDetailInfo();
         const admins =
           eventDetails?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+        const superadmins =
+          eventDetails?.superAdmin?.map((superAdmin) =>
+            superAdmin.id.toLowerCase(),
+          ) || [];
         const members =
           eventDetails?.members?.map((member) => member.id.toLowerCase()) || [];
         const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        if (admins.includes(userDID) || members.includes(userDID)) {
+        if (
+          superadmins.includes(userDID) ||
+          admins.includes(userDID) ||
+          members.includes(userDID)
+        ) {
           setSessionView(true);
         }
       } catch (err) {
@@ -101,7 +113,7 @@ const Home = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [verify]);
 
   return (
     <Stack
@@ -135,7 +147,11 @@ const Home = () => {
           canViewSessions={sessionView}
         />
         {tabName === 'About' && (
-          <About eventData={eventData} setEventData={setEventData} />
+          <About
+            eventData={eventData}
+            setEventData={setEventData}
+            setVerify={setVerify}
+          />
         )}
         {tabName === 'Sessions' && <Sessions eventData={eventData} />}
       </Stack>

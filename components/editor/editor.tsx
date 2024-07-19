@@ -1,10 +1,17 @@
 'use client';
-import React, { useEffect, useRef, Fragment, FC, useState, SetStateAction } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  Fragment,
+  FC,
+  SetStateAction,
+  useCallback,
+} from 'react';
 import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
 import EditorJS from '@editorjs/editorjs';
-import { MDImporter, MDParser } from './markdownParser';
+import clsx from 'clsx';
 
 import './editor.css';
 
@@ -23,6 +30,7 @@ interface TextEditorPropTypes extends BoxProps {
   setIsContentLarge?: React.Dispatch<SetStateAction<boolean>> | any;
   setContentHeight?: (height: number) => void;
   limit?: number;
+  fullWidth?: boolean;
 }
 
 const TextEditor: FC<TextEditorPropTypes> = ({
@@ -36,7 +44,8 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   setShowMore,
   isContentLarge,
   setIsContentLarge,
-  setContentHeight = () => { },
+  setContentHeight = () => {},
+  fullWidth = false,
   ...props
 }: TextEditorPropTypes) => {
   const ref: any = useRef();
@@ -91,14 +100,15 @@ const TextEditor: FC<TextEditorPropTypes> = ({
           }
         },
         onReady: () => {
-          const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+          const editorContent = document.querySelector(
+            '.codex-editor__redactor',
+          ) as HTMLElement;
           if (editorContent) {
             setContentHeight(editorContent.scrollHeight);
             applyCustomStyles(editorContent.scrollHeight <= 300);
           }
         },
       });
-
       ref.current = editor;
     }
 
@@ -108,6 +118,14 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       }
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (ref.current) {
+  //     ref.current.isReady.then(() => {
+  //       ref.current.render(value);
+  //     });
+  //   }
+  // }, [value]);
 
   const applyCustomStyles = (isPrimary: boolean) => {
     const editorContent = document.querySelector(
@@ -119,15 +137,35 @@ const TextEditor: FC<TextEditorPropTypes> = ({
   };
 
   useEffect(() => {
-    const editorContent = document.querySelector('.codex-editor__redactor') as HTMLElement;
+    const editorContent = document.querySelector(
+      '.codex-editor__redactor',
+    ) as HTMLElement;
     if (editorContent) {
       applyCustomStyles(showMore || editorContent.scrollHeight <= 300);
     }
   }, [showMore]);
 
+  const handleClick = useCallback(() => {
+    if (ref.current) {
+      ref.current.focus(true);
+    }
+  }, []);
+
   return (
     <Fragment>
-      {children ? children : <Box id={holder} {...props}></Box>}
+      {children ? (
+        children
+      ) : (
+        <Box
+          id={holder}
+          className={clsx({
+            fullWidth: fullWidth,
+            editorReadOnly: readonly,
+          })}
+          {...props}
+          onClick={handleClick}
+        ></Box>
+      )}
     </Fragment>
   );
 };

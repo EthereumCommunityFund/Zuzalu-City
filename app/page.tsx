@@ -5,4 +5,4 @@ const Home = () => {
   return <DynamicHomePage />;
 };
 
-export default Home
+export default Home;

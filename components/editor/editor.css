@@ -6,3 +6,11 @@
   padding-bottom: 0 !important;
   overflow: hidden;
 }
+
+.fullWidth .codex-editor * {
+  max-width: unset !important;
+}
+
+.editorReadOnly .ce-block--selected .ce-block__content {
+  background-color: unset;
+}

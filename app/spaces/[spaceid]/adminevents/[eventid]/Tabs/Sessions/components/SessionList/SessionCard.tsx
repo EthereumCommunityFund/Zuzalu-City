@@ -42,31 +42,35 @@ const SessionCard: React.FC<SessionCardProps> = ({
           </Typography>
         </Stack>
         <Typography variant="bodyB">
-          {dayjs(session.startTime).format('h:mm A')} -{' '}
-          {dayjs(session.endTime).format('h:mm A')}
+          {dayjs(session.startTime).utc().format('h:mm A')} -{' '}
+          {dayjs(session.endTime).utc().format('h:mm A')}
         </Typography>
         <Typography variant="subtitleSB">{session.title}</Typography>
         <Stack direction={'row'} spacing={1} alignItems="center">
           <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
             Speakers:
           </Typography>
-          {JSON.parse(session.speakers).map((speaker: any, index: number) => (
-            <Stack
-              key={`Speaker-${index}`}
-              direction={'row'}
-              spacing={0.5}
-              alignItems={'center'}
-            >
-              <Box
-                component={'img'}
-                height={20}
-                width={20}
-                borderRadius={10}
-                src={speaker.avatar || '/16.jpg'}
-              />
-              <Typography variant="bodyS">{speaker.username}</Typography>
-            </Stack>
-          ))}
+          {session.speakers
+            ? JSON.parse(session.speakers).map(
+                (speaker: any, index: number) => (
+                  <Stack
+                    key={`Speaker-${index}`}
+                    direction={'row'}
+                    spacing={0.5}
+                    alignItems={'center'}
+                  >
+                    <Box
+                      component={'img'}
+                      height={20}
+                      width={20}
+                      borderRadius={10}
+                      src={speaker.avatar || '/16.jpg'}
+                    />
+                    <Typography variant="bodyS">{speaker.username}</Typography>
+                  </Stack>
+                ),
+              )
+            : null}
         </Stack>
         <Stack direction={'row'} alignItems={'center'} spacing={1}>
           <MapIcon size={4} />

@@ -1,18 +1,18 @@
 export function parseDelimiterToMarkdown() {
-    const delimiter = '---';
+  const delimiter = '---';
 
-    return delimiter.concat('\n');
+  return delimiter.concat('\n');
 }
 
 export function parseMarkdownToDelimiter() {
-    let delimiterData = {};
+  let delimiterData = {};
 
-    delimiterData = {
-        data: {
-            items: [],
-        },
-        type: 'delimiter',
-    };
+  delimiterData = {
+    data: {
+      items: [],
+    },
+    type: 'delimiter',
+  };
 
-    return delimiterData;
+  return delimiterData;
 }

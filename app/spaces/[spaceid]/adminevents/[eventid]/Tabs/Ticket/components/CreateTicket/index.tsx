@@ -44,6 +44,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 interface IProps {
   setIsConfirm?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setGoToSummary?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -587,34 +588,8 @@ export const CreateTicket = ({
   ticketImageURL,
   setTicketImageURL,
 }: IProps) => {
-  const [file, setFile] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const inputFile = useRef<HTMLInputElement>(null);
+  const avatarUploader = useUploaderPreview(setTicketImageURL);
 
-  const uploadFile = async (fileToUpload: File) => {
-    try {
-      setUploading(true);
-      const data = new FormData();
-      data.set('file', fileToUpload);
-      const res = await fetch('/api/pinata', {
-        method: 'POST',
-        body: data,
-      });
-      const resData = await res.json();
-      console.log(resData);
-      setTicketImageURL(resData.url);
-      setUploading(false);
-    } catch (e) {
-      console.log(e);
-      setUploading(false);
-      alert('Trouble uploading file');
-    }
-  };
-
-  const handleImageChange = (e: any) => {
-    setFile(e.target.files[0]);
-    uploadFile(e.target.files[0]);
-  };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack padding="20px 30px" spacing="30px">
@@ -774,33 +749,42 @@ export const CreateTicket = ({
           </Stack>
           <Stack spacing="10px">
             <Typography variant="bodyBB">Image</Typography>
-            <Typography
-              variant="bodyS"
-              sx={{
-                opacity: '0.6',
-              }}
-            >
+            <Typography variant="bodyS" sx={{ opacity: '0.6' }}>
               Recommend min of 200 * 200px (1:1 Ratio)
             </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-              }}
-            >
-              <ZuInput
-                type="file"
-                id="Avatar"
-                ref={inputFile}
-                onChange={handleImageChange}
-              />
-              <PreviewFile
-                sx={{
-                  width: '200px',
-                  height: '200px',
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Uploader3
+                accept={['.gif', '.jpeg', '.gif', '.png']}
+                api={'/api/file/upload'}
+                multiple={false}
+                crop={{
+                  size: { width: 400, height: 400 },
+                  aspectRatio: 1,
+                }} // must be false when accept is svg
+                onUpload={(file) => {
+                  avatarUploader.setFile(file);
                 }}
-                file={ticketImageURL}
+                onComplete={(file) => {
+                  avatarUploader.setFile(file);
+                }}
+              >
+                <Button
+                  component="span"
+                  sx={{
+                    color: 'white',
+                    borderRadius: '10px',
+                    backgroundColor: '#373737',
+                    border: '1px solid #383838',
+                  }}
+                >
+                  Upload Image
+                </Button>
+              </Uploader3>
+              <PreviewFile
+                sx={{ width: '200px', height: '200px' }}
+                src={avatarUploader.getUrl()}
+                isError={avatarUploader.isError()}
+                isLoading={avatarUploader.isLoading()}
               />
             </Box>
           </Stack>

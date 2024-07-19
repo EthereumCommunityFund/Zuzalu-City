@@ -25,12 +25,17 @@ import { RightArrowCircleSmallIcon } from 'components/icons/RightArrowCircleSmal
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { MOCK_DATA } from 'mock';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, Event, SpaceEventData } from '@/types';
 import { Sidebar } from '@/components/layout';
-import { groupEventsByMonth } from '@/components/cards/EventCard';
+import {
+  EventCardMonthGroup,
+  EventCardSkeleton,
+  filterUpcomingEvents,
+  groupEventsByMonth,
+} from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import TextEditor from '@/components/editor/editor';
 // import { SubSidebar } from '@/components/layout';
@@ -44,16 +49,14 @@ export default function SpaceDetailPage() {
   const [space, setSpace] = useState<Space>();
   const [showCopyToast, setShowCopyToast] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
+  const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const [currentHref, setCurrentHref] = useState('');
-
-  const [contentHeight, setContentHeight] = useState(0);
-  const [isContentLarge, setIsContentLarge] = useState(false);
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const getSpaceByID = async () => {
-    try {
-      const GET_SPACE_QUERY = `
+    setIsEventsLoading(true);
+    const GET_SPACE_QUERY = `
       query GetSpace($id: ID!) {
         node(id: $id) {
           ...on Space {
@@ -71,7 +74,10 @@ export default function SpaceDetailPage() {
             github
             discord
             ens
-            admin {
+            admins {
+              id
+            }
+            superAdmin {
               id
             }
             events(first: 10) {
@@ -106,51 +112,57 @@ export default function SpaceDetailPage() {
         }
       }
       `;
-      const spaceId = params.spaceid.toString();
+    const spaceId = params.spaceid.toString();
 
-      const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
-        id: spaceId,
-      });
-      const spaceData: Space = response.data.node as Space;
-      setSpace(spaceData);
-      const eventData: SpaceEventData = response.data.node
-        .events as SpaceEventData;
-      const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
-      setEvents(fetchedEvents);
-      return spaceData;
-    } catch (error) {
-      console.error('Failed to fetch space:', error);
-    }
+    const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+      id: spaceId,
+    });
+    const spaceData: Space = response.data.node as Space;
+    setSpace(spaceData);
+    const eventData: SpaceEventData = response.data.node
+      .events as SpaceEventData;
+    const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
+    setEvents(fetchedEvents);
+    return spaceData;
   };
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setCurrentHref(window.location.href);
-        const space = await getSpaceByID();
-        document.title = space?.name + ' - ' + 'Zuzalu City';
-        const admins =
-          space?.admin?.map((admin) => admin.id.toLowerCase()) || [];
-        const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        if (admins.includes(userDID)) {
-          setIsAdmin(true);
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
+      setCurrentHref(window.location.href);
+      const space = await getSpaceByID();
+      document.title = space?.name + ' - ' + 'Zuzalu City';
+      const admins =
+        space?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+      const superAdmins =
+        space?.superAdmin?.map((superAdmin) => superAdmin.id.toLowerCase()) ||
+        [];
+      const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+      if (admins.includes(userDID) || superAdmins.includes(userDID)) {
+        setIsAdmin(true);
       }
     };
 
-    fetchData();
+    fetchData()
+      .catch((error) => {
+        console.error('An error occurred:', error);
+      })
+      .finally(() => {
+        setIsEventsLoading(false);
+      });
   }, []);
 
-  useEffect(() => {
-    const editorContent = document.querySelector(
-      '.codex-editor__redactor',
-    ) as HTMLElement;
-    if (editorContent) {
-      setContentHeight(editorContent.scrollHeight);
-      setIsContentLarge(editorContent.scrollHeight > 300);
-    }
-  }, [space?.description]);
+  const hasShowMore = (spaceDescription?: string) => {
+    if (!spaceDescription) return false;
+    const descData = JSON.parse(spaceDescription.replaceAll('\\"', '"'));
+    const { blocks } = descData;
+    if (blocks.length === 0) return false;
+    if (blocks.length > 5) return true;
+    const totalLength = blocks.reduce((acc: number, block: any) => {
+      return acc + block.data?.text?.length || 0;
+    }, 0);
+    return totalLength > 300;
+  };
+
+  const isContentLarge = hasShowMore(space?.description);
 
   return (
     <Box
@@ -203,12 +215,12 @@ export default function SpaceDetailPage() {
             {space ? (
               <Image
                 src={
-                  space?.banner ||
+                  space.banner ||
                   'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png'
                 }
-                alt={space?.name || ''}
-                width={200}
-                height={200}
+                alt={space.name || ''}
+                width={1280}
+                height={240}
                 style={{
                   position: 'absolute',
                   inset: 0,
@@ -220,7 +232,12 @@ export default function SpaceDetailPage() {
                 className="absolute inset-0 object-cover w-full h-full rounded-[10px]"
               />
             ) : (
-              <Skeleton variant="rectangular" width={'100%'} height={'100%'} />
+              <Skeleton
+                variant="rectangular"
+                width={'100%'}
+                height={'100%'}
+                sx={{ borderRadius: '10px' }}
+              />
             )}
             <Box
               sx={{
@@ -363,11 +380,7 @@ export default function SpaceDetailPage() {
             {space ? (
               <>
                 <Box
-                  sx={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#919191',
-                  }}
+                  sx={{ fontSize: '18px', fontWeight: '700', color: '#919191' }}
                 >
                   About {space.name}
                 </Box>
@@ -377,7 +390,7 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     backgroundColor: '#ffffff05',
                     borderRadius: '10px',
-                    height: !showMore ? '157px' : 'fit-content',
+                    height: !showMore ? '180px' : 'unset',
                     boxSizing: 'border-box',
                     overflow: 'hidden',
                   }}
@@ -394,13 +407,10 @@ export default function SpaceDetailPage() {
                     {space.name}
                   </Box>
                   <TextEditor
+                    fullWidth={true}
                     holder="space-detail-editor"
                     readonly={true}
                     value={JSON.parse(space.description.replaceAll('\\"', '"'))}
-                    setContentHeight={(height: number) => {
-                      setContentHeight(height);
-                      setIsContentLarge(height > 300);
-                    }}
                     sx={{
                       fontFamily: 'Inter',
                       color: 'white',
@@ -408,18 +418,18 @@ export default function SpaceDetailPage() {
                       height: 'auto',
                       overflow: 'auto',
                       padding: '0px',
-                      '& > div > div': {
-                        paddingBottom: '0px !important',
-                      },
-                      '& .ce-block__content': {
-                        maxWidth: '100% !important', // Adjust the margin value as needed
-                      },
+                      opacity: 0.8,
                     }}
                   />
                 </Box>
               </>
             ) : (
-              <Skeleton variant="rounded" width={'100%'} height={60} />
+              <>
+                <Typography variant={'h6'}>
+                  <Skeleton width={200} />
+                </Typography>
+                <Skeleton variant="rounded" width={'100%'} height={80} />
+              </>
             )}
 
             {isContentLarge && (
@@ -454,7 +464,22 @@ export default function SpaceDetailPage() {
               </SidebarButton>
             )}
           </Box>
-          {events.length > 0 && (
+          {isEventsLoading ? (
+            <Box
+              sx={{
+                padding: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+              }}
+            >
+              <EventCardMonthGroup>
+                <Skeleton width={60}></Skeleton>
+              </EventCardMonthGroup>
+              <EventCardSkeleton />
+              <EventCardSkeleton />
+            </Box>
+          ) : events.length > 0 ? (
             <Box
               sx={{
                 padding: '20px',
@@ -479,7 +504,7 @@ export default function SpaceDetailPage() {
                     color: '#919191',
                   }}
                 >
-                  Upcoming Events ({events.length})
+                  Upcoming Events ({filterUpcomingEvents(events).length})
                 </Box>
                 <SidebarButton
                   onClick={() => {
@@ -516,50 +541,21 @@ export default function SpaceDetailPage() {
                   width: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '10px',
+                  gap: '20px',
                 }}
               >
-                {Object.entries(groupEventsByMonth(events)).map(
-                  ([key, value], index) => {
-                    return (
-                      <div key={key + index}>
-                        <Box
-                          sx={{
-                            width: '100%',
-                            boxSizing: 'border-box',
-                            fontSize: '18px',
-                            fontWeight: '600',
-                            paddingLeft: '14px',
-                            paddingRight: '14px',
-                            paddingTop: '8px',
-                            paddingBottom: '8px',
-                            border: '1px solid #ffffff1a',
-                            borderRadius: '50px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'sticky',
-                            backdropFilter: 'blur(40px)',
-                            top: '10px',
-                            backgroundColor: '#222222cc',
-                          }}
-                        >
-                          {key}
-                        </Box>
-                        <Box>
-                          {value.map((event, index) => {
-                            return (
-                              <EventCard
-                                key={`EventCard-${event.id}`}
-                                event={event}
-                              />
-                            );
-                          })}
-                        </Box>
-                      </div>
-                    );
-                  },
-                )}
+                {Object.entries(
+                  groupEventsByMonth(filterUpcomingEvents(events)),
+                ).map(([key, value], index) => {
+                  return (
+                    <Fragment key={key + index}>
+                      <EventCardMonthGroup>{key}</EventCardMonthGroup>
+                      {value.map((event) => {
+                        return <EventCard key={event.id} event={event} />;
+                      })}
+                    </Fragment>
+                  );
+                })}
               </Box>
               <Box
                 sx={{
@@ -605,7 +601,7 @@ export default function SpaceDetailPage() {
                 {/*</Box>*/}
               </Box>
             </Box>
-          )}
+          ) : null}
         </Box>
       </Box>
     </Box>

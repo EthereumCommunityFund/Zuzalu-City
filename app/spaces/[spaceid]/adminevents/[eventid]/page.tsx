@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
   const [event, setEvent] = React.useState<Event>();
 
-  const { ceramic, composeClient, profile } = useCeramicContext();
+  const { composeClient } = useCeramicContext();
 
   const pathname = useParams();
 
@@ -73,7 +73,7 @@ const Home: React.FC = () => {
     }
   };
 
-  const isMobile = useMediaQuery('(max-width:500px)');
+  const isMobile = useMediaQuery('(max-width:768px)');
   const renderPage = () => {
     switch (tabName) {
       case 'Overview':
@@ -107,7 +107,7 @@ const Home: React.FC = () => {
       <Navbar spaceName={event?.space?.name} />
       <Tabbar tabName={tabName} setTabName={setTabName} />
       <Stack direction="row" justifyContent="center">
-        <Box width={isMobile ? '90%' : '60%'} marginTop={3}>
+        <Box width={isMobile ? '100%' : '860px'} marginTop={3}>
           {renderPage()}
         </Box>
       </Stack>

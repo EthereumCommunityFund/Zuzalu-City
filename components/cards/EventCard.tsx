@@ -3,14 +3,25 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { MapIcon, LockIcon } from '../icons';
 import { Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
+import { dayjs } from '@/utils/dayjs';
 
-type EventCardProps = {
-  event: Event;
+type EventCardProps = { event: Event };
+
+const dateNowUtc = dayjs(new Date()).utc();
+
+export const filterPastEvents = (events: Event[]) => {
+  return events.filter((event) => dayjs(event.endTime).isBefore(dateNowUtc));
+};
+
+export const filterUpcomingEvents = (events: Event[]) => {
+  return events.filter((event) =>
+    dayjs(event.startTime).isSameOrAfter(dateNowUtc),
+  );
 };
 
 export const formatDateToMonth = (timestamp: string | number | Date) => {
@@ -83,7 +94,13 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       padding="10px"
       display="flex"
       gap={isMobile ? '10px' : '14px'}
-      sx={{ cursor: 'pointer' }}
+      sx={{
+        cursor: 'pointer',
+        transition: 'background-color 0.3s',
+        ':hover': {
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        },
+      }}
       width={'100%'}
       boxSizing={'border-box'}
       position={'relative'}
@@ -115,12 +132,18 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               borderRadius="40px"
             /> */}
             <Image
-              src={event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
-              loader={() => event.space?.avatar || "https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png"}
+              src={
+                event.space?.avatar ||
+                'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+              }
+              loader={() =>
+                event.space?.avatar ||
+                'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+              }
               width={18}
               height={18}
               alt={event.title}
-              style={{ borderRadius: "100%" }}
+              style={{ borderRadius: '100%' }}
             />
             <Typography
               color="white"
@@ -204,5 +227,79 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     </Box>
   );
 };
+
+export const EventCardMonthGroup: React.FC<
+  React.PropsWithChildren<{
+    bgColor?: 'transparent' | string;
+  }>
+> = ({ children, bgColor = 'rgba(34, 34, 34, 0.80)' }) => {
+  return (
+    <Box
+      component={'div'}
+      width={'100%'}
+      color="#ccc"
+      justifyContent="center"
+      alignContent={'center'}
+      paddingY="8px"
+      fontWeight={700}
+      display={'flex'}
+      sx={{
+        borderRadius: '40px',
+        border: '1px solid rgba(255, 255, 255, 0.10)',
+        backgroundColor: bgColor,
+        backdropFilter: 'blur(10px)',
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+export const EventCardSkeleton = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  return (
+    <Box
+      padding="10px"
+      display="flex"
+      gap={isMobile ? '10px' : '14px'}
+      sx={{ cursor: 'pointer' }}
+      width={'100%'}
+      boxSizing={'border-box'}
+      position={'relative'}
+    >
+      <Skeleton
+        variant="rectangular"
+        width={isMobile ? '80px' : '140px'}
+        height={isMobile ? '80px' : '140px'}
+        sx={{ borderRadius: '10px' }}
+      />
+      <Box display="flex" flexDirection="column" gap="10px" flexGrow={1}>
+        <Box
+          display="flex"
+          flexDirection={isMobile ? 'column' : 'row'}
+          alignItems={isMobile ? 'initial' : 'center'}
+          gap="10px"
+        >
+          <Typography color="white" variant="caption">
+            BY:
+          </Typography>
+          <Skeleton variant="circular" width={18} height={18} />
+          <Skeleton variant="text" width={100} />
+        </Box>
+        <Box display="flex" flexDirection="column">
+          <Skeleton variant="text" width={isMobile ? '100%' : '80%'} />
+          <Skeleton variant="text" width={isMobile ? '60%' : '70%'} />
+        </Box>
+        <Box display="flex" alignItems="center" gap="6px" sx={{ opacity: 0.5 }}>
+          <MapIcon size={4} />
+          <Skeleton variant="text" width={100} />
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export { EventCard };
 
 export default EventCard;

@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+import bs58 from 'bs58';
 export const isMobile = (): boolean => {
   let flag: RegExpMatchArray | null = navigator.userAgent.match(
     /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i,
@@ -22,3 +24,19 @@ export const convertDateStringFormat = (dateString: string): string => {
 
   return formattedDate;
 };
+
+export function uint8ArrayToBase64(array: Uint8Array): string {
+  return btoa(String.fromCharCode.apply(null, Array.from(array)));
+}
+
+export function base64ToUint8Array(base64: string): Uint8Array {
+  return Uint8Array.from([...atob(base64)].map((char) => char.charCodeAt(0)));
+}
+
+export function hashAndEncodeBase58(value: string): string {
+  const hash = crypto.createHash('sha256').update(value).digest();
+
+  const encoded = bs58.encode(hash);
+
+  return encoded.slice(0, 16);
+}

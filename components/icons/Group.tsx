@@ -8,7 +8,7 @@ export const GroupIcon: React.FC<IconProps> = ({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 30 30"
+      viewBox={`0 0 ${size * 4} ${size * 4}`}
       fill={color}
       width={`${size * 4}px`}
       height={`${size * 4}px`}

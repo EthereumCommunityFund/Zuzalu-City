@@ -77,6 +77,10 @@ import { SessionSupabaseData } from '@/types';
 import { supaCreateSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
+import SlotDate from '@/components/calendar/SlotDate';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
+import SelectCategories from '@/components/select/selectCategories';
+import SelectSearchUser from '@/components/select/selectSearchUser';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -126,6 +130,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
+
+  const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
+    [],
+  );
+
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -148,6 +157,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
     dayjs().set('hour', 0).set('minute', 0),
   );
+
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
     dayjs().set('hour', 0).set('minute', 0),
   );
@@ -155,7 +165,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<any>>([]);
   const [speakers, setSpeakers] = useState<Array<string>>([]);
-  const [sessionLocation, setSessionLocation] = useState<string>();
+  const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
 
@@ -197,12 +207,27 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const handleDateChange = (date: Dayjs) => {
     if (date && person) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
+      const selectedDay = date.format('YYYY-MM-DD');
+      if (sessionLocation == '') {
+        return;
+      }
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
+
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+
+      const bookedSessionsDay = bookedSessions.filter((session) => {
+        const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+
+        return sessionStartDay === selectedDay;
+      });
+
+      setBookedSessionsForDay(bookedSessionsDay);
     }
     setSessionDate(date);
+    setSessionStartTime(dayjs().set('hour', 0).set('minute', 0));
+    setSessionEndTime(dayjs().set('hour', 0).set('minute', 0));
   };
 
   const isDateInRange = (
@@ -216,16 +241,62 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     );
   };
 
-  const isTimeAvailable = (date: Dayjs, available?: any): boolean => {
-    const formattedTime = date.format('HH:mm');
-    const isMinuteIntervalValid = date.minute() % 30 === 0;
-    const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
-      const startTime = dayjs(slot.startTime).format('HH:mm');
-      const endTime = dayjs(slot.endTime).format('HH:mm');
-      return formattedTime >= startTime && formattedTime < endTime;
-    });
+  const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
+    if (sessionDate == null) return true;
+    const sessionDateDay = sessionDate.format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
+    if (today >= sessionDateDay) {
+      return false;
+    } else {
+      const formattedTime = date.format('HH:mm');
 
-    return isMinuteIntervalValid && isWithinAvailableSlot;
+      const isWithinBookedSession = bookedSessionsForDay.some((session) => {
+        const sessionStartTime = dayjs(session.startTime).format('HH:mm');
+        const sessionEndTime = dayjs(session.endTime).format('HH:mm');
+
+        if (isStart) {
+          return (
+            formattedTime >= sessionStartTime && formattedTime < sessionEndTime
+          );
+        } else {
+          return (
+            formattedTime > sessionStartTime && formattedTime <= sessionEndTime
+          );
+        }
+      });
+
+      const isMinuteIntervalValid = date.minute() % 30 === 0;
+      const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
+        let startTime;
+        let endTime;
+        if (isStart) {
+          startTime = dayjs.utc(slot.startTime).format('HH:mm');
+          endTime = dayjs.utc(slot.endTime).format('HH:mm');
+          if (endTime >= startTime) {
+            return formattedTime >= startTime && formattedTime < endTime;
+          } else {
+            return !(formattedTime < startTime && formattedTime >= endTime);
+          }
+        } else {
+          if (
+            sessionStartTime.hour() === 0 &&
+            sessionStartTime.minute() === 0
+          ) {
+            startTime = dayjs.utc(slot.endTime).format('HH:mm');
+          } else {
+            startTime = sessionStartTime.format('HH:mm');
+          }
+          endTime = dayjs.utc(slot.endTime).format('HH:mm');
+          if (endTime >= startTime) {
+            return formattedTime >= startTime && formattedTime <= endTime;
+          } else {
+            return !(formattedTime < startTime && formattedTime > endTime);
+          }
+        }
+      });
+
+      return isWithinAvailableSlot && !isWithinBookedSession;
+    }
   };
 
   const getPeople = async () => {
@@ -277,37 +348,16 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     }
   };
 
-  const handleChange = (e: any) => {
-    setSessionTags(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
   };
 
-  const handleSpeakerChange = (e: any) => {
-    setSpeakers(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
-
-    const speakers = e.target.value.map(
-      (speaker: any) => people.filter((i) => i.username === speaker)[0],
-    );
-    setSessionSpeakers(speakers);
+  const handleSpeakerChange = (users: Profile[]) => {
+    setSessionSpeakers(users);
   };
 
-  const handleOrganizerChange = (e: any) => {
-    setOrganizers(
-      typeof e.target.value === 'string'
-        ? e.target.value.split(',')
-        : e.target.value,
-    );
-    const organizers = e.target.value.map(
-      (organizer: any) => people.filter((i) => i.username === organizer)[0],
-    );
-    setSessionOrganizers(organizers);
+  const handleOrganizerChange = (users: Profile[]) => {
+    setSessionOrganizers(users);
   };
   const createSession = async () => {
     if (!isAuthenticated) {
@@ -380,6 +430,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   }, []);
 
   const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
+
   const getBookedSession = async () => {
     try {
       const { data } = await supabase
@@ -505,28 +556,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   </Typography>
                 </Stack>
                 <Box>
-                  <Select
-                    multiple
-                    value={sessionTags}
-                    style={{ width: '100%' }}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {SPACE_CATEGORIES.map((tag, index) => {
-                      return (
-                        <MenuItem value={tag.value} key={index}>
-                          {tag.label}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
+                  <SelectCategories onChange={handleChange} />
                 </Box>
                 <Box
                   display={'flex'}
@@ -763,18 +793,18 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                               width="60px"
                               height="60px"
                               borderRadius="8px"
-                              src="/20.png"
+                              src={selectedRoom?.avatar}
                             />
                             <Stack spacing="4px">
                               <Typography variant="bodyBB">
                                 {sessionLocation}
                               </Typography>
-                              <Typography variant="bodyS">
+                              {/*<Typography variant="bodyS">
                                 Sessions booked: {bookedSessions.length}
                               </Typography>
                               <Typography variant="caption">
                                 Capacity: {selectedRoom?.capacity}
-                              </Typography>
+                              </Typography> */}
                             </Stack>
                           </Stack>
                         </Stack>
@@ -840,7 +870,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, true);
                             }
                             return false;
                           }}
@@ -891,7 +921,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, false);
                             }
                             return false;
                           }}
@@ -1141,61 +1171,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={organizers}
-                    style={{ width: '100%' }}
-                    onChange={handleOrganizerChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem
-                          value={i.username}
-                          key={`Organizer_Index${index}`}
-                        >
-                          {i.username}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {organizers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = organizers.filter(
-                            (item) => item !== i,
-                          );
-                          setOrganizers(newArray);
-                          const newDIDs = sessionOrganizers.filter(
-                            (_, ind) => ind !== index,
-                          );
-                          setSessionOrganizers(newDIDs);
-                        }}
-                        key={`Selected_Organizerr${index}`}
-                      />
-                    );
-                  })}
-                </Box>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleOrganizerChange}
+                />
               </Stack>
               {/* <Stack spacing="20px">
                 <Stack
@@ -1232,61 +1211,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     Type or search a person
                   </Typography>
                 </Stack>
-                <Box>
-                  <Select
-                    multiple
-                    value={speakers}
-                    style={{ width: '100%' }}
-                    onChange={handleSpeakerChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {people.map((i, index) => {
-                      return (
-                        <MenuItem
-                          value={i.username}
-                          key={`Speaker_Index${index}`}
-                        >
-                          {i.username}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={'10px'}
-                  flexWrap={'wrap'}
-                >
-                  {speakers.map((i, index) => {
-                    return (
-                      <Chip
-                        label={i}
-                        sx={{
-                          borderRadius: '10px',
-                        }}
-                        onDelete={() => {
-                          const newArray = speakers.filter(
-                            (item) => item !== i,
-                          );
-                          setSpeakers(newArray);
-                          const newDIDs = sessionSpeakers.filter(
-                            (_, ind) => ind !== index,
-                          );
-                          setSessionSpeakers(newDIDs);
-                        }}
-                        key={`Selected_Speaker${index}`}
-                      />
-                    );
-                  })}
-                </Box>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleSpeakerChange}
+                />
               </Stack>
             </Stack>
             <Box display="flex" gap="20px">

@@ -11,6 +11,7 @@ import {
   Select,
   MenuItem,
   Chip,
+  useTheme,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -36,6 +37,13 @@ import { Venue, Event } from '@/types';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
+import {
+  FormLabel,
+  FormLabelDesc,
+  FormTitle,
+} from '@/components/typography/formTypography';
+import SelectCheckItem from '@/components/select/selectCheckItem';
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Custom_Option: TimeStepOptions = {
@@ -106,36 +114,9 @@ const Home: React.FC<IVenue> = ({ event }) => {
     );
   };
 
-  const [avatar, setAvatar] = useState<SelectedFile>();
-  const [avatarURL, setAvatarURL] = useState<string>();
+  const avatarUploader = useUploaderPreview('');
   const [searchValue, setSearchValue] = useState<string>('');
-  const [file, setFile] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const inputFile = useRef<HTMLInputElement>(null);
 
-  const uploadFile = async (fileToUpload: File) => {
-    try {
-      setUploading(true);
-      const data = new FormData();
-      data.set('file', fileToUpload);
-      const res = await fetch('/api/pinata', {
-        method: 'POST',
-        body: data,
-      });
-      const resData = await res.json();
-      setAvatarURL(resData.url);
-      setUploading(false);
-    } catch (e) {
-      console.log(e);
-      setUploading(false);
-      alert('Trouble uploading file');
-    }
-  };
-
-  const handleImageChange = (e: any) => {
-    setFile(e.target.files[0]);
-    uploadFile(e.target.files[0]);
-  };
   const getVenues = async () => {
     try {
       const { data } = await supabase
@@ -174,6 +155,8 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const debounceGetEventsCity = debounce(getVenues, 1000);
 
   const List = (anchor: Anchor) => {
+    const { breakpoints } = useTheme();
+
     const [monday, setMonday] = useState<AvailableType[]>([
       {
         startTime: '',
@@ -204,6 +187,18 @@ const Home: React.FC<IVenue> = ({ event }) => {
         endTime: '',
       },
     ]);
+    const [saturday, setSaturday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [sunday, setSunday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
 
     const createVenue = async () => {
       try {
@@ -213,12 +208,14 @@ const Home: React.FC<IVenue> = ({ event }) => {
           wednesday,
           thursday,
           friday,
+          saturday,
+          sunday,
         };
         const { data } = await supabase.from('venues').insert({
           name,
           tags: tags.join(','),
           eventId,
-          avatar: avatarURL,
+          avatar: avatarUploader.getUrl(),
           bookings: JSON.stringify(bookings),
           capacity,
         });
@@ -235,6 +232,9 @@ const Home: React.FC<IVenue> = ({ event }) => {
           sx={{
             width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
             backgroundColor: '#222222',
+            [breakpoints.down('md')]: {
+              width: '100%',
+            },
           }}
           role="presentation"
           zIndex="100"
@@ -247,12 +247,19 @@ const Home: React.FC<IVenue> = ({ event }) => {
             borderBottom="1px solid #383838"
             paddingX={3}
             gap={2}
+            sx={{
+              position: 'sticky',
+              top: 0,
+              backgroundColor: '#222222',
+              zIndex: 10,
+            }}
           >
             <ZuButton
-              startIcon={<XMarkIcon />}
+              startIcon={<XMarkIcon size={5} />}
               onClick={() => toggleDrawer('right', false)}
               sx={{
                 backgroundColor: 'transparent',
+                fontWeight: 'bold',
               }}
             >
               Close
@@ -265,16 +272,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Typography variant="subtitleMB">Create a Venue</Typography>
-              <ZuButton
-                startIcon={<ArchiveBoxIcon size={5} />}
-                sx={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-              >
-                Save Draft
-              </ZuButton>
+              <FormTitle>Create a Venue</FormTitle>
             </Stack>
             <Stack
               direction={'column'}
@@ -283,9 +281,9 @@ const Home: React.FC<IVenue> = ({ event }) => {
               padding="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleMB">Venue Space Details</Typography>
+              <FormTitle>Venue Space Details</FormTitle>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Space Name*</Typography>
+                <FormLabel>Space Name*</FormLabel>
                 <ZuInput
                   placeholder="Standard Pass"
                   onChange={(e) => setName(e.target.value)}
@@ -293,10 +291,10 @@ const Home: React.FC<IVenue> = ({ event }) => {
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">Space Tags</Typography>
-                  <Typography variant="bodyS">
+                  <FormLabel>Space Tags</FormLabel>
+                  <FormLabelDesc>
                     Search or create categories related to your space
-                  </Typography>
+                  </FormLabelDesc>
                 </Stack>
                 <Box>
                   <Select
@@ -305,6 +303,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     style={{ width: '100%' }}
                     onChange={handleChange}
                     input={<OutlinedInput label="Name" />}
+                    renderValue={(selected) => selected.join(', ')}
                     MenuProps={{
                       PaperProps: {
                         style: {
@@ -316,7 +315,12 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     {VENUE_TAGS.map((tag, index) => {
                       return (
                         <MenuItem value={tag.value} key={index}>
-                          {tag.label}
+                          <SelectCheckItem
+                            label={tag.label}
+                            isChecked={
+                              tags.findIndex((item) => item === tag.value) > -1
+                            }
+                          />
                         </MenuItem>
                       );
                     })}
@@ -346,38 +350,12 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     );
                   })}
                 </Box>
-                {/* <Stack direction="row" spacing="10px">
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Typography variant="bodyMB">
-                      Live-stream Available
-                    </Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    alignItems="center"
-                    bgcolor="#313131"
-                    borderRadius="10px"
-                    padding="4px 10px"
-                  >
-                    <Typography variant="bodyMB">External Venue</Typography>
-                    <XMarkIcon size={4} />
-                  </Stack>
-                </Stack> */}
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Space Image</Typography>
-                <Typography variant="bodyS">
+                <FormLabel>Space Image</FormLabel>
+                <FormLabelDesc>
                   Recommend min of 200x200px (1:1 Ratio)
-                </Typography>
+                </FormLabelDesc>
                 <Box
                   sx={{
                     display: 'flex',
@@ -385,24 +363,47 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     gap: '10px',
                   }}
                 >
-                  <ZuInput
-                    type="file"
-                    id="Avatar"
-                    ref={inputFile}
-                    onChange={handleImageChange}
-                  />
+                  <Uploader3
+                    accept={['.gif', '.jpeg', '.gif', '.png']}
+                    api={'/api/file/upload'}
+                    multiple={false}
+                    crop={{
+                      size: { width: 400, height: 400 },
+                      aspectRatio: 1,
+                    }} // must be false when accept is svg
+                    onUpload={(file) => {
+                      avatarUploader.setFile(file);
+                    }}
+                    onComplete={(file) => {
+                      avatarUploader.setFile(file);
+                    }}
+                  >
+                    <Button
+                      component="span"
+                      sx={{
+                        color: 'white',
+                        borderRadius: '10px',
+                        backgroundColor: '#373737',
+                        border: '1px solid #383838',
+                      }}
+                    >
+                      Upload Image
+                    </Button>
+                  </Uploader3>
                   <PreviewFile
                     sx={{
                       width: '200px',
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    file={avatarURL}
+                    src={avatarUploader.getUrl()}
+                    isLoading={avatarUploader.isLoading()}
+                    isError={avatarUploader.isError()}
                   />
                 </Box>
               </Stack>
               <Stack spacing="10px">
-                <Typography variant="bodyBB">Space Capacity*</Typography>
+                <FormLabel>Space Capacity*</FormLabel>
                 <ZuInput
                   type="number"
                   onChange={(e) => setCapacity(Number(e.target.value))}
@@ -416,11 +417,19 @@ const Home: React.FC<IVenue> = ({ event }) => {
               padding="20px"
               borderRadius="10px"
             >
-              <Typography variant="subtitleMB">Available Bookings</Typography>
-              <Typography variant="bodyBB">
-                {/* Your event timeframe: Month, 00, 2024 - Month, 00, 2024 */}
-                {`Your event timeframe: ${dayjs(event?.startTime).format('MMMM')}, ${dayjs(event?.startTime).date()}, ${dayjs(event?.startTime).year()} - ${dayjs(event?.endTime).format('MMMM')}, ${dayjs(event?.endTime).date()}, ${dayjs(event?.endTime).year()}`}
+              <FormTitle>Available Bookings</FormTitle>
+              <Typography variant="bodyBB" color="text.secondary">
+                Your event timezone: {event?.timezone}
               </Typography>
+              <Stack spacing="4px" direction={'row'}>
+                <Typography variant="bodyBB" color="text.secondary">
+                  Your event timeframe:
+                </Typography>
+
+                <Typography variant="bodyBB">
+                  {`${dayjs(event?.startTime).format('MMMM')}, ${dayjs(event?.startTime).date()}, ${dayjs(event?.startTime).year()} - ${dayjs(event?.endTime).format('MMMM')}, ${dayjs(event?.endTime).date()}, ${dayjs(event?.endTime).year()}`}
+                </Typography>
+              </Stack>
               <Stack spacing="20px">
                 <Stack direction="row" spacing="20px">
                   <Stack
@@ -439,6 +448,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={monday}
                         setValues={setMonday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -492,6 +502,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={tuesday}
                         setValues={setTuesday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -546,6 +557,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={wednesday}
                         setValues={setWednesday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -600,6 +612,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={thursday}
                         setValues={setThursday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -654,6 +667,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={friday}
                         setValues={setFriday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -701,8 +715,16 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">SAT</Typography>
                   </Stack>
-                  <Stack direction="row" alignItems="center" flex="4">
-                    <Typography>Unavailable</Typography>
+                  <Stack spacing="10px" flex="4">
+                    {saturday.map((item, index) => (
+                      <TimeRange
+                        key={`Saturday-Item-${index}`}
+                        values={saturday}
+                        setValues={setSaturday}
+                        id={index}
+                        timezone={event?.timezone as string}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -710,10 +732,30 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setSaturday((prev) => [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...saturday];
+                        prev.pop();
+                        setSaturday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -728,8 +770,16 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">SUN</Typography>
                   </Stack>
-                  <Stack direction="row" alignItems="center" flex="4">
-                    <Typography>Unavailable</Typography>
+                  <Stack spacing="10px" flex="4">
+                    {sunday.map((item, index) => (
+                      <TimeRange
+                        key={`Sunday-Item-${index}`}
+                        values={sunday}
+                        setValues={setSunday}
+                        id={index}
+                        timezone={event?.timezone as string}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -737,10 +787,30 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setSunday((prev) => [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...sunday];
+                        prev.pop();
+                        setSunday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -785,13 +855,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
       />
       <SwipeableDrawer
         hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '50px',
-            height: 'calc(100% - 50px)',
-            boxShadow: 'none',
-          },
-        }}
         anchor="right"
         open={state['right']}
         onClose={() => toggleDrawer('right', false)}

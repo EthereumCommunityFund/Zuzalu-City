@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 export type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export type IconProps = {
@@ -57,6 +59,9 @@ export interface Event {
   members?: {
     id: string;
   }[];
+  superAdmin?: {
+    id: string;
+  }[];
 }
 
 export interface EventEdge {
@@ -99,9 +104,20 @@ export interface Space {
   members?: {
     id: string;
   }[];
-  admin?: {
+  admins?: {
     id: string;
   }[];
+  superAdmin?: {
+    id: string;
+  }[];
+  events: {
+    edges: {
+      node: {
+        startTime: string;
+        endTime: string;
+      };
+    }[];
+  };
 }
 
 export interface SpaceEdge {
@@ -239,4 +255,55 @@ export interface IProps {
   setTokenId?: React.Dispatch<React.SetStateAction<string>> | any;
   ticketMinted?: any[];
   setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
+}
+
+export interface SocialLinks {
+  title: string;
+  links: string;
+}
+
+export interface CreateEventRequest {
+  name: string;
+  tagline: string;
+  participant: number;
+  max_participant: number;
+  min_participant: number;
+  external_url: string;
+  strDesc: string;
+  spaceId: string;
+  profileId: string;
+  avatarURL: string;
+  startTime: string;
+  endTime: string;
+  socialLinks: SocialLinks[];
+  adminId: string;
+  tracks: string[];
+  person: boolean;
+  locations: string[];
+}
+
+export interface ZuAutoCompleteProps {
+  optionVals: Array<{
+    value: string;
+    label: string;
+  }>;
+  val: Array<{
+    value: string;
+    label: string;
+  }>;
+  setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>;
+}
+
+export interface AddZupassMemberRequest {
+  eventId: string;
+  memberDID: string;
+  memberZupass: string;
+}
+export interface AddMemberRequest {
+  eventId: string;
+  memberAddress: string;
+}
+export interface AddAdminRequest {
+  eventId: string;
+  adminAddress: string;
 }

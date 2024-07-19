@@ -20,16 +20,11 @@ const Header: React.FC<IHeader> = ({ name, spaceId }) => {
       borderBottom="1px solid #383838"
       bgcolor="#2d2d2d"
       sx={{
-        position: 'sticky',
-        top: 0,
         zIndex: 1,
       }}
     >
       <Stack direction="row" spacing={2} alignItems="center">
-        <ZuButton
-          startIcon={<LeftArrowIcon />}
-          onClick={() => router.push(`/spaces/${spaceId}`)}
-        >
+        <ZuButton startIcon={<LeftArrowIcon />} onClick={() => router.back()}>
           Back
         </ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">

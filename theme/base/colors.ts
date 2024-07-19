@@ -6,6 +6,7 @@ export const Colors: PaletteOptions = {
   },
   text: {
     primary: '#FFFFFF',
+    secondary: 'rgba(225, 225, 225, 0.6)',
   },
   primary: {
     main: '#383838',

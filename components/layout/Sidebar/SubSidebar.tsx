@@ -228,7 +228,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
         >
           <SidebarButton
             icon={<HomeIcon />}
-            onClick={() => router.push('/spaces')}
+            onClick={() => router.push(`/spaces/${spaceId}`)}
             content="Home"
             isActive={false}
           />
