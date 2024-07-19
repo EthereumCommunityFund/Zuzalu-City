@@ -223,7 +223,7 @@ const Venue: React.FC = () => {
                       borderRadius: '10px',
                     }}
                     src={avatarUploader.getUrl()}
-                    isError={avatarUploader.isError()}
+                    errorMessage={avatarUploader.errorMessage()}
                     isLoading={avatarUploader.isLoading()}
                   />
                 </Box>

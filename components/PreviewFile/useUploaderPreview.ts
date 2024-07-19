@@ -28,8 +28,9 @@ export const useUploaderPreview = (src?: string) => {
     }
   };
 
+  const errorMessage = () =>
+    file?.status === Uploader3FileStatus.error ? file.message : undefined;
   const isLoading = () => file?.status === Uploader3FileStatus.uploading;
-  const isError = () => file?.status === Uploader3FileStatus.error;
 
-  return { url, setUrl, file, setFile, getUrl, isLoading, isError };
+  return { url, setUrl, file, setFile, getUrl, isLoading, errorMessage };
 };

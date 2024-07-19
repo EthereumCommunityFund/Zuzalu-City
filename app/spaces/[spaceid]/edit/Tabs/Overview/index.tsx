@@ -288,7 +288,7 @@ const Overview = () => {
             <PreviewFile
               sx={{ width: '150px', height: '150px', borderRadius: '60%' }}
               src={avatarUploader.getUrl()}
-              isError={avatarUploader.isError()}
+              errorMessage={avatarUploader.errorMessage()}
               isLoading={avatarUploader.isLoading()}
             />
           </Box>
@@ -344,7 +344,7 @@ const Overview = () => {
             <PreviewFile
               sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
               src={bannerUploader.getUrl()}
-              isError={bannerUploader.isError()}
+              errorMessage={bannerUploader.errorMessage()}
               isLoading={bannerUploader.isLoading()}
             />
           </Box>

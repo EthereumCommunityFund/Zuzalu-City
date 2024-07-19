@@ -42,7 +42,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@irys/sdk": "^0.2.6",
     "@lxdao/img3": "1.0.1",
-    "@lxdao/uploader3": "^1.5.2",
+    "@lxdao/uploader3": "^1.5.4",
     "@lxdao/uploader3-connector": "1.2.0",
     "@mui/material": "^5.15.16",
     "@mui/material-nextjs": "^5.15.11",
@@ -128,6 +128,5 @@
     "storybook": "^8.0.8",
     "tailwindcss": "^3.4.3",
     "typescript": "^5"
-  },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
+  }
 }

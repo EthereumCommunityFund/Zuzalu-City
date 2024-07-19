@@ -384,7 +384,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     }}
                     src={avatarUploader.getUrl()}
                     isLoading={avatarUploader.isLoading()}
-                    isError={avatarUploader.isError()}
+                    errorMessage={avatarUploader.errorMessage()}
                   />
                 </Box>
               </Stack>
