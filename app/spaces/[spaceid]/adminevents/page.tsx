@@ -385,7 +385,7 @@ const Home = () => {
             spaceId: spaceId,
             profileId: profileId,
             avatarURL:
-              avatarURL ||
+              avatarUploader.getUrl() ||
               'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
             startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
             endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),

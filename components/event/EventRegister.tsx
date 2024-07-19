@@ -137,6 +137,9 @@ const EventRegister: React.FC<EventRegisterProps> = ({
         <Typography color="white" variant="subtitleS">
           Event Registration
         </Typography>
+        <Typography color="white" variant="subtitleS" sx={{ fontSize: '10px' }}>
+          External Registration
+        </Typography>
       </Stack>
       <Stack spacing="20px" padding="10px 20px">
         {/* <Stack spacing="4px">
@@ -303,7 +306,14 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             </Stack>
           )}
         </Stack>*/}
-        <Stack spacing="10px">
+        <Stack spacing="20px">
+          <Typography
+            color="white"
+            variant="subtitleS"
+            sx={{ fontSize: '14px' }}
+          >
+            Apply to this event{' '}
+          </Typography>
           <ZuButton
             sx={{
               backgroundColor: '#373b36',

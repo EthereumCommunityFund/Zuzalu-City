@@ -298,3 +298,11 @@ export interface AddZupassMemberRequest {
   memberDID: string;
   memberZupass: string;
 }
+export interface AddMemberRequest {
+  eventId: string;
+  memberAddress: string;
+}
+export interface AddAdminRequest {
+  eventId: string;
+  adminAddress: string;
+}

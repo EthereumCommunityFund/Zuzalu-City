@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import dayjs from 'dayjs';
 import { supabase } from '@/utils/supabase/client';
 import { Ed25519Provider } from 'key-did-provider-ed25519';
 import { getResolver } from 'key-did-resolver';
@@ -7,13 +6,11 @@ import { DID } from 'dids';
 import { ceramic, composeClient } from '@/constant';
 import { base64ToUint8Array, hashAndEncodeBase58 } from '@/utils';
 import { chainID } from '@/constant';
-interface zupass {
-  hash: string;
-}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { eventId, memberDID, memberZupass } = body;
+    const { eventId, adminAddress } = body;
     const { data, error } = await supabase
       .from('events')
       .select('privateKey')
@@ -49,46 +46,30 @@ export async function POST(req: Request) {
             author {
               id
             }
+            superAdmin {
+              id
+            }
             zupassHash {
-            hash
+             hash
             }
           }
         }
       }
     `;
-
     const getEventResponse: any = await composeClient.executeQuery(
       GET_Event_QUERY,
       {
         id: eventId,
       },
     );
-    const existedZupass =
-      getEventResponse.data.node.zupassHash?.map(
-        (zupass: any) => zupass.hash,
-      ) ?? [];
 
-    if (existedZupass.includes(hashAndEncodeBase58(memberZupass))) {
-      return new NextResponse('Zupass already existed', { status: 500 });
-    } else {
-      const updatedMembers = getEventResponse.data.node.members
-        ? [
-            ...getEventResponse.data.node.members.map(
-              (member: any) => member.id,
-            ),
-            memberDID,
-          ]
-        : [memberDID];
-      const existingZupass: zupass[] = Array.isArray(
-        getEventResponse.data.node.zupassHash,
-      )
-        ? getEventResponse.data.node.zupassHash
-        : [];
-      const newZupass: zupass = {
-        hash: hashAndEncodeBase58(memberZupass),
-      };
-      const updatedZupass: zupass[] = [...existingZupass, newZupass];
-      const query = `
+    const updatedAdmins = getEventResponse.data.node.admins
+      ? [
+          ...getEventResponse.data.node.admins.map((admin: any) => admin.id),
+          `did:pkh:eip155:${chainID.toString()}:${adminAddress}`,
+        ]
+      : [`did:pkh:eip155:${chainID.toString()}:${adminAddress}`];
+    const query = `
             mutation UpdateEvent($i: UpdateEventInput!) {
             updateEvent(input: $i) {
             document {
@@ -98,23 +79,21 @@ export async function POST(req: Request) {
     }
     `;
 
-      const variables = {
-        i: {
-          id: eventId,
-          content: {
-            members: updatedMembers,
-            zupassHash: updatedZupass,
-          },
+    const variables = {
+      i: {
+        id: eventId,
+        content: {
+          admins: updatedAdmins,
         },
-      };
-      const updateResult: any = await composeClient.executeQuery(
-        query,
-        variables,
-      );
-      return NextResponse.json({
-        message: 'Successfully added into member list',
-      });
-    }
+      },
+    };
+    const updateResult: any = await composeClient.executeQuery(
+      query,
+      variables,
+    );
+    return NextResponse.json({
+      message: 'Successfully added into member list',
+    });
   } catch (err) {
     console.error(err);
     return new NextResponse('An unexpected error occurred', { status: 500 });
