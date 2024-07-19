@@ -113,19 +113,15 @@ const OverviewInvite = ({ event }: PropTypes) => {
         const event = await getEventList();
         const admins =
           event?.admins?.map((admin: any) => admin.id.toLowerCase()) || [];
-        console.log('Event Data:', event);
-        console.log('SuperAdmin:', event?.superAdmin);
 
         const superAdmins =
           event?.superAdmin?.map((superAdmin: any) =>
             superAdmin.id.toLowerCase(),
           ) || [];
         const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        console.log(admins, superAdmins, userDID);
 
         if (admins.includes(userDID) || superAdmins.includes(userDID)) {
           setIsAdmin(true);
-          console.log(admins, superAdmins, userDID);
         }
       } catch (error) {
         console.error('An error occurred:', error);

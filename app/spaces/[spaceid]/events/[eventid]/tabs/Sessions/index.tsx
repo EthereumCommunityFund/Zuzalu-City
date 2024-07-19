@@ -209,15 +209,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
       const selectedDay = date.format('YYYY-MM-DD');
       if (sessionLocation == '') {
-        console.log('please select sessionLocation');
         return;
       }
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
-      console.log('available', available);
 
-      console.log('available_dayName', available[dayName.toLowerCase()]);
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
 
       const bookedSessionsDay = bookedSessions.filter((session) => {
@@ -455,7 +452,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     fetchData();
   }, [sessionLocation]);
-  console.log('session', { sessions }, 'venues', { venues });
 
   useEffect(() => {
     const contentHeight = contentRef.current?.scrollHeight ?? 0;
