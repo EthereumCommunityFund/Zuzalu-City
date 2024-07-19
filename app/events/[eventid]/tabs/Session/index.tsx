@@ -1278,7 +1278,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           key={`SessionCard-${index}`}
                           session={session}
                           setSelectedSession={setSelectedSession}
-                          timezone={eventData?.timezone ?? 'utc'}
                         />
                       ))}
                     </Stack>
