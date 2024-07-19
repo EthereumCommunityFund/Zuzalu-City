@@ -26,7 +26,7 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SelectCategories from '@/components/select/selectCategories';
 import { Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
-import { isDev } from '@/constant';
+
 const validationSchema = yup.object({
   name: yup
     .string()
@@ -82,16 +82,21 @@ const Create = () => {
       socialLinksRef.current.children.length > 1
     ) {
       for (let i = 0; i < socialLinksRef.current.children.length - 1; i++) {
-        const key =
-          socialLinksRef.current.children[i].children[0].querySelector(
-            'input',
-          )?.value;
-        const value =
-          socialLinksRef.current.children[i].children[1].querySelector(
-            'input',
-          )?.value;
-        if (key) {
-          socialLinks = { ...socialLinks, [key]: value };
+        const firstChild = socialLinksRef.current.children[i].children[0];
+        const secondChild = socialLinksRef.current.children[i].children[1];
+
+        if (firstChild && secondChild) {
+          const key =
+            socialLinksRef.current.children[i].children[0].querySelector(
+              'input',
+            )?.value;
+          const value =
+            socialLinksRef.current.children[i].children[1].querySelector(
+              'input',
+            )?.value;
+          if (key) {
+            socialLinks = { ...socialLinks, [key]: value };
+          }
         }
       }
     }
@@ -102,19 +107,24 @@ const Create = () => {
       customLinksRef.current.children.length > 1
     ) {
       for (let i = 0; i < customLinksRef.current.children.length - 1; i++) {
-        const key =
-          customLinksRef.current.children[i].children[0].querySelector(
-            'input',
-          )?.value;
-        const value =
-          customLinksRef.current.children[i].children[1].querySelector(
-            'input',
-          )?.value;
-        if (key) {
-          customLinks.push({
-            links: value,
-            title: key,
-          });
+        const firstChild = customLinksRef.current.children[i].children[0];
+        const secondChild = customLinksRef.current.children[i].children[1];
+
+        if (firstChild && secondChild) {
+          const key =
+            customLinksRef.current.children[i].children[0].querySelector(
+              'input',
+            )?.value;
+          const value =
+            customLinksRef.current.children[i].children[1].querySelector(
+              'input',
+            )?.value;
+          if (key) {
+            customLinks.push({
+              links: value,
+              title: key,
+            });
+          }
         }
       }
     }
@@ -122,17 +132,14 @@ const Create = () => {
     if (!isAuthenticated) return;
 
     try {
-      if (!isDev) {
-        console.log('1');
-      } else {
-        setSubmitting(true);
-        await validationSchema.validate({
-          name: name,
-          tagline: tagline,
-          categories: categories,
-        });
-        const result = await composeClient.executeQuery(
-          `
+      setSubmitting(true);
+      await validationSchema.validate({
+        name: name,
+        tagline: tagline,
+        categories: categories,
+      });
+      const result = await composeClient.executeQuery(
+        `
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
         createSpace(
           input: $input
@@ -141,9 +148,6 @@ const Create = () => {
             id
             name
             description
-            superAdmin {
-              id
-            }
             profileId
             avatar
             banner
@@ -152,32 +156,31 @@ const Create = () => {
         }
       }
       `,
-          {
-            input: {
-              content: {
-                customLinks,
-                ...socialLinks,
-                name: name,
-                description: strDesc,
-                tagline: tagline,
-                superAdmin: adminId,
-                profileId: profileId,
-                avatar:
-                  avatarUploader.getUrl() ||
-                  'https://nftstorage.link/ipfs/bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe',
-                banner:
-                  bannerUploader.getUrl() ||
-                  'https://nftstorage.link/ipfs/bafybeifqan4j2n7gygwkmekcty3dsp7v4rxbjimpo7nrktclwxgxreiyay',
-                category: categories.join(', '),
-              },
+        {
+          input: {
+            content: {
+              customLinks,
+              ...socialLinks,
+              name: name,
+              description: strDesc,
+              tagline: tagline,
+              superAdmin: adminId,
+              profileId: profileId,
+              avatar:
+                avatarUploader.getUrl() ||
+                'https://nftstorage.link/ipfs/bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe',
+              banner:
+                bannerUploader.getUrl() ||
+                'https://nftstorage.link/ipfs/bafybeifqan4j2n7gygwkmekcty3dsp7v4rxbjimpo7nrktclwxgxreiyay',
+              category: categories.join(', '),
             },
           },
-        );
-        if (result.errors?.length) {
-          throw new Error('Error creating space.');
-        }
-        setShowModal(true);
+        },
+      );
+      if (result.errors?.length) {
+        throw new Error('Error creating space.');
       }
+      setShowModal(true);
     } catch (err: any) {
       console.log(err);
       if (err.message) {

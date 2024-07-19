@@ -560,28 +560,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   </Typography>
                 </Stack>
                 <Box>
-                  <Select
-                    multiple
-                    value={sessionTags}
-                    style={{ width: '100%' }}
-                    onChange={handleChange}
-                    input={<OutlinedInput label="Name" />}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
-                    }}
-                  >
-                    {SPACE_CATEGORIES.map((tag, index) => {
-                      return (
-                        <MenuItem value={tag.value} key={index}>
-                          {tag.label}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
+                  <SelectCategories onChange={handleChange} />
                 </Box>
                 <Box
                   display={'flex'}
