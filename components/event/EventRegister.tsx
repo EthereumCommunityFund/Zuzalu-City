@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Stack, Typography, Box, Divider } from '@mui/material';
 import { ZuButton } from 'components/core';
 import {
@@ -10,16 +10,21 @@ import {
 import Ticket from './Ticket';
 import { ChevronUpIcon } from '../icons/ChevronUp';
 import BpCheckbox from './Checkbox';
-import { Anchor } from '@/types';
+import { Anchor, AddZupassMemberRequest } from '@/types';
 import { useZupassContext } from '@/context/ZupassContext';
 import { InitialStep } from './steps/InitialStep';
 import { FirstStep } from './steps/FirstStep';
+import { updateZupassMember } from '@/services/event/addZupassMember';
+import { useCeramicContext } from '@/context/CeramicContext';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
   setWhitelist?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setSponsor?: React.Dispatch<React.SetStateAction<boolean>> | any;
   external_url?: string;
+  eventId: string;
+  setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
 const EventRegister: React.FC<EventRegisterProps> = ({
@@ -27,21 +32,75 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   setWhitelist,
   setSponsor,
   external_url,
+  eventId,
+  setVerify,
 }) => {
   const [isOne, setIsOne] = useState<boolean>(false);
   const [isTwo, setIsTwo] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState<string>('');
+  const [modalText, setModalText] = useState<string>('');
+  const {
+    pcdStr,
+    authState,
+    log,
+    user,
+    auth,
+    logout,
+    nullifierHash,
+    setNullifierHash,
+  } = useZupassContext();
+  const hasProcessedNullifier = useRef(false);
+
   const handleClick = () => {
     window.open(external_url, '_blank');
   };
+  const { ceramic } = useCeramicContext();
   const handleZupass = () => {
-    auth();
+    if (!ceramic?.did?.parent) {
+      setModalTitle('Please login');
+      setModalText('Please login to perform this action');
+      setShowModal(true);
+    } else {
+      auth();
+    }
   };
-  const { pcdStr, authState, log, user, auth, logout, nullifierHash } =
-    useZupassContext();
-
   useEffect(() => {
-    if (nullifierHash) {
-      console.log(nullifierHash, 'my nullifierhash');
+    if (
+      nullifierHash &&
+      ceramic?.did?.parent &&
+      !hasProcessedNullifier.current
+    ) {
+      const addZupassMemberInput = {
+        eventId: eventId,
+        memberDID: ceramic?.did?.parent,
+        memberZupass: nullifierHash,
+      };
+      updateZupassMember(addZupassMemberInput)
+        .then((result) => {
+          console.log(result);
+          hasProcessedNullifier.current = true;
+          setNullifierHash('');
+          if (result.message === 'Successfully added into member list') {
+            setModalTitle('Successfully updated!');
+            setModalText(
+              'You are now a member of this event! Please check out the sessions',
+            );
+            setShowModal(true);
+            setVerify(true);
+          }
+        })
+        .catch((error) => {
+          const errorMessage =
+            typeof error === 'string'
+              ? error
+              : error instanceof Error
+                ? error.message
+                : 'An unknown error occurred';
+          setModalTitle('Error updating member:');
+          setModalText(errorMessage);
+          setShowModal(true);
+        });
     }
   }, [nullifierHash]);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -62,6 +121,13 @@ const EventRegister: React.FC<EventRegisterProps> = ({
       border="1px solid #383838"
       bgcolor="#262626"
     >
+      <Dialog
+        title={modalTitle}
+        message={modalText}
+        showModal={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={() => setShowModal(false)}
+      />
       <Stack
         padding="10px 14px"
         borderBottom="1px solid #383838"

@@ -27,6 +27,7 @@ interface ZuAuthContextType {
   user: Record<string, string> | undefined;
   auth: () => void;
   logout: () => void;
+  setNullifierHash: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ZupassContext = createContext<ZuAuthContextType>({
@@ -37,6 +38,7 @@ const ZupassContext = createContext<ZuAuthContextType>({
   user: undefined,
   auth: () => {},
   logout: () => {},
+  setNullifierHash: () => {},
 });
 
 export const ZupassProvider = ({ children }: any) => {
@@ -52,8 +54,9 @@ export const ZupassProvider = ({ children }: any) => {
     (async () => {
       if (authState === 'auth-start') {
         addLog('Fetching watermark');
-        const watermark = (await (await fetch('/api/watermark')).json())
-          .watermark;
+        //const watermark = (await (await fetch('/api/watermark')).json()).watermark;
+        const bigIntValue = 12345n;
+        const watermark = bigIntValue.toString();
         addLog('Got watermark');
         addLog('Opening popup window');
         setAuthState('authenticating');
@@ -80,7 +83,6 @@ export const ZupassProvider = ({ children }: any) => {
           console.log('here', loginResult);
           setUser((await loginResult.json()).user);*/
           const pcd = await authenticate(result.pcdStr, watermark, Zuconfig);
-          console.log(pcd);
           setNullifierHash(pcd.claim.nullifierHash as string);
           addLog('Authenticated successfully');
           setAuthState('authenticated');
@@ -114,7 +116,16 @@ export const ZupassProvider = ({ children }: any) => {
 
   return (
     <ZupassContext.Provider
-      value={{ pcdStr, authState, log, user, auth, logout, nullifierHash }}
+      value={{
+        pcdStr,
+        authState,
+        log,
+        user,
+        auth,
+        logout,
+        nullifierHash,
+        setNullifierHash,
+      }}
     >
       {children}
     </ZupassContext.Provider>

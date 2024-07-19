@@ -1,25 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import dayjs from 'dayjs';
 import { supabase } from '@/utils/supabase/client';
-import { ComposeClient } from '@composedb/client';
 import { Ed25519Provider } from 'key-did-provider-ed25519';
 import { getResolver } from 'key-did-resolver';
 import { DID } from 'dids';
-import { CeramicClient } from '@ceramicnetwork/http-client';
-import { RuntimeCompositeDefinition } from '@composedb/types';
-import { definition } from '@/composites/definition.js';
+import { ceramic, composeClient } from '@/constant';
 import { uint8ArrayToBase64 } from '@/utils';
-const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
-const ceramicUrl =
-  (isDev
-    ? process.env.NEXT_PUBLIC_CERAMIC_URL_DEV
-    : process.env.NEXT_PUBLIC_CERAMIC_URL_PROD) || 'http://localhost:7007';
 
-const ceramic = new CeramicClient(ceramicUrl);
-const composeClient = new ComposeClient({
-  ceramic: ceramicUrl,
-  definition: definition as RuntimeCompositeDefinition,
-});
 export async function POST(req: Request) {
   try {
     let seed = crypto.getRandomValues(new Uint8Array(32));

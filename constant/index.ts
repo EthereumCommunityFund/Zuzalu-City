@@ -5,6 +5,22 @@ import { scrollSepolia } from 'wagmi/chains';
 import { EdDSAPublicKey } from '@pcd/eddsa-pcd';
 import { EdDSATicketPCDTypeName } from '@pcd/eddsa-ticket-pcd';
 import { PipelineEdDSATicketZuAuthConfig } from '@pcd/passport-interface';
+import { CeramicClient } from '@ceramicnetwork/http-client';
+import { RuntimeCompositeDefinition } from '@composedb/types';
+import { definition } from '@/composites/definition.js';
+import { ComposeClient } from '@composedb/client';
+
+const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
+export const ceramicUrl =
+  (isDev
+    ? process.env.NEXT_PUBLIC_CERAMIC_URL_DEV
+    : process.env.NEXT_PUBLIC_CERAMIC_URL_PROD) || 'http://localhost:7007';
+
+export const ceramic = new CeramicClient(ceramicUrl);
+export const composeClient = new ComposeClient({
+  ceramic: ceramicUrl,
+  definition: definition as RuntimeCompositeDefinition,
+});
 
 export const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxia3BicWVtYnRiZHVwaWRrYmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQ3MTc1NjMsImV4cCI6MjAzMDI5MzU2M30.ZvO6KbDesswcZ77B-vAKI7lzSCiGjcfEN0vHfRo-tFs';

@@ -292,3 +292,9 @@ export interface ZuAutoCompleteProps {
   }>;
   setVal: Dispatch<SetStateAction<{ value: string; label: string }[]>>;
 }
+
+export interface AddZupassMemberRequest {
+  eventId: string;
+  memberDID: string;
+  memberZupass: string;
+}
