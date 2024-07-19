@@ -11,6 +11,7 @@ import { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
 import EditorJS from '@editorjs/editorjs';
+import clsx from 'clsx';
 
 import './editor.css';
 
@@ -118,6 +119,14 @@ const TextEditor: FC<TextEditorPropTypes> = ({
     };
   }, []);
 
+  // useEffect(() => {
+  //   if (ref.current) {
+  //     ref.current.isReady.then(() => {
+  //       ref.current.render(value);
+  //     });
+  //   }
+  // }, [value]);
+
   const applyCustomStyles = (isPrimary: boolean) => {
     const editorContent = document.querySelector(
       '.codex-editor__redactor',
@@ -149,7 +158,10 @@ const TextEditor: FC<TextEditorPropTypes> = ({
       ) : (
         <Box
           id={holder}
-          className={fullWidth ? 'fullWidth' : ''}
+          className={clsx({
+            fullWidth: fullWidth,
+            editorReadOnly: readonly,
+          })}
           {...props}
           onClick={handleClick}
         ></Box>

@@ -31,6 +31,7 @@ import BpCheckbox from '@/components/event/Checkbox';
 import TextEditor from '@/components/editor/editor';
 import { MOCK_DATA } from '@/mock';
 import { ZuButton, ZuInput } from '@/components/core';
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -52,11 +53,7 @@ const Venue: React.FC = () => {
   };
 
   const List = (anchor: Anchor) => {
-    const [avatar, setAvatar] = useState<SelectedFile>();
-    const [avatarURL, setAvatarURL] = useState<string>();
-    const connector = createConnector('NFT.storage', {
-      token: process.env.NEXT_PUBLIC_CONNECTOR_TOKEN ?? '',
-    });
+    const avatarUploader = useUploaderPreview('');
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -191,17 +188,20 @@ const Venue: React.FC = () => {
                 >
                   <Uploader3
                     accept={['.gif', '.jpeg', '.gif', '.png']}
-                    connector={connector}
+                    api={'/api/file/upload'}
                     multiple={false}
-                    crop={false} // must be false when accept is svg
-                    onChange={(files: any) => {
-                      setAvatar(files[0]);
+                    crop={{
+                      size: { width: 400, height: 400 },
+                      aspectRatio: 1,
+                    }} // must be false when accept is svg
+                    onChange={(files) => {
+                      avatarUploader.setFile(files[0]);
                     }}
-                    onUpload={(file: any) => {
-                      setAvatar(file);
+                    onUpload={(file) => {
+                      avatarUploader.setFile(file);
                     }}
-                    onComplete={(result: any) => {
-                      setAvatarURL(result?.url);
+                    onComplete={(file) => {
+                      avatarUploader.setFile(file);
                     }}
                   >
                     <Button
@@ -222,7 +222,9 @@ const Venue: React.FC = () => {
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    file={avatarURL}
+                    src={avatarUploader.getUrl()}
+                    isError={avatarUploader.isError()}
+                    isLoading={avatarUploader.isLoading()}
                   />
                 </Box>
               </Stack>

@@ -1,54 +1,59 @@
-import { NextResponse } from 'next/server';
-import {
-  createConnector,
-  type Uploader3Connector,
-} from '@lxdao/uploader3-connector';
+import { type Uploader3Connector } from '@lxdao/uploader3-connector';
+import FormData from 'form-data';
+import fetch from 'node-fetch';
 
-const token = `${process?.env?.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process?.env?.NEXT_PUBLIC_CONNECTOR_TOKEN}`;
+const token = `${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN}`;
+
+enum ErrorMessage {
+  NO_IMAGE_DATA_OR_TYPE = 'No image data or type provided',
+  FILE_SIZE_TOO_LARGE = 'File size exceeds 2MB limit',
+}
 
 export async function GET() {
-  return NextResponse.json({ message: token.length }, { status: 200 });
+  return Response.json({ message: 'get' }, { status: 200 });
 }
 
 export async function POST(req: Request) {
-  try {
-    const connector = createConnector('lighthouse', { token });
+  const { data: imageData = '', type } =
+    (await req.json()) as Uploader3Connector.PostImageFile;
 
-    const reqBody = (await req.json()) as Uploader3Connector.PostImageFile;
-    let { data: imageData = '', type } = reqBody;
-
-    if (!imageData) {
-      console.error('No image data');
-      return NextResponse.json({ error: 'No image data' }, { status: 500 });
-    }
-
-    if (!type) {
-      console.error('No image type');
-      return NextResponse.json({ error: 'No image type' }, { status: 400 });
-    }
-
-    if (imageData.startsWith('data:image/')) {
-      imageData = imageData.replace(/^data:image\/\w+;base64,/, '');
-    }
-
-    const buffer = Buffer.from(imageData, 'base64');
-    // if buffer size > 2MB throw error
-    if (buffer.byteLength > 2 * 1024 * 1024) {
-      return NextResponse.json({ error: 'file size > 2MB' }, { status: 500 });
-    }
-    return connector
-      .postImage({ data: imageData, type })
-      .then((result) => {
-        return NextResponse.json({ url: result.url });
-      })
-      .catch((e) => {
-        return NextResponse.json({ error: e.message }, { status: 500 });
-      });
-  } catch (e: any) {
-    console.error(e);
-    return NextResponse.json(
-      { error: e.message, stack: e.stack },
-      { status: 401 },
+  if (!imageData || !type) {
+    return Response.json(
+      { error: ErrorMessage.NO_IMAGE_DATA_OR_TYPE },
+      { status: 400 },
     );
+  }
+
+  let imageDataStr = imageData.startsWith('data:image/')
+    ? imageData.replace(/^data:image\/\w+;base64,/, '')
+    : imageData;
+  const buffer = Buffer.from(imageDataStr, 'base64');
+
+  if (buffer.byteLength > 2 * 1024 * 1024) {
+    return Response.json(
+      { error: ErrorMessage.FILE_SIZE_TOO_LARGE },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('file', buffer, { contentType: type });
+    const res = await fetch('https://node.lighthouse.storage/api/v0/add', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Encryption: 'false',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const { Hash: cid } = (await res.json()) as { Hash: string };
+    return Response.json(
+      { url: `https://gateway.lighthouse.storage/ipfs/${cid}` },
+      { status: 200 },
+    );
+  } catch (e) {
+    // @ts-ignore
+    return Response.json({ error: e.message }, { status: 500 });
   }
 }

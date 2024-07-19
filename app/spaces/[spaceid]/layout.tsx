@@ -4,6 +4,7 @@ import { Header, Sidebar } from 'components/layout';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import { Box, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import React from 'react';
 
 interface SpacePageLayoutPropTypes {
   children: React.ReactNode;

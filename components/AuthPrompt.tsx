@@ -173,7 +173,7 @@ const AuthPrompt: React.FC<{}> = () => {
   }, [isAuthPromptVisible, isConnected]);
 
   const content = getDialogContent();
-  console.log('content: ', content);
+  // console.warn('content: ', content);
   if (content) {
     const { title, message, actions } = content as {
       title: string;
@@ -182,19 +182,16 @@ const AuthPrompt: React.FC<{}> = () => {
     };
 
     return (
-      <>
-        <Dialog
-          title={title}
-          message={message}
-          showModal={isAuthPromptVisible}
-          onClose={hideAuthPrompt}
-          actions={actions}
-        />
-      </>
+      <Dialog
+        title={title}
+        message={message}
+        showModal={isAuthPromptVisible}
+        onClose={hideAuthPrompt}
+        actions={actions}
+      />
     );
-  } else {
-    return null;
   }
+  return null;
 };
 
 export default AuthPrompt;

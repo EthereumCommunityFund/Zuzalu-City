@@ -14,7 +14,7 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
   return (
     <Stack
       width="260px"
-      height="100vh"
+      height="100%"
       padding="20px 10px 0 20px"
       spacing="10px"
       sx={{

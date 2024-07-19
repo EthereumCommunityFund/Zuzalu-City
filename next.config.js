@@ -20,6 +20,13 @@ const nextConfig = {
         pathname: '/ipfs/**',
         port: '',
       },
+      // https://gateway.lighthouse.storage
+      {
+        protocol: 'https',
+        hostname: 'gateway.lighthouse.storage',
+        pathname: '/ipfs/**',
+        port: '',
+      },
     ],
   },
   swcMinify: false,

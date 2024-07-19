@@ -43,8 +43,7 @@ import {
   FormTitle,
 } from '@/components/typography/formTypography';
 import SelectCheckItem from '@/components/select/selectCheckItem';
-import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
-import Space from '@/app/spaces/space';
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const Custom_Option: TimeStepOptions = {
@@ -115,36 +114,9 @@ const Home: React.FC<IVenue> = ({ event }) => {
     );
   };
 
-  const [avatar, setAvatar] = useState<SelectedFile>();
-  const [avatarURL, setAvatarURL] = useState<string>();
+  const avatarUploader = useUploaderPreview('');
   const [searchValue, setSearchValue] = useState<string>('');
-  const [file, setFile] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const inputFile = useRef<HTMLInputElement>(null);
 
-  const uploadFile = async (fileToUpload: File) => {
-    try {
-      setUploading(true);
-      const data = new FormData();
-      data.set('file', fileToUpload);
-      const res = await fetch('/api/pinata', {
-        method: 'POST',
-        body: data,
-      });
-      const resData = await res.json();
-      setAvatarURL(resData.url);
-      setUploading(false);
-    } catch (e) {
-      console.log(e);
-      setUploading(false);
-      alert('Trouble uploading file');
-    }
-  };
-
-  const handleImageChange = (e: any) => {
-    setFile(e.target.files[0]);
-    uploadFile(e.target.files[0]);
-  };
   const getVenues = async () => {
     try {
       const { data } = await supabase
@@ -229,7 +201,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
           name,
           tags: tags.join(','),
           eventId,
-          avatar: avatarURL,
+          avatar: avatarUploader.getUrl(),
           bookings: JSON.stringify(bookings),
           capacity,
         });
@@ -377,31 +349,42 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     gap: '10px',
                   }}
                 >
-                  <Button
-                    component="label"
-                    tabIndex={-1}
-                    disabled={uploading}
-                    sx={{
-                      color: 'white',
-                      borderRadius: '10px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
-                      width: '140px',
+                  <Uploader3
+                    accept={['.gif', '.jpeg', '.gif', '.png']}
+                    api={'/api/file/upload'}
+                    multiple={false}
+                    crop={{
+                      size: { width: 400, height: 400 },
+                      aspectRatio: 1,
+                    }} // must be false when accept is svg
+                    onUpload={(file) => {
+                      avatarUploader.setFile(file);
+                    }}
+                    onComplete={(file) => {
+                      avatarUploader.setFile(file);
                     }}
                   >
-                    {uploading ? 'Uploading...' : 'Upload Image'}
-                    <VisuallyHiddenInput
-                      type="file"
-                      onChange={handleImageChange}
-                    />
-                  </Button>
+                    <Button
+                      component="span"
+                      sx={{
+                        color: 'white',
+                        borderRadius: '10px',
+                        backgroundColor: '#373737',
+                        border: '1px solid #383838',
+                      }}
+                    >
+                      Upload Image
+                    </Button>
+                  </Uploader3>
                   <PreviewFile
                     sx={{
                       width: '200px',
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    file={avatarURL}
+                    src={avatarUploader.getUrl()}
+                    isLoading={avatarUploader.isLoading()}
+                    isError={avatarUploader.isError()}
                   />
                 </Box>
               </Stack>
