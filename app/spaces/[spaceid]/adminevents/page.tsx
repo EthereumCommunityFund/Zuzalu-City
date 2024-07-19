@@ -30,7 +30,7 @@ import { ZuButton, ZuInput } from 'components/core';
 import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
-import { SelectedFile } from '@lxdao/uploader3';
+import {SelectedFile, Uploader3} from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import { Event, EventData, Space, SpaceEventData } from '@/types';
@@ -44,10 +44,13 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
+
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import {useAccount} from "wagmi";
 
 interface Inputs {
   name: string;
@@ -268,12 +271,11 @@ const Home = () => {
 
     const [description, setDescription] = useState<OutputData>();
     const [avatar, setAvatar] = useState<SelectedFile>();
-    const [avatarURL, setAvatarURL] = useState<string>();
+    const avatarUploader = useUploaderPreview('');
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
     const socialLinksRef = useRef<HTMLDivElement>(null);
     const [socialLinks, setSocialLinks] = useState<number[]>([0]);
-    const [status, setStatus] = useState<string>('');
     const [locations, setLocations] = useState<string[]>(['']);
     const [track, setTrack] = useState<string>('');
     const [tracks, setTracks] = useState<string[]>([]);
@@ -284,28 +286,6 @@ const Home = () => {
     const inputFile = useRef<HTMLInputElement>(null);
     const [isLoading, setLoading] = useState(false);
 
-    const uploadFile = async (fileToUpload: File) => {
-      try {
-        setUploading(true);
-        const data = new FormData();
-        data.set('file', fileToUpload);
-        const res = await fetch('/api/pinata', {
-          method: 'POST',
-          body: data,
-        });
-        const resData = await res.json();
-        setAvatarURL(resData.url);
-        setUploading(false);
-      } catch (e) {
-        console.log(e);
-        setUploading(false);
-        alert('Trouble uploading file');
-      }
-    };
-
-    const handleImageChange = (e: any) => {
-      uploadFile(e.target.files[0]);
-    };
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 
@@ -416,7 +396,7 @@ const Home = () => {
                   spaceId: spaceId,
                   profileId: profileId,
                   image_url:
-                    avatarURL ||
+                    avatarUploader.getUrl() ||
                     'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
@@ -563,31 +543,42 @@ const Home = () => {
                     gap: '10px',
                   }}
                 >
-                  <Button
-                    component="label"
-                    tabIndex={-1}
-                    disabled={uploading}
-                    sx={{
-                      color: 'white',
-                      borderRadius: '10px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
-                      width: '140px',
+                  <Uploader3
+                    accept={['.gif', '.jpeg', '.gif', '.png']}
+                    api={'/api/file/upload'}
+                    multiple={false}
+                    crop={{
+                      size: { width: 400, height: 400 },
+                      aspectRatio: 1,
+                    }} // must be false when accept is svg
+                    onUpload={(file) => {
+                      avatarUploader.setFile(file);
+                    }}
+                    onComplete={(file) => {
+                      avatarUploader.setFile(file);
                     }}
                   >
-                    {uploading ? 'Uploading...' : 'Upload Image'}
-                    <VisuallyHiddenInput
-                      type="file"
-                      onChange={handleImageChange}
-                    />
-                  </Button>
+                    <Button
+                      component="span"
+                      sx={{
+                        color: 'white',
+                        borderRadius: '10px',
+                        backgroundColor: '#373737',
+                        border: '1px solid #383838',
+                      }}
+                    >
+                      Upload Image
+                    </Button>
+                  </Uploader3>
                   <PreviewFile
                     sx={{
                       width: '200px',
                       height: '200px',
                       borderRadius: '10px',
                     }}
-                    file={avatarURL}
+                    src={avatarUploader.getUrl()}
+                    isError={avatarUploader.isError()}
+                    isLoading={avatarUploader.isLoading()}
                   />
                 </Box>
               </Stack>
