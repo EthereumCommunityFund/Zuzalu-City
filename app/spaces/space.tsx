@@ -191,6 +191,7 @@ const Home = () => {
                     description={item.description}
                     members={item.members}
                     categories={item.category}
+                    tagline={item.tagline}
                   />
                 </Grid>
               ))
