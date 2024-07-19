@@ -17,39 +17,34 @@ import {
   MenuItem,
   TextField,
   Chip,
+  FormHelperText,
+  FormControl,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircleIcon, PlusIcon, XMarkIcon } from 'components/icons';
-import { EventHeader, CurrentEvents, PastEvents, Invite } from './components';
+import { EventHeader, CurrentEvents, Invite } from './components';
 import { ZuButton, ZuInput } from 'components/core';
 import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
-import { Uploader3, SelectedFile } from '@lxdao/uploader3';
+import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
 import { OutputData } from '@editorjs/editorjs';
 import {
+  CreateEventRequest,
   Event,
   EventData,
   Space,
   SpaceEventData,
-  CreateEventRequest,
 } from '@/types';
-import {
-  TICKET_FACTORY_ADDRESS,
-  ticketFactoryGetContract,
-  SOCIAL_TYPES,
-} from '@/constant';
+import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { supabase } from '@/utils/supabase/client';
-import { useAccount } from 'wagmi';
-import Input from '@/components/core/Input';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
-import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 import {
   FormLabel,
   FormLabelDesc,
@@ -58,6 +53,11 @@ import {
 
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import { createEventKeySupa } from '@/services/event/createEvent';
+import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useAccount } from 'wagmi';
 
 interface Inputs {
   name: string;
@@ -70,19 +70,6 @@ interface Inputs {
   external_url: string;
 }
 
-interface EventDocument {
-  document: {
-    id: string;
-  };
-}
-interface CreateEvent {
-  createEvent: EventDocument;
-}
-
-interface UpdateType {
-  data: CreateEvent;
-}
-
 export interface IEventArg {
   args: {
     eventId: string;
@@ -91,12 +78,24 @@ export interface IEventArg {
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
+const schema = Yup.object().shape({
+  socialLinks: Yup.array().of(
+    Yup.object().shape({
+      title: Yup.string().required('Social is required').trim(),
+      links: Yup.string()
+        .required('URL is required')
+        .trim()
+        .matches(/^https:\/\//, 'URL must start with https://'),
+    }),
+  ),
+});
+
+type FormData = Yup.InferType<typeof schema>;
+
 const Home = () => {
   const router = useRouter();
   const params = useParams();
   const spaceId = params.spaceid.toString();
-
-  const { address, isConnected } = useAccount();
 
   const [state, setState] = useState({
     top: false,
@@ -109,6 +108,21 @@ const Home = () => {
   const [reload, setReload] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      socialLinks: [{ title: '', links: '' }],
+    },
+    resolver: yupResolver(schema),
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'socialLinks',
+  });
 
   const getSpaceByID = async () => {
     try {
@@ -281,6 +295,9 @@ const Home = () => {
     const [error, setError] = useState(false);
     const profileId = profile?.id || '';
     const adminId = ceramic?.did?.parent || '';
+    const [uploading, setUploading] = useState(false);
+    const inputFile = useRef<HTMLInputElement>(null);
+    const [isLoading, setLoading] = useState(false);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -307,18 +324,7 @@ const Home = () => {
     };
 
     const handleAddSocialLink = () => {
-      if (socialLinks.length === 0) {
-        setSocialLinks([0]);
-        return;
-      }
-      const nextItem = Math.max(...socialLinks);
-      const temp = [...socialLinks, nextItem + 1];
-      setSocialLinks(temp);
-    };
-
-    const handleRemoveSociaLink = (index: number) => {
-      const temp = socialLinks.filter((item) => item !== index);
-      setSocialLinks(temp);
+      append({ title: '', links: '' });
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -332,7 +338,8 @@ const Home = () => {
       }
     };
 
-    const createEvent = async () => {
+    const createEvent = async (formData: FormData) => {
+      const { socialLinks } = formData;
       const isNeeded =
         inputs.name.length === 0 ||
         !startTime ||
@@ -342,28 +349,8 @@ const Home = () => {
       if (isNeeded) {
         typeof window !== 'undefined' &&
           window.alert('Please input all necessary fields.');
+        return;
       } else {
-        let socialLinks = {};
-
-        if (
-          socialLinksRef.current &&
-          socialLinksRef &&
-          socialLinksRef.current.children.length > 2
-        ) {
-          for (let i = 0; i < socialLinksRef.current.children.length - 2; i++) {
-            const key =
-              socialLinksRef.current.children[i + 1].children[0].querySelector(
-                'input',
-              )?.value;
-            const value =
-              socialLinksRef.current.children[i + 1].children[1].querySelector(
-                'input',
-              )?.value;
-            if (key) {
-              socialLinks = { ...socialLinks, [key]: value };
-            }
-          }
-        }
         // const output = await editor.save();
         let strDesc: any = JSON.stringify(description);
 
@@ -378,12 +365,7 @@ const Home = () => {
         strDesc = strDesc.replaceAll('"', '\\"');
 
         try {
-          console.log(
-            Object.entries(socialLinks).map(([key, value]) => ({
-              title: key,
-              links: value as string,
-            })),
-          );
+          setLoading(true);
           const eventCreationInput: CreateEventRequest = {
             name: inputs.name,
             strDesc: strDesc,
@@ -395,10 +377,7 @@ const Home = () => {
               'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
             startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
             endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-            socialLinks: Object.entries(socialLinks).map(([key, value]) => ({
-              title: key,
-              links: value as string,
-            })),
+            socialLinks: socialLinks ?? [],
             participant: inputs.participant,
             max_participant: inputs.max_participant,
             min_participant: inputs.min_participant,
@@ -409,6 +388,7 @@ const Home = () => {
             locations: locations,
           };
           /*const update: any = await composeClient.executeQuery(
+          const update: any = await composeClient.executeQuery(
             `
          mutation CreateEventMutation($input: CreateEventInput!) {
            createEvent(
@@ -456,9 +436,7 @@ const Home = () => {
                   createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
                   endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                  customLinks: Object.entries(socialLinks).map(
-                    ([key, value]) => ({ title: key, links: value }),
-                  ),
+                  customLinks: socialLinks,
                   participant_count: inputs.participant,
                   max_participant: inputs.max_participant,
                   min_participant: inputs.min_participant,
@@ -474,6 +452,8 @@ const Home = () => {
             name: locations.join(','),
             eventId: update.data.createEvent.document.id,
           });
+          toggleDrawer('right', false);
+          setReload((prev) => !prev);
 
           typeof window !== 'undefined' &&
             window.alert(
@@ -483,15 +463,10 @@ const Home = () => {
           const data = await createEventKeySupa(eventCreationInput);
         } catch (err) {
           console.log(err);
+        } finally {
+          setLoading(false);
         }
-        // `);
-        // console.log(update);
-        // toggleDrawer('right', false);
-        // await getEvents();
       }
-
-      toggleDrawer('right', false);
-      setReload((prev) => !prev);
     };
 
     return (
@@ -837,89 +812,129 @@ const Home = () => {
                 gap={'30px'}
                 ref={socialLinksRef}
               >
-                {socialLinks.map((item, index) => {
+                {fields.map((item, index) => {
                   return (
                     <Box
                       display={'flex'}
-                      flexDirection={'row'}
+                      flexDirection={'column'}
                       gap={'20px'}
-                      key={index}
+                      key={item.id}
                     >
                       <Box
                         display={'flex'}
-                        flexDirection={'column'}
+                        flexDirection={'row'}
                         gap={'10px'}
                         flex={1}
                       >
-                        <Typography variant="subtitle2" color="white">
+                        <Typography
+                          variant="subtitle2"
+                          color="white"
+                          sx={{ flex: 1 }}
+                        >
                           Select Social
                         </Typography>
-                        <Select
-                          placeholder="Select"
-                          MenuProps={{
-                            PaperProps: {
-                              style: {
-                                backgroundColor: '#222222',
-                              },
-                            },
-                          }}
-                          sx={{
-                            '& > div': {
-                              padding: '8.5px 12px',
-                              borderRadius: '10px',
-                            },
-                          }}
+                        <Typography
+                          variant="subtitle2"
+                          color="white"
+                          sx={{ flex: 1, marginLeft: '-50px' }}
                         >
-                          {SOCIAL_TYPES.map((social, index) => {
-                            return (
-                              <MenuItem value={social.key} key={index}>
-                                {social.value}
-                              </MenuItem>
-                            );
-                          })}
-                        </Select>
+                          URL
+                        </Typography>
                       </Box>
                       <Box
                         display={'flex'}
-                        flexDirection={'column'}
+                        flexDirection={'row'}
                         gap={'10px'}
                         flex={1}
                       >
-                        <Typography variant="subtitle2" color="white">
-                          URL
-                        </Typography>
-                        <TextField
-                          variant="outlined"
-                          placeholder="https://"
-                          sx={{
-                            opacity: '0.6',
-                            '& > div > input': {
-                              padding: '8.5px 12px',
-                            },
-                          }}
-                        />
-                      </Box>
-                      <Box
-                        display={'flex'}
-                        flexDirection={'column'}
-                        justifyContent={'flex-end'}
-                        sx={{ cursor: 'pointer' }}
-                        onClick={() => handleRemoveSociaLink(item)}
-                      >
+                        <Box flex={1}>
+                          <Controller
+                            name={`socialLinks.${index}.title`}
+                            control={control}
+                            render={({ field }) => (
+                              <FormControl
+                                fullWidth
+                                error={!!errors.socialLinks?.[index]?.title}
+                              >
+                                <Select
+                                  {...field}
+                                  labelId={`social-label-${index}`}
+                                  label="Select"
+                                  MenuProps={{
+                                    PaperProps: {
+                                      style: {
+                                        backgroundColor: '#222222',
+                                      },
+                                    },
+                                  }}
+                                  sx={{
+                                    '& > div': {
+                                      padding: '8.5px 12px',
+                                      borderRadius: '10px',
+                                    },
+                                  }}
+                                  error={!!errors.socialLinks?.[index]?.title}
+                                >
+                                  {SOCIAL_TYPES.map((social, index) => {
+                                    return (
+                                      <MenuItem value={social.key} key={index}>
+                                        {social.value}
+                                      </MenuItem>
+                                    );
+                                  })}
+                                </Select>
+                                <FormHelperText>
+                                  {errors.socialLinks?.[index]?.title?.message}
+                                </FormHelperText>
+                              </FormControl>
+                            )}
+                          />
+                        </Box>
+                        <Box flex={1}>
+                          <Controller
+                            name={`socialLinks.${index}.links`}
+                            control={control}
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                fullWidth
+                                variant="outlined"
+                                placeholder="https://"
+                                sx={{
+                                  '& > div > input': {
+                                    padding: '8.5px 12px',
+                                  },
+                                }}
+                                error={!!errors.socialLinks?.[index]?.links}
+                                helperText={
+                                  errors.socialLinks?.[index]?.links?.message
+                                }
+                              />
+                            )}
+                          />
+                        </Box>
                         <Box
-                          sx={{
-                            borderRadius: '10px',
-                            width: '40px',
-                            height: '40px',
-                            padding: '10px 14px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                          }}
+                          display={'flex'}
+                          flexDirection={'column'}
+                          justifyContent={'flex-end'}
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => remove(index)}
                         >
-                          <CancelIcon sx={{ fontSize: 20 }} />
+                          <Box
+                            sx={{
+                              borderRadius: '10px',
+                              width: '40px',
+                              height: '40px',
+                              padding: '10px 14px',
+                              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'white',
+                            }}
+                          >
+                            <CancelIcon sx={{ fontSize: 20 }} />
+                          </Box>
                         </Box>
                       </Box>
                     </Box>
@@ -1011,7 +1026,8 @@ const Home = () => {
                   flex: 1,
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" size={5} />}
-                onClick={createEvent}
+                disabled={isLoading}
+                onClick={handleSubmit(createEvent)}
               >
                 Create Event
               </ZuButton>
