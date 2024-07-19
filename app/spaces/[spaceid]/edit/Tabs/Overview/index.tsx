@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack, Box, useTheme, Typography, Button } from '@mui/material';
+import {
+  Box,
+  Button,
+  Skeleton,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { ZuInput } from '@/components/core';
 import TextEditor from '@/components/editor/editor';
 import { OutputData } from '@editorjs/editorjs';
 import { Uploader3 } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Space, SpaceData } from '@/types';
+import { Space } from '@/types';
+import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 
 const Overview = () => {
   const theme = useTheme();
@@ -17,13 +25,10 @@ const Overview = () => {
   const [space, setSpace] = useState<Space>();
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const [avatarURL, setAvatarURL] = useState<string | undefined>(
-    space ? space.avatar : '',
-  );
-  const [bannerURL, setBannerURL] = useState<string | undefined>(
-    space ? space.banner : '',
-  );
-  const [description, setDescription] = useState<OutputData>();
+  const avatarUploader = useUploaderPreview('');
+  const bannerUploader = useUploaderPreview('');
+
+  const [editorValue, setEditorValue] = useState<OutputData>();
   const [editor, setEditorInst] = useState<any>();
 
   const getSpace = async () => {
@@ -58,7 +63,12 @@ const Overview = () => {
       const editSpace: Space = response.data.node as Space;
       setSpace(editSpace);
       setName(editSpace.name);
-      setDescription(JSON.parse(editSpace.description.replaceAll('\\"', '"')));
+      avatarUploader.setUrl(editSpace.avatar);
+      bannerUploader.setUrl(editSpace.banner);
+      const descriptionData = JSON.parse(
+        editSpace.description.replaceAll('\\"', '"'),
+      );
+      setEditorValue(descriptionData);
       setTagline(editSpace.tagline);
     } catch (error) {
       console.error('Failed to fetch spaces:', error);
@@ -72,7 +82,11 @@ const Overview = () => {
   }, []);
 
   return (
-    <Stack spacing="20px" padding="40px" sx={{ width: '100%', maxWidth: 800 }}>
+    <Stack
+      spacing="20px"
+      padding="40px"
+      sx={{ width: '100%', maxWidth: 762, margin: '0 auto' }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -148,22 +162,33 @@ const Overview = () => {
           This is a description greeting for new members. You can also update
           descriptions.
         </Typography>
-        <TextEditor
-          holder="space_description"
-          placeholder="Write Space Description"
-          sx={{
-            width: '100%',
-            height: 'auto',
-            minHeight: '270px',
-            backgroundColor: '#ffffff0d',
-            fontFamily: 'Inter',
-            color: 'white',
-            padding: '10px',
-            borderRadius: '10px',
-          }}
-          value={description}
-          setData={setDescription}
-        />
+        {/* why?  first render is empty */}
+        {editorValue ? (
+          <TextEditor
+            holder="space_description"
+            placeholder="Write Space Description"
+            sx={{
+              backgroundColor: '#ffffff0d',
+              fontFamily: 'Inter',
+              color: 'white',
+              padding: '12px',
+              borderRadius: '10px',
+              height: 'auto',
+              minHeight: '270px',
+            }}
+            value={editorValue}
+            setData={setEditorValue}
+          />
+        ) : (
+          <Skeleton
+            variant="rectangular"
+            height={270}
+            sx={{
+              backgroundColor: '#ffffff0d',
+              borderRadius: '10px',
+            }}
+          />
+        )}
         {/* <Stack
           sx={{
             display: 'flex',
@@ -241,8 +266,11 @@ const Overview = () => {
                 size: { width: 400, height: 400 },
                 aspectRatio: 1,
               }} // must be false when accept is svg
-              onComplete={(result: any) => {
-                setAvatarURL(result?.url);
+              onUpload={(file) => {
+                avatarUploader.setFile(file);
+              }}
+              onComplete={(file) => {
+                avatarUploader.setFile(file);
               }}
             >
               <Button
@@ -258,12 +286,10 @@ const Overview = () => {
               </Button>
             </Uploader3>
             <PreviewFile
-              sx={{
-                width: '150px',
-                height: '150px',
-                borderRadius: '60%',
-              }}
-              file={avatarURL ? avatarURL : space?.avatar}
+              sx={{ width: '150px', height: '150px', borderRadius: '60%' }}
+              src={avatarUploader.getUrl()}
+              isError={avatarUploader.isError()}
+              isLoading={avatarUploader.isLoading()}
             />
           </Box>
         </Box>
@@ -279,7 +305,7 @@ const Overview = () => {
             Space Main Banner
           </Typography>
           <Typography fontSize={'13px'} fontWeight={500} lineHeight={'140%'}>
-            Recommend size of 20 x 220 Accept PNG GIF or JPEG
+            Recommend min of 730x220 Accept PNG GIF or JPEG
           </Typography>
           <Box
             sx={{
@@ -296,8 +322,11 @@ const Overview = () => {
                 size: { width: 600, height: 400 },
                 aspectRatio: 740 / 200,
               }}
-              onComplete={(result: any) => {
-                setBannerURL(result?.url);
+              onUpload={(file) => {
+                bannerUploader.setFile(file);
+              }}
+              onComplete={(file) => {
+                bannerUploader.setFile(file);
               }}
             >
               <Button
@@ -314,7 +343,9 @@ const Overview = () => {
             </Uploader3>
             <PreviewFile
               sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
-              file={bannerURL ? bannerURL : space?.banner}
+              src={bannerUploader.getUrl()}
+              isError={bannerUploader.isError()}
+              isLoading={bannerUploader.isLoading()}
             />
           </Box>
         </Box>

@@ -52,9 +52,6 @@ export default function SpaceDetailPage() {
   const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
   const [currentHref, setCurrentHref] = useState('');
 
-  const [contentHeight, setContentHeight] = useState(0);
-  const [isContentLarge, setIsContentLarge] = useState(false);
-
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const getSpaceByID = async () => {
@@ -153,15 +150,19 @@ export default function SpaceDetailPage() {
       });
   }, []);
 
-  useEffect(() => {
-    const editorContent = document.querySelector(
-      '.codex-editor__redactor',
-    ) as HTMLElement;
-    if (editorContent) {
-      setContentHeight(editorContent.scrollHeight);
-      setIsContentLarge(editorContent.scrollHeight > 300);
-    }
-  }, [space?.description]);
+  const hasShowMore = (spaceDescription?: string) => {
+    if (!spaceDescription) return false;
+    const descData = JSON.parse(spaceDescription.replaceAll('\\"', '"'));
+    const { blocks } = descData;
+    if (blocks.length === 0) return false;
+    if (blocks.length > 5) return true;
+    const totalLength = blocks.reduce((acc: number, block: any) => {
+      return acc + block.data?.text?.length || 0;
+    }, 0);
+    return totalLength > 300;
+  };
+
+  const isContentLarge = hasShowMore(space?.description);
 
   return (
     <Box
@@ -214,12 +215,12 @@ export default function SpaceDetailPage() {
             {space ? (
               <Image
                 src={
-                  space?.banner ||
+                  space.banner ||
                   'https://framerusercontent.com/images/MapDq7Vvn8BNPMgVHZVBMSpwI.png'
                 }
-                alt={space?.name || ''}
-                width={200}
-                height={200}
+                alt={space.name || ''}
+                width={1280}
+                height={240}
                 style={{
                   position: 'absolute',
                   inset: 0,
@@ -235,9 +236,7 @@ export default function SpaceDetailPage() {
                 variant="rectangular"
                 width={'100%'}
                 height={'100%'}
-                sx={{
-                  borderRadius: '10px',
-                }}
+                sx={{ borderRadius: '10px' }}
               />
             )}
             <Box
@@ -381,11 +380,7 @@ export default function SpaceDetailPage() {
             {space ? (
               <>
                 <Box
-                  sx={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#919191',
-                  }}
+                  sx={{ fontSize: '18px', fontWeight: '700', color: '#919191' }}
                 >
                   About {space.name}
                 </Box>
@@ -395,7 +390,7 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     backgroundColor: '#ffffff05',
                     borderRadius: '10px',
-                    height: !showMore ? '157px' : 'fit-content',
+                    height: !showMore ? '180px' : 'unset',
                     boxSizing: 'border-box',
                     overflow: 'hidden',
                   }}
@@ -416,10 +411,6 @@ export default function SpaceDetailPage() {
                     holder="space-detail-editor"
                     readonly={true}
                     value={JSON.parse(space.description.replaceAll('\\"', '"'))}
-                    setContentHeight={(height: number) => {
-                      setContentHeight(height);
-                      setIsContentLarge(height > 300);
-                    }}
                     sx={{
                       fontFamily: 'Inter',
                       color: 'white',
@@ -433,7 +424,12 @@ export default function SpaceDetailPage() {
                 </Box>
               </>
             ) : (
-              <Skeleton variant="rounded" width={'100%'} height={60} />
+              <>
+                <Typography variant={'h6'}>
+                  <Skeleton width={200} />
+                </Typography>
+                <Skeleton variant="rounded" width={'100%'} height={80} />
+              </>
             )}
 
             {isContentLarge && (
@@ -471,7 +467,7 @@ export default function SpaceDetailPage() {
           {isEventsLoading ? (
             <Box
               sx={{
-                width: '100%',
+                padding: '20px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px',
@@ -605,9 +601,7 @@ export default function SpaceDetailPage() {
                 {/*</Box>*/}
               </Box>
             </Box>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </Box>
       </Box>
     </Box>
