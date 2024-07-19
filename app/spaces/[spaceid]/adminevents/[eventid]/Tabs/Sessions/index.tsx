@@ -793,11 +793,11 @@ const Sessions = () => {
                               width="60px"
                               height="60px"
                               borderRadius="8px"
-                              src="/20.png"
+                              src={selectedRoom?.avatar}
                             />
                             <Stack spacing="4px">
                               <FormLabel>{sessionLocation}</FormLabel>
-                              <FormLabelDesc>
+                              {/*} <FormLabelDesc>
                                 Sessions booked: {bookedSessions.length}
                               </FormLabelDesc>
                               <Typography
@@ -805,7 +805,7 @@ const Sessions = () => {
                                 color="text.secondary"
                               >
                                 Capacity: {selectedRoom?.capacity}
-                              </Typography>
+                              </Typography>*/}
                             </Stack>
                           </Stack>
                         </Stack>

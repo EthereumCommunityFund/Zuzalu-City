@@ -48,6 +48,9 @@ const Home = () => {
               admins{
               id
               }
+              superAdmin{
+              id
+              }
               space {
                 id
                 name
@@ -89,10 +92,18 @@ const Home = () => {
         const eventDetails = await getEventDetailInfo();
         const admins =
           eventDetails?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+        const superadmins =
+          eventDetails?.superAdmin?.map((superAdmin) =>
+            superAdmin.id.toLowerCase(),
+          ) || [];
         const members =
           eventDetails?.members?.map((member) => member.id.toLowerCase()) || [];
         const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        if (admins.includes(userDID) || members.includes(userDID)) {
+        if (
+          superadmins.includes(userDID) ||
+          admins.includes(userDID) ||
+          members.includes(userDID)
+        ) {
           setSessionView(true);
         }
       } catch (err) {

@@ -378,6 +378,12 @@ const Home = () => {
         strDesc = strDesc.replaceAll('"', '\\"');
 
         try {
+          console.log(
+            Object.entries(socialLinks).map(([key, value]) => ({
+              title: key,
+              links: value as string,
+            })),
+          );
           const eventCreationInput: CreateEventRequest = {
             name: inputs.name,
             strDesc: strDesc,
@@ -389,7 +395,10 @@ const Home = () => {
               'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
             startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
             endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-            socialLinks: socialLinks,
+            socialLinks: Object.entries(socialLinks).map(([key, value]) => ({
+              title: key,
+              links: value as string,
+            })),
             participant: inputs.participant,
             max_participant: inputs.max_participant,
             min_participant: inputs.min_participant,

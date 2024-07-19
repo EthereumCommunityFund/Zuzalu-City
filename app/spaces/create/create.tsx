@@ -28,7 +28,7 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SelectCategories from '@/components/select/selectCategories';
 import { Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
-
+import { isDev } from '@/constant';
 const validationSchema = yup.object({
   name: yup
     .string()
@@ -124,14 +124,17 @@ const Create = () => {
     if (!isAuthenticated) return;
 
     try {
-      setSubmitting(true);
-      await validationSchema.validate({
-        name: name,
-        tagline: tagline,
-        categories: categories,
-      });
-      const result = await composeClient.executeQuery(
-        `
+      if (!isDev) {
+        console.log('1');
+      } else {
+        setSubmitting(true);
+        await validationSchema.validate({
+          name: name,
+          tagline: tagline,
+          categories: categories,
+        });
+        const result = await composeClient.executeQuery(
+          `
       mutation CreateSpaceMutation($input: CreateSpaceInput!) {
         createSpace(
           input: $input
@@ -151,31 +154,32 @@ const Create = () => {
         }
       }
       `,
-        {
-          input: {
-            content: {
-              customLinks,
-              ...socialLinks,
-              name: name,
-              description: strDesc,
-              tagline: tagline,
-              superAdmin: adminId,
-              profileId: profileId,
-              avatar:
-                avatarUploader.getUrl() ||
-                'https://nftstorage.link/ipfs/bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe',
-              banner:
-                bannerUploader.getUrl() ||
-                'https://nftstorage.link/ipfs/bafybeifqan4j2n7gygwkmekcty3dsp7v4rxbjimpo7nrktclwxgxreiyay',
-              category: categories.join(', '),
+          {
+            input: {
+              content: {
+                customLinks,
+                ...socialLinks,
+                name: name,
+                description: strDesc,
+                tagline: tagline,
+                superAdmin: adminId,
+                profileId: profileId,
+                avatar:
+                  avatarUploader.getUrl() ||
+                  'https://nftstorage.link/ipfs/bafybeifcplhgttja4hoj5vx4u3x7ucft34acdpiaf62fsqrobesg5bdsqe',
+                banner:
+                  bannerUploader.getUrl() ||
+                  'https://nftstorage.link/ipfs/bafybeifqan4j2n7gygwkmekcty3dsp7v4rxbjimpo7nrktclwxgxreiyay',
+                category: categories.join(', '),
+              },
             },
           },
-        },
-      );
-      if (result.errors?.length) {
-        throw new Error('Error creating space.');
+        );
+        if (result.errors?.length) {
+          throw new Error('Error creating space.');
+        }
+        setShowModal(true);
       }
-      setShowModal(true);
     } catch (err: any) {
       console.log(err);
       if (err.message) {

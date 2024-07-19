@@ -258,7 +258,8 @@ export interface IProps {
 }
 
 export interface SocialLinks {
-  [key: string]: string;
+  title: string;
+  links: string;
 }
 
 export interface CreateEventRequest {
@@ -274,7 +275,7 @@ export interface CreateEventRequest {
   avatarURL: string;
   startTime: string;
   endTime: string;
-  socialLinks: SocialLinks;
+  socialLinks: SocialLinks[];
   adminId: string;
   tracks: string[];
   person: boolean;

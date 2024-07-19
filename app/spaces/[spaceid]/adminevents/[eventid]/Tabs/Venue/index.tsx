@@ -187,6 +187,18 @@ const Home: React.FC<IVenue> = ({ event }) => {
         endTime: '',
       },
     ]);
+    const [saturday, setSaturday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
+    const [sunday, setSunday] = useState<AvailableType[]>([
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]);
 
     const createVenue = async () => {
       try {
@@ -196,6 +208,8 @@ const Home: React.FC<IVenue> = ({ event }) => {
           wednesday,
           thursday,
           friday,
+          saturday,
+          sunday,
         };
         const { data } = await supabase.from('venues').insert({
           name,
@@ -404,10 +418,14 @@ const Home: React.FC<IVenue> = ({ event }) => {
               borderRadius="10px"
             >
               <FormTitle>Available Bookings</FormTitle>
+              <Typography variant="bodyBB" color="text.secondary">
+                Your event timezone: {event?.timezone}
+              </Typography>
               <Stack spacing="4px" direction={'row'}>
                 <Typography variant="bodyBB" color="text.secondary">
                   Your event timeframe:
                 </Typography>
+
                 <Typography variant="bodyBB">
                   {`${dayjs(event?.startTime).format('MMMM')}, ${dayjs(event?.startTime).date()}, ${dayjs(event?.startTime).year()} - ${dayjs(event?.endTime).format('MMMM')}, ${dayjs(event?.endTime).date()}, ${dayjs(event?.endTime).year()}`}
                 </Typography>
@@ -430,6 +448,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={monday}
                         setValues={setMonday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -483,6 +502,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={tuesday}
                         setValues={setTuesday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -537,6 +557,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={wednesday}
                         setValues={setWednesday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -591,6 +612,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={thursday}
                         setValues={setThursday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -645,6 +667,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                         values={friday}
                         setValues={setFriday}
                         id={index}
+                        timezone={event?.timezone as string}
                       />
                     ))}
                   </Stack>
@@ -692,8 +715,16 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">SAT</Typography>
                   </Stack>
-                  <Stack direction="row" alignItems="center" flex="4">
-                    <Typography>Unavailable</Typography>
+                  <Stack spacing="10px" flex="4">
+                    {saturday.map((item, index) => (
+                      <TimeRange
+                        key={`Saturday-Item-${index}`}
+                        values={saturday}
+                        setValues={setSaturday}
+                        id={index}
+                        timezone={event?.timezone as string}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -701,10 +732,30 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setSaturday((prev) => [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...saturday];
+                        prev.pop();
+                        setSaturday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
@@ -719,8 +770,16 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     <BpCheckbox />
                     <Typography variant="bodyBB">SUN</Typography>
                   </Stack>
-                  <Stack direction="row" alignItems="center" flex="4">
-                    <Typography>Unavailable</Typography>
+                  <Stack spacing="10px" flex="4">
+                    {sunday.map((item, index) => (
+                      <TimeRange
+                        key={`Sunday-Item-${index}`}
+                        values={sunday}
+                        setValues={setSunday}
+                        id={index}
+                        timezone={event?.timezone as string}
+                      />
+                    ))}
                   </Stack>
                   <Stack
                     direction="row"
@@ -728,10 +787,30 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     alignItems="center"
                     flex="1"
                   >
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setSunday((prev) => [
+                          ...prev,
+                          {
+                            startTime: '',
+                            endTime: '',
+                          },
+                        ]);
+                      }}
+                    >
                       <PlusIcon size={5} />
                     </Stack>
-                    <Stack padding="10px" sx={{ cursor: 'pointer' }}>
+                    <Stack
+                      padding="10px"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const prev = [...sunday];
+                        prev.pop();
+                        setSunday(prev);
+                      }}
+                    >
                       <MinusIcon size={5} />
                     </Stack>
                   </Stack>
