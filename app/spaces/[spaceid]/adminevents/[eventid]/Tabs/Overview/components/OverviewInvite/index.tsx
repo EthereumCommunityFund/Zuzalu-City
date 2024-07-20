@@ -13,7 +13,7 @@ import { chainID } from '@/constant';
 import { updateAdmin } from '@/services/event/addAdmin';
 import { updateMember } from '@/services/event/addMember';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-
+import { tempUpdateTrack } from '@/services/event/tempAddTrack';
 interface IMember {
   id: string;
   mvpProfile?: {
@@ -28,6 +28,7 @@ const OverviewInvite = ({ event }: PropTypes) => {
   const { composeClient, isAuthenticated, ceramic, profile } =
     useCeramicContext();
   const [initialMember, setInitialMember] = useState<string>('');
+  const [newTrack, setNewTrack] = useState<string>('');
   const [initialAdmin, setInitialAdmin] = useState<string>('');
   const [extraAdmin, setExtraAdmin] = useState<string[]>([]);
   const [extraMember, setExtraMember] = useState<string[]>([]);
@@ -68,6 +69,7 @@ const OverviewInvite = ({ event }: PropTypes) => {
               author {
                 id
               }
+              tracks
             }
           }
         }
@@ -122,6 +124,25 @@ const OverviewInvite = ({ event }: PropTypes) => {
       getEventList();
     }
   };
+  const updateTrack = async () => {
+    const addTrackInput = {
+      eventId: params.eventid as string,
+      newTrack: newTrack,
+    };
+    try {
+      setBlockClickModal(true);
+      const response = await tempUpdateTrack(addTrackInput);
+      if (response.status === 200) {
+        setShowModal(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      getEventList();
+      setNewTrack('');
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -160,10 +181,32 @@ const OverviewInvite = ({ event }: PropTypes) => {
       />
       <Dialog
         showModal={blockClickModal}
-        onClose={() => {}}
+        showActions={false}
         title="Updating"
-        message="Please wait while the list is being updated..."
+        message="Please wait while the data is being updated..."
       />
+      <Box padding="20px" borderRadius="10px" bgcolor="#262626">
+        <Typography variant="subtitleMB">Add Track (Temp Solution)</Typography>
+        <Stack
+          padding="20px"
+          spacing="30px"
+          borderRadius="10px"
+          bgcolor="#262626"
+          mt={2}
+        >
+          <Stack spacing="10px">
+            <Typography variant="bodyBB">Input New Track</Typography>
+            <ZuInput
+              value={newTrack}
+              onChange={(e) => setNewTrack(e.target.value)}
+            />
+            <ZuButton variant="contained" color="primary" onClick={updateTrack}>
+              Add Track
+            </ZuButton>
+          </Stack>
+          <Stack spacing="10px">{eventData?.tracks}</Stack>
+        </Stack>
+      </Box>
       <Typography variant="subtitleMB">Invite Event Admins</Typography>
       <Stack
         padding="20px"

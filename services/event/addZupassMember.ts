@@ -9,7 +9,7 @@ export const updateZupassMember = async (
       '/api/event/updateZupassMember',
       zupassMemberInput,
     );
-    return response.data;
+    return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw error.response?.data || error.message;

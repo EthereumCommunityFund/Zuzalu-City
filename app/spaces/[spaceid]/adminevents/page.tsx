@@ -392,6 +392,7 @@ const Home = () => {
             external_url: inputs.external_url,
             person: person,
             locations: locations,
+            timezone: dayjs.tz.guess(),
           };
           /*const update: any = await composeClient.executeQuery(
           const update: any = await composeClient.executeQuery(

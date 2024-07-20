@@ -280,6 +280,7 @@ export interface CreateEventRequest {
   tracks: string[];
   person: boolean;
   locations: string[];
+  timezone: string;
 }
 
 export interface ZuAutoCompleteProps {
