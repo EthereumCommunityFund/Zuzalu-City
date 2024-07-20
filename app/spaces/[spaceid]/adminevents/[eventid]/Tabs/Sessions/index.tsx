@@ -58,6 +58,8 @@ import SelectCategories from '@/components/select/selectCategories';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import { supaCreateSession } from '@/services/session';
+import { SuperEditor } from '@/components/editor/SuperEditor';
+import { useEditorStore } from '@/components/editor/useEditorStore';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -87,7 +89,7 @@ const Sessions = () => {
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
-  const [sessionDescription, setSessionDescription] = useState<OutputData>();
+  const sessionDescriptionEditorStore = useEditorStore();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
@@ -402,9 +404,7 @@ const Sessions = () => {
     if (!isAuthenticated) {
       return;
     }
-    let strDesc: any = JSON.stringify(sessionDescription);
 
-    strDesc = strDesc.replaceAll('"', '\\"');
     const error =
       !eventId ||
       !sessionDate ||
@@ -413,7 +413,7 @@ const Sessions = () => {
       !sessionName ||
       !sessionTags ||
       !sessionTrack ||
-      !sessionDescription ||
+      !sessionDescriptionEditorStore.value ||
       !profileId;
 
     if (error) {
@@ -428,7 +428,7 @@ const Sessions = () => {
 
     const formattedData: SessionSupabaseData = {
       title: sessionName,
-      description: strDesc,
+      description: sessionDescriptionEditorStore.getValueString(),
       experience_level: sessionExperienceLevel,
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
@@ -574,18 +574,11 @@ const Sessions = () => {
                 <FormLabelDesc>
                   Write an introduction for this session
                 </FormLabelDesc>
-                <TextEditor
-                  holder="session_description"
-                  sx={{
-                    backgroundColor: '#ffffff0d',
-                    fontFamily: 'Inter',
-                    height: 'auto',
-                    minHeight: '270px',
-                    color: 'white',
-                    padding: '12px',
-                    borderRadius: '10px',
+                <SuperEditor
+                  value={sessionDescriptionEditorStore.value}
+                  onChange={(val) => {
+                    sessionDescriptionEditorStore.setValue(val);
                   }}
-                  setData={setSessionDescription}
                 />
               </Stack>
               <Stack spacing="10px">
