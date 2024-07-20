@@ -72,7 +72,6 @@ import {
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
-import TextEditor from '@/components/editor/editor';
 import { SessionSupabaseData } from '@/types';
 import { supaCreateSession } from '@/services/session';
 import Link from 'next/link';
@@ -82,6 +81,8 @@ import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import { SuperEditor } from '@/components/editor/SuperEditor';
+import { useEditorStore } from '@/components/editor/useEditorStore';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -146,7 +147,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
   const [sessionTags, setSessionTags] = useState<Array<string>>([]);
-  const [sessionDescription, setSessionDescription] = useState<OutputData>();
+  const sessionDescriptionEditorStore = useEditorStore();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
   const [sessionGated, setSessionGated] = useState<string>('');
@@ -366,10 +367,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       return;
     }
 
-    let strDesc: any = JSON.stringify(sessionDescription);
-
-    strDesc = strDesc.replaceAll('"', '\\"');
-
     const error =
       !eventId ||
       !sessionStartTime ||
@@ -389,7 +386,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     const formattedData: SessionSupabaseData = {
       title: sessionName,
-      description: strDesc,
+      description: sessionDescriptionEditorStore.getValueString(),
       experience_level: sessionExperienceLevel,
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime
@@ -490,7 +487,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         />
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -618,18 +615,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                   Write an introduction for this session
                 </Typography>
-                <TextEditor
-                  holder="session_description"
-                  sx={{
-                    backgroundColor: '#ffffff0d',
-                    fontFamily: 'Inter',
-                    height: 'auto',
-                    minHeight: '270px',
-                    color: 'white',
-                    padding: '12px 12px 12px 80px',
-                    borderRadius: '10px',
+                <SuperEditor
+                  value={sessionDescriptionEditorStore.value}
+                  onChange={(val) => {
+                    sessionDescriptionEditorStore.setValue(val);
                   }}
-                  setData={setSessionDescription}
                 />
               </Stack>
               <Stack spacing="10px">
@@ -1635,21 +1625,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     selectedSession.description.replaceAll('\\"', '"'),
                   ).blocks.map((item: any) => item.data.text)}
                 </Typography>
-                {/* <TextEditor
-                  holder="session-description"
-                  readonly
-                  sx={{
-                    backgroundColor: '#ffffff0d',
-                    fontFamily: 'Inter',
-                    color: 'white',
-                    padding: '12px 12px 12px 80px',
-                    borderRadius: '10px',
-                  }}
-                  value={JSON.parse(
-                    selectedSession.description.replaceAll('\\"', '"'),
-                  )}
-                  showMore={showMore}
-                /> */}
                 {isContentLarge && (
                   <ZuButton
                     startIcon={
@@ -1851,10 +1826,14 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         <SwipeableDrawer
           hideBackdrop={true}
           sx={{
+            position: 'relative',
+            zIndex: 3,
             '& .MuiDrawer-paper': {
               marginTop: '50px',
               height: 'calc(100% - 50px)',
               boxShadow: 'none',
+              backgroundColor: 'transparent',
+              paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
             },
           }}
           anchor="right"
