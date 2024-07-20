@@ -18,6 +18,10 @@ export const useEditorStore = () => {
 
   return {
     value,
+    getValueString: () => {
+      // FIXME: This is a temporary solution to fix the issue with the double quotes
+      return JSON.stringify(value).replaceAll('"', '\\"');
+    },
     setValue: (value: OutputData | string) => {
       const data =
         typeof value === 'string' ? ParseStringToOutputData(value) : value;

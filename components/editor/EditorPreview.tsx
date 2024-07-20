@@ -51,7 +51,7 @@ export const EditorPreview: React.FC<{
           // eslint-disable-next-line no-inner-declarations
           function calculateHeight() {
             const editorEl = container.querySelector<HTMLDivElement>(
-              '.codex-editor__redactor'
+              '.codex-editor__redactor',
             );
             if (editorEl) {
               const editorHeight = editorEl.getBoundingClientRect().height;
