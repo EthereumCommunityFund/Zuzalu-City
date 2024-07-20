@@ -699,14 +699,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     alignItems="center"
                     gap="10px"
                     flex={1}
+                    onClick={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
                   >
-                    <BpCheckbox
-                      checked={person}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
+                    <BpCheckbox checked={person} />
                     <Stack>
                       <Typography
                         color="white"
@@ -733,14 +731,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     alignItems="center"
                     gap="10px"
                     flex={1}
+                    onClick={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
                   >
-                    <BpCheckbox
-                      checked={online}
-                      onChange={() => {
-                        setPerson((prev) => !prev);
-                        setOnline((prev) => !prev);
-                      }}
-                    />
+                    <BpCheckbox checked={online} />
                     <Stack>
                       <Typography
                         color="white"
