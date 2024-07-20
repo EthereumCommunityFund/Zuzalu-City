@@ -11,8 +11,9 @@ interface Proptypes {
   title: string;
   message: string;
   showModal: boolean;
+  showActions?: boolean;
   actions?: React.ReactNode;
-  onClose: () => void;
+  onClose?: () => void;
   onConfirm?: () => void;
 }
 
@@ -23,11 +24,12 @@ export default function Dialog({
   title,
   message,
   actions,
+  showActions = true,
 }: Proptypes) {
   return (
     <MDialog
       open={showModal}
-      onClose={onClose}
+      onClose={() => onClose?.()}
       PaperProps={{
         style: {
           width: '40%',
@@ -57,18 +59,20 @@ export default function Dialog({
         }}
       >
         {title}
-        <IconButton
-          onClick={onClose}
-          style={{
-            color: 'white',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            width: '30px',
-            height: '30px',
-            borderRadius: '10px',
-          }}
-        >
-          <CloseIcon sx={{ fontSize: 20 }} />
-        </IconButton>
+        {onClose ? (
+          <IconButton
+            onClick={onClose}
+            style={{
+              color: 'white',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              width: '30px',
+              height: '30px',
+              borderRadius: '10px',
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        ) : null}
       </DialogTitle>
       <DialogContent style={{ padding: 0, width: '100%', color: 'white' }}>
         <DialogContentText
@@ -82,11 +86,11 @@ export default function Dialog({
       >
         {actions ? (
           actions
-        ) : (
+        ) : showActions ? (
           <Button onClick={onConfirm} variant="contained" fullWidth>
             Finish
           </Button>
-        )}
+        ) : null}
       </DialogActions>
     </MDialog>
   );
