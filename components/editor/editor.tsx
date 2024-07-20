@@ -167,6 +167,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
           sx={{
             height: showMore ? 'auto' : '180px',
             overflow: 'hidden',
+            ...props.sx,
           }}
         ></Box>
       )}
