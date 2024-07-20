@@ -1,8 +1,8 @@
 import { ClickAwayListener, Stack, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { ZuButton } from 'components/core';
-import TextEditor from 'components/editor/editor';
+import { SuperEditor } from '@/components/editor/SuperEditor';
 
 interface ModalProps {
   showModal: boolean;
@@ -110,19 +110,12 @@ export const PostAnnouncementModal = ({
             </Stack>
           </Stack>
           <Stack>
-            <TextEditor
-              holder="post_anouncement_editor"
-              placeholder="Write Your Post Here!"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                fontFamily: 'Inter',
-                color: 'white',
-                padding: '12px',
-                borderRadius: '10px',
-                height: 'auto',
-                minHeight: '270px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                overflow: 'auto',
+            <SuperEditor
+              placeholder={'Write Your Post Here!'}
+              // value={descriptionEditorStore.value}
+              onChange={(val) => {
+                // TODO: handle change
+                // descriptionEditorStore.setValue(val);
               }}
             />
           </Stack>
