@@ -1496,7 +1496,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 </Typography>
                 <Stack spacing="10px">
                   <Stack direction={'row'} alignItems={'center'} spacing={1}>
-                    <MapIcon size={4} />
                     {selectedSession.format === 'online' ? (
                       <Link
                         href={selectedSession.video_url || ''}
@@ -1506,15 +1505,18 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <Typography
                           variant="bodyM"
                           color="white"
-                          sx={{ opacity: 0.5 }}
+                          sx={{ opacity: 0.5, wordBreak: 'break-all' }}
                         >
                           {selectedSession.video_url}
                         </Typography>
                       </Link>
                     ) : (
-                      <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
-                        {selectedSession.location}
-                      </Typography>
+                      <>
+                        <MapIcon size={4} />
+                        <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
+                          {selectedSession.location}
+                        </Typography>
+                      </>
                     )}
                   </Stack>
                   <Stack direction={'row'} spacing={1} alignItems="center">
@@ -1566,7 +1568,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <SessionIcon />
                     <Typography variant="bodyBB">RSVP Session</Typography>
                   </Stack>
-                  <Typography variant="bodyS">Attending: 000</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Attending: 000
+                  </Typography>
                 </Stack>
               </Stack>
               <Stack spacing="14px" padding="20px">
