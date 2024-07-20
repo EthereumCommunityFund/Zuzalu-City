@@ -12,11 +12,7 @@ export const getOutputDataLength = (blocks: OutputData['blocks'] = []) => {
 };
 
 export const useEditorStore = () => {
-  const [value, setValue] = useState<OutputData>({
-    time: 0,
-    blocks: [],
-    version: '2.22.2',
-  });
+  const [value, setValue] = useState<OutputData>();
 
   const [length, setLength] = useState<number>(0);
 
