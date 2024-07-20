@@ -3,28 +3,15 @@ import { Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { ChevronDownIcon, ChevronUpIcon } from 'components/icons';
 import TextEditor from '../editor/editor';
+import { EditorPreview } from '@/components/editor/EditorPreview';
 
 interface EventAboutTypes {
   description: string;
 }
 
 const EventAbout = ({ description }: EventAboutTypes) => {
-  const [showMore, setShowMore] = useState(false);
-  const [contentHeight, setContentHeight] = useState(0);
-
-  const hasShowMore = (description?: string) => {
-    if (!description) return false;
-    const descData = JSON.parse(description.replaceAll('\\"', '"'));
-    const { blocks } = descData;
-    if (blocks.length === 0) return false;
-    if (blocks.length > 5) return true;
-    const totalLength = blocks.reduce((acc: number, block: any) => {
-      return acc + block.data?.text?.length || 0;
-    }, 0);
-    return totalLength > 300;
-  };
-
-  const isContentLarge = hasShowMore(description);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [isCanCollapse, setIsCanCollapse] = useState<boolean>(false);
 
   return (
     <Stack bgcolor="#292929" padding="10px" borderRadius="10px">
@@ -42,27 +29,31 @@ const EventAbout = ({ description }: EventAboutTypes) => {
           ABOUT THIS EVENT
         </Typography>
         <Stack sx={{ opacity: '0.8' }}>
-          <TextEditor
-            holder="event-description"
-            readonly={true}
-            value={JSON.parse(description.replaceAll('\\"', '"'))}
-            showMore={showMore}
+          <EditorPreview
+            value={description}
+            collapsed={isCollapsed}
+            onCollapse={(collapsed) => {
+              setIsCanCollapse((v) => {
+                return v || collapsed;
+              });
+              setIsCollapsed(collapsed);
+            }}
           />
         </Stack>
       </Stack>
-      {isContentLarge && (
+      {isCanCollapse && (
         <ZuButton
           startIcon={
-            !showMore ? (
+            isCollapsed ? (
               <ChevronDownIcon size={4} />
             ) : (
               <ChevronUpIcon size={4} />
             )
           }
           sx={{ backgroundColor: '#313131', width: '100%' }}
-          onClick={() => setShowMore((prev) => !prev)}
+          onClick={() => setIsCollapsed((prev) => !prev)}
         >
-          {!showMore ? 'Show More' : 'Show Less'}
+          {isCollapsed ? 'Show More' : 'Show Less'}
         </ZuButton>
       )}
     </Stack>
