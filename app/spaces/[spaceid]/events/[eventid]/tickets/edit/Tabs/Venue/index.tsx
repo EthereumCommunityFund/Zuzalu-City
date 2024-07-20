@@ -53,7 +53,7 @@ const Venue: React.FC = () => {
   };
 
   const List = (anchor: Anchor) => {
-    const avatarUploader = useUploaderPreview('');
+    const avatarUploader = useUploaderPreview();
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -223,7 +223,7 @@ const Venue: React.FC = () => {
                       borderRadius: '10px',
                     }}
                     src={avatarUploader.getUrl()}
-                    isError={avatarUploader.isError()}
+                    errorMessage={avatarUploader.errorMessage()}
                     isLoading={avatarUploader.isLoading()}
                   />
                 </Box>

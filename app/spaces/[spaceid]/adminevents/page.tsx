@@ -286,7 +286,7 @@ const Home = () => {
 
     const [description, setDescription] = useState<OutputData>();
     const [avatar, setAvatar] = useState<SelectedFile>();
-    const avatarUploader = useUploaderPreview('');
+    const avatarUploader = useUploaderPreview();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
     const socialLinksRef = useRef<HTMLDivElement>(null);
@@ -644,7 +644,7 @@ const Home = () => {
                       borderRadius: '10px',
                     }}
                     src={avatarUploader.getUrl()}
-                    isError={avatarUploader.isError()}
+                    errorMessage={avatarUploader.errorMessage()}
                     isLoading={avatarUploader.isLoading()}
                   />
                 </Box>

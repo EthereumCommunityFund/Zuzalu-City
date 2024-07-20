@@ -783,7 +783,7 @@ export const CreateTicket = ({
               <PreviewFile
                 sx={{ width: '200px', height: '200px' }}
                 src={avatarUploader.getUrl()}
-                isError={avatarUploader.isError()}
+                errorMessage={avatarUploader.errorMessage()}
                 isLoading={avatarUploader.isLoading()}
               />
             </Box>
