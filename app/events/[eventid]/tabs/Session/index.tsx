@@ -29,7 +29,10 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { TimeView } from '@mui/x-date-pickers/models';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from '@/utils/dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import isBetween from 'dayjs/plugin/isBetween';
+import timezone from 'dayjs/plugin/timezone';
 import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
 import { OutputData } from '@editorjs/editorjs';
 import {
@@ -78,6 +81,7 @@ import SlotDate from '@/components/calendar/SlotDate';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -87,6 +91,10 @@ const Custom_Option: TimeStepOptions = {
 interface ISessions {
   eventData: Event | undefined;
 }
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isBetween);
 
 const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const theme = useTheme();
@@ -111,11 +119,23 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [isContentLarge, setIsContentLarge] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(new Date()));
-  const [calendarDate, setCalendarDate] = useState<Dayjs>(dayjs(new Date()));
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
+    dayjs(
+      new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
+    ),
+  );
 
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
+
+  const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
+    [],
+  );
+
   const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -125,7 +145,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [online, setOnline] = useState(false);
   const [sessionName, setSessionName] = useState<string>('');
   const [sessionTrack, setSessionTrack] = useState<string>('');
-  const [sessionTags, setSessionTags] = useState<Array<string>>([]);
+  const [sessionTags, setSessionTags] = useState<string[]>([]);
   const [sessionDescription, setSessionDescription] = useState<OutputData>();
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
@@ -138,6 +158,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
     dayjs().set('hour', 0).set('minute', 0),
   );
+
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
     dayjs().set('hour', 0).set('minute', 0),
   );
@@ -145,9 +166,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<any>>([]);
   const [speakers, setSpeakers] = useState<Array<string>>([]);
-  const [sessionLocation, setSessionLocation] = useState<string>();
+  const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -187,12 +210,26 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const handleDateChange = (date: Dayjs) => {
     if (date && person) {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
+      const selectedDay = date.format('YYYY-MM-DD');
+      if (sessionLocation == '') {
+        return;
+      }
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+
+      const bookedSessionsDay = bookedSessions.filter((session) => {
+        const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+
+        return sessionStartDay === selectedDay;
+      });
+
+      setBookedSessionsForDay(bookedSessionsDay);
     }
     setSessionDate(date);
+    setSessionStartTime(dayjs().set('hour', 0).set('minute', 0));
+    setSessionEndTime(dayjs().set('hour', 0).set('minute', 0));
   };
 
   const isDateInRange = (
@@ -206,16 +243,75 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     );
   };
 
-  const isTimeAvailable = (date: Dayjs, available?: any): boolean => {
-    const formattedTime = date.format('HH:mm');
-    const isMinuteIntervalValid = date.minute() % 30 === 0;
-    const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
-      const startTime = dayjs(slot.startTime).format('HH:mm');
-      const endTime = dayjs(slot.endTime).format('HH:mm');
-      return formattedTime >= startTime && formattedTime < endTime;
-    });
+  const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
+    if (sessionDate == null) return true;
+    const sessionDateDay = sessionDate.format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
+    if (today >= sessionDateDay) {
+      return false;
+    } else {
+      const formattedTime = date.format('HH:mm');
 
-    return isMinuteIntervalValid && isWithinAvailableSlot;
+      const isWithinBookedSession = bookedSessionsForDay.some((session) => {
+        const sessionStartTime = dayjs(session.startTime, 'HH:mm')
+          .tz(eventData?.timezone)
+          .format('HH:mm');
+        const sessionEndTime = dayjs(session.endTime, 'HH:mm')
+          .tz(eventData?.timezone)
+          .format('HH:mm');
+        if (isStart) {
+          return (
+            formattedTime >= sessionStartTime && formattedTime < sessionEndTime
+          );
+        } else {
+          return (
+            formattedTime > sessionStartTime && formattedTime <= sessionEndTime
+          );
+        }
+      });
+
+      const isMinuteIntervalValid = date.minute() % 30 === 0;
+      const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
+        let startTime;
+        let endTime;
+        if (isStart) {
+          const startTime = dayjs(slot.startTime, 'HH:mm')
+            .tz(eventData?.timezone)
+            .format('HH:mm');
+          const endTime = dayjs(slot.endTime, 'HH:mm')
+            .tz(eventData?.timezone)
+            .format('HH:mm');
+          if (endTime >= startTime) {
+            return formattedTime >= startTime && formattedTime < endTime;
+          } else {
+            return !(formattedTime < startTime && formattedTime >= endTime);
+          }
+        } else {
+          if (
+            sessionStartTime.hour() === 0 &&
+            sessionStartTime.minute() === 0
+          ) {
+            startTime = dayjs(slot.endTime, 'HH:mm')
+              .tz(eventData?.timezone)
+              .format('HH:mm');
+          } else {
+            startTime = sessionStartTime
+              .tz(eventData?.timezone)
+              .format('HH:mm');
+          }
+          endTime = dayjs(slot.endTime, 'HH:mm')
+            .tz(eventData?.timezone)
+            .format('HH:mm');
+          if (endTime >= startTime) {
+            return formattedTime >= startTime && formattedTime <= endTime;
+          } else {
+            return !(formattedTime < startTime && formattedTime > endTime);
+          }
+        }
+      });
+
+      return isWithinAvailableSlot && !isWithinBookedSession;
+    }
   };
 
   const getPeople = async () => {
@@ -311,10 +407,16 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       experience_level: sessionExperienceLevel,
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime
-        ? dayjs(sessionStartTime).format('YYYY-MM-DDTHH:mm:ss[Z]').toString()
+        ? dayjs(sessionStartTime)
+            .tz(eventData?.timezone)
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
         : null,
       endTime: sessionEndTime
-        ? dayjs(sessionEndTime).format('YYYY-MM-DDTHH:mm:ss[Z]').toString()
+        ? dayjs(sessionEndTime)
+            .tz(eventData?.timezone)
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
         : null,
       profileId,
       eventId,
@@ -330,13 +432,17 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       userDID: adminId,
     };
     try {
-      const data = await supaCreateSession(formattedData);
-    } catch (error) {
-      console.error('Error creating session:', error);
+      setBlockClickModal(true);
+      const response = await supaCreateSession(formattedData);
+      if (response.status === 200) {
+        setShowModal(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      toggleDrawer('right', false);
     }
-
-    toggleDrawer('right', false);
-    await getSession();
   };
 
   useEffect(() => {
@@ -350,6 +456,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   }, []);
 
   const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
+
   const getBookedSession = async () => {
     try {
       const { data } = await supabase
@@ -371,7 +478,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
     fetchData();
   }, [sessionLocation]);
-
   useEffect(() => {
     const contentHeight = contentRef.current?.scrollHeight ?? 0;
     setIsContentLarge(contentHeight > 300);
@@ -380,9 +486,30 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const List = (anchor: Anchor) => {
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Dialog
+          title="Session Created"
+          message="Please view it."
+          showModal={showModal}
+          onClose={() => {
+            setShowModal(false);
+            getSession();
+            toggleDrawer('right', false);
+          }}
+          onConfirm={() => {
+            setShowModal(false);
+            getSession();
+            toggleDrawer('right', false);
+          }}
+        />
+        <Dialog
+          showModal={blockClickModal}
+          onClose={() => {}}
+          title="Creating Session"
+          message="Please wait while the session is being created..."
+        />
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
+            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -437,7 +564,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 <Typography variant="bodyBB">Session Name*</Typography>
                 <ZuInput
                   onChange={(e) => setSessionName(e.target.value)}
-                  placeholder="Standard Pass"
+                  placeholder="Input a name"
                 />
               </Stack>
               <Stack spacing="10px">
@@ -683,18 +810,18 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                               width="60px"
                               height="60px"
                               borderRadius="8px"
-                              src="/20.png"
+                              src={selectedRoom?.avatar}
                             />
                             <Stack spacing="4px">
                               <Typography variant="bodyBB">
                                 {sessionLocation}
                               </Typography>
-                              <Typography variant="bodyS">
+                              {/*<Typography variant="bodyS">
                                 Sessions booked: {bookedSessions.length}
                               </Typography>
                               <Typography variant="caption">
                                 Capacity: {selectedRoom?.capacity}
-                              </Typography>
+                              </Typography> */}
                             </Stack>
                           </Stack>
                         </Stack>
@@ -707,6 +834,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       <Typography variant="bodyS">
                         View and select the available dates and times for this
                         location
+                      </Typography>
+                      <Typography variant="bodyB">
+                        Your booking will be at the event timezone:{' '}
+                        {eventData?.timezone}
                       </Typography>
                       <DatePicker
                         onChange={(newValue) => {
@@ -760,7 +891,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, true);
                             }
                             return false;
                           }}
@@ -811,7 +942,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           }}
                           shouldDisableTime={(date: Dayjs, view: TimeView) => {
                             if (view === 'minutes' || view === 'hours') {
-                              return !isTimeAvailable(date);
+                              return !isTimeAvailable(date, false);
                             }
                             return false;
                           }}
@@ -880,14 +1011,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                                   `${sessionDate.format('YYYY')}`}
                               </Typography>
                               <Typography variant="bodyS">
-                                Start Time:{' '}
-                                {`${sessionStartTime.format('HH')}` +
-                                  `${sessionStartTime.format('A')}`}
+                                Start Time: {`${sessionStartTime.format('HH')}`}
                               </Typography>
                               <Typography variant="bodyS">
-                                End Time: :{' '}
-                                {`${sessionEndTime.format('HH')}` +
-                                  `${sessionEndTime.format('A')}`}
+                                End Time: : {`${sessionEndTime.format('HH')}`}
                               </Typography>
                             </Stack>
                           </Stack>
@@ -1156,11 +1283,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       key={`Sesssion-GroupByDate-${date}`}
                     >
                       <Typography
+                        borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
                         padding="8px 10px"
                         variant="bodySB"
-                        bgcolor="rgba(49, 49, 49)"
+                        bgcolor="rgba(255, 255, 255, 0.05)"
                         borderRadius="10px"
-                        sx={{ position: 'sticky', top: '100px', zIndex: 10 }}
+                        sx={{ opacity: 0.6 }}
                       >
                         {date}
                       </Typography>
@@ -1298,38 +1426,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   </Stack>
                 </Stack>
                 <ZuCalendar
-                  defaultValue={selectedDate}
+                  value={selectedDate}
                   onChange={(val) => {
                     setSelectedDate(val);
                   }}
-                  slots={{
-                    day: SlotDate,
-                  }}
+                  // slots={{
+                  //   day: SlotDates,
+                  // }}
                   slotProps={{
                     day: {
-                      highlightedDays: sessions
-                        .filter((session) => {
-                          // filter session.startTime month equal to selected month
-                          return (
-                            dayjs(session.startTime).month() ===
-                              calendarDate.month() &&
-                            dayjs(session.startTime).year() ===
-                              calendarDate.year() &&
-                            dayjs(session.startTime).date() !==
-                              selectedDate.date()
-                          );
-                        })
-                        .map((session) => {
-                          return dayjs(session.startTime).date();
-                        }),
+                      highlightedDays: sessions.map((session) => {
+                        return new Date(session.startTime).getDate();
+                      }),
                     } as any,
                   }}
-                  onMonthChange={(date) => {
-                    setCalendarDate(date);
-                  }}
-                  onYearChange={(date) => {
-                    setCalendarDate(date);
-                  }}
+                  // onMonthChange={(val) => handleMonthChange(val)}
                 />
               </Stack>
             </Grid>
@@ -1378,7 +1489,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     </Typography>
                     <Typography variant="bodyS">
                       {dayjs(selectedSession.startTime).format('h:mm A')} -{' '}
-                      {dayjs(selectedSession.endTime).format('h:mm A')}
+                      {dayjs(selectedSession.endTime)
+                        .tz(eventData?.timezone)
+                        .format('h:mm A')}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -1493,7 +1606,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
                     color: 'white',
-                    padding: '12px 12px 12px 40px',
+                    padding: '12px 12px 12px 80px',
                     borderRadius: '10px',
                   }}
                   value={JSON.parse(
@@ -1702,14 +1815,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         <SwipeableDrawer
           hideBackdrop={true}
           sx={{
-            position: 'relative',
-            zIndex: 1,
             '& .MuiDrawer-paper': {
               marginTop: '50px',
               height: 'calc(100% - 50px)',
               boxShadow: 'none',
-              backgroundColor: 'transparent',
-              paddingLeft: '80px', // Leave space for editorjs to operate
             },
           }}
           anchor="right"

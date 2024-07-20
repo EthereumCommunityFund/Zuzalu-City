@@ -19,9 +19,12 @@ export const filterPastEvents = (events: Event[]) => {
 };
 
 export const filterUpcomingEvents = (events: Event[]) => {
-  return events.filter((event) =>
-    dayjs(event.startTime).isSameOrAfter(dateNowUtc),
-  );
+  return events.filter((event) => {
+    const now = dayjs();
+    const startTime = dayjs(event.startTime);
+    const endTime = dayjs(event.endTime);
+    return now.isBetween(startTime, endTime) || startTime.isAfter(now);
+  });
 };
 
 export const formatDateToMonth = (timestamp: string | number | Date) => {
@@ -172,17 +175,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             {event.title}
           </Typography>
           <Typography color="rgba(255,255,255,0.6)" variant="bodyM">
-            {event.description === null && 'NULL'}
-            {event.description !== null &&
-              !isValidJSON(event.description.replaceAll('\\"', '"')) &&
-              event.description}
-            {event.description === null ||
-            !isValidJSON(event.description.replaceAll('\\"', '"')) ||
-            JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0] ===
-              undefined
-              ? 'JSON ERROR'
-              : JSON.parse(event.description.replaceAll('\\"', '"')).blocks[0]
-                  .data.text}
+            {event.tagline}
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="6px" sx={{ opacity: 0.5 }}>

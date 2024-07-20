@@ -17,6 +17,7 @@ export type SpaceCardProps = {
     id: string;
   }[];
   categories?: string;
+  tagline?: string;
 };
 
 const SpaceCard: React.FC<SpaceCardProps> = ({
@@ -28,6 +29,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
   joined = false,
   members = [],
   categories = '',
+  tagline,
 }) => {
   return (
     <Link href={`/spaces/${id}`} style={{ textDecoration: 'none' }}>
@@ -77,25 +79,37 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
               color="white"
               sx={{ wordWrap: 'break-word', opacity: 0.6, lineHeight: '22px' }}
             >
-              {description &&
-                JSON.parse(description.replaceAll('\\"', '"')).blocks[0].data
-                  .text}
+              {tagline}
             </Typography>
           </Stack>
           <Stack direction="row">
-            <Typography color="white" variant="caption" sx={{ opacity: 0.5 }}>
+            <Typography
+              color="white"
+              variant="caption"
+              sx={{
+                opacity: 0.5,
+                fontSize: '10px',
+                letterSpacing: '0.02em',
+              }}
+            >
               {categories &&
-                categories
-                  .split(', ')
-                  .map((category) => {
-                    const matchedCategory = SPACE_CATEGORIES.filter(
-                      (cat) => cat.value === category,
-                    );
-                    return matchedCategory.length > 0
-                      ? matchedCategory[0].label
-                      : category;
-                  })
-                  .join(', ')}
+                (() => {
+                  const categoryArray = categories.split(', ');
+                  const displayedCategories = categoryArray
+                    .slice(0, 2)
+                    .map((category) => {
+                      const matchedCategory = SPACE_CATEGORIES.filter(
+                        (cat) => cat.value === category,
+                      );
+                      return matchedCategory.length > 0
+                        ? matchedCategory[0].label
+                        : category;
+                    });
+                  const extraCount = categoryArray.length - 2;
+                  return extraCount > 0
+                    ? `${displayedCategories.join(', ')} +${extraCount}`
+                    : displayedCategories.join(', ');
+                })()}
             </Typography>
           </Stack>
 

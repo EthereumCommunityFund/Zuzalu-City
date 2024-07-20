@@ -1,7 +1,7 @@
 import { AddMemberRequest } from '@/types';
 import axiosInstance from '@/utils/axiosInstance';
 import axios from 'axios';
-export const updateZupassMember = async (addMemberInput: AddMemberRequest) => {
+export const updateMember = async (addMemberInput: AddMemberRequest) => {
   try {
     const response = await axiosInstance.post(
       '/api/event/updateMember',

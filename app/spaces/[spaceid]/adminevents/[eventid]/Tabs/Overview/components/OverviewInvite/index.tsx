@@ -1,6 +1,6 @@
 'use client';
 import { InformationIcon, PlusIcon } from 'components/icons';
-import { Event } from '@/types';
+import { AddAdminRequest, Event, AddMemberRequest } from '@/types';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Stack, Typography, Box } from '@mui/material';
@@ -10,6 +10,10 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { Space, SpaceData } from '@/types';
 import { DID } from 'dids';
 import { chainID } from '@/constant';
+import { updateAdmin } from '@/services/event/addAdmin';
+import { updateMember } from '@/services/event/addMember';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
+
 interface IMember {
   id: string;
   mvpProfile?: {
@@ -33,7 +37,12 @@ const OverviewInvite = ({ event }: PropTypes) => {
   // });
   const [members, setMembers] = useState<IMember[]>([]);
   const [admins, setAdmins] = useState<IMember[]>([]);
+  const [superAdmin, setSuperAdmin] = useState<IMember[]>([]);
   const [author, setAuthor] = useState<string>('');
+  const [eventData, setEventData] = useState<Event>();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const getEventList = async () => {
     try {
       const GET_Event_QUERY = `
@@ -46,6 +55,9 @@ const OverviewInvite = ({ event }: PropTypes) => {
                 mvpProfile {
                   username
                 }
+              }
+              superAdmin {
+                id
               }
               members {
                 id
@@ -64,85 +76,69 @@ const OverviewInvite = ({ event }: PropTypes) => {
       const response: any = await composeClient.executeQuery(GET_Event_QUERY, {
         id: params.eventid,
       });
+      setEventData(response.data.node);
       setMembers(response.data.node.members);
       setAdmins(response.data.node.admins);
-      setAuthor(response.data.node.author.id);
+      return response.data.node;
     } catch (error) {
       console.error('Failed to fetch event:', error);
     }
   };
   const updateEventAdmin = async () => {
-    if (!isAuthenticated) return;
-    const updatedAdmins = [
-      ...admins.map((admin) => admin.id),
-      `did:pkh:eip155:${chainID.toString()}:${initialAdmin}`,
-    ];
-    const query = `
-      mutation UpdateEvent($i: UpdateEventInput!) {
-       updateEvent(input: $i) {
-         document {
-           id
-         }
-        }
-      }
-      `;
-
-    const variables = {
-      i: {
-        id: params.eventid,
-        content: {
-          admins: updatedAdmins,
-        },
-      },
+    const addAdminInput: AddAdminRequest = {
+      eventId: params.eventid as string,
+      adminAddress: initialAdmin,
     };
-
     try {
-      const result: any = await composeClient.executeQuery(query, variables);
-      await getEventList();
+      setBlockClickModal(true);
+      const response = await updateAdmin(addAdminInput);
+      if (response.status === 200) {
+        setShowModal(true);
+      }
     } catch (err) {
       console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      getEventList();
     }
   };
 
   const updateEventMember = async () => {
-    if (!isAuthenticated) return;
-    const updatedMembers = members
-      ? [
-          ...members.map((member) => member.id),
-          `did:pkh:eip155:${chainID.toString()}:${initialMember}`,
-        ]
-      : [`did:pkh:eip155:${chainID.toString()}:${initialMember}`];
-    const query = `
-      mutation UpdateEvent($i: UpdateEventInput!) {
-       updateEvent(input: $i) {
-         document {
-           id
-         }
-        }
-      }
-      `;
-
-    const variables = {
-      i: {
-        id: params.eventid,
-        content: {
-          members: updatedMembers,
-        },
-      },
+    const addMemberInput: AddMemberRequest = {
+      eventId: params.eventid as string,
+      memberAddress: initialMember,
     };
-
     try {
-      const result: any = await composeClient.executeQuery(query, variables);
-      await getEventList();
+      setBlockClickModal(true);
+      const response = await updateMember(addMemberInput);
+
+      if (response.status === 200) {
+        setShowModal(true);
+      }
     } catch (err) {
       console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      getEventList();
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getEventList();
+        const event = await getEventList();
+        const admins =
+          event?.admins?.map((admin: any) => admin.id.toLowerCase()) || [];
+
+        const superAdmins =
+          event?.superAdmin?.map((superAdmin: any) =>
+            superAdmin.id.toLowerCase(),
+          ) || [];
+        const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+
+        if (admins.includes(userDID) || superAdmins.includes(userDID)) {
+          setIsAdmin(true);
+        }
       } catch (error) {
         console.error('An error occurred:', error);
       }
@@ -151,6 +147,23 @@ const OverviewInvite = ({ event }: PropTypes) => {
   }, []);
   return (
     <Stack direction="column" spacing={3} marginBottom={3}>
+      <Dialog
+        title="Updated"
+        message="Please view it."
+        showModal={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+        onConfirm={() => {
+          setShowModal(false);
+        }}
+      />
+      <Dialog
+        showModal={blockClickModal}
+        onClose={() => {}}
+        title="Updating"
+        message="Please wait while the list is being updated..."
+      />
       <Typography variant="subtitleMB">Invite Event Admins</Typography>
       <Stack
         padding="20px"
@@ -203,9 +216,7 @@ const OverviewInvite = ({ event }: PropTypes) => {
             >
               Add More
             </ZuButton>*/}
-            {ceramic &&
-            ceramic.did &&
-            author === ceramic.did.parent.toString() ? (
+            {ceramic && ceramic.did && isAdmin ? (
               <ZuButton
                 sx={{
                   color: '#67DBFF',
@@ -311,9 +322,7 @@ const OverviewInvite = ({ event }: PropTypes) => {
             >
               Add More
             </ZuButton>*/}
-            {ceramic &&
-            ceramic.did &&
-            author === ceramic.did.parent.toString() ? (
+            {ceramic && ceramic.did && isAdmin ? (
               <ZuButton
                 sx={{
                   color: '#67DBFF',

@@ -411,6 +411,7 @@ export default function SpaceDetailPage() {
                     holder="space-detail-editor"
                     readonly={true}
                     value={JSON.parse(space.description.replaceAll('\\"', '"'))}
+                    showMore={showMore}
                     sx={{
                       fontFamily: 'Inter',
                       color: 'white',
@@ -506,7 +507,7 @@ export default function SpaceDetailPage() {
                 >
                   Upcoming Events ({filterUpcomingEvents(events).length})
                 </Box>
-                <SidebarButton
+                {/*<SidebarButton
                   onClick={() => {
                     router.push(`/spaces/${params.spaceid}/events`);
                   }}
@@ -534,7 +535,7 @@ export default function SpaceDetailPage() {
                     </span>
                     <RightArrowCircleSmallIcon />
                   </Stack>
-                </SidebarButton>
+                </SidebarButton>*/}
               </Box>
               <Box
                 sx={{

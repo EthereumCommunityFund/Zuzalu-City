@@ -6,6 +6,8 @@ import { getResolver } from 'key-did-resolver';
 import { DID } from 'dids';
 import { ceramic, composeClient } from '@/constant';
 import { uint8ArrayToBase64 } from '@/utils';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(timezone);
 
 export async function POST(req: Request) {
   try {
@@ -66,6 +68,7 @@ export async function POST(req: Request) {
               id
             }
             external_url
+            timezone
           }
         }
       }
@@ -82,10 +85,7 @@ export async function POST(req: Request) {
             createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
             startTime: startTime,
             endTime: endTime,
-            customLinks: Object.entries(socialLinks).map(([key, value]) => ({
-              title: key,
-              links: value,
-            })),
+            customLinks: socialLinks,
             participant_count: participant,
             max_participant: max_participant,
             min_participant: min_participant,
@@ -93,6 +93,7 @@ export async function POST(req: Request) {
             tracks: tracks.join(','),
             superAdmin: adminId,
             external_url: external_url,
+            timezone: dayjs.tz.guess(),
           },
         },
       },
@@ -100,7 +101,7 @@ export async function POST(req: Request) {
     const { data: locationData, error: locationError } = await supabase
       .from('locations')
       .insert({
-        name: body.locations.join(','),
+        name: locations.join(','),
         eventId: update.data.createEvent.document.id,
       });
 
@@ -123,10 +124,13 @@ export async function POST(req: Request) {
       return new NextResponse('Error inserting into events', { status: 500 });
     }
 
-    return NextResponse.json({
-      message:
-        'Submitted! Create process probably complete after few minutes. Please check it in Space List page.',
-    });
+    return NextResponse.json(
+      {
+        message:
+          'Submitted! Create process probably complete after few minutes.',
+      },
+      { status: 200 },
+    );
   } catch (err) {
     console.error(err);
     return new NextResponse('An unexpected error occurred', { status: 500 });

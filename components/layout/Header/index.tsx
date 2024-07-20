@@ -119,7 +119,7 @@ const Header = () => {
             opacity: 0.8,
           }}
         >
-          beta
+          alpha
         </Typography>
       </Box>
       {isAuthenticated ? (

@@ -39,7 +39,7 @@ const validationSchema = yup.object({
   categories: yup
     .array()
     .min(1, 'Categories are required.')
-    .max(15, 'Categories select up to 15 items.')
+    .max(30, 'Categories select up to 30 items.')
     .required('Categories are required.'),
 });
 
@@ -82,16 +82,21 @@ const Create = () => {
       socialLinksRef.current.children.length > 1
     ) {
       for (let i = 0; i < socialLinksRef.current.children.length - 1; i++) {
-        const key =
-          socialLinksRef.current.children[i].children[0].querySelector(
-            'input',
-          )?.value;
-        const value =
-          socialLinksRef.current.children[i].children[1].querySelector(
-            'input',
-          )?.value;
-        if (key) {
-          socialLinks = { ...socialLinks, [key]: value };
+        const firstChild = socialLinksRef.current.children[i].children[0];
+        const secondChild = socialLinksRef.current.children[i].children[1];
+
+        if (firstChild && secondChild) {
+          const key =
+            socialLinksRef.current.children[i].children[0].querySelector(
+              'input',
+            )?.value;
+          const value =
+            socialLinksRef.current.children[i].children[1].querySelector(
+              'input',
+            )?.value;
+          if (key) {
+            socialLinks = { ...socialLinks, [key]: value };
+          }
         }
       }
     }
@@ -102,19 +107,24 @@ const Create = () => {
       customLinksRef.current.children.length > 1
     ) {
       for (let i = 0; i < customLinksRef.current.children.length - 1; i++) {
-        const key =
-          customLinksRef.current.children[i].children[0].querySelector(
-            'input',
-          )?.value;
-        const value =
-          customLinksRef.current.children[i].children[1].querySelector(
-            'input',
-          )?.value;
-        if (key) {
-          customLinks.push({
-            links: value,
-            title: key,
-          });
+        const firstChild = customLinksRef.current.children[i].children[0];
+        const secondChild = customLinksRef.current.children[i].children[1];
+
+        if (firstChild && secondChild) {
+          const key =
+            customLinksRef.current.children[i].children[0].querySelector(
+              'input',
+            )?.value;
+          const value =
+            customLinksRef.current.children[i].children[1].querySelector(
+              'input',
+            )?.value;
+          if (key) {
+            customLinks.push({
+              links: value,
+              title: key,
+            });
+          }
         }
       }
     }
@@ -138,9 +148,6 @@ const Create = () => {
             id
             name
             description
-            superAdmin {
-              id
-            }
             profileId
             avatar
             banner
@@ -284,11 +291,11 @@ const Create = () => {
                   sx={{
                     backgroundColor: '#ffffff0d',
                     fontFamily: 'Inter',
-                    color: 'white',
-                    padding: '12px',
-                    borderRadius: '10px',
                     height: 'auto',
                     minHeight: '270px',
+                    color: 'white',
+                    padding: '12px 12px 12px 40px',
+                    borderRadius: '10px',
                   }}
                 />
                 <Stack direction="row" justifyContent="flex-end">
@@ -306,7 +313,7 @@ const Create = () => {
               <Box display={'flex'} flexDirection={'column'} gap={'20px'}>
                 <Box>
                   <Typography variant="subtitle2" color="white">
-                    Community Tags (Max: 15)*
+                    Community Tags (Max: 30)*
                   </Typography>
                   <Typography color="text.secondary" variant="body2">
                     Search or create categories related to your space
