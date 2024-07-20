@@ -38,6 +38,7 @@ import {
 } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import TextEditor from '@/components/editor/editor';
+import { EditorPreview } from '@/components/editor/EditorPreview';
 // import { SubSidebar } from '@/components/layout';
 
 export default function SpaceDetailPage() {
@@ -45,7 +46,8 @@ export default function SpaceDetailPage() {
   const theme = useTheme();
   const router = useRouter();
   const { composeClient, ceramic } = useCeramicContext();
-  const [showMore, setShowMore] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [isCanCollapse, setIsCanCollapse] = useState<boolean>(false);
   const [space, setSpace] = useState<Space>();
   const [showCopyToast, setShowCopyToast] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
@@ -149,20 +151,6 @@ export default function SpaceDetailPage() {
         setIsEventsLoading(false);
       });
   }, []);
-
-  const hasShowMore = (spaceDescription?: string) => {
-    if (!spaceDescription) return false;
-    const descData = JSON.parse(spaceDescription.replaceAll('\\"', '"'));
-    const { blocks } = descData;
-    if (blocks.length === 0) return false;
-    if (blocks.length > 5) return true;
-    const totalLength = blocks.reduce((acc: number, block: any) => {
-      return acc + block.data?.text?.length || 0;
-    }, 0);
-    return totalLength > 300;
-  };
-
-  const isContentLarge = hasShowMore(space?.description);
 
   return (
     <Box
@@ -390,7 +378,6 @@ export default function SpaceDetailPage() {
                     width: '100%',
                     backgroundColor: '#ffffff05',
                     borderRadius: '10px',
-                    height: !showMore ? '180px' : 'unset',
                     boxSizing: 'border-box',
                     overflow: 'hidden',
                   }}
@@ -406,20 +393,14 @@ export default function SpaceDetailPage() {
                   >
                     {space.name}
                   </Box>
-                  <TextEditor
-                    fullWidth={true}
-                    holder="space-detail-editor"
-                    readonly={true}
-                    value={JSON.parse(space.description.replaceAll('\\"', '"'))}
-                    showMore={showMore}
-                    sx={{
-                      fontFamily: 'Inter',
-                      color: 'white',
-                      borderRadius: '10px',
-                      height: 'auto',
-                      overflow: 'auto',
-                      padding: '0px',
-                      opacity: 0.8,
+                  <EditorPreview
+                    value={space.description}
+                    collapsed={isCollapsed}
+                    onCollapse={(collapsed) => {
+                      setIsCanCollapse((v) => {
+                        return v || collapsed;
+                      });
+                      setIsCollapsed(collapsed);
                     }}
                   />
                 </Box>
@@ -433,7 +414,7 @@ export default function SpaceDetailPage() {
               </>
             )}
 
-            {isContentLarge && (
+            {isCanCollapse && (
               <SidebarButton
                 sx={{
                   width: '100%',
@@ -451,16 +432,16 @@ export default function SpaceDetailPage() {
                   boxSizing: 'border-box',
                 }}
                 onClick={() => {
-                  setShowMore((v) => !v);
+                  setIsCollapsed((v) => !v);
                 }}
               >
                 <Stack direction="row" spacing={'10px'} alignItems={'center'}>
-                  {showMore ? (
-                    <ChevronUpIcon size={4} />
-                  ) : (
+                  {isCollapsed ? (
                     <ChevronDownIcon size={4} />
+                  ) : (
+                    <ChevronUpIcon size={4} />
                   )}
-                  <span>{showMore ? 'Show Less' : 'Show More'}</span>
+                  <span>{isCollapsed ? 'Show More' : 'Show Less'}</span>
                 </Stack>
               </SidebarButton>
             )}
