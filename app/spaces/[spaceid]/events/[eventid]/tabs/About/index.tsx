@@ -427,7 +427,7 @@ const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
                 </Stack>
               </Box>
             </Stack>
-            <Stack
+            {/*<Stack
               bgcolor="#292929"
               padding="20px"
               spacing="20px"
@@ -455,9 +455,22 @@ const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
                   innovation.
                 </Typography>
               </Stack>
-            </Stack>
+            </Stack>*/}
           </Stack>
-          <Stack spacing="20px" flex="1">
+          <Stack
+            spacing="20px"
+            sx={{
+              width: '350px',
+              px: '20px',
+              [breakpoints.down('md')]: {
+                width: '100%',
+                px: '20px',
+              },
+              [breakpoints.down('sm')]: {
+                px: '10px',
+              },
+            }}
+          >
             <EventRegister
               onToggle={toggleDrawer}
               setWhitelist={setWhitelist}
