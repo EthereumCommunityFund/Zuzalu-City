@@ -19,9 +19,12 @@ export const filterPastEvents = (events: Event[]) => {
 };
 
 export const filterUpcomingEvents = (events: Event[]) => {
-  return events.filter((event) =>
-    dayjs(event.startTime).isSameOrAfter(dateNowUtc),
-  );
+  return events.filter((event) => {
+    const now = dayjs();
+    const startTime = dayjs(event.startTime);
+    const endTime = dayjs(event.endTime);
+    return now.isBetween(startTime, endTime) || startTime.isAfter(now);
+  });
 };
 
 export const formatDateToMonth = (timestamp: string | number | Date) => {

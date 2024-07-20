@@ -164,6 +164,10 @@ const TextEditor: FC<TextEditorPropTypes> = ({
           })}
           {...props}
           onClick={handleClick}
+          sx={{
+            height: showMore ? 'auto' : '180px',
+            overflow: 'hidden',
+          }}
         ></Box>
       )}
     </Fragment>

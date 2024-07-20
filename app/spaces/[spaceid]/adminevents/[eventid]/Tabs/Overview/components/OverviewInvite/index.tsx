@@ -12,6 +12,7 @@ import { DID } from 'dids';
 import { chainID } from '@/constant';
 import { updateAdmin } from '@/services/event/addAdmin';
 import { updateMember } from '@/services/event/addMember';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 interface IMember {
   id: string;
@@ -40,6 +41,8 @@ const OverviewInvite = ({ event }: PropTypes) => {
   const [author, setAuthor] = useState<string>('');
   const [eventData, setEventData] = useState<Event>();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const getEventList = async () => {
     try {
       const GET_Event_QUERY = `
@@ -87,10 +90,16 @@ const OverviewInvite = ({ event }: PropTypes) => {
       adminAddress: initialAdmin,
     };
     try {
-      const data = await updateAdmin(addAdminInput);
-      await getEventList();
+      setBlockClickModal(true);
+      const response = await updateAdmin(addAdminInput);
+      if (response.status === 200) {
+        setShowModal(true);
+      }
     } catch (err) {
       console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      getEventList();
     }
   };
 
@@ -100,10 +109,17 @@ const OverviewInvite = ({ event }: PropTypes) => {
       memberAddress: initialMember,
     };
     try {
-      const data = await updateMember(addMemberInput);
-      await getEventList();
+      setBlockClickModal(true);
+      const response = await updateMember(addMemberInput);
+
+      if (response.status === 200) {
+        setShowModal(true);
+      }
     } catch (err) {
       console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      getEventList();
     }
   };
 
@@ -131,6 +147,23 @@ const OverviewInvite = ({ event }: PropTypes) => {
   }, []);
   return (
     <Stack direction="column" spacing={3} marginBottom={3}>
+      <Dialog
+        title="Updated"
+        message="Please view it."
+        showModal={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+        onConfirm={() => {
+          setShowModal(false);
+        }}
+      />
+      <Dialog
+        showModal={blockClickModal}
+        onClose={() => {}}
+        title="Updating"
+        message="Please wait while the list is being updated..."
+      />
       <Typography variant="subtitleMB">Invite Event Admins</Typography>
       <Stack
         padding="20px"

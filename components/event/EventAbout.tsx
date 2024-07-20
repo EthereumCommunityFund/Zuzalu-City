@@ -11,17 +11,20 @@ interface EventAboutTypes {
 const EventAbout = ({ description }: EventAboutTypes) => {
   const [showMore, setShowMore] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
-  const [isContentLarge, setIsContentLarge] = useState(false);
 
-  useEffect(() => {
-    const editorContent = document.querySelector(
-      '.codex-editor__redactor',
-    ) as HTMLElement;
-    if (editorContent) {
-      setContentHeight(editorContent.scrollHeight);
-      setIsContentLarge(editorContent.scrollHeight > 300);
-    }
-  }, [description]);
+  const hasShowMore = (description?: string) => {
+    if (!description) return false;
+    const descData = JSON.parse(description.replaceAll('\\"', '"'));
+    const { blocks } = descData;
+    if (blocks.length === 0) return false;
+    if (blocks.length > 5) return true;
+    const totalLength = blocks.reduce((acc: number, block: any) => {
+      return acc + block.data?.text?.length || 0;
+    }, 0);
+    return totalLength > 300;
+  };
+
+  const isContentLarge = hasShowMore(description);
 
   return (
     <Stack bgcolor="#292929" padding="10px" borderRadius="10px">
@@ -41,6 +44,7 @@ const EventAbout = ({ description }: EventAboutTypes) => {
         <Stack sx={{ opacity: '0.8' }}>
           <TextEditor
             holder="event-description"
+            readonly={true}
             value={JSON.parse(description.replaceAll('\\"', '"'))}
             showMore={showMore}
           />
