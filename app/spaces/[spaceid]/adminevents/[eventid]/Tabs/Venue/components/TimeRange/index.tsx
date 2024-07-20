@@ -12,6 +12,7 @@ interface ITimeRange {
   values: AvailableType[];
   id: number;
   setValues: Dispatch<SetStateAction<AvailableType[]>>;
+  timezone: string;
 }
 
 const validateTimeRanges = (ranges: AvailableType[]) => {
@@ -42,17 +43,26 @@ const validateTimeRanges = (ranges: AvailableType[]) => {
   return errors;
 };
 
-const TimeRange: React.FC<ITimeRange> = ({ id, setValues, values }) => {
+const TimeRange: React.FC<ITimeRange> = ({
+  id,
+  setValues,
+  values,
+  timezone,
+}) => {
   const currentRange = values[id];
   return (
     <Stack direction="column" spacing="10px" flex="4">
       <Stack direction="row" spacing="10px">
         <TimePicker
+          ampm={false}
           onChange={(value) => {
             if (value) {
               const newValue = values.map((item, index) => {
                 if (index === id) {
-                  item.startTime = value.toString();
+                  item.startTime = dayjs(value)
+                    .tz(timezone)
+                    .format('HH:mm')
+                    .toString();
                   return item;
                 }
                 return item;
@@ -93,11 +103,15 @@ const TimeRange: React.FC<ITimeRange> = ({ id, setValues, values }) => {
           }}
         />
         <TimePicker
+          ampm={false}
           onChange={(value) => {
             if (value) {
               const newValue = values.map((item, index) => {
                 if (index === id) {
-                  item.endTime = value.toString();
+                  item.endTime = dayjs(value)
+                    .tz(timezone)
+                    .format('HH:mm')
+                    .toString();
                   return item;
                 }
                 return item;
