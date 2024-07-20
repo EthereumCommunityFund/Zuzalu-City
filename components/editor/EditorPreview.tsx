@@ -20,9 +20,18 @@ export const EditorPreview: React.FC<{
    */
   collapsable?: boolean;
   collapseHeight?: number;
+  /**
+   * if scrollHeight is set, the editor will be scrollable
+   */
+  scrollHeight?: number;
   onCollapse?: (collapsed: boolean) => void;
 }> = (props) => {
-  const { value, collapseHeight = 200, collapsable = true } = props;
+  const {
+    value,
+    collapseHeight = 200,
+    collapsable = true,
+    scrollHeight,
+  } = props;
 
   const data =
     typeof value === 'string'
@@ -91,6 +100,7 @@ export const EditorPreview: React.FC<{
   return (
     <Wrapper
       ref={wrapperRef}
+      scrollHeight={scrollHeight}
       style={{ height: collapsed ? collapseHeight : 'auto' }}
     >
       <Global styles={globalStyles} />
@@ -114,7 +124,16 @@ const globalStyles = css`
   }
 `;
 
-const Wrapper = styled('div')`
+const Wrapper = styled('div')<{
+  scrollHeight?: number;
+}>`
   color: white;
   overflow: hidden;
+  ${(props) =>
+    props.scrollHeight
+      ? `
+    max-height: ${props.scrollHeight}px;
+    overflow-y: auto;
+  `
+      : ''}
 `;
