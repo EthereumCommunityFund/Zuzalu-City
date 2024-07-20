@@ -81,6 +81,7 @@ import SlotDate from '@/components/calendar/SlotDate';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -168,6 +169,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -429,13 +432,17 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       userDID: adminId,
     };
     try {
-      const data = await supaCreateSession(formattedData);
-    } catch (error) {
-      console.error('Error creating session:', error);
+      setBlockClickModal(true);
+      const response = await supaCreateSession(formattedData);
+      if (response.status === 200) {
+        setShowModal(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      toggleDrawer('right', false);
     }
-
-    toggleDrawer('right', false);
-    await getSession();
   };
 
   useEffect(() => {
@@ -479,6 +486,27 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const List = (anchor: Anchor) => {
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Dialog
+          title="Session Created"
+          message="Please view it."
+          showModal={showModal}
+          onClose={() => {
+            setShowModal(false);
+            getSession();
+            toggleDrawer('right', false);
+          }}
+          onConfirm={() => {
+            setShowModal(false);
+            getSession();
+            toggleDrawer('right', false);
+          }}
+        />
+        <Dialog
+          showModal={blockClickModal}
+          onClose={() => {}}
+          title="Creating Session"
+          message="Please wait while the session is being created..."
+        />
         <Box
           sx={{
             width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',

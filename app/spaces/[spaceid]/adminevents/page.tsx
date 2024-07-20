@@ -58,6 +58,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useAccount } from 'wagmi';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 interface Inputs {
   name: string;
@@ -108,6 +109,7 @@ const Home = () => {
   const [reload, setReload] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
+  const [showModal, setShowModal] = useState(false);
   const {
     control,
     handleSubmit,
@@ -298,7 +300,7 @@ const Home = () => {
     const [uploading, setUploading] = useState(false);
     const inputFile = useRef<HTMLInputElement>(null);
     const [isLoading, setLoading] = useState(false);
-
+    const [blockClickModal, setBlockClickModal] = useState(false);
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
 
@@ -366,6 +368,7 @@ const Home = () => {
 
         try {
           setLoading(true);
+          setBlockClickModal(true);
           const eventCreationInput: CreateEventRequest = {
             name: inputs.name,
             strDesc: strDesc,
@@ -460,17 +463,42 @@ const Home = () => {
               'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
             );*/
 
-          const data = await createEventKeySupa(eventCreationInput);
+          const response = await createEventKeySupa(eventCreationInput);
+          if (response.status === 200) {
+            setShowModal(true);
+          }
         } catch (err) {
           console.log(err);
         } finally {
           setLoading(false);
+          setBlockClickModal(false);
         }
       }
     };
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Dialog
+          title="Event Created"
+          message="Please view it."
+          showModal={showModal}
+          onClose={() => {
+            setShowModal(false);
+            getSpaceByID();
+            handleClose();
+          }}
+          onConfirm={() => {
+            setShowModal(false);
+            getSpaceByID();
+            handleClose();
+          }}
+        />
+        <Dialog
+          showModal={blockClickModal}
+          onClose={() => {}}
+          title="Creating Event"
+          message="Please wait while the event is being created..."
+        />
         <Box
           sx={{
             width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
@@ -551,7 +579,6 @@ const Home = () => {
                       borderRadius: '10px',
                       height: 'auto',
                       minHeight: '270px',
-                      overflow: 'auto',
                     }}
                   />
                   <Stack direction="row" justifyContent="flex-end">

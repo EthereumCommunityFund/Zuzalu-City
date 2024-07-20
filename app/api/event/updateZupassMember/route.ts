@@ -111,9 +111,12 @@ export async function POST(req: Request) {
         query,
         variables,
       );
-      return NextResponse.json({
-        message: 'Successfully added into member list',
-      });
+      return NextResponse.json(
+        {
+          message: 'Successfully added into member list',
+        },
+        { status: 200 },
+      );
     }
   } catch (err) {
     console.error(err);

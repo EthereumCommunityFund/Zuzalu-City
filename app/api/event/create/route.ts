@@ -124,10 +124,13 @@ export async function POST(req: Request) {
       return new NextResponse('Error inserting into events', { status: 500 });
     }
 
-    return NextResponse.json({
-      message:
-        'Submitted! Create process probably complete after few minutes. Please check it in Space List page.',
-    });
+    return NextResponse.json(
+      {
+        message:
+          'Submitted! Create process probably complete after few minutes.',
+      },
+      { status: 200 },
+    );
   } catch (err) {
     console.error(err);
     return new NextResponse('An unexpected error occurred', { status: 500 });
