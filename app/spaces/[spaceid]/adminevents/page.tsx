@@ -309,6 +309,9 @@ const Home = () => {
         name === 'max_participant' ||
         name === 'min_participant'
       ) {
+        if (!/^\d*$/.test(value)) {
+          return;
+        }
         setInputs((prevInputs) => ({
           ...prevInputs,
           [name]: Number(value),
@@ -720,6 +723,7 @@ const Home = () => {
               <Stack spacing="10px" padding="20px">
                 <FormLabel>Participant</FormLabel>
                 <ZuInput
+                  value={inputs.participant}
                   onChange={handleInputChange}
                   type="number"
                   name="participant"
@@ -729,6 +733,7 @@ const Home = () => {
               <Stack spacing="10px" padding="20px">
                 <FormLabel>Max Participant</FormLabel>
                 <ZuInput
+                  value={inputs.max_participant}
                   onChange={handleInputChange}
                   type="number"
                   name="max_participant"
@@ -738,6 +743,7 @@ const Home = () => {
               <Stack spacing="10px" padding="20px">
                 <FormLabel>Min Participant</FormLabel>
                 <ZuInput
+                  value={inputs.min_participant}
                   onChange={handleInputChange}
                   type="number"
                   name="min_participant"

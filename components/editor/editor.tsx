@@ -145,12 +145,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
     }
   }, [showMore]);
 
-  const handleClick = useCallback(() => {
-    if (ref.current) {
-      ref.current.focus(true);
-    }
-  }, []);
-
   return (
     <Fragment>
       {children ? (
@@ -163,7 +157,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
             editorReadOnly: readonly,
           })}
           {...props}
-          onClick={handleClick}
           sx={{
             height: showMore ? 'auto' : '180px',
             overflow: 'hidden',
