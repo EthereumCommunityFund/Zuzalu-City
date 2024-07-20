@@ -83,11 +83,11 @@ const Create = () => {
     ) {
       for (let i = 0; i < socialLinksRef.current.children.length - 1; i++) {
         const key =
-          socialLinksRef.current.children[i].children[0].querySelector(
+          socialLinksRef.current.children[i + 1].children[0].querySelector(
             'input',
           )?.value;
         const value =
-          socialLinksRef.current.children[i].children[1].querySelector(
+          socialLinksRef.current.children[i + 1].children[1].querySelector(
             'input',
           )?.value;
         if (key) {
@@ -103,11 +103,11 @@ const Create = () => {
     ) {
       for (let i = 0; i < customLinksRef.current.children.length - 1; i++) {
         const key =
-          customLinksRef.current.children[i].children[0].querySelector(
+          customLinksRef.current.children[i + 1].children[0].querySelector(
             'input',
           )?.value;
         const value =
-          customLinksRef.current.children[i].children[1].querySelector(
+          customLinksRef.current.children[i + 1].children[1].querySelector(
             'input',
           )?.value;
         if (key) {
