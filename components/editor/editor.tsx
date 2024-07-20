@@ -1,16 +1,8 @@
 'use client';
-import React, {
-  useEffect,
-  useRef,
-  Fragment,
-  FC,
-  SetStateAction,
-  useCallback,
-} from 'react';
-import { OutputData } from '@editorjs/editorjs';
+import React, { FC, Fragment, SetStateAction, useEffect, useRef } from 'react';
+import EditorJS, { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Box, BoxProps } from '@mui/material';
-import EditorJS from '@editorjs/editorjs';
 import clsx from 'clsx';
 
 import './editor.css';
@@ -52,7 +44,7 @@ const TextEditor: FC<TextEditorPropTypes> = ({
 
   useEffect(() => {
     if (!ref.current) {
-      const editor = new EditorJS({
+      ref.current = new EditorJS({
         holder: holder,
         tools,
         data: value,
@@ -109,7 +101,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
           }
         },
       });
-      ref.current = editor;
     }
 
     return () => {
@@ -145,12 +136,6 @@ const TextEditor: FC<TextEditorPropTypes> = ({
     }
   }, [showMore]);
 
-  const handleClick = useCallback(() => {
-    if (ref.current) {
-      ref.current.focus(true);
-    }
-  }, []);
-
   return (
     <Fragment>
       {children ? (
@@ -163,10 +148,8 @@ const TextEditor: FC<TextEditorPropTypes> = ({
             editorReadOnly: readonly,
           })}
           {...props}
-          onClick={handleClick}
           sx={{
             height: showMore ? 'auto' : '180px',
-            overflow: 'hidden',
             ...props.sx,
           }}
         ></Box>

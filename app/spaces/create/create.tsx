@@ -294,7 +294,7 @@ const Create = () => {
                     height: 'auto',
                     minHeight: '270px',
                     color: 'white',
-                    padding: '12px 12px 12px 40px',
+                    padding: '12px',
                     borderRadius: '10px',
                   }}
                 />
