@@ -498,7 +498,7 @@ const Home = () => {
         />
         <Dialog
           showModal={blockClickModal}
-          onClose={() => {}}
+          showActions={false}
           title="Creating Event"
           message="Please wait while the event is being created..."
         />
