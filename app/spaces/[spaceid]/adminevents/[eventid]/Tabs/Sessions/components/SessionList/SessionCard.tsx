@@ -11,6 +11,7 @@ interface SessionCardProps {
   userDID: string;
   setIsRsvped: React.Dispatch<React.SetStateAction<boolean>> | any;
   setShowDeleteButton: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setLocationAvatar: React.Dispatch<React.SetStateAction<string>> | any;
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({
@@ -19,6 +20,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
   userDID,
   setIsRsvped,
   setShowDeleteButton,
+  setLocationAvatar,
 }) => {
   const handleClick = async () => {
     const { data: rsvpData, error: rsvpError } = await supabase
@@ -32,6 +34,16 @@ const SessionCard: React.FC<SessionCardProps> = ({
     if ((rsvpData?.length as number) > 0) {
       setIsRsvped(true);
     }
+    const { data: locationData, error: locationError } = await supabase
+      .from('venues')
+      .select('avatar')
+      .eq('name', session.location)
+      .eq('eventId', session.eventId)
+      .single();
+    if (locationError) {
+      console.error('Error fetching data:', locationError);
+    }
+    setLocationAvatar(locationData?.avatar);
     const { data: deleteData, error: deleteError } = await supabase
       .from('sessions')
       .select('*')
