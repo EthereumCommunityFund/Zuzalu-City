@@ -59,7 +59,8 @@ import { useAccount } from 'wagmi';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
-
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(timezone);
 interface Inputs {
   name: string;
   symbol: string;
@@ -388,6 +389,7 @@ const Home = () => {
             external_url: inputs.external_url,
             person: person,
             locations: locations,
+            timezone: dayjs.tz.guess(),
           };
           /*const update: any = await composeClient.executeQuery(
           const update: any = await composeClient.executeQuery(

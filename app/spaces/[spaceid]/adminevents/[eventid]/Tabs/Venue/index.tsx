@@ -218,6 +218,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
           avatar: avatarUploader.getUrl(),
           bookings: JSON.stringify(bookings),
           capacity,
+          timezone: event?.timezone,
         });
         toggleDrawer('right', false);
         await getVenues();

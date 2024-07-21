@@ -60,7 +60,7 @@ const TimeRange: React.FC<ITimeRange> = ({
               const newValue = values.map((item, index) => {
                 if (index === id) {
                   item.startTime = dayjs(value)
-                    .tz(timezone)
+                    .utc()
                     .format('HH:mm')
                     .toString();
                   return item;
@@ -108,10 +108,7 @@ const TimeRange: React.FC<ITimeRange> = ({
             if (value) {
               const newValue = values.map((item, index) => {
                 if (index === id) {
-                  item.endTime = dayjs(value)
-                    .tz(timezone)
-                    .format('HH:mm')
-                    .toString();
+                  item.endTime = dayjs(value).utc().format('HH:mm').toString();
                   return item;
                 }
                 return item;

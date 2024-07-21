@@ -37,13 +37,13 @@ const SessionList: React.FC<SessionsListProps> = ({
           spacing={2}
           divider={<Divider sx={{ borderColor: '#383838' }} />}
         >
-          {sessions.map((session, index) => (
+          {/*sessions.map((session, index) => (
             <SessionCard
               key={`SessionCard-${index}`}
               session={session}
               setSelectedSession={setSelectedSession}
             />
-          ))}
+          ))*/}
         </Stack>
       ) : (
         <Stack

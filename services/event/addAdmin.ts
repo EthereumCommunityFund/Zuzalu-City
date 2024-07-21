@@ -7,7 +7,7 @@ export const updateAdmin = async (addAdminInput: AddAdminRequest) => {
       '/api/event/updateAdmin',
       addAdminInput,
     );
-    return response.data;
+    return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw error.response?.data || error.message;
