@@ -86,6 +86,8 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
+import { EditorPreview } from '@/components/editor/EditorPreview';
+
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -152,6 +154,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [sessionType, setSessionType] = useState<string>('');
   const [sessoinStatus, setSessionStatus] = useState<string>('');
   const [sessionGated, setSessionGated] = useState<string>('');
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [isCanCollapse, setIsCanCollapse] = useState<boolean>(false);
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
@@ -186,7 +190,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   ): Record<string, Session[]> => {
     return sessions.reduce(
       (acc, session) => {
-        const formattedDate = dayjs(session.startTime).format('MMMM D, YYYY');
+        const formattedDate = dayjs(session.startTime)
+          .tz(session.timezone)
+          .format('MMMM D, YYYY');
         if (!acc[formattedDate]) {
           acc[formattedDate] = [];
         }
@@ -468,7 +474,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       !sessionStartTime ||
       !sessionEndTime ||
       !sessionName ||
-      !sessionTags ||
       !sessionTrack ||
       !sessionOrganizers;
     !profileId;
@@ -1718,9 +1723,9 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing="14px">
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                      {dayjs(selectedSession.startTime).format('dddd')},{' '}
-                      {dayjs(selectedSession.startTime).format('MMMM')}{' '}
-                      {dayjs(selectedSession.startTime).month()}
+                      {dayjs(selectedSession.startTime)
+                        .tz(eventData?.timezone)
+                        .format('dddd, MMMM D')}
                     </Typography>
                     <Typography variant="bodyS">
                       {dayjs(selectedSession.startTime)
@@ -1835,33 +1840,29 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               )}
               <Stack spacing="20px" padding="20px">
                 <Typography variant="subtitleSB">Description</Typography>
-                <Typography
-                  ref={contentRef}
-                  style={{
-                    maxHeight: showMore ? 'none' : '300px',
-                    overflow: 'hidden',
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: showMore ? 'none' : '3',
+                <EditorPreview
+                  value={selectedSession.description}
+                  collapsed={isCollapsed}
+                  onCollapse={(collapsed) => {
+                    setIsCanCollapse((v) => {
+                      return v || collapsed;
+                    });
+                    setIsCollapsed(collapsed);
                   }}
-                >
-                  {JSON.parse(
-                    selectedSession.description.replaceAll('\\"', '"'),
-                  ).blocks.map((item: any) => item.data.text)}
-                </Typography>
-                {isContentLarge && (
+                />
+                {isCanCollapse && (
                   <ZuButton
                     startIcon={
-                      !showMore ? (
+                      isCollapsed ? (
                         <ChevronDownIcon size={4} />
                       ) : (
                         <ChevronUpIcon size={4} />
                       )
                     }
                     sx={{ backgroundColor: '#313131', width: '100%' }}
-                    onClick={() => setShowMore((prev) => !prev)}
+                    onClick={() => setIsCollapsed((prev) => !prev)}
                   >
-                    {!showMore ? 'Show More' : 'Show Less'}
+                    {isCollapsed ? 'Show More' : 'Show Less'}
                   </ZuButton>
                 )}
               </Stack>
