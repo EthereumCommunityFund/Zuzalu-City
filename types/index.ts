@@ -160,6 +160,7 @@ export interface Session {
   location?: string;
   speakers: string;
   organizers: string;
+  rsvpNb?: number;
 }
 export type SessionSupabaseData = {
   title: string;
@@ -179,7 +180,7 @@ export type SessionSupabaseData = {
   location?: string;
   organizers?: string;
   speakers?: string;
-  userDID: string;
+  creatorDID: string;
 };
 export interface SessionEdge {
   node: Session;
@@ -280,6 +281,7 @@ export interface CreateEventRequest {
   tracks: string[];
   person: boolean;
   locations: string[];
+  timezone: string;
 }
 
 export interface ZuAutoCompleteProps {

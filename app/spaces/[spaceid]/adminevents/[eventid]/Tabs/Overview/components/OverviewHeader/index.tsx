@@ -43,8 +43,6 @@ const OverviewHeader = ({ event }: PropTypes) => {
   const [sessionName, setSessionName] = React.useState<string>('');
   const [sessionTrack, setSessionTrack] = React.useState<string>('');
   const [sessionTags, setSessionTags] = React.useState<Array<string>>([]);
-  const [sessionDescription, setSessionDescription] =
-    React.useState<OutputData>();
   const [sessionType, setSessionType] = React.useState<string>('');
   const [sessoinStatus, setSessionStatus] = React.useState<string>('');
   const [sessionGated, setSessionGated] = React.useState<string>('');
@@ -140,10 +138,6 @@ const OverviewHeader = ({ event }: PropTypes) => {
       return;
     }
 
-    let strDesc: any = JSON.stringify(sessionDescription);
-
-    strDesc = strDesc.replaceAll('"', '\\"');
-
     const error =
       !eventId ||
       !sessionStartTime ||
@@ -164,7 +158,7 @@ const OverviewHeader = ({ event }: PropTypes) => {
 
     const { data } = await supabase.from('sessions').insert({
       title: sessionName,
-      description: strDesc,
+      description: '', // TODO:
       experience_level: sessionExperienceLevel,
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime?.format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),

@@ -6,7 +6,7 @@ const token = `${process.env.NEXT_PUBLIC_CONNECTOR_TOKEN_Prefix}.${process.env.N
 
 enum ErrorMessage {
   NO_IMAGE_DATA_OR_TYPE = 'No image data or type provided',
-  FILE_SIZE_TOO_LARGE = 'File size exceeds 2MB limit',
+  FILE_SIZE_TOO_LARGE = 'File size exceeds 10MB limit',
 }
 
 export async function GET() {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     : imageData;
   const buffer = Buffer.from(imageDataStr, 'base64');
 
-  if (buffer.byteLength > 2 * 1024 * 1024) {
+  if (buffer.byteLength > 10 * 1024 * 1024) {
     return Response.json(
       { error: ErrorMessage.FILE_SIZE_TOO_LARGE },
       { status: 400 },

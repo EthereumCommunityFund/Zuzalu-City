@@ -27,12 +27,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { PlusCircleIcon, PlusIcon, XMarkIcon } from 'components/icons';
 import { EventHeader, CurrentEvents, Invite } from './components';
 import { ZuButton, ZuInput } from 'components/core';
-import TextEditor from '@/components/editor/editor';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
-import { OutputData } from '@editorjs/editorjs';
 import {
   CreateEventRequest,
   Event,
@@ -59,7 +57,10 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useAccount } from 'wagmi';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-
+import { SuperEditor } from '@/components/editor/SuperEditor';
+import { useEditorStore } from '@/components/editor/useEditorStore';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(timezone);
 interface Inputs {
   name: string;
   symbol: string;
@@ -284,9 +285,9 @@ const Home = () => {
       external_url: 'TBD',
     });
 
-    const [description, setDescription] = useState<OutputData>();
+    const descriptionEditorStore = useEditorStore();
     const [avatar, setAvatar] = useState<SelectedFile>();
-    const avatarUploader = useUploaderPreview('');
+    const avatarUploader = useUploaderPreview();
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
     const socialLinksRef = useRef<HTMLDivElement>(null);
@@ -309,6 +310,9 @@ const Home = () => {
         name === 'max_participant' ||
         name === 'min_participant'
       ) {
+        if (!/^\d*$/.test(value)) {
+          return;
+        }
         setInputs((prevInputs) => ({
           ...prevInputs,
           [name]: Number(value),
@@ -353,25 +357,21 @@ const Home = () => {
           window.alert('Please input all necessary fields.');
         return;
       } else {
-        // const output = await editor.save();
-        let strDesc: any = JSON.stringify(description);
-
         if (
-          !description ||
-          !description.blocks ||
-          description.blocks.length == 0
+          !descriptionEditorStore.value ||
+          !descriptionEditorStore.value.blocks ||
+          descriptionEditorStore.value.blocks.length == 0
         ) {
           setError(true);
           return;
         }
-        strDesc = strDesc.replaceAll('"', '\\"');
 
         try {
           setLoading(true);
           setBlockClickModal(true);
           const eventCreationInput: CreateEventRequest = {
             name: inputs.name,
-            strDesc: strDesc,
+            strDesc: descriptionEditorStore.getValueString(),
             tagline: inputs.tagline,
             spaceId: spaceId,
             profileId: profileId,
@@ -389,6 +389,7 @@ const Home = () => {
             external_url: inputs.external_url,
             person: person,
             locations: locations,
+            timezone: dayjs.tz.guess(),
           };
           /*const update: any = await composeClient.executeQuery(
           const update: any = await composeClient.executeQuery(
@@ -495,7 +496,7 @@ const Home = () => {
         />
         <Dialog
           showModal={blockClickModal}
-          onClose={() => {}}
+          showActions={false}
           title="Creating Event"
           message="Please wait while the event is being created..."
         />
@@ -567,29 +568,15 @@ const Home = () => {
                     This is a description greeting for new members. You can also
                     update descriptions.
                   </FormLabelDesc>
-                  <TextEditor
-                    holder="event_description"
-                    value={description}
-                    setData={setDescription}
-                    sx={{
-                      backgroundColor: '#ffffff0d',
-                      fontFamily: 'Inter',
-                      color: 'white',
-                      padding: '12px',
-                      borderRadius: '10px',
-                      height: 'auto',
-                      minHeight: '270px',
+                  <SuperEditor
+                    value={descriptionEditorStore.value}
+                    onChange={(val) => {
+                      descriptionEditorStore.setValue(val);
                     }}
                   />
                   <Stack direction="row" justifyContent="flex-end">
                     <Typography variant="caption" color="white">
-                      {5000 -
-                        (description
-                          ? description.blocks
-                              .map((item) => item.data.text.length)
-                              .reduce((prev, current) => prev + current, 0)
-                          : 0)}{' '}
-                      Characters Left
+                      {5000 - descriptionEditorStore.length} Characters Left
                     </Typography>
                   </Stack>
                 </Stack>
@@ -641,7 +628,7 @@ const Home = () => {
                       borderRadius: '10px',
                     }}
                     src={avatarUploader.getUrl()}
-                    isError={avatarUploader.isError()}
+                    errorMessage={avatarUploader.errorMessage()}
                     isLoading={avatarUploader.isLoading()}
                   />
                 </Box>
@@ -720,6 +707,7 @@ const Home = () => {
               <Stack spacing="10px" padding="20px">
                 <FormLabel>Participant</FormLabel>
                 <ZuInput
+                  value={inputs.participant}
                   onChange={handleInputChange}
                   type="number"
                   name="participant"
@@ -729,6 +717,7 @@ const Home = () => {
               <Stack spacing="10px" padding="20px">
                 <FormLabel>Max Participant</FormLabel>
                 <ZuInput
+                  value={inputs.max_participant}
                   onChange={handleInputChange}
                   type="number"
                   name="max_participant"
@@ -738,6 +727,7 @@ const Home = () => {
               <Stack spacing="10px" padding="20px">
                 <FormLabel>Min Participant</FormLabel>
                 <ZuInput
+                  value={inputs.min_participant}
                   onChange={handleInputChange}
                   type="number"
                   name="min_participant"
@@ -1084,6 +1074,17 @@ const Home = () => {
           open={state['right']}
           onClose={() => toggleDrawer('right', false)}
           onOpen={() => toggleDrawer('right', true)}
+          sx={{
+            position: 'relative',
+            zIndex: 3,
+            '& .MuiDrawer-paper': {
+              marginTop: '50px',
+              height: 'calc(100% - 50px)',
+              boxShadow: 'none',
+              backgroundColor: 'transparent',
+              paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
+            },
+          }}
         >
           {List('right')}
         </SwipeableDrawer>
