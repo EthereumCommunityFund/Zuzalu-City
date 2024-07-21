@@ -28,7 +28,6 @@ import {
   MinusIcon,
 } from '@/components/icons';
 import BpCheckbox from '@/components/event/Checkbox';
-import TextEditor from '@/components/editor/editor';
 import { MOCK_DATA } from '@/mock';
 import { ZuButton, ZuInput } from '@/components/core';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
