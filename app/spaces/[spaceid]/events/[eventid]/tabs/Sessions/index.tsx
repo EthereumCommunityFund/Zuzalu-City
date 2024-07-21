@@ -183,7 +183,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
-
+  const [locationAvatar, setLocationAvatar] = useState<string>('');
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
@@ -268,68 +268,59 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     if (sessionDate == null) return true;
-    const sessionDateDay = sessionDate.format('YYYY-MM-DD');
-    const today = dayjs().format('YYYY-MM-DD');
-    if (today >= sessionDateDay) {
-      return false;
-    } else {
-      const formattedTime = date.format('HH:mm');
-      const isWithinBookedSession = bookedSessionsForDay.some((session) => {
-        const sessionStartTime = dayjs(session.startTime)
-          .tz('UTC')
-          .tz(eventData?.timezone)
-          .format('HH:mm');
-        const sessionEndTime = dayjs(session.endTime)
-          .tz('UTC')
-          .tz(eventData?.timezone)
-          .format('HH:mm');
-        return (
-          (formattedTime >= sessionStartTime &&
-            formattedTime < sessionEndTime) ||
-          (formattedTime <= sessionStartTime &&
-            formattedTime >= sessionEndTime) ||
-          (isStart
-            ? formattedTime >= sessionStartTime &&
-              formattedTime < sessionEndTime
-            : formattedTime > sessionStartTime &&
-              formattedTime <= sessionEndTime)
-        );
-      });
+    const formattedTime = date.format('HH:mm');
+    const isWithinBookedSession = bookedSessionsForDay.some((session) => {
+      const sessionStartTime = dayjs(session.startTime)
+        .tz('UTC')
+        .tz(eventData?.timezone)
+        .format('HH:mm');
+      const sessionEndTime = dayjs(session.endTime)
+        .tz('UTC')
+        .tz(eventData?.timezone)
+        .format('HH:mm');
+      return (
+        (formattedTime >= sessionStartTime && formattedTime < sessionEndTime) ||
+        (formattedTime <= sessionStartTime &&
+          formattedTime >= sessionEndTime) ||
+        (isStart
+          ? formattedTime >= sessionStartTime && formattedTime < sessionEndTime
+          : formattedTime > sessionStartTime && formattedTime <= sessionEndTime)
+      );
+    });
 
-      const isMinuteIntervalValid = date.minute() % 30 === 0;
-      const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
-        let startTime;
-        let endTime;
-        if (isStart) {
-          const startTime = dayjs
-            .tz(slot.startTime, 'HH:mm', 'UTC')
-            .tz(eventData?.timezone)
-            .format('HH:mm');
-          const endTime = dayjs
-            .tz(slot.endTime, 'HH:mm', 'UTC')
-            .tz(eventData?.timezone)
-            .format('HH:mm');
-          if (endTime >= startTime) {
-            return formattedTime >= startTime && formattedTime < endTime;
-          } else {
-            return !(formattedTime < startTime && formattedTime >= endTime);
-          }
+    const isMinuteIntervalValid = date.minute() % 30 === 0;
+    const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
+      let startTime;
+      let endTime;
+      if (isStart) {
+        const startTime = dayjs
+          .tz(slot.startTime, 'HH:mm', 'UTC')
+          .tz(eventData?.timezone)
+          .format('HH:mm');
+        const endTime = dayjs
+          .tz(slot.endTime, 'HH:mm', 'UTC')
+          .tz(eventData?.timezone)
+          .format('HH:mm');
+        if (endTime >= startTime) {
+          return formattedTime >= startTime && formattedTime < endTime;
         } else {
-          startTime = sessionStartTime.tz(eventData?.timezone).format('HH:mm');
-          endTime = dayjs
-            .tz(slot.endTime, 'HH:mm', 'UTC')
-            .tz(eventData?.timezone)
-            .format('HH:mm');
-          if (endTime >= startTime) {
-            return formattedTime >= startTime && formattedTime <= endTime;
-          } else {
-            return !(formattedTime < startTime && formattedTime > endTime);
-          }
+          return !(formattedTime < startTime && formattedTime >= endTime);
         }
-      });
+      } else {
+        startTime = sessionStartTime.tz(eventData?.timezone).format('HH:mm');
+        endTime = dayjs
+          .tz(slot.endTime, 'HH:mm', 'UTC')
+          .tz(eventData?.timezone)
+          .format('HH:mm');
+        if (endTime >= startTime) {
+          return formattedTime >= startTime && formattedTime <= endTime;
+        } else {
+          return !(formattedTime < startTime && formattedTime > endTime);
+        }
+      }
+    });
 
-      return isWithinAvailableSlot && !isWithinBookedSession;
-    }
+    return isWithinAvailableSlot && !isWithinBookedSession;
   };
 
   const getPeople = async () => {
@@ -1543,6 +1534,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           setIsRsvped={setIsRsvped}
                           userDID={adminId}
                           setShowDeleteButton={setShowDeleteButton}
+                          setLocationAvatar={setLocationAvatar}
                         />
                       ))}
                     </Stack>
@@ -2050,7 +2042,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       borderRadius="10px"
                       width="80px"
                       height="80px"
-                      src="/26.png"
+                      src={locationAvatar || '/26.png'}
                     />
                     <Stack alignItems="center">
                       <Typography variant="bodyM">
