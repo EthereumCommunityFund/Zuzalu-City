@@ -59,7 +59,8 @@ import { useAccount } from 'wagmi';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
-
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(timezone);
 interface Inputs {
   name: string;
   symbol: string;
