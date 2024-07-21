@@ -37,7 +37,6 @@ import {
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
-import TextEditor from '@/components/editor/editor';
 import { EditorPreview } from '@/components/editor/EditorPreview';
 // import { SubSidebar } from '@/components/layout';
 

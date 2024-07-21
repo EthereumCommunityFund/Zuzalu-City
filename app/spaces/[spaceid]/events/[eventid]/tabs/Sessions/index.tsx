@@ -34,7 +34,6 @@ import utc from 'dayjs/plugin/utc';
 import isBetween from 'dayjs/plugin/isBetween';
 import timezone from 'dayjs/plugin/timezone';
 import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
-import { OutputData } from '@editorjs/editorjs';
 import {
   PlusCircleIcon,
   LockIcon,

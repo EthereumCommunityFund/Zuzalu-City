@@ -109,6 +109,9 @@ export const SuperEditor: React.FC<{
     };
   }, []);
 
+  // TODO: re-render editor when data changed
+  // there is no use case now
+
   return (
     <Wrapper ref={wrapperRef} minHeight={minHeight}>
       <Global styles={globalStyles} />

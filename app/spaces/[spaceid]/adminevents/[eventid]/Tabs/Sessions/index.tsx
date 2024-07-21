@@ -30,7 +30,6 @@ import {
   PlusIcon,
   MinusIcon,
 } from 'components/icons';
-import TextEditor from 'components/editor/editor';
 import BpCheckbox from '@/components/event/Checkbox';
 import { useCeramicContext } from '@/context/CeramicContext';
 import {
@@ -45,7 +44,6 @@ import {
   Venue,
   SessionSupabaseData,
 } from '@/types';
-import { OutputData } from '@editorjs/editorjs';
 import { EXPREIENCE_LEVEL_TYPES, SPACE_CATEGORIES } from '@/constant';
 import { supabase } from '@/utils/supabase/client';
 import {

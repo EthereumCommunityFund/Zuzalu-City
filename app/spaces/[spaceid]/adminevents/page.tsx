@@ -31,7 +31,6 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
-import { OutputData } from '@editorjs/editorjs';
 import {
   CreateEventRequest,
   Event,

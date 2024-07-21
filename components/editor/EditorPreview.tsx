@@ -10,7 +10,7 @@ import React, {
 import EditorJS, { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Global, css } from '@emotion/react';
-import { ParseStringToOutputData } from '@/components/editor/useEditorStore';
+import { decodeOutputData } from '@/components/editor/useEditorStore';
 
 export const EditorPreview: React.FC<{
   value?: OutputData | string;
@@ -34,9 +34,7 @@ export const EditorPreview: React.FC<{
   } = props;
 
   const data =
-    typeof value === 'string'
-      ? ParseStringToOutputData(value as string)
-      : value;
+    typeof value === 'string' ? decodeOutputData(value as string) : value;
 
   const [collapsed, setCollapsed] = useState(props.collapsed);
 
@@ -97,6 +95,9 @@ export const EditorPreview: React.FC<{
     };
   }, []);
 
+  // TODO: re-render editor when data changed
+  // there is no use case now
+
   return (
     <Wrapper
       ref={wrapperRef}
@@ -131,7 +132,7 @@ const Wrapper = styled('div')<{
   overflow: hidden;
   ${(props) =>
     props.scrollHeight
-      ? `
+      ? `    
     max-height: ${props.scrollHeight}px;
     overflow-y: auto;
   `

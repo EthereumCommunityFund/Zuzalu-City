@@ -76,12 +76,6 @@ const Create = () => {
       return;
     }
 
-    // FIXME: why we need to replace all double quotes with escaped double quotes?
-    let strDesc: any = JSON.stringify(descriptionEditorStore.value).replaceAll(
-      '"',
-      '\\"',
-    );
-
     let socialLinks = {};
     let customLinks = [];
     if (
@@ -170,7 +164,7 @@ const Create = () => {
               customLinks,
               ...socialLinks,
               name: name,
-              description: strDesc,
+              description: descriptionEditorStore.getValueString(),
               tagline: tagline,
               superAdmin: adminId,
               profileId: profileId,
