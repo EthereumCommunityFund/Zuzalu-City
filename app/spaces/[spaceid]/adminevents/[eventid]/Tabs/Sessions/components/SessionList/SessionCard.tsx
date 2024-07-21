@@ -3,19 +3,52 @@ import dayjs from 'dayjs';
 import { Stack, Typography, Box } from '@mui/material';
 import { EditIcon, MapIcon, SessionIcon } from 'components/icons';
 import { Session } from '@/types';
+import { supabase } from '@/utils/supabase/client';
 
 interface SessionCardProps {
   session: Session;
   setSelectedSession?: React.Dispatch<React.SetStateAction<Session>> | any;
+  userDID: string;
+  setIsRsvped: React.Dispatch<React.SetStateAction<boolean>> | any;
+  setShowDeleteButton: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({
   session,
   setSelectedSession,
+  userDID,
+  setIsRsvped,
+  setShowDeleteButton,
 }) => {
+  const handleClick = async () => {
+    const { data: rsvpData, error: rsvpError } = await supabase
+      .from('rsvp')
+      .select('*')
+      .eq('userDID', userDID)
+      .eq('sessionID', session.id);
+    if (rsvpError) {
+      console.error('Error fetching data:', rsvpError);
+    }
+    if ((rsvpData?.length as number) > 0) {
+      setIsRsvped(true);
+    }
+    const { data: deleteData, error: deleteError } = await supabase
+      .from('sessions')
+      .select('*')
+      .eq('creatorDID', userDID)
+      .eq('id', session.id);
+    if (deleteError) {
+      console.error('Error fetching data:', deleteError);
+    }
+    if ((deleteData?.length as number) > 0) {
+      setShowDeleteButton(true);
+    }
+    setSelectedSession(session);
+  };
+
   return (
     <Stack
-      onClick={() => setSelectedSession(session)}
+      onClick={() => handleClick()}
       direction="row"
       padding="10px 10px 20px 10px"
       borderRadius={'10px'}
@@ -42,14 +75,16 @@ const SessionCard: React.FC<SessionCardProps> = ({
           </Typography>
         </Stack>
         <Typography variant="bodyB">
-          {dayjs(session.startTime).utc().format('h:mm A')} -{' '}
-          {dayjs(session.endTime).utc().format('h:mm A')}
+          {dayjs(session.startTime).tz(session.timezone).format('h:mm A')} -{' '}
+          {dayjs(session.endTime).tz(session.timezone).format('h:mm A')}
         </Typography>
         <Typography variant="subtitleSB">{session.title}</Typography>
         <Stack direction={'row'} spacing={1} alignItems="center">
-          <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
-            Speakers:
-          </Typography>
+          {session.speakers && session.speakers.length > 0 && (
+            <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+              Speakers:
+            </Typography>
+          )}
           {session.speakers
             ? JSON.parse(session.speakers).map(
                 (speaker: any, index: number) => (
@@ -64,7 +99,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
                       height={20}
                       width={20}
                       borderRadius={10}
-                      src={speaker.avatar || '/16.jpg'}
+                      src={speaker.avatar || '/user/avatar_p.png'}
                     />
                     <Typography variant="bodyS">{speaker.username}</Typography>
                   </Stack>
@@ -90,7 +125,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
         height="fit-content"
       >
         <SessionIcon />
-        <Typography variant="bodyS">1</Typography>
+        <Typography variant="bodyS">{session.rsvpNb || 0}</Typography>
       </Stack>
     </Stack>
   );

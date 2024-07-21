@@ -73,7 +73,10 @@ export const CeramicProvider = ({ children }: any) => {
             mvpProfile {
               id
               username
-              
+              avatar
+              author {
+                id
+              }
             }
           }
         }

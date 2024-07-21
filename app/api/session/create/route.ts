@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     location,
     organizers,
     speakers,
-    userDID,
+    creatorDID,
   }: SessionSupabaseData = await req.json();
 
   try {
@@ -75,9 +75,9 @@ export async function POST(req: NextRequest) {
           superAdmin.id.toLowerCase(),
         ) || [];
       if (
-        !superAdmins.includes(userDID.toLowerCase()) &&
-        !admins.includes(userDID.toLowerCase()) &&
-        !members.includes(userDID.toLowerCase())
+        !superAdmins.includes(creatorDID.toLowerCase()) &&
+        !admins.includes(creatorDID.toLowerCase()) &&
+        !members.includes(creatorDID.toLowerCase())
       ) {
         return NextResponse.json(
           { error: 'Profile ID is neither an admin nor a member' },
@@ -106,6 +106,7 @@ export async function POST(req: NextRequest) {
       location,
       organizers,
       speakers,
+      creatorDID,
     });
 
     if (error) {

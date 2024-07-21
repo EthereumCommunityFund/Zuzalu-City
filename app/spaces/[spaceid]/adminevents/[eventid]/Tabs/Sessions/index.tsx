@@ -444,7 +444,7 @@ const Sessions = () => {
       location: sessionLocation,
       organizers: JSON.stringify(sessionOrganizers),
       speakers: JSON.stringify(sessionSpeakers),
-      userDID: adminId,
+      creatorDID: adminId,
     };
 
     try {
@@ -792,13 +792,13 @@ const Sessions = () => {
                               <FormLabel>{sessionLocation}</FormLabel>
                               {/*} <FormLabelDesc>
                                 Sessions booked: {bookedSessions.length}
-                              </FormLabelDesc>
+                              </FormLabelDesc>*/}
                               <Typography
                                 variant="caption"
                                 color="text.secondary"
                               >
                                 Capacity: {selectedRoom?.capacity}
-                              </Typography>*/}
+                              </Typography>
                             </Stack>
                           </Stack>
                         </Stack>

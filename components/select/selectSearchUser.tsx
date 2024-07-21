@@ -11,17 +11,23 @@ import Checkbox from '@mui/material/Checkbox';
 interface IProps {
   users: Profile[];
   onChange: (value: Profile[]) => void;
+  initialUsers?: Profile[];
 }
 
-export default function SelectSearchUser({ onChange, users }: IProps) {
-  const [value, setValue] = React.useState<Profile[]>([]);
+export default function SelectSearchUser({
+  onChange,
+  users,
+  initialUsers = [],
+}: IProps) {
+  const [value, setValue] = React.useState<Profile[]>(initialUsers || []);
 
   const handleChange = useCallback(
-    (value: Profile[]) => {
-      setValue(value);
-      onChange(value);
+    (newValue: Profile[]) => {
+      const updatedValue = Array.from(new Set([...initialUsers, ...newValue]));
+      setValue(updatedValue);
+      onChange(updatedValue);
     },
-    [onChange],
+    [onChange, initialUsers],
   );
 
   return (
@@ -101,17 +107,13 @@ export default function SelectSearchUser({ onChange, users }: IProps) {
           );
         }}
       />
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        gap={'10px'}
-        flexWrap={'wrap'}
-      >
+      <Box display="flex" flexDirection="row" gap="10px" flexWrap="wrap">
         {value.map((i, index) => {
+          const isInitialUser = initialUsers.some((user) => user.id === i.id);
           return (
             <Chip
               label={
-                <Stack direction={'row'} alignItems="center" spacing="10px">
+                <Stack direction="row" alignItems="center" spacing="10px">
                   <Image
                     src={i.avatar || '/user/avatar_icon.png'}
                     width={26}
@@ -128,10 +130,15 @@ export default function SelectSearchUser({ onChange, users }: IProps) {
                 padding: '6px 0',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
               }}
-              onDelete={() => {
-                const newArray = value.filter((item) => item.id !== i.id);
-                setValue(newArray);
-              }}
+              onDelete={
+                isInitialUser
+                  ? undefined
+                  : () => {
+                      const newArray = value.filter((item) => item.id !== i.id);
+                      setValue(newArray);
+                      onChange(newArray);
+                    }
+              }
               key={`Selected_Speaker${index}`}
             />
           );
