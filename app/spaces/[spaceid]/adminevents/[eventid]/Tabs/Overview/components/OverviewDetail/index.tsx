@@ -15,7 +15,7 @@ import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
 import Link from 'next/link';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import TextEditor from '@/components/editor/editor';
+import { EditorPreview } from '@/components/editor/EditorPreview';
 
 interface PropTypes {
   eventData?: Event;
@@ -191,21 +191,10 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
         <Typography variant="subtitleLB" color="white">
           {eventData.title}
         </Typography>
-        <TextEditor
-          holder="event-detail-editor"
-          readonly={true}
-          fullWidth
-          value={JSON.parse(eventData.description.replaceAll('\\"', '"'))}
-          sx={{
-            fontFamily: 'Inter',
-            color: 'white',
-            fontSize: '14px',
-            borderRadius: '10px',
-            height: 'auto',
-            overflow: 'auto',
-            padding: '0px',
-            opacity: 0.8,
-          }}
+        <EditorPreview
+          value={eventData.description}
+          collapsable={false}
+          scrollHeight={300}
         />
         {eventData.timezone && (
           <Stack direction="row" alignItems="center" spacing={1}>
