@@ -10,22 +10,21 @@ import {
   TextField,
 } from '@mui/material';
 import * as yup from 'yup';
-import TextEditor from '@/components/editor/editor';
 import { ZuInput } from '@/components/core';
 import { Header } from './components';
 import { XMarkIcon, SpacePlusIcon } from '@/components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
-import { OutputData } from '@editorjs/editorjs';
 import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useRouter } from 'next/navigation';
-import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SelectCategories from '@/components/select/selectCategories';
 import { Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
+import { SuperEditor } from '@/components/editor/SuperEditor';
+import { useEditorStore } from '@/components/editor/useEditorStore';
 
 const validationSchema = yup.object({
   name: yup
@@ -48,9 +47,9 @@ const Create = () => {
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState<string>('');
   const [tagline, setTagline] = useState<string>('');
-  const avatarUploader = useUploaderPreview('');
-  const bannerUploader = useUploaderPreview('');
-  const [description, setDescription] = useState<OutputData>();
+  const avatarUploader = useUploaderPreview();
+  const bannerUploader = useUploaderPreview();
+  const descriptionEditorStore = useEditorStore();
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [socialLinks, setSocialLinks] = useState<number[]>([0]);
@@ -66,13 +65,16 @@ const Create = () => {
   const customLinksRef = useRef<HTMLDivElement>(null);
 
   const createSpace = async () => {
-    let strDesc: any = JSON.stringify(description);
+    const descriptionOutputData = descriptionEditorStore.value;
 
-    if (!description || !description.blocks || description.blocks.length == 0) {
+    if (
+      !descriptionOutputData ||
+      !descriptionOutputData.blocks ||
+      descriptionOutputData.blocks.length == 0
+    ) {
       setError('Description is required.');
       return;
     }
-    strDesc = strDesc.replaceAll('"', '\\"');
 
     let socialLinks = {};
     let customLinks = [];
@@ -162,7 +164,7 @@ const Create = () => {
               customLinks,
               ...socialLinks,
               name: name,
-              description: strDesc,
+              description: descriptionEditorStore.getValueString(),
               tagline: tagline,
               superAdmin: adminId,
               profileId: profileId,
@@ -280,33 +282,18 @@ const Create = () => {
                 <Typography variant="subtitle2" color="white">
                   Space Description*
                 </Typography>
-                <Typography color="text.secondary" variant="body2">
-                  This is a description greeting for new members. You can also
-                  update descriptions.
-                </Typography>
-                <TextEditor
-                  holder="space_description"
-                  value={description}
-                  setData={setDescription}
-                  sx={{
-                    backgroundColor: '#ffffff0d',
-                    fontFamily: 'Inter',
-                    height: 'auto',
-                    minHeight: '270px',
-                    color: 'white',
-                    padding: '12px 12px 12px 40px',
-                    borderRadius: '10px',
+                <SuperEditor
+                  placeholder={
+                    'This is a description greeting for new members. You can also update descriptions.'
+                  }
+                  value={descriptionEditorStore.value}
+                  onChange={(val) => {
+                    descriptionEditorStore.setValue(val);
                   }}
                 />
                 <Stack direction="row" justifyContent="flex-end">
                   <Typography variant="caption" color="white">
-                    {5000 -
-                      (description
-                        ? description.blocks
-                            .map((item) => item.data.text.length)
-                            .reduce((prev, current) => prev + current, 0)
-                        : 0)}{' '}
-                    Characters Left
+                    {5000 - descriptionEditorStore.length} Characters Left
                   </Typography>
                 </Stack>
               </Stack>
@@ -379,7 +366,7 @@ const Create = () => {
                     borderRadius: '60%',
                   }}
                   src={avatarUploader.getUrl()}
-                  isError={avatarUploader.isError()}
+                  errorMessage={avatarUploader.errorMessage()}
                   isLoading={avatarUploader.isLoading()}
                 />
               </Box>
@@ -428,7 +415,7 @@ const Create = () => {
                 <PreviewFile
                   sx={{ width: '100%', height: '200px', borderRadius: '10px' }}
                   src={bannerUploader.getUrl()}
-                  isError={bannerUploader.isError()}
+                  errorMessage={bannerUploader.errorMessage()}
                   isLoading={bannerUploader.isLoading()}
                 />
               </Box>

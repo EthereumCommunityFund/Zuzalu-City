@@ -3,7 +3,6 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Typography, Button, Box, Stack, Skeleton } from '@mui/material';
 import { CheckCircleIcon, PlusCircleIcon, UsersIcon } from '../icons';
-import TextEditor from '../editor/editor';
 import { SPACE_CATEGORIES } from '@/constant';
 
 export type SpaceCardProps = {

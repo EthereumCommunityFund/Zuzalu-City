@@ -1,11 +1,13 @@
-import { AddMemberRequest } from '@/types';
 import axiosInstance from '@/utils/axiosInstance';
 import axios from 'axios';
-export const updateMember = async (addMemberInput: AddMemberRequest) => {
+export const tempUpdateTrack = async (addTrackInput: {
+  eventId: string;
+  newTrack: string;
+}) => {
   try {
     const response = await axiosInstance.post(
-      '/api/event/updateMember',
-      addMemberInput,
+      '/api/event/tempUpdateInfo',
+      addTrackInput,
     );
     return response;
   } catch (error) {

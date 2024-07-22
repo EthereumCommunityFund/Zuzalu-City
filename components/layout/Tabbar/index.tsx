@@ -39,7 +39,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
       >
         Overview
       </Typography>
-      <Typography
+      {/*<Typography
         onClick={() => setTabName('Event Sessions')}
         color="white"
         fontFamily="Inter"
@@ -52,7 +52,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
         sx={{ cursor: 'pointer' }}
       >
         Event Sessions
-      </Typography>
+      </Typography>*/}
       <Typography
         onClick={() => setTabName('Venue')}
         color="white"

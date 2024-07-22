@@ -38,8 +38,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { shortenAddress } from '@/utils/format';
 import { SCROLL_EXPLORER } from '@/constant';
-import { OutputData } from '@editorjs/editorjs';
-import TextEditor from '@/components/editor/editor';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
@@ -783,7 +781,7 @@ export const CreateTicket = ({
               <PreviewFile
                 sx={{ width: '200px', height: '200px' }}
                 src={avatarUploader.getUrl()}
-                isError={avatarUploader.isError()}
+                errorMessage={avatarUploader.errorMessage()}
                 isLoading={avatarUploader.isLoading()}
               />
             </Box>

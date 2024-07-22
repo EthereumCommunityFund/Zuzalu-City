@@ -28,7 +28,6 @@ import {
   MinusIcon,
 } from '@/components/icons';
 import BpCheckbox from '@/components/event/Checkbox';
-import TextEditor from '@/components/editor/editor';
 import { MOCK_DATA } from '@/mock';
 import { ZuButton, ZuInput } from '@/components/core';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
@@ -53,7 +52,7 @@ const Venue: React.FC = () => {
   };
 
   const List = (anchor: Anchor) => {
-    const avatarUploader = useUploaderPreview('');
+    const avatarUploader = useUploaderPreview();
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -223,7 +222,7 @@ const Venue: React.FC = () => {
                       borderRadius: '10px',
                     }}
                     src={avatarUploader.getUrl()}
-                    isError={avatarUploader.isError()}
+                    errorMessage={avatarUploader.errorMessage()}
                     isLoading={avatarUploader.isLoading()}
                   />
                 </Box>

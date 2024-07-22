@@ -114,7 +114,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
     );
   };
 
-  const avatarUploader = useUploaderPreview('');
+  const avatarUploader = useUploaderPreview();
   const [searchValue, setSearchValue] = useState<string>('');
 
   const getVenues = async () => {
@@ -218,6 +218,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
           avatar: avatarUploader.getUrl(),
           bookings: JSON.stringify(bookings),
           capacity,
+          timezone: event?.timezone,
         });
         toggleDrawer('right', false);
         await getVenues();
@@ -398,7 +399,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                     }}
                     src={avatarUploader.getUrl()}
                     isLoading={avatarUploader.isLoading()}
-                    isError={avatarUploader.isError()}
+                    errorMessage={avatarUploader.errorMessage()}
                   />
                 </Box>
               </Stack>

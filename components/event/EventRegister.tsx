@@ -81,7 +81,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
           console.log(result);
           hasProcessedNullifier.current = true;
           setNullifierHash('');
-          if (result.message === 'Successfully added into member list') {
+          if (result.status === 200) {
             setModalTitle('Successfully updated!');
             setModalText(
               'You are now a member of this event! Please check out the sessions',

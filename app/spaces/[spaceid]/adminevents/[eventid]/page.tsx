@@ -80,8 +80,8 @@ const Home: React.FC = () => {
         return <Overview event={event} />;
       case 'Tickets':
         return <Ticket event={event} />;
-      case 'Event Sessions':
-        return <Sessions />;
+      /*case 'Event Sessions':
+        return <Sessions />;*/
       case 'Venue':
         return <Venue event={event} />;
       default:
