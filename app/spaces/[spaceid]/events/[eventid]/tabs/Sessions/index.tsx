@@ -645,6 +645,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       setBlockClickModal(true);
       const response = await supaCreateSession(formattedData);
       if (response.status === 200) {
+        await fetchAndFilterSessions();
         setShowModal(true);
       }
     } catch (err) {
@@ -697,14 +698,14 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
           message="Please view it."
           showModal={showModal}
           onClose={() => {
-            fetchAndFilterSessions();
             toggleDrawer('right', false);
             setShowModal(false);
+            fetchAndFilterSessions();
           }}
           onConfirm={() => {
-            fetchAndFilterSessions();
             toggleDrawer('right', false);
             setShowModal(false);
+            fetchAndFilterSessions();
           }}
         />
         <Dialog
