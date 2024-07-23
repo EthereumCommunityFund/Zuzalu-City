@@ -1746,7 +1746,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <QueueListIcon size={5} />
                     <ZuButton
                       onClick={() => {
-                        fetchAndFilterSessions();
                         setSelectedDate(null);
                       }}
                       variant="text"
