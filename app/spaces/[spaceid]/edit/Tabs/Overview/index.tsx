@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Box,
@@ -16,6 +16,7 @@ import { Space } from '@/types';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
+import SaveAsRoundedIcon from '@mui/icons-material/SaveAsRounded';
 
 const Overview = () => {
   const theme = useTheme();
@@ -30,7 +31,7 @@ const Overview = () => {
 
   const descriptionEditorStore = useEditorStore();
 
-  const getSpace = async () => {
+  const getSpace = useCallback(async () => {
     try {
       const response: any = await composeClient.executeQuery(
         `
@@ -69,13 +70,72 @@ const Overview = () => {
     } catch (error) {
       console.error('Failed to fetch spaces:', error);
     }
-  };
+  }, []);
+
+  const updateSpace = useCallback(
+    async (data: {
+      id: string;
+      name: string;
+      tagline: string;
+      avatar: string;
+      banner: string;
+      description: string;
+    }) => {
+      const { id, name, tagline, avatar, banner, description } = data;
+      try {
+        const query = `
+          mutation UpdateSpace($i: UpdateSpaceInput!) {
+            updateSpace(input: $i) {
+              document {
+                id
+              },
+            }
+          }
+        `;
+        const variables = {
+          i: {
+            id,
+            content: {
+              name,
+              tagline,
+              avatar,
+              banner,
+              description,
+            },
+          },
+        };
+        await composeClient.executeQuery(query, variables);
+      } catch (error) {
+        console.error('Failed to update space:', error);
+      }
+    },
+    [space],
+  );
 
   useEffect(() => {
     getSpace().catch((error) => {
       console.error('An error occurred:', error);
     });
   }, []);
+
+  const save = () => {
+    const data = {
+      id: space!.id,
+      name,
+      tagline,
+      avatar: avatarUploader.getUrl() as string,
+      banner: bannerUploader.getUrl() as string,
+      description: descriptionEditorStore.getValueString(),
+    };
+    console.log('data', data);
+    updateSpace(data)
+      .then((res) => {
+        console.info('Space updated:', res);
+      })
+      .catch((error) => {
+        console.error('An error occurred:', error);
+      });
+  };
 
   return (
     <Stack
@@ -298,6 +358,26 @@ const Overview = () => {
           isLoading={bannerUploader.isLoading()}
         />
       </Box>
+      <Button
+        sx={{
+          color: '#67DBFF',
+          borderRadius: '10px',
+          backgroundColor: 'rgba(103, 219, 255, 0.10)',
+          fontSize: '14px',
+          padding: '6px 16px',
+          flex: 1,
+          border: '1px solid rgba(103, 219, 255, 0.20)',
+          opacity: '1',
+          '&:disabled': {
+            opacity: '0.6',
+            color: '#67DBFF',
+          },
+        }}
+        startIcon={<SaveAsRoundedIcon />}
+        onClick={save}
+      >
+        Save
+      </Button>
     </Stack>
   );
 };

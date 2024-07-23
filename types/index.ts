@@ -161,6 +161,7 @@ export interface Session {
   speakers: string;
   organizers: string;
   rsvpNb?: number;
+  creatorDID?: string;
 }
 export type SessionSupabaseData = {
   title: string;

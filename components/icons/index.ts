@@ -78,7 +78,7 @@ import { QueueListIcon } from './QueueList';
 import { ChevronDoubleRightIcon } from './ChevronDoubleRight';
 import { MicrophoneIcon } from './Microphone';
 import { TagIcon } from './Tag';
-
+import { UserCircleIcon } from './UserCircle';
 export {
   HomeIcon,
   SearchIcon,
@@ -160,4 +160,5 @@ export {
   ChevronDoubleRightIcon,
   MicrophoneIcon,
   TagIcon,
+  UserCircleIcon,
 };

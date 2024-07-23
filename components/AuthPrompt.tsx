@@ -8,9 +8,9 @@ import React, {
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useAccount, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-
 import { Box, Button, OutlinedInput } from '@mui/material';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import { useDisconnect } from 'wagmi';
 
 const AuthPrompt: React.FC<{}> = () => {
   const { isConnected, address } = useAccount();
@@ -25,7 +25,7 @@ const AuthPrompt: React.FC<{}> = () => {
     username,
     createProfile,
   } = useCeramicContext();
-
+  const { disconnect } = useDisconnect();
   const [authState, setAuthState] = useState('');
   const authenticateCalled = useRef(false);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,6 +130,9 @@ const AuthPrompt: React.FC<{}> = () => {
       if (existingUsername && isAuthPromptVisible) {
         await authenticate();
         setAuthState('Logged_In');
+      } else if (!existingUsername && isAuthPromptVisible && isConnected) {
+        disconnect();
+        setAuthState('CONNECT_WALLET');
       }
     };
     authenticateLoggedUser();

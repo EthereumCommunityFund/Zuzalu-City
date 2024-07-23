@@ -23,9 +23,8 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { DesktopTimePicker } from '@mui/x-date-pickers';
 import { TimeView } from '@mui/x-date-pickers/models';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -87,7 +86,7 @@ import {
   FormTitle,
 } from '@/components/typography/formTypography';
 import { EditorPreview } from '@/components/editor/EditorPreview';
-
+import SlotDates from '@/components/calendar/SlotDate';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -106,6 +105,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const params = useParams();
   const eventId = params.eventid.toString();
   const profileId = profile?.id || '';
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [directions, setDirections] = useState<string>('');
   const [customLocation, setCustomLocation] = useState<string>('');
   const [isDirections, setIsDirections] = useState<boolean>(false);
@@ -123,18 +123,13 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [isContentLarge, setIsContentLarge] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isRsvped, setIsRsvped] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
-    dayjs(
-      new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }),
-    ),
+  const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
+    dayjs(new Date()),
   );
-
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
+  const [sessionsForCalendar, setSessionsForCalendar] = useState<Session[]>([]);
 
   const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
     [],
@@ -181,14 +176,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
   const [locationAvatar, setLocationAvatar] = useState<string>('');
+  const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
   const groupSessionByDate = (
-    sessions: Session[],
+    sessions: Session[] | undefined,
   ): Record<string, Session[]> => {
-    return sessions.reduce(
+    if (!sessions || sessions.length === 0) {
+      return {};
+    }
+    const groupedSessions = sessions.reduce(
       (acc, session) => {
         const formattedDate = dayjs(session.startTime)
           .tz(session.timezone)
@@ -201,8 +203,54 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       },
       {} as Record<string, Session[]>,
     );
+
+    Object.keys(groupedSessions).forEach((date) => {
+      groupedSessions[date].sort((a, b) =>
+        dayjs(a.startTime).isBefore(dayjs(b.startTime)) ? -1 : 1,
+      );
+    });
+
+    return groupedSessions;
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+  const getSessionsByDate = async (targetDate: string) => {
+    const sessions = await getSession();
+    if (sessions) {
+      return sessions.filter(
+        (session) =>
+          dayjs(session.startTime)
+            .tz(session.timezone)
+            .format('MMMM D, YYYY') === targetDate,
+      );
+    }
+  };
+  const getSessionsByMonth = async (dateForCalendar: dayjs.Dayjs) => {
+    if (sessions) {
+      const sessionsbymonth = sessions.filter((session) => {
+        const sessionDate = dayjs(session.startTime).tz(session.timezone);
+        return (
+          sessionDate.month() === dateForCalendar.month() &&
+          sessionDate.year() === dateForCalendar.year()
+        );
+      });
+      return sessionsbymonth;
+    }
+    return [];
+  };
+  const getRSVPSessions = async () => {
+    const { data, error } = await supabase
+      .from('rsvp')
+      .select('sessionID')
+      .eq('userDID', adminId);
+    if (error) {
+      console.error('Failed to fetch RSVP sessions:', error);
+      return [];
+    }
+    return data.map((rsvp: { sessionID: string }) => rsvp.sessionID);
+  };
   const getSession = async () => {
     try {
       const { data } = await supabase
@@ -211,13 +259,73 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         .eq('eventId', eventId);
       if (data) {
         setSessions(data);
-        const sessionsbydate = groupSessionByDate(data);
-        setSessionsByDate(sessionsbydate);
+        return data as Session[];
       }
     } catch (err) {
       console.log(err);
     }
   };
+
+  const fetchAndFilterSessions = async () => {
+    setLoading(true);
+    try {
+      let filteredSessions = await getSession();
+      if (filteredSessions) {
+        if (dateForCalendar) {
+          filteredSessions = await getSessionsByMonth(dateForCalendar);
+        }
+        if (selectedDate) {
+          filteredSessions = await getSessionsByDate(
+            dayjs(selectedDate).tz(eventData?.timezone).format('MMMM D, YYYY'),
+          );
+        }
+        if (isManagedFiltered) {
+          filteredSessions = filteredSessions?.filter(
+            (session) => session.creatorDID === adminId,
+          );
+        }
+        if (isRSVPFiltered) {
+          const rsvpSessionIDs = await getRSVPSessions();
+          filteredSessions = filteredSessions?.filter((session) =>
+            rsvpSessionIDs.includes(session.id),
+          );
+        }
+        if (searchQuery) {
+          filteredSessions = filteredSessions?.filter((session) =>
+            session.title?.toLowerCase().includes(searchQuery.toLowerCase()),
+          );
+        }
+        if (filteredSessions && filteredSessions.length > 0) {
+          setSessionsByDate(groupSessionByDate(filteredSessions));
+        } else if (selectedDate) {
+          setSessionsByDate({
+            [dayjs(selectedDate)
+              .tz(eventData?.timezone)
+              .format('MMMM D, YYYY')]: [],
+          });
+        } else {
+          setSessionsByDate(undefined);
+        }
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('An error occurred:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAndFilterSessions().catch((error) => {
+      console.error('An error occurred:', error);
+    });
+  }, [
+    selectedDate,
+    dateForCalendar,
+    isRSVPFiltered,
+    isManagedFiltered,
+    searchQuery,
+    eventId,
+  ]);
   const handleRSVPSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -537,19 +645,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       setBlockClickModal(true);
       const response = await supaCreateSession(formattedData);
       if (response.status === 200) {
+        await fetchAndFilterSessions();
         setShowModal(true);
       }
     } catch (err) {
       console.log(err);
     } finally {
       setBlockClickModal(false);
-      toggleDrawer('right', false);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      await getSession();
+      const sessions = await getSession();
+      const sessionsbydate = groupSessionByDate(sessions);
+      setSessionsByDate(sessionsbydate);
       await getPeople();
       await getLocation();
     };
@@ -577,13 +687,8 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     const fetchData = async () => {
       await getBookedSession();
     };
-
     fetchData();
   }, [sessionLocation]);
-  useEffect(() => {
-    const contentHeight = contentRef.current?.scrollHeight ?? 0;
-    setIsContentLarge(contentHeight > 300);
-  }, [selectedSession?.description]);
 
   const List = (anchor: Anchor) => {
     return (
@@ -593,14 +698,14 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
           message="Please view it."
           showModal={showModal}
           onClose={() => {
-            setShowModal(false);
-            getSession();
             toggleDrawer('right', false);
+            setShowModal(false);
+            fetchAndFilterSessions();
           }}
           onConfirm={() => {
-            setShowModal(false);
-            getSession();
             toggleDrawer('right', false);
+            setShowModal(false);
+            fetchAndFilterSessions();
           }}
         />
         <Dialog
@@ -611,7 +716,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         />
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
+            width:
+              anchor === 'top' || anchor === 'bottom'
+                ? 'auto'
+                : isMobile
+                  ? '100%'
+                  : '762px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -643,9 +753,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <ZuButton onClick={() => toggleDrawer('right', true)}>
-                <Typography variant="subtitleMB">Create a Session</Typography>
-              </ZuButton>
+              <Typography variant="subtitleMB">Create a Session</Typography>
               {/*<ZuButton
                 startIcon={<ArchiveBoxIcon size={5} />}
                 sx={{
@@ -702,7 +810,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">Session Tags*</Typography>
+                  <Typography variant="bodyBB">Session Tags</Typography>
                   <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                     Search or create categories related to your space
                   </Typography>
@@ -778,7 +886,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               <Typography variant="subtitleMB">Location & Booking</Typography>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Format*</Typography>
-                <Box display="flex" justifyContent="space-between" gap="20px">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  gap="20px"
+                  flexDirection={isMobile ? 'column' : 'row'}
+                >
                   <Box
                     bgcolor={person ? '#484E45' : '#373737'}
                     borderRadius="10px"
@@ -1000,7 +1113,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           Your booking will be at the event timezone:{' '}
                           {eventData?.timezone}
                         </Typography>
-                        <DatePicker
+                        <DesktopDatePicker
                           onChange={(newValue) => {
                             if (newValue !== null) handleDateChange(newValue);
                           }}
@@ -1038,7 +1151,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <Stack direction="row" spacing="20px">
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">Start Time</Typography>
-                            <TimePicker
+                            <DesktopTimePicker
                               value={sessionStartTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1096,7 +1209,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           </Stack>
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">End Time</Typography>
-                            <TimePicker
+                            <DesktopTimePicker
                               value={sessionEndTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1221,7 +1334,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       <Typography variant="bodyS">
                         Pick a date for this session
                       </Typography>
-                      <DatePicker
+                      <DesktopDatePicker
                         onChange={(newValue) => {
                           if (newValue !== null) handleDateChange(newValue);
                         }}
@@ -1260,7 +1373,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <Stack direction="row" spacing="20px">
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">Start Time</Typography>
-                        <TimePicker
+                        <DesktopTimePicker
                           value={sessionStartTime}
                           ampm={false}
                           onChange={(newValue) => {
@@ -1308,7 +1421,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       </Stack>
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">End Time</Typography>
-                        <TimePicker
+                        <DesktopTimePicker
                           value={sessionEndTime}
                           ampm={false}
                           onChange={(newValue) => {
@@ -1411,6 +1524,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               borderRadius="10px"
             >
               <Typography variant="subtitleMB">Session Participants</Typography>
+              <Stack direction={'row'} spacing="10px">
+                <ZuSwitch
+                  checked={hiddenOrganizer}
+                  onChange={() => setHiddenOrganizer((v) => !v)}
+                />
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">
+                    Hide yourself as an organizer for this session
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    By default the creator of a session is listed as an
+                    organizer of it
+                  </Typography>
+                </Stack>
+              </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
                   <Typography variant="bodyBB">Organizers*</Typography>
@@ -1422,6 +1550,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   users={people}
                   onChange={handleOrganizerChange}
                   initialUsers={[profile as Profile]}
+                  removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>
               <Stack spacing="20px">
@@ -1437,10 +1566,15 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 />
               </Stack>
             </Stack>
-            <Box display="flex" gap="20px">
+            <Box
+              display="flex"
+              gap="20px"
+              flexDirection={isMobile ? 'column' : 'row'}
+            >
               <ZuButton
                 sx={{
                   flex: 1,
+                  width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<XMarkIcon />}
                 onClick={() => toggleDrawer('right', false)}
@@ -1452,6 +1586,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   color: '#67DBFF',
                   backgroundColor: 'rgba(103, 219, 255, 0.10)',
                   flex: 1,
+                  width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
                 onClick={createSession}
@@ -1470,6 +1605,123 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       <Stack padding="20px" bgcolor="#222222" height="auto">
         {!selectedSession ? (
           <Grid container spacing="30px">
+            {isMobile && (
+              <Grid item xs={12}>
+                <Stack spacing="20px">
+                  <OutlinedInput
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    placeholder="Search Sessions"
+                    sx={{
+                      backgroundColor: '#313131',
+                      paddingX: '15px',
+                      paddingY: '13px',
+                      borderRadius: '10px',
+                      height: '35px',
+                      border:
+                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
+                      fontFamily: 'Inter',
+                      opacity: 0.7,
+                      color: 'white',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                      },
+                    }}
+                    startAdornment={
+                      <InputAdornment position="start" sx={{ opacity: 0.6 }}>
+                        <SearchIcon />
+                      </InputAdornment>
+                    }
+                  />
+                  <ZuButton
+                    startIcon={<PlusCircleIcon />}
+                    sx={{ width: '100%' }}
+                    onClick={() => toggleDrawer('right', true)}
+                  >
+                    Add a Session
+                  </ZuButton>
+                  <Stack spacing="15px">
+                    <Stack
+                      padding="10px"
+                      borderRadius="10px"
+                      bgcolor="#2d2d2d"
+                      direction="row"
+                      alignItems="center"
+                      spacing="10px"
+                    >
+                      <UserPlusIcon />
+                      <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                        My RSVPs
+                      </Typography>
+                      <Stack flex={1} direction="row" justifyContent="end">
+                        <ZuSwitch
+                          checked={isRSVPFiltered}
+                          onChange={handleRSVPSwitchChange}
+                        />
+                      </Stack>
+                    </Stack>
+                    <Stack
+                      padding="10px"
+                      borderRadius="10px"
+                      bgcolor="#2d2d2d"
+                      direction="row"
+                      alignItems="center"
+                      spacing="10px"
+                    >
+                      <EditIcon />
+                      <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                        Managed by me
+                      </Typography>
+                      <Stack flex={1} direction="row" justifyContent="end">
+                        <ZuSwitch
+                          checked={isManagedFiltered}
+                          onChange={handleManagedSwitchChange}
+                        />
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                  <ZuCalendar
+                    value={selectedDate}
+                    onChange={(val) => {
+                      setSelectedDate(val);
+                    }}
+                    slots={{ day: SlotDates }}
+                    slotProps={{
+                      day: {
+                        highlightedDays: sessions
+                          .filter((session) => {
+                            return (
+                              dayjs(session.startTime)
+                                .tz(eventData?.timezone)
+                                .month() === dateForCalendar.month() &&
+                              dayjs(session.startTime)
+                                .tz(eventData?.timezone)
+                                .year() === dateForCalendar.year()
+                            );
+                          })
+                          .filter((session) => {
+                            if (selectedDate) {
+                              return (
+                                dayjs(session.startTime)
+                                  .tz(eventData?.timezone)
+                                  .date() !== selectedDate.date()
+                              );
+                            }
+                            return true;
+                          })
+                          .map((session) => {
+                            return dayjs(session.startTime)
+                              .tz(eventData?.timezone)
+                              .date();
+                          }),
+                      } as any,
+                    }}
+                    onMonthChange={(val) => setDateForCalendar(val)}
+                    onYearChange={(val) => setDateForCalendar(val)}
+                  />
+                </Stack>
+              </Grid>
+            )}
             <Grid item xs={12} md={8}>
               <Stack
                 borderRadius="10px"
@@ -1493,7 +1745,19 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     alignItems="center"
                   >
                     <QueueListIcon size={5} />
-                    <Typography variant="bodyS">Full Schedule</Typography>
+                    <ZuButton
+                      onClick={() => {
+                        setSelectedDate(null);
+                      }}
+                      variant="text"
+                      sx={{
+                        textTransform: 'none',
+                        padding: 0,
+                        minWidth: 'auto',
+                      }}
+                    >
+                      <Typography variant="bodyS">Full Schedule</Typography>
+                    </ZuButton>
                   </Stack>
                   <Stack
                     direction="row"
@@ -1503,39 +1767,100 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     alignItems="center"
                   >
                     <ChevronDoubleRightIcon size={5} />
-                    <Typography variant="bodyS">Today</Typography>
+                    <ZuButton
+                      onClick={() => {
+                        setSelectedDate(dayjs().tz(eventData?.timezone));
+                      }}
+                      variant="text"
+                      sx={{
+                        textTransform: 'none',
+                        padding: 0,
+                        minWidth: 'auto',
+                      }}
+                    >
+                      <Typography variant="bodyS">Today</Typography>
+                    </ZuButton>
                   </Stack>
                 </Stack>
-                {sessionsByDate && Object.keys(sessionsByDate).length !== 0 ? (
-                  Object.entries(sessionsByDate).map(([date, dateSessions]) => (
-                    <Stack
-                      spacing="10px"
-                      padding="10px"
-                      key={`Sesssion-GroupByDate-${date}`}
-                    >
-                      <Typography
-                        borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
-                        padding="8px 10px"
-                        variant="bodySB"
-                        bgcolor="rgba(255, 255, 255, 0.05)"
-                        borderRadius="10px"
-                        sx={{ opacity: 0.6 }}
+                {loading ? (
+                  <Stack
+                    borderRadius="10px"
+                    border="1px solid #383838"
+                    bgcolor="#262626"
+                    flex={8}
+                  >
+                    <Typography variant="bodyS">Loading...</Typography>
+                  </Stack>
+                ) : sessionsByDate &&
+                  Object.keys(sessionsByDate).length !== 0 ? (
+                  Object.entries(sessionsByDate)
+                    .sort(([a], [b]) => {
+                      const dateA = dayjs(a, 'MMMM D, YYYY')
+                        .tz(eventData?.timezone)
+                        .toDate()
+                        .getTime();
+                      const dateB = dayjs(b, 'MMMM D, YYYY')
+                        .tz(eventData?.timezone)
+                        .toDate()
+                        .getTime();
+                      return dateA - dateB;
+                    })
+                    .map(([date, dateSessions]) => (
+                      <Stack
+                        spacing="10px"
+                        padding="10px"
+                        key={`Session-GroupByDate-${date}`}
                       >
-                        {date}
-                      </Typography>
-                      {dateSessions.map((session, index) => (
-                        <SessionCard
-                          key={`SessionCard-${index}`}
-                          session={session}
-                          setSelectedSession={setSelectedSession}
-                          setIsRsvped={setIsRsvped}
-                          userDID={adminId}
-                          setShowDeleteButton={setShowDeleteButton}
-                          setLocationAvatar={setLocationAvatar}
-                        />
-                      ))}
-                    </Stack>
-                  ))
+                        <Typography
+                          borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                          padding="8px 10px"
+                          variant="bodySB"
+                          bgcolor="rgba(255, 255, 255, 0.05)"
+                          borderRadius="10px"
+                          sx={{ opacity: 0.6 }}
+                        >
+                          {dayjs(date, 'MMMM D, YYYY')
+                            .tz(eventData?.timezone)
+                            .format('dddd · DD MMM YYYY')}
+                        </Typography>
+                        {dateSessions && dateSessions.length > 0 ? (
+                          dateSessions.map((session, index) => (
+                            <SessionCard
+                              key={`SessionCard-${index}`}
+                              session={session}
+                              setSelectedSession={setSelectedSession}
+                              setIsRsvped={setIsRsvped}
+                              userDID={adminId}
+                              setShowDeleteButton={setShowDeleteButton}
+                              setLocationAvatar={setLocationAvatar}
+                            />
+                          ))
+                        ) : (
+                          <Stack padding="20px">
+                            <Stack
+                              direction="column"
+                              alignItems="center"
+                              bgcolor="#2d2d2d"
+                              padding="20px"
+                              borderRadius="10px"
+                              sx={{ cursor: 'pointer' }}
+                            >
+                              <PlusCircleIcon color="#6c6c6c" size={15} />
+                              <Typography variant="subtitle2">
+                                No Sessions
+                              </Typography>
+                              <ZuButton
+                                onClick={() => toggleDrawer('right', true)}
+                              >
+                                <Typography variant="subtitle2">
+                                  Create a Session
+                                </Typography>
+                              </ZuButton>
+                            </Stack>
+                          </Stack>
+                        )}
+                      </Stack>
+                    ))
                 ) : (
                   <Stack padding="20px">
                     <Stack
@@ -1548,137 +1873,148 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     >
                       <PlusCircleIcon color="#6c6c6c" size={15} />
                       <Typography variant="subtitle2">No Sessions</Typography>
-                      <Typography variant="body2">Create a Session</Typography>
+                      <ZuButton onClick={() => toggleDrawer('right', true)}>
+                        <Typography variant="subtitle2">
+                          Create a Session
+                        </Typography>
+                      </ZuButton>
                     </Stack>
                   </Stack>
                 )}
               </Stack>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <Stack spacing="20px">
-                <Stack
-                  sx={{
-                    flexDirection: 'column',
-                    gap: '10px',
-                    [theme.breakpoints.down('md')]: {
-                      display: 'flex',
-                    },
-                  }}
-                >
-                  <OutlinedInput
-                    placeholder="Search Sessions"
-                    // onKeyDown={(event) => {
-                    //   if (event.keyCode === 13) {
-                    //     onSearch();
-                    //   }
-                    // }}
+            {!isMobile && (
+              <Grid item xs={12} md={4}>
+                <Stack spacing="20px">
+                  <Stack
                     sx={{
-                      backgroundColor: '#313131',
-                      paddingX: '15px',
-                      paddingY: '13px',
-                      borderRadius: '10px',
-                      height: '35px',
-                      border:
-                        '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-                      fontFamily: 'Inter',
-                      opacity: 0.7,
-                      color: 'white',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        border: 'none',
+                      flexDirection: 'column',
+                      gap: '10px',
+                      [theme.breakpoints.down('md')]: {
+                        display: 'flex',
                       },
                     }}
-                    startAdornment={
-                      <InputAdornment position="start" sx={{ opacity: 0.6 }}>
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </Stack>
-                <ZuButton
-                  startIcon={<PlusCircleIcon />}
-                  sx={{ width: '100%' }}
-                  onClick={() => toggleDrawer('right', true)}
-                >
-                  Add a Session
-                </ZuButton>
-                {/* <Stack borderRadius="10px" border="1px solid #383838" bgcolor="#262626" padding="10px" flex={4} spacing="10px">
-                <Stack pb="20px" borderBottom="1px solid #383838">
-                  <ZuButton startIcon={<LockIcon />} sx={{ width: "100%" }}
+                  >
+                    <OutlinedInput
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      placeholder="Search Sessions"
+                      // onKeyDown={(event) => {
+                      //   if (event.keyCode === 13) {
+                      //     onSearch();
+                      //   }
+                      // }}
+                      sx={{
+                        backgroundColor: '#313131',
+                        paddingX: '15px',
+                        paddingY: '13px',
+                        borderRadius: '10px',
+                        height: '35px',
+                        border:
+                          '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
+                        fontFamily: 'Inter',
+                        opacity: 0.7,
+                        color: 'white',
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          border: 'none',
+                        },
+                      }}
+                      startAdornment={
+                        <InputAdornment position="start" sx={{ opacity: 0.6 }}>
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                  </Stack>
+                  <ZuButton
+                    startIcon={<PlusCircleIcon />}
+                    sx={{ width: '100%' }}
                     onClick={() => toggleDrawer('right', true)}
                   >
                     Add a Session
                   </ZuButton>
-                </Stack>
-                <Stack spacing="5px">
-                  <Typography variant="bodyMB">
-                    Gated For:
-                  </Typography>
-                  <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                    Need at least one of the following credentials:
-                  </Typography>
-                </Stack>
-                <ZuButton>
-                  ZuVillage Attendee
-                </ZuButton>
-                <ZuButton startIcon={<FingerPrintIcon />} sx={{ width: "100%" }} variant='outlined'>
-                  Verify
-                </ZuButton>
-              </Stack> */}
-                <Stack spacing="15px">
-                  {/*<ZuInput placeholder="Location" />
-                  <ZuInput placeholder="Track" />*/}
-                  <Stack
-                    padding="10px"
-                    borderRadius="10px"
-                    bgcolor="#2d2d2d"
-                    direction="row"
-                    alignItems="center"
-                    spacing="10px"
-                  >
-                    <UserPlusIcon />
-                    <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
-                      My RSVPs
-                    </Typography>
-                    <Stack flex={1} direction="row" justifyContent="end">
-                      <ZuSwitch />
+                  <Stack spacing="15px">
+                    <Stack
+                      padding="10px"
+                      borderRadius="10px"
+                      bgcolor="#2d2d2d"
+                      direction="row"
+                      alignItems="center"
+                      spacing="10px"
+                    >
+                      <UserPlusIcon />
+                      <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                        My RSVPs
+                      </Typography>
+                      <Stack flex={1} direction="row" justifyContent="end">
+                        <ZuSwitch
+                          checked={isRSVPFiltered}
+                          onChange={handleRSVPSwitchChange}
+                        />
+                      </Stack>
+                    </Stack>
+                    <Stack
+                      padding="10px"
+                      borderRadius="10px"
+                      bgcolor="#2d2d2d"
+                      direction="row"
+                      alignItems="center"
+                      spacing="10px"
+                    >
+                      <EditIcon />
+                      <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                        Managed by me
+                      </Typography>
+                      <Stack flex={1} direction="row" justifyContent="end">
+                        <ZuSwitch
+                          checked={isManagedFiltered}
+                          onChange={handleManagedSwitchChange}
+                        />
+                      </Stack>
                     </Stack>
                   </Stack>
-                  <Stack
-                    padding="10px"
-                    borderRadius="10px"
-                    bgcolor="#2d2d2d"
-                    direction="row"
-                    alignItems="center"
-                    spacing="10px"
-                  >
-                    <EditIcon />
-                    <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
-                      Managed by me
-                    </Typography>
-                    <Stack flex={1} direction="row" justifyContent="end">
-                      <ZuSwitch />
-                    </Stack>
-                  </Stack>
+                  <ZuCalendar
+                    value={selectedDate}
+                    onChange={(val) => {
+                      setSelectedDate(val);
+                    }}
+                    slots={{ day: SlotDates }}
+                    slotProps={{
+                      day: {
+                        highlightedDays: sessions
+                          .filter((session) => {
+                            return (
+                              dayjs(session.startTime)
+                                .tz(eventData?.timezone)
+                                .month() === dateForCalendar.month() &&
+                              dayjs(session.startTime)
+                                .tz(eventData?.timezone)
+                                .year() === dateForCalendar.year()
+                            );
+                          })
+                          .filter((session) => {
+                            if (selectedDate) {
+                              return (
+                                dayjs(session.startTime)
+                                  .tz(eventData?.timezone)
+                                  .date() !== selectedDate.date()
+                              );
+                            }
+                            return true;
+                          })
+                          .map((session) => {
+                            return dayjs(session.startTime)
+                              .tz(eventData?.timezone)
+                              .date();
+                          }),
+                      } as any,
+                    }}
+                    onMonthChange={(val) => setDateForCalendar(val)}
+                    onYearChange={(val) => setDateForCalendar(val)}
+                  />
                 </Stack>
-                <ZuCalendar
-                  value={selectedDate}
-                  onChange={(val) => {
-                    setSelectedDate(val);
-                  }}
-                  // slots={{
-                  //   day: SlotDates,
-                  // }}
-                  slotProps={{
-                    day: {
-                      highlightedDays: sessions.map((session) => {
-                        return new Date(session.startTime).getDate();
-                      }),
-                    } as any,
-                  }}
-                  // onMonthChange={(val) => handleMonthChange(val)}
-                />
-              </Stack>
-            </Grid>
+              </Grid>
+            )}
           </Grid>
         ) : (
           <Stack
@@ -1699,7 +2035,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     setSelectedSession(undefined);
                     setIsRsvped(false);
                     setShowDeleteButton(false);
-                    getSession();
+                    fetchAndFilterSessions();
                   }}
                 >
                   Back to List
@@ -2064,26 +2400,41 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
             </Stack>
           </Stack>
         )}
-        <SwipeableDrawer
-          hideBackdrop={true}
-          sx={{
-            position: 'relative',
-            zIndex: 3,
-            '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
-              boxShadow: 'none',
-              backgroundColor: 'transparent',
-              paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
-            },
-          }}
-          anchor="right"
-          open={state['right']}
-          onClose={() => toggleDrawer('right', false)}
-          onOpen={() => toggleDrawer('right', true)}
-        >
-          {List('right')}
-        </SwipeableDrawer>
+        {!isMobile ? (
+          <SwipeableDrawer
+            hideBackdrop={true}
+            sx={{
+              position: 'relative',
+              zIndex: 3,
+              '& .MuiDrawer-paper': {
+                marginTop: '50px',
+                height: 'calc(100% - 50px)',
+                boxShadow: 'none',
+                backgroundColor: 'transparent',
+                paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
+              },
+            }}
+            anchor="right"
+            open={state['right']}
+            onClose={() => toggleDrawer('right', false)}
+            onOpen={() => toggleDrawer('right', true)}
+          >
+            {List('right')}
+          </SwipeableDrawer>
+        ) : state.right ? (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: 100,
+            }}
+          >
+            {List('right')}
+          </Box>
+        ) : null}
       </Stack>
     </LocalizationProvider>
   );
