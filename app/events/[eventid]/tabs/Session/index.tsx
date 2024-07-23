@@ -17,15 +17,14 @@ import {
   Select,
   OutlinedInput,
   MenuItem,
-  Chip,
   InputAdornment,
   useTheme,
   useMediaQuery,
+  Switch,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { DesktopTimePicker } from '@mui/x-date-pickers';
 import { TimeView } from '@mui/x-date-pickers/models';
 import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -33,14 +32,11 @@ import dayjs, { Dayjs } from '@/utils/dayjs';
 import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
 import {
   PlusCircleIcon,
-  LockIcon,
   XMarkIcon,
-  ArchiveBoxIcon,
   ArrowDownIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   SearchIcon,
-  FingerPrintIcon,
   UserPlusIcon,
   EditIcon,
   QueueListIcon,
@@ -48,7 +44,6 @@ import {
   LeftArrowIcon,
   MapIcon,
   SessionIcon,
-  Cog6Icon,
   MicrophoneIcon,
   TagIcon,
   PlusIcon,
@@ -56,17 +51,7 @@ import {
 } from '@/components/icons';
 import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
 import BpCheckbox from '@/components/event/Checkbox';
-import {
-  Anchor,
-  Session,
-  SessionData,
-  ProfileEdge,
-  Profile,
-  CeramicResponseType,
-  EventEdge,
-  Venue,
-  Event,
-} from '@/types';
+import { Anchor, Session, ProfileEdge, Profile, Venue, Event } from '@/types';
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
@@ -106,6 +91,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const params = useParams();
   const eventId = params.eventid.toString();
   const profileId = profile?.id || '';
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [directions, setDirections] = useState<string>('');
   const [customLocation, setCustomLocation] = useState<string>('');
   const [isDirections, setIsDirections] = useState<boolean>(false);
@@ -176,6 +162,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
   const [locationAvatar, setLocationAvatar] = useState<string>('');
+  const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
@@ -716,7 +703,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
         />
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
+            width:
+              anchor === 'top' || anchor === 'bottom'
+                ? 'auto'
+                : isMobile
+                  ? '100%'
+                  : '762px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -748,9 +740,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <ZuButton onClick={() => toggleDrawer('right', true)}>
-                <Typography variant="subtitle2">Create a Session</Typography>
-              </ZuButton>
+              <Typography variant="subtitleMB">Create a Session</Typography>
               {/*<ZuButton
                 startIcon={<ArchiveBoxIcon size={5} />}
                 sx={{
@@ -883,7 +873,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               <Typography variant="subtitleMB">Location & Booking</Typography>
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Format*</Typography>
-                <Box display="flex" justifyContent="space-between" gap="20px">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  gap="20px"
+                  flexDirection={isMobile ? 'column' : 'row'}
+                >
                   <Box
                     bgcolor={person ? '#484E45' : '#373737'}
                     borderRadius="10px"
@@ -1105,7 +1100,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           Your booking will be at the event timezone:{' '}
                           {eventData?.timezone}
                         </Typography>
-                        <DatePicker
+                        <DesktopDatePicker
                           onChange={(newValue) => {
                             if (newValue !== null) handleDateChange(newValue);
                           }}
@@ -1143,7 +1138,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <Stack direction="row" spacing="20px">
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">Start Time</Typography>
-                            <TimePicker
+                            <DesktopTimePicker
                               value={sessionStartTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1201,7 +1196,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                           </Stack>
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">End Time</Typography>
-                            <TimePicker
+                            <DesktopTimePicker
                               value={sessionEndTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1326,7 +1321,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       <Typography variant="bodyS">
                         Pick a date for this session
                       </Typography>
-                      <DatePicker
+                      <DesktopDatePicker
                         onChange={(newValue) => {
                           if (newValue !== null) handleDateChange(newValue);
                         }}
@@ -1365,7 +1360,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <Stack direction="row" spacing="20px">
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">Start Time</Typography>
-                        <TimePicker
+                        <DesktopTimePicker
                           value={sessionStartTime}
                           ampm={false}
                           onChange={(newValue) => {
@@ -1413,7 +1408,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                       </Stack>
                       <Stack spacing="10px" flex={1}>
                         <Typography variant="bodyBB">End Time</Typography>
-                        <TimePicker
+                        <DesktopTimePicker
                           value={sessionEndTime}
                           ampm={false}
                           onChange={(newValue) => {
@@ -1516,6 +1511,21 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               borderRadius="10px"
             >
               <Typography variant="subtitleMB">Session Participants</Typography>
+              <Stack direction={'row'} spacing="10px">
+                <ZuSwitch
+                  checked={hiddenOrganizer}
+                  onChange={() => setHiddenOrganizer((v) => !v)}
+                />
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">
+                    Hide yourself as an organizer for this session
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    By default the creator of a session is listed as an
+                    organizer of it
+                  </Typography>
+                </Stack>
+              </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
                   <Typography variant="bodyBB">Organizers*</Typography>
@@ -1527,6 +1537,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   users={people}
                   onChange={handleOrganizerChange}
                   initialUsers={[profile as Profile]}
+                  removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>
               <Stack spacing="20px">
@@ -1542,10 +1553,15 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 />
               </Stack>
             </Stack>
-            <Box display="flex" gap="20px">
+            <Box
+              display="flex"
+              gap="20px"
+              flexDirection={isMobile ? 'column' : 'row'}
+            >
               <ZuButton
                 sx={{
                   flex: 1,
+                  width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<XMarkIcon />}
                 onClick={() => toggleDrawer('right', false)}
@@ -1557,6 +1573,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   color: '#67DBFF',
                   backgroundColor: 'rgba(103, 219, 255, 0.10)',
                   flex: 1,
+                  width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
                 onClick={createSession}
@@ -1956,7 +1973,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 </Typography>
                 <Stack spacing="10px">
                   <Stack direction={'row'} alignItems={'center'} spacing={1}>
-                    <MapIcon size={4} />
                     {selectedSession.format === 'online' ? (
                       <Link
                         href={selectedSession.video_url || ''}
@@ -1966,15 +1982,18 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         <Typography
                           variant="bodyM"
                           color="white"
-                          sx={{ opacity: 0.5 }}
+                          sx={{ opacity: 0.5, wordBreak: 'break-all' }}
                         >
                           {selectedSession.video_url}
                         </Typography>
                       </Link>
                     ) : (
-                      <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
-                        {selectedSession.location}
-                      </Typography>
+                      <>
+                        <MapIcon size={4} />
+                        <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
+                          {selectedSession.location}
+                        </Typography>
+                      </>
                     )}
                   </Stack>
                   <Stack direction={'row'} spacing={1} alignItems="center">
@@ -2277,26 +2296,41 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
             </Stack>
           </Stack>
         )}
-        <SwipeableDrawer
-          hideBackdrop={true}
-          sx={{
-            position: 'relative',
-            zIndex: 3,
-            '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
-              boxShadow: 'none',
-              backgroundColor: 'transparent',
-              paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
-            },
-          }}
-          anchor="right"
-          open={state['right']}
-          onClose={() => toggleDrawer('right', false)}
-          onOpen={() => toggleDrawer('right', true)}
-        >
-          {List('right')}
-        </SwipeableDrawer>
+        {!isMobile ? (
+          <SwipeableDrawer
+            hideBackdrop={true}
+            sx={{
+              position: 'relative',
+              zIndex: 3,
+              '& .MuiDrawer-paper': {
+                marginTop: '50px',
+                height: 'calc(100% - 50px)',
+                boxShadow: 'none',
+                backgroundColor: 'transparent',
+                paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
+              },
+            }}
+            anchor="right"
+            open={state['right']}
+            onClose={() => toggleDrawer('right', false)}
+            onOpen={() => toggleDrawer('right', true)}
+          >
+            {List('right')}
+          </SwipeableDrawer>
+        ) : state.right ? (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: 100,
+            }}
+          >
+            {List('right')}
+          </Box>
+        ) : null}
       </Stack>
     </LocalizationProvider>
   );

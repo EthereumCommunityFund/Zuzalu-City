@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
@@ -12,23 +12,45 @@ interface IProps {
   users: Profile[];
   onChange: (value: Profile[]) => void;
   initialUsers?: Profile[];
+  removedInitialUsers?: boolean;
 }
 
 export default function SelectSearchUser({
   onChange,
   users,
   initialUsers = [],
+  removedInitialUsers = false,
 }: IProps) {
   const [value, setValue] = React.useState<Profile[]>(initialUsers || []);
+  const ref = React.useRef(initialUsers);
 
   const handleChange = useCallback(
     (newValue: Profile[]) => {
-      const updatedValue = Array.from(new Set([...initialUsers, ...newValue]));
+      const fixedValue = !removedInitialUsers ? initialUsers : [];
+      const updatedValue = Array.from(new Set([...fixedValue, ...newValue]));
       setValue(updatedValue);
       onChange(updatedValue);
     },
-    [onChange, initialUsers],
+    [removedInitialUsers, initialUsers, onChange],
   );
+
+  const options = useMemo(() => {
+    if (ref.current) {
+      return users.filter((u) => ref.current?.findIndex((r) => r.id === u.id));
+    }
+    return users;
+  }, [users]);
+
+  useEffect(() => {
+    if (removedInitialUsers && ref.current) {
+      setValue((v) => {
+        return v.filter((u) => !ref.current.includes(u));
+      });
+    }
+    if (!removedInitialUsers && ref.current) {
+      setValue((v) => Array.from(new Set([...ref.current, ...v])));
+    }
+  }, [removedInitialUsers]);
 
   return (
     <>
@@ -53,7 +75,7 @@ export default function SelectSearchUser({
             return false;
           });
         }}
-        options={users}
+        options={options}
         getOptionLabel={(option) => {
           return option.username;
         }}
