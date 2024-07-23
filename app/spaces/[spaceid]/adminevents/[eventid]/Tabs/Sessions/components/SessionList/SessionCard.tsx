@@ -1,7 +1,12 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import { Stack, Typography, Box } from '@mui/material';
-import { EditIcon, MapIcon, SessionIcon } from 'components/icons';
+import {
+  EditIcon,
+  MapIcon,
+  SessionIcon,
+  UserCircleIcon,
+} from 'components/icons';
 import { Session } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 
@@ -92,11 +97,11 @@ const SessionCard: React.FC<SessionCardProps> = ({
         </Typography>
         <Typography variant="subtitleSB">{session.title}</Typography>
         <Stack direction={'row'} spacing={1} alignItems="center">
-          {session.speakers && session.speakers.length > 0 && (
+          {session.speakers.length > 2 ? (
             <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
               Speakers:
             </Typography>
-          )}
+          ) : null}
           {session.speakers
             ? JSON.parse(session.speakers).map(
                 (speaker: any, index: number) => (
