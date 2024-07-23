@@ -1553,10 +1553,15 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 />
               </Stack>
             </Stack>
-            <Box display="flex" gap="20px">
+            <Box
+              display="flex"
+              gap="20px"
+              flexDirection={isMobile ? 'column' : 'row'}
+            >
               <ZuButton
                 sx={{
                   flex: 1,
+                  width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<XMarkIcon />}
                 onClick={() => toggleDrawer('right', false)}
@@ -1568,6 +1573,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   color: '#67DBFF',
                   backgroundColor: 'rgba(103, 219, 255, 0.10)',
                   flex: 1,
+                  width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
                 onClick={createSession}
