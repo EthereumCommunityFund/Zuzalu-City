@@ -807,7 +807,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               </Stack>
               <Stack spacing="20px">
                 <Stack spacing="10px">
-                  <Typography variant="bodyBB">Session Tags*</Typography>
+                  <Typography variant="bodyBB">Session Tags</Typography>
                   <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
                     Search or create categories related to your space
                   </Typography>
@@ -1600,7 +1600,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     <QueueListIcon size={5} />
                     <ZuButton
                       onClick={() => {
-                        fetchAndFilterSessions();
                         setSelectedDate(null);
                       }}
                       variant="text"
