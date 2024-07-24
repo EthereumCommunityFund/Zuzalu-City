@@ -2050,7 +2050,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         variant="bodyBB"
                         onClick={() => handleRSVPClick(selectedSession.id)}
                       >
-                        RSVP Session{' '}
+                        RSVP Session
                       </Typography>
                     )}
                   </Stack>

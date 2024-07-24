@@ -2058,13 +2058,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     {isRsvped ? (
                       <Typography variant="bodyBB">RSVP Confirmed</Typography>
                     ) : (
-                      <ZuButton
-                        variant="contained"
-                        color="primary"
+                      <Typography
+                        variant="bodyBB"
                         onClick={() => handleRSVPClick(selectedSession.id)}
                       >
-                        <Typography variant="bodyBB"> RSVP Session </Typography>
-                      </ZuButton>
+                        RSVP Session
+                      </Typography>
                     )}
                   </Stack>
                   {/*<Typography variant="bodyS">Attending: 000</Typography>*/}
@@ -2140,7 +2139,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 </Typography>
               </Stack>
             </Stack>
-            <Stack spacing="20px" width="320px">
+            <Stack spacing="20px" width={isMobile ? '100%' : '320px'}>
               <Stack
                 padding="14px 14px 14px 0"
                 borderBottom="1px solid #383838"
