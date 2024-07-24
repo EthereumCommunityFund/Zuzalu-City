@@ -1922,21 +1922,19 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
               width={isMobile ? '100%' : '600px'}
             >
-              {!isMobile ? (
-                <Stack padding="10px">
-                  <ZuButton
-                    startIcon={<LeftArrowIcon />}
-                    onClick={() => {
-                      setSelectedSession(undefined);
-                      setIsRsvped(false);
-                      setShowDeleteButton(false);
-                      fetchAndFilterSessions();
-                    }}
-                  >
-                    Back to List
-                  </ZuButton>
-                </Stack>
-              ) : null}
+              <Stack padding={!isMobile ? '10px' : '10px 10px 10px 0'}>
+                <ZuButton
+                  startIcon={<LeftArrowIcon />}
+                  onClick={() => {
+                    setSelectedSession(undefined);
+                    setIsRsvped(false);
+                    setShowDeleteButton(false);
+                    fetchAndFilterSessions();
+                  }}
+                >
+                  Back to List
+                </ZuButton>
+              </Stack>
               <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px" alignItems="center">
