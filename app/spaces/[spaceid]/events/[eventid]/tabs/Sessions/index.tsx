@@ -1932,11 +1932,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
           >
             <Stack
               borderRadius="10px"
-              border="1px solid #383838"
-              bgcolor="#262626"
-              width="600px"
+              border={!isMobile ? '1px solid #383838' : 'none'}
+              bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
+              width={isMobile ? '100%' : '600px'}
             >
-              <Stack padding="10px">
+              <Stack padding={!isMobile ? '10px' : '10px 10px 10px 0'}>
                 <ZuButton
                   startIcon={<LeftArrowIcon />}
                   onClick={() => {
@@ -1949,7 +1949,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   Back to List
                 </ZuButton>
               </Stack>
-              <Stack padding="20px" spacing="20px">
+              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px" alignItems="center">
                     <Typography
@@ -2082,7 +2082,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   ></Stack>
                 </Stack>
               )}
-              <Stack spacing="20px" padding="20px">
+              <Stack spacing="20px" padding={!isMobile ? '20px' : '0 0 20px'}>
                 <Typography variant="subtitleSB">Description</Typography>
                 <EditorPreview
                   value={selectedSession.description}
@@ -2110,7 +2110,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   </ZuButton>
                 )}
               </Stack>
-              <Stack padding="20px" spacing="20px">
+              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
@@ -2141,7 +2141,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
               </Stack>
             </Stack>
             <Stack spacing="20px" width="320px">
-              <Stack padding="14px" borderBottom="1px solid #383838">
+              <Stack
+                padding="14px 14px 14px 0"
+                borderBottom="1px solid #383838"
+              >
                 <Typography variant="subtitleMB">Session Details</Typography>
               </Stack>
               <Stack spacing="10px">
