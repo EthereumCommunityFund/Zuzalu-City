@@ -1778,7 +1778,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         minWidth: 'auto',
                       }}
                     >
-                      <Typography variant="bodyS">Today</Typography>
+                      <Typography variant="bodyS">
+                        Today{' '}
+                        {dayjs().tz(eventData?.timezone).format('DD MMM YYYY')}
+                      </Typography>
                     </ZuButton>
                   </Stack>
                 </Stack>
