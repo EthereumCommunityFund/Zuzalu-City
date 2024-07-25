@@ -577,14 +577,18 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       return;
     }
 
+    const description = sessionDescriptionEditorStore.getValueString();
+    const format = person ? 'person' : 'online';
+
     const error =
       !eventId ||
       !sessionStartTime ||
+      !description ||
       !sessionEndTime ||
       !sessionName ||
       !sessionTrack ||
-      !sessionOrganizers;
-    !profileId;
+      !sessionOrganizers ||
+      !profileId;
 
     if (error) {
       typeof window !== 'undefined' &&
@@ -606,11 +610,28 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       return;
     }
 
-    const format = person ? 'person' : 'online';
+    if (format === 'person') {
+      if (sessionLocation === 'Custom' && !customLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill custom location field');
+        return;
+      }
+      if (!sessionLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill location field');
+        return;
+      }
+    } else {
+      if (!sessionVideoURL) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill virtual location field');
+        return;
+      }
+    }
 
     const formattedData: SessionSupabaseData = {
       title: sessionName,
-      description: sessionDescriptionEditorStore.getValueString(),
+      description,
       experience_level: sessionExperienceLevel,
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime
