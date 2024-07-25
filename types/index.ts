@@ -310,3 +310,9 @@ export interface AddAdminRequest {
   eventId: string;
   adminAddress: string;
 }
+
+export type AvailableType = {
+  startTime: string;
+  endTime: string;
+  error?: string;
+};

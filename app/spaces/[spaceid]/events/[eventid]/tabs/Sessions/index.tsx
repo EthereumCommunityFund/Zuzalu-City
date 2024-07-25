@@ -576,15 +576,18 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     if (!isAuthenticated) {
       return;
     }
+    const description = sessionDescriptionEditorStore.getValueString();
+    const format = person ? 'person' : 'online';
 
     const error =
       !eventId ||
       !sessionStartTime ||
+      !description ||
       !sessionEndTime ||
       !sessionName ||
       !sessionTrack ||
-      !sessionOrganizers;
-    !profileId;
+      !sessionOrganizers ||
+      !profileId;
 
     if (error) {
       typeof window !== 'undefined' &&
@@ -606,11 +609,28 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
       return;
     }
 
-    const format = person ? 'person' : 'online';
+    if (format === 'person') {
+      if (sessionLocation === 'Custom' && !customLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill custom location field');
+        return;
+      }
+      if (!sessionLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill location field');
+        return;
+      }
+    } else {
+      if (!sessionVideoURL) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill virtual location field');
+        return;
+      }
+    }
 
     const formattedData: SessionSupabaseData = {
       title: sessionName,
-      description: sessionDescriptionEditorStore.getValueString(),
+      description,
       experience_level: sessionExperienceLevel,
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime
@@ -1778,7 +1798,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         minWidth: 'auto',
                       }}
                     >
-                      <Typography variant="bodyS">Today</Typography>
+                      <Typography variant="bodyS">
+                        Today{' '}
+                        {dayjs().tz(eventData?.timezone).format('DD MMM YYYY')}
+                      </Typography>
                     </ZuButton>
                   </Stack>
                 </Stack>
@@ -2024,11 +2047,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
           >
             <Stack
               borderRadius="10px"
-              border="1px solid #383838"
-              bgcolor="#262626"
-              width="600px"
+              border={!isMobile ? '1px solid #383838' : 'none'}
+              bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
+              width={isMobile ? '100%' : '600px'}
             >
-              <Stack padding="10px">
+              <Stack padding={!isMobile ? '10px' : '10px 10px 10px 0'}>
                 <ZuButton
                   startIcon={<LeftArrowIcon />}
                   onClick={() => {
@@ -2041,7 +2064,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   Back to List
                 </ZuButton>
               </Stack>
-              <Stack padding="20px" spacing="20px">
+              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px" alignItems="center">
                     <Typography
@@ -2150,13 +2173,12 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                     {isRsvped ? (
                       <Typography variant="bodyBB">RSVP Confirmed</Typography>
                     ) : (
-                      <ZuButton
-                        variant="contained"
-                        color="primary"
+                      <Typography
+                        variant="bodyBB"
                         onClick={() => handleRSVPClick(selectedSession.id)}
                       >
-                        <Typography variant="bodyBB"> RSVP Session </Typography>
-                      </ZuButton>
+                        RSVP Session
+                      </Typography>
                     )}
                   </Stack>
                   {/*<Typography variant="bodyS">Attending: 000</Typography>*/}
@@ -2174,7 +2196,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   ></Stack>
                 </Stack>
               )}
-              <Stack spacing="20px" padding="20px">
+              <Stack spacing="20px" padding={!isMobile ? '20px' : '0 0 20px'}>
                 <Typography variant="subtitleSB">Description</Typography>
                 <EditorPreview
                   value={selectedSession.description}
@@ -2202,7 +2224,7 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                   </ZuButton>
                 )}
               </Stack>
-              <Stack padding="20px" spacing="20px">
+              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
@@ -2232,8 +2254,11 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                 </Typography>
               </Stack>
             </Stack>
-            <Stack spacing="20px" width="320px">
-              <Stack padding="14px" borderBottom="1px solid #383838">
+            <Stack spacing="20px" width={isMobile ? '100%' : '320px'}>
+              <Stack
+                padding="14px 14px 14px 0"
+                borderBottom="1px solid #383838"
+              >
                 <Typography variant="subtitleMB">Session Details</Typography>
               </Stack>
               <Stack spacing="10px">

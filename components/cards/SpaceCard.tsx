@@ -70,7 +70,11 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
         />
         <Stack padding="10px" spacing="10px" marginTop="20px">
           <Typography color="white" gutterBottom variant="subtitleS">
-            {title}
+            {title
+              ? title.length > 26
+                ? `${title.substring(0, 26)}...`
+                : title
+              : ''}
           </Typography>
           <Stack sx={{ maxHeight: '44px', overflow: 'auto' }}>
             <Typography
@@ -112,7 +116,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
             </Typography>
           </Stack>
 
-          {members && members.length > 0 && (
+          {/*members && members.length > 0 && (
             <Stack direction="row" alignItems="center" spacing="10px">
               <UsersIcon size={4} />
               <Typography
@@ -125,7 +129,7 @@ const SpaceCard: React.FC<SpaceCardProps> = ({
                   : members.length}
               </Typography>
             </Stack>
-          )}
+          )*/}
           {/* <Button
               size="small"
               startIcon={

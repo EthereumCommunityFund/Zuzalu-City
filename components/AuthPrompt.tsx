@@ -176,7 +176,6 @@ const AuthPrompt: React.FC<{}> = () => {
   }, [isAuthPromptVisible, isConnected]);
 
   const content = getDialogContent();
-  // console.warn('content: ', content);
   if (content) {
     const { title, message, actions } = content as {
       title: string;
