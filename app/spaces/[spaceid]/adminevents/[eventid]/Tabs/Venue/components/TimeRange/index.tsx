@@ -2,12 +2,8 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { Stack, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
+import { AvailableType } from '@/types';
 
-type AvailableType = {
-  startTime: string;
-  endTime: string;
-  error?: string;
-};
 interface ITimeRange {
   values: AvailableType[];
   id: number;
@@ -15,32 +11,43 @@ interface ITimeRange {
   timezone: string;
 }
 
-const validateTimeRanges = (ranges: AvailableType[]) => {
-  const errors = ranges.map((range, index) => {
-    const startTime = new Date(range.startTime).getTime();
-    const endTime = new Date(range.endTime).getTime();
+const validateTimeRanges = (
+  timeRanges: AvailableType[],
+  setValues: Dispatch<SetStateAction<AvailableType[]>>,
+) => {
+  const isOverlapping = (range1: AvailableType, range2: AvailableType) => {
+    return (
+      range1.startTime < range2.endTime && range2.startTime < range1.endTime
+    );
+  };
 
+  // First, check each time range for validity (start time should be before end time)
+  for (let i = 0; i < timeRanges.length; i++) {
+    const { startTime, endTime } = timeRanges[i];
     if (startTime >= endTime) {
-      return { ...range, error: 'Start time must be before end time' };
+      timeRanges[i].error =
+        `Time range ${i + 1} is invalid as start time ${startTime} is not before end time ${endTime}`;
+    } else {
+      timeRanges[i].error = '';
     }
+  }
 
-    for (let i = 0; i < ranges.length; i++) {
-      if (i !== index) {
-        const otherStartTime = new Date(ranges[i].startTime).getTime();
-        const otherEndTime = new Date(ranges[i].endTime).getTime();
-        if (
-          (startTime < otherEndTime && startTime >= otherStartTime) ||
-          (endTime > otherStartTime && endTime <= otherEndTime)
-        ) {
-          return { ...range, error: 'Time ranges overlap' };
-        }
+  // Second, check for overlaps
+  for (let i = 0; i < timeRanges.length; i++) {
+    for (let j = i + 1; j < timeRanges.length; j++) {
+      if (isOverlapping(timeRanges[i], timeRanges[j])) {
+        timeRanges[i].error =
+          `Time range ${i + 1} overlaps with time range ${j + 1}`;
+        timeRanges[j].error =
+          `Time range ${j + 1} overlaps with time range ${i + 1}`;
+      } else {
+        timeRanges[i].error = ``;
+        timeRanges[j].error = ``;
       }
     }
+  }
 
-    return { ...range, error: '' };
-  });
-
-  return errors;
+  setValues(timeRanges);
 };
 
 const TimeRange: React.FC<ITimeRange> = ({
@@ -67,7 +74,11 @@ const TimeRange: React.FC<ITimeRange> = ({
                 }
                 return item;
               });
-              setValues(validateTimeRanges(newValue));
+              if (values[id].endTime) {
+                validateTimeRanges(newValue, setValues);
+              } else {
+                setValues(newValue);
+              }
             }
           }}
           value={currentRange.startTime ? dayjs(currentRange.startTime) : null}
@@ -113,7 +124,7 @@ const TimeRange: React.FC<ITimeRange> = ({
                 }
                 return item;
               });
-              setValues(validateTimeRanges(newValue));
+              validateTimeRanges(newValue, setValues);
             }
           }}
           value={currentRange.endTime ? dayjs(currentRange.endTime) : null}

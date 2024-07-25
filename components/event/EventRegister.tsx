@@ -78,7 +78,6 @@ const EventRegister: React.FC<EventRegisterProps> = ({
       };
       updateZupassMember(addZupassMemberInput)
         .then((result) => {
-          console.log(result);
           hasProcessedNullifier.current = true;
           setNullifierHash('');
           if (result.status === 200) {
