@@ -691,9 +691,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             break;
         }
       } else {
-        console.log('gere');
         const sessions = await getSession();
-        console.log(sessions);
         const sessionsbydate = groupSessionByDate(sessions);
         setSessionsByDate(sessionsbydate);
       }

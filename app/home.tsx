@@ -217,7 +217,6 @@ const Home: React.FC = () => {
           if (canView) {
             setTargetEventView(canView);
           }
-          console.log(canView, ceramic);
         }
       } else {
         console.error('Invalid data structure:', response.data);
@@ -357,7 +356,6 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log('ceramic changed');
     document.title = 'Zuzalu City';
     Promise.all([getSpaces(), getEvents()]).catch((error) => {
       console.error('An error occurred:', error);
