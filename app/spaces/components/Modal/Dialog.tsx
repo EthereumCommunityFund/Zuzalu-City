@@ -6,7 +6,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import MDialog from '@mui/material/Dialog';
 import React from 'react';
-
+import { useTheme, useMediaQuery } from '@mui/material';
 interface Proptypes {
   title: string;
   message: string;
@@ -26,15 +26,18 @@ export default function Dialog({
   actions,
   showActions = true,
 }: Proptypes) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <MDialog
       open={showModal}
       onClose={() => onClose?.()}
       PaperProps={{
         style: {
-          width: '40%',
+          width: isMobile ? '90%' : '40%',
           height: 'auto',
-          padding: '20px 16px',
+          padding: isMobile ? '10px 8px' : '20px 16px',
           backgroundColor: 'rgba(34, 34, 34, 0.9)',
           borderRadius: '16px',
           border: '1px solid rgba(255, 255, 255, 0.10)',
@@ -43,7 +46,7 @@ export default function Dialog({
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'flex-start',
-          gap: '20px',
+          gap: isMobile ? '10px' : '20px',
         },
       }}
     >
@@ -54,7 +57,7 @@ export default function Dialog({
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: 0,
-          fontSize: '25px',
+          fontSize: isMobile ? '20px' : '25px',
           fontWeight: 'bold',
         }}
       >
@@ -65,18 +68,21 @@ export default function Dialog({
             style={{
               color: 'white',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              width: '30px',
-              height: '30px',
+              width: isMobile ? '25px' : '30px',
+              height: isMobile ? '25px' : '30px',
               borderRadius: '10px',
             }}
           >
-            <CloseIcon sx={{ fontSize: 20 }} />
+            <CloseIcon sx={{ fontSize: isMobile ? 16 : 20 }} />
           </IconButton>
         ) : null}
       </DialogTitle>
       <DialogContent style={{ padding: 0, width: '100%', color: 'white' }}>
         <DialogContentText
-          style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '18px' }}
+          style={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: isMobile ? '16px' : '18px',
+          }}
         >
           {message}
         </DialogContentText>

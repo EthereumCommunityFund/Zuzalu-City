@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
   Button,
@@ -8,7 +8,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { ZuInput } from '@/components/core';
+import { ZuInput, ZuButton } from '@/components/core';
 import { Uploader3 } from '@lxdao/uploader3';
 import { PreviewFile } from '@/components';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -28,7 +28,7 @@ const Overview = () => {
   const [tagline, setTagline] = useState<string>('');
   const avatarUploader = useUploaderPreview();
   const bannerUploader = useUploaderPreview();
-
+  const router = useRouter();
   const descriptionEditorStore = useEditorStore();
 
   const getSpace = useCallback(async () => {
@@ -136,7 +136,29 @@ const Overview = () => {
         console.error('An error occurred:', error);
       });
   };
-
+  const deleteSpace = async () => {
+    try {
+      const enableIndexingSpaceMutation = `mutation enableIndexingSpace($input: EnableIndexingSpaceInput!) {
+      enableIndexingSpace(input: $input) {
+        document {
+          id
+        }
+      }
+    }`;
+      const response = await composeClient.executeQuery(
+        enableIndexingSpaceMutation,
+        {
+          input: {
+            id: params.spaceid,
+            shouldIndex: false,
+          },
+        },
+      );
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to update space:', error);
+    }
+  };
   return (
     <Stack
       spacing="20px"
@@ -378,6 +400,25 @@ const Overview = () => {
       >
         Save
       </Button>
+      <ZuButton
+        sx={{
+          color: 'white',
+          borderRadius: '10px',
+          backgroundColor: 'red',
+          fontSize: '14px',
+          padding: '6px 16px',
+          flex: 1,
+          border: '1px solid rgba(103, 219, 255, 0.20)',
+          opacity: '1',
+          '&:disabled': {
+            opacity: '0.6',
+            color: '#67DBFF',
+          },
+        }}
+        onClick={() => deleteSpace()}
+      >
+        Delete Space
+      </ZuButton>
     </Stack>
   );
 };

@@ -14,7 +14,7 @@ const { wallets } = getDefaultWallets();
 
 const connectors = connectorsForWallets([...wallets], {
   appName: 'Zuzalu City',
-  projectId: '544d3493ab4f4697501052e837047dd1',
+  projectId: '6c190133ca2cec0744761447d868de85',
 });
 const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
 

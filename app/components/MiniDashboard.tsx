@@ -6,8 +6,10 @@ import {
   TicketIcon,
 } from '@/components/icons';
 import ClockIcon from '@/components/icons/Clock';
-import { Box, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Stack, Typography, useTheme, Button } from '@mui/material';
+import Link from 'next/link';
 import dayjs from 'dayjs';
+import { useParams, useRouter } from 'next/navigation';
 
 interface PropTypes {
   spaceName: string;
@@ -15,6 +17,8 @@ interface PropTypes {
   endTime: string;
   imageUrl?: string;
   showManage: boolean;
+  eventId: string;
+  spaceId: string;
 }
 
 export default function MiniDashboard({
@@ -23,13 +27,22 @@ export default function MiniDashboard({
   endTime,
   imageUrl,
   showManage,
+  eventId,
+  spaceId,
 }: PropTypes) {
   const { breakpoints } = useTheme();
-
-  const convertMMDD = (date: string) => {
-    return dayjs(date).format('MMM DD');
+  const router = useRouter();
+  const handleNavigation = (tab: string, option: string) => {
+    router.push(`/events/${eventId}`);
+    sessionStorage.setItem('tab', tab);
+    sessionStorage.setItem('option', option);
   };
-
+  const externalNavigation = (url: string) => {
+    window.open(url, '_blank');
+  };
+  const manageEventNavigation = () => {
+    router.push(`/spaces/${spaceId}/adminevents/${eventId}`);
+  };
   return (
     <Stack
       width={'100%'}
@@ -78,7 +91,7 @@ export default function MiniDashboard({
             color={'white'}
             sx={{ opacity: '0.8' }}
           >
-            {`${convertMMDD(startTime)} - ${convertMMDD(endTime)}`}
+            {`${startTime} - ${endTime}`}
           </Typography>
         </Stack>
       </Stack>
@@ -93,6 +106,7 @@ export default function MiniDashboard({
         }}
       >
         <ZuButton
+          onClick={() => handleNavigation('Sessions', 'Today')}
           sx={{
             borderRadius: '10px',
             border: '1px solid rgba(255, 255, 255, 0.10)',
@@ -113,7 +127,9 @@ export default function MiniDashboard({
         >
           {`Today's Schedule`}
         </ZuButton>
+
         <ZuButton
+          onClick={() => handleNavigation('Sessions', 'RSVP')}
           sx={{
             borderRadius: '10px',
             border: '1px solid rgba(255, 255, 255, 0.10)',
@@ -135,6 +151,9 @@ export default function MiniDashboard({
           {'My RSVPs'}
         </ZuButton>
         <ZuButton
+          onClick={() =>
+            externalNavigation('https://matrix.to/#/#welcome-zg:matrix.org')
+          }
           sx={{
             borderRadius: '10px',
             border: '1px solid rgba(255, 255, 255, 0.10)',
@@ -156,6 +175,9 @@ export default function MiniDashboard({
           {'Join Conversation'}
         </ZuButton>
         <ZuButton
+          onClick={() =>
+            externalNavigation('https://zuvillage-georgia.framer.website/')
+          }
           sx={{
             borderRadius: '10px',
             border: '1px solid rgba(255, 255, 255, 0.10)',
@@ -178,6 +200,7 @@ export default function MiniDashboard({
         </ZuButton>
         {showManage && (
           <ZuButton
+            onClick={manageEventNavigation}
             sx={{
               borderRadius: '10px',
               border: '1px solid rgba(255, 255, 255, 0.10)',

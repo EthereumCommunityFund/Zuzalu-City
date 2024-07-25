@@ -94,14 +94,14 @@ const Custom_Option: TimeStepOptions = {
 
 interface ISessions {
   eventData: Event | undefined;
+  option?: string;
 }
 
-const Sessions: React.FC<ISessions> = ({ eventData }) => {
+const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const { ceramic, composeClient, isAuthenticated, profile } =
     useCeramicContext();
-
   const params = useParams();
   const eventId = params.eventid.toString();
   const profileId = profile?.id || '';
@@ -324,7 +324,6 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
     isRSVPFiltered,
     isManagedFiltered,
     searchQuery,
-    eventId,
   ]);
   const handleRSVPSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -678,13 +677,25 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const sessions = await getSession();
-      const sessionsbydate = groupSessionByDate(sessions);
-      setSessionsByDate(sessionsbydate);
       await getPeople();
       await getLocation();
+      if (option && option.length > 0) {
+        switch (option) {
+          case 'RSVP':
+            setIsRSVPFiltered(true);
+            break;
+          case 'Today':
+            setSelectedDate(dayjs().tz(eventData?.timezone));
+            break;
+          default:
+            break;
+        }
+      } else {
+        const sessions = await getSession();
+        const sessionsbydate = groupSessionByDate(sessions);
+        setSessionsByDate(sessionsbydate);
+      }
     };
-
     fetchData();
   }, []);
 
@@ -1799,7 +1810,10 @@ const Sessions: React.FC<ISessions> = ({ eventData }) => {
                         minWidth: 'auto',
                       }}
                     >
-                      <Typography variant="bodyS">Today</Typography>
+                      <Typography variant="bodyS">
+                        Today{' '}
+                        {dayjs().tz(eventData?.timezone).format('DD MMM YYYY')}
+                      </Typography>
                     </ZuButton>
                   </Stack>
                 </Stack>

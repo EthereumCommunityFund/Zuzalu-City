@@ -1,15 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken';
 import { ethers } from 'ethers';
-import {
-  SUPABASE_KEY,
-  JWT_SECRET,
-  PROVIDER,
-  CONTRACT_ADDRESS,
-} from '@/constant';
-
-const supabaseUrl = 'https://lbkpbqembtbdupidkbcy.supabase.co';
-const supabase = createClient(supabaseUrl, SUPABASE_KEY);
+import { JWT_SECRET, PROVIDER, CONTRACT_ADDRESS } from '@/constant';
+import { supabase } from '@/utils/supabase/client';
 
 const ABI = [
   {
