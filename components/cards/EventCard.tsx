@@ -89,7 +89,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const handleNavigation = () => {
     if (pathname !== '/') {
       router.push(`/spaces/${event.spaceId}/events/${event.id}`);
-    } else router.push(`/events/${event.id}}`);
+    } else router.push(`/events/${event.id}`);
   };
 
   return (
