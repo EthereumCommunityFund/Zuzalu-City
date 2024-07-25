@@ -14,6 +14,7 @@ const Home = () => {
   const [sessionView, setSessionView] = useState<boolean>(false);
   const [verify, setVerify] = useState<boolean>(false);
   const eventId = params.eventid.toString();
+  const [urlOption, setUrlOption] = useState<string>('');
   const getEventDetailInfo = async () => {
     try {
       const response: CeramicResponseType<EventEdge> =
@@ -106,6 +107,12 @@ const Home = () => {
         ) {
           setSessionView(true);
         }
+        if (sessionStorage.getItem('tab')) {
+          setTabName(sessionStorage.getItem('tab') as string);
+          setUrlOption(sessionStorage.getItem('option') as string);
+          sessionStorage.setItem('tab', '');
+          sessionStorage.setItem('option', '');
+        }
       } catch (err) {
         console.log(err);
       }
@@ -124,7 +131,9 @@ const Home = () => {
       {tabName === 'About' && (
         <About eventData={eventData} setVerify={setVerify} />
       )}
-      {tabName === 'Sessions' && <Sessions eventData={eventData} />}
+      {tabName === 'Sessions' && (
+        <Sessions eventData={eventData} option={urlOption} />
+      )}
     </Stack>
   );
 };

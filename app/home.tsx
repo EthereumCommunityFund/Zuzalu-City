@@ -40,7 +40,7 @@ import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import MiniDashboard from './components/MiniDashboard';
-
+import { dashboardEvent } from '@/constant';
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -56,6 +56,8 @@ const Home: React.FC = () => {
   const [eventsForCalendar, setEventsForCalendar] = useState<Event[]>([]);
   const [isPast, setIsPast] = useState<boolean>(true);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [targetEventView, setTargetEventView] = useState<boolean>(false);
+  const [targetEvent, setTargetEvent] = useState<Event>();
 
   const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
     dayjs(new Date()),
@@ -161,6 +163,15 @@ const Home: React.FC = () => {
               tagline
               timezone
               title
+              members{
+              id
+              }
+              admins{
+              id
+              }
+              superAdmin{
+              id
+              }
               profile {
                 username
                 avatar
@@ -183,6 +194,31 @@ const Home: React.FC = () => {
         );
         setEvents(fetchedEvents);
         setIsEventsLoading(false);
+        const getEvent =
+          fetchedEvents &&
+          fetchedEvents.find((event) => event.id === dashboardEvent);
+        setTargetEvent(getEvent);
+        const userDid = ceramic.did?.parent.toString().toLowerCase() || '';
+        if (getEvent) {
+          const memberIds = new Set(
+            getEvent.members?.map((member) => member.id.toLowerCase()),
+          );
+          const adminIds = new Set(
+            getEvent.admins?.map((admin) => admin.id.toLowerCase()),
+          );
+          const superAdminIds = new Set(
+            getEvent.superAdmin?.map((sa) => sa.id.toLowerCase()),
+          );
+
+          const canView =
+            memberIds.has(userDid) ||
+            adminIds.has(userDid) ||
+            superAdminIds.has(userDid);
+          if (canView) {
+            setTargetEventView(canView);
+          }
+          console.log(canView, ceramic);
+        }
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -320,20 +356,13 @@ const Home: React.FC = () => {
     }
   };
 
-  const targetSpaceExist =
-    spaces &&
-    spaces.length > 0 &&
-    spaces
-      .filter((space) => space.id === process.env.MAIN_SPACE_ID)[0]
-      ?.members?.map((member) => member.id.toLowerCase())
-      .includes(ceramic.did?.parent.toString().toLowerCase() || '');
-
   useEffect(() => {
+    console.log('ceramic changed');
     document.title = 'Zuzalu City';
     Promise.all([getSpaces(), getEvents()]).catch((error) => {
       console.error('An error occurred:', error);
     });
-  }, []);
+  }, [ceramic.did?.parent]);
 
   useEffect(() => {
     getEventsByDate().catch((error) => {
@@ -368,38 +397,21 @@ const Home: React.FC = () => {
               overflowX: 'hidden',
             }}
           >
-            {ceramic && targetSpaceExist && (
+            {ceramic && targetEvent && targetEventView && (
               <MiniDashboard
-                imageUrl={
-                  spaces.filter(
-                    (space) => space.id === process.env.MAIN_SPACE_ID,
-                  )[0].avatar
-                }
-                spaceName={
-                  spaces.filter(
-                    (space) => space.id === process.env.MAIN_SPACE_ID,
-                  )[0].name
-                }
-                startTime={
-                  spaces.filter(
-                    (space) => space.id === process.env.MAIN_SPACE_ID,
-                  )[0].events?.edges[0].node.startTime
-                }
-                endTime={
-                  spaces.filter(
-                    (space) => space.id === process.env.MAIN_SPACE_ID,
-                  )[0].events.edges[0].node.endTime
-                }
+                imageUrl={targetEvent.image_url}
+                spaceName={targetEvent.title}
+                startTime={dayjs(targetEvent.startTime).format('MMMM DD')}
+                endTime={dayjs(targetEvent.endTime).format('MMMM DD')}
                 showManage={
-                  spaces
-                    .filter(
-                      (space) => space.id === process.env.MAIN_SPACE_ID,
-                    )[0]
-                    .superAdmin?.map((ad) => ad.id.toLowerCase())
+                  targetEvent.superAdmin
+                    ?.map((ad) => ad.id.toLowerCase())
                     .includes(
                       ceramic.did?.parent.toString().toLowerCase() || '',
                     ) ?? false
                 }
+                eventId={targetEvent.id}
+                spaceId={targetEvent.spaceId as string}
               />
             )}
 
