@@ -33,7 +33,7 @@ import { ZuButton, ZuInput } from '@/components/core';
 import { TimeRange } from './components';
 import { supabase } from '@/utils/supabase/client';
 import { VENUE_TAGS } from '@/constant';
-import { Venue, Event } from '@/types';
+import { Venue, Event, AvailableType } from '@/types';
 import { debounce } from 'lodash';
 import dayjs from 'dayjs';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
@@ -49,11 +49,6 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
-};
-
-type AvailableType = {
-  startTime: string;
-  endTime: string;
 };
 
 interface IVenue {
@@ -79,33 +74,37 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [capacity, setCapacity] = useState<number>(0);
   const [venues, setVenues] = useState<Venue[]>([]);
-  const validateTimeRanges = (ranges: AvailableType[]) => {
-    const errors = ranges.map((range, index) => {
-      const startTime = new Date(range.startTime).getTime();
-      const endTime = new Date(range.endTime).getTime();
+  const validateTimeRanges = (timeRanges: AvailableType[]) => {
+    const isOverlapping = (range1: AvailableType, range2: AvailableType) => {
+      return (
+        range1.startTime < range2.endTime && range2.startTime < range1.endTime
+      );
+    };
 
-      if (startTime >= endTime) {
-        return { ...range, error: 'Start time must be before end time' };
+    // First, check each time range for validity (start time should be before end time)
+    for (let i = 0; i < timeRanges.length; i++) {
+      const { startTime, endTime } = timeRanges[i];
+      if (new Date(startTime) >= new Date(endTime)) {
+        timeRanges[i].error =
+          `Time range ${i + 1} is invalid as start time ${startTime} is not before end time ${endTime}`;
       }
+    }
 
-      for (let i = 0; i < ranges.length; i++) {
-        if (i !== index) {
-          const otherStartTime = new Date(ranges[i].startTime).getTime();
-          const otherEndTime = new Date(ranges[i].endTime).getTime();
-          if (
-            (startTime < otherEndTime && startTime >= otherStartTime) ||
-            (endTime > otherStartTime && endTime <= otherEndTime)
-          ) {
-            return { ...range, error: 'Time ranges overlap' };
-          }
+    // Second, check for overlaps
+    for (let i = 0; i < timeRanges.length; i++) {
+      for (let j = i + 1; j < timeRanges.length; j++) {
+        if (isOverlapping(timeRanges[i], timeRanges[j])) {
+          timeRanges[i].error =
+            `Time range ${i + 1} overlaps with time range ${j + 1}`;
+          timeRanges[j].error =
+            `Time range ${j + 1} overlaps with time range ${i + 1}`;
         }
       }
+    }
 
-      return { ...range, error: '' };
-    });
-
-    return errors;
+    return timeRanges;
   };
+
   const handleChange = (e: any) => {
     setTags(
       typeof e.target.value === 'string'
@@ -463,12 +462,12 @@ const Home: React.FC<IVenue> = ({ event }) => {
                       padding="10px"
                       sx={{ cursor: 'pointer' }}
                       onClick={() => {
-                        setMonday((prev) =>
-                          validateTimeRanges([
+                        if (monday.filter((item) => item.error).length === 0) {
+                          setMonday((prev) => [
                             ...prev,
                             { startTime: '', endTime: '' },
-                          ]),
-                        );
+                          ]);
+                        }
                       }}
                     >
                       <PlusIcon size={5} />
@@ -479,7 +478,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                       onClick={() => {
                         const prev = [...monday];
                         prev.pop();
-                        setMonday(validateTimeRanges(prev));
+                        setMonday(prev);
                       }}
                     >
                       <MinusIcon size={5} />
