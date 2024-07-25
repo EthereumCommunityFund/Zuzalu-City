@@ -50,7 +50,9 @@ function RootLayout({
                     <AppContextProvider>
                       <Header />
                       {isClient && <AuthPrompt />}
-                      {children}
+                      <div style={{ minHeight: `calc(100vh - 50px)` }}>
+                        {children}
+                      </div>
                     </AppContextProvider>
                   </ZupassProvider>
                 </WalletProvider>
