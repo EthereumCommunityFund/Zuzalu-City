@@ -31,7 +31,7 @@ const Header: React.FC<IHeader> = ({ name, spaceId }) => {
           {name}
         </Typography>
       </Stack>
-      <Stack direction="row" gap={1}>
+      {/*<Stack direction="row" gap={1}>
         <Stack
           direction="row"
           padding={1}
@@ -50,7 +50,7 @@ const Header: React.FC<IHeader> = ({ name, spaceId }) => {
         >
           <ThreeHorizonIcon />
         </Stack>
-      </Stack>
+      </Stack>*/}
     </Stack>
   );
 };
