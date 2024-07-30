@@ -1,3 +1,4 @@
+import { SwipeableDrawerProps } from '@mui/material';
 import { CSSProperties, Dispatch, SetStateAction } from 'react';
 import { ITimezoneOption } from 'react-timezone-select';
 
