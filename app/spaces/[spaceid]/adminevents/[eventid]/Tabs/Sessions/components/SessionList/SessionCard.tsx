@@ -9,58 +9,27 @@ import {
 } from 'components/icons';
 import { Session } from '@/types';
 import { supabase } from '@/utils/supabase/client';
-
+import { useRouter } from 'next/navigation';
 interface SessionCardProps {
   session: Session;
-  setSelectedSession?: React.Dispatch<React.SetStateAction<Session>> | any;
-  userDID: string;
-  setIsRsvped: React.Dispatch<React.SetStateAction<boolean>> | any;
-  setShowDeleteButton: React.Dispatch<React.SetStateAction<boolean>> | any;
-  setLocationAvatar: React.Dispatch<React.SetStateAction<string>> | any;
+  eventId: string;
+  spaceId?: string;
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({
   session,
-  setSelectedSession,
-  userDID,
-  setIsRsvped,
-  setShowDeleteButton,
-  setLocationAvatar,
+  eventId,
+  spaceId,
 }) => {
+  const router = useRouter();
   const handleClick = async () => {
-    const { data: rsvpData, error: rsvpError } = await supabase
-      .from('rsvp')
-      .select('*')
-      .eq('userDID', userDID)
-      .eq('sessionID', session.id);
-    if (rsvpError) {
-      console.error('Error fetching data:', rsvpError);
+    if (spaceId) {
+      router.push(
+        `/spaces/${spaceId}/events/${eventId}/sessions/${session.uuid}`,
+      );
+    } else {
+      router.push(`/events/${eventId}/sessions/${session.uuid}`);
     }
-    if ((rsvpData?.length as number) > 0) {
-      setIsRsvped(true);
-    }
-    const { data: locationData, error: locationError } = await supabase
-      .from('venues')
-      .select('avatar')
-      .eq('name', session.location)
-      .eq('eventId', session.eventId)
-      .single();
-    if (locationError) {
-      console.error('Error fetching data:', locationError);
-    }
-    setLocationAvatar(locationData?.avatar);
-    const { data: deleteData, error: deleteError } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('creatorDID', userDID)
-      .eq('id', session.id);
-    if (deleteError) {
-      console.error('Error fetching data:', deleteError);
-    }
-    if ((deleteData?.length as number) > 0) {
-      setShowDeleteButton(true);
-    }
-    setSelectedSession(session);
   };
 
   return (

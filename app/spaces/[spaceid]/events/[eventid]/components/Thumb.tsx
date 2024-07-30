@@ -64,7 +64,7 @@ const Thumb: React.FC<TabbarProps> = ({
           </Typography>
         </Stack>
       </Stack>
-      <Stack
+      {/*<Stack
         direction="row"
         paddingLeft={3}
         borderLeft="1px solid #383838"
@@ -79,7 +79,7 @@ const Thumb: React.FC<TabbarProps> = ({
         >
           Host Announcements
         </Typography>
-      </Stack>
+      </Stack>*/}
     </Stack>
   );
 };
