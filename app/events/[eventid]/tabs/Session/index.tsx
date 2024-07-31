@@ -88,6 +88,8 @@ import {
 import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
+import { ITimezoneOption } from 'react-timezone-select';
+import { TimezoneSelector } from '@/components/select/TimezoneSelector';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -171,6 +173,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedTimezone, setSelectedTimezone] = useState<ITimezoneOption>({} as ITimezoneOption);
   const router = useRouter();
 
   const groupSessionByDate = (
@@ -362,16 +365,20 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
+    let timezone = eventData?.timezone;
+    if(selectedTimezone.value) {
+      timezone = selectedTimezone.value
+    }
     if (sessionDate == null) return true;
     const formattedTime = date.format('HH:mm');
     const isWithinBookedSession = bookedSessionsForDay.some((session) => {
       const sessionStartTime = dayjs(session.startTime)
         .tz('UTC')
-        .tz(eventData?.timezone)
+        .tz(timezone)
         .format('HH:mm');
       const sessionEndTime = dayjs(session.endTime)
         .tz('UTC')
-        .tz(eventData?.timezone)
+        .tz(timezone)
         .format('HH:mm');
       return (
         (formattedTime >= sessionStartTime && formattedTime < sessionEndTime) ||
@@ -390,11 +397,11 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       if (isStart) {
         const startTime = dayjs
           .tz(slot.startTime, 'HH:mm', 'UTC')
-          .tz(eventData?.timezone)
+          .tz(timezone)
           .format('HH:mm');
         const endTime = dayjs
           .tz(slot.endTime, 'HH:mm', 'UTC')
-          .tz(eventData?.timezone)
+          .tz(timezone)
           .format('HH:mm');
         if (endTime >= startTime) {
           return formattedTime >= startTime && formattedTime < endTime;
@@ -402,10 +409,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           return !(formattedTime < startTime && formattedTime >= endTime);
         }
       } else {
-        startTime = sessionStartTime.tz(eventData?.timezone).format('HH:mm');
+        startTime = sessionStartTime.tz(timezone).format('HH:mm');
         endTime = dayjs
           .tz(slot.endTime, 'HH:mm', 'UTC')
-          .tz(eventData?.timezone)
+          .tz(timezone)
           .format('HH:mm');
         if (endTime >= startTime) {
           return formattedTime >= startTime && formattedTime <= endTime;
@@ -537,14 +544,19 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   ) => {
     const newSessionStart = startTime;
     const newSessionEnd = endTime;
+    let timezone = eventData?.timezone;
+
+    if(selectedTimezone.value) {
+      timezone = selectedTimezone.value;
+    }
 
     for (let session of bookedSessions) {
       const sessionStart = dayjs(session.startTime)
         .tz('UTC')
-        .tz(eventData?.timezone);
+        .tz(timezone);
       const sessionEnd = dayjs(session.endTime)
         .tz('UTC')
-        .tz(eventData?.timezone);
+        .tz(timezone);
 
       if (
         (newSessionStart.isSameOrBefore(sessionEnd) &&
@@ -563,6 +575,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const createSession = async () => {
     if (!isAuthenticated) {
       return;
+    }
+
+    let timezone = eventData?.timezone;
+
+    if(selectedTimezone.value) {
+      timezone = selectedTimezone.value;
     }
 
     const description = sessionDescriptionEditorStore.getValueString();
@@ -589,8 +607,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     } else if (
       isSessionOverlap(
         bookedSessionsForDay,
-        dayjs(sessionStartTime).tz('UTC').tz(eventData?.timezone),
-        dayjs(sessionEndTime).tz('UTC').tz(eventData?.timezone),
+        dayjs(sessionStartTime).tz('UTC').tz(timezone),
+        dayjs(sessionEndTime).tz('UTC').tz(timezone),
       )
     ) {
       typeof window !== 'undefined' &&
@@ -640,7 +658,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       type: sessionType,
       format,
       track: sessionTrack,
-      timezone: eventData?.timezone,
+      timezone: timezone,
       video_url: sessionVideoURL,
       location:
         sessionLocation === 'Custom'
@@ -667,6 +685,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      let timezone = eventData?.timezone;
+      
+      if(selectedTimezone.value) {
+        timezone = selectedTimezone.value
+      }
+
       await getPeople();
       await getLocation();
       if (option && option.length > 0) {
@@ -675,7 +699,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             setIsRSVPFiltered(true);
             break;
           case 'Today':
-            setSelectedDate(dayjs().tz(eventData?.timezone));
+            setSelectedDate(dayjs().tz(timezone));
             break;
           default:
             break;
@@ -1132,9 +1156,14 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           location
                         </Typography>
                         <Typography variant="bodyB">
-                          Your booking will be at the event timezone:{' '}
-                          {eventData?.timezone}
+                          Your booking will be at this timezone: {selectedTimezone.value ? selectedTimezone.value : eventData?.timezone}
                         </Typography>
+                        <TimezoneSelector 
+                          setSelectedTimezone={setSelectedTimezone}
+                          sx={{
+                            width: '100%'
+                          }}
+                        />
                         <DesktopDatePicker
                           onChange={(newValue) => {
                             if (newValue !== null) handleDateChange(newValue);

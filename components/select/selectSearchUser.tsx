@@ -35,8 +35,8 @@ export default function SelectSearchUser({
   );
 
   const options = useMemo(() => {
-    if (ref.current) {
-      return users.filter((u) => ref.current?.findIndex((r) => r.id === u.id));
+    if (ref.current && users.length > 0) {
+      return users.filter((u) => ref.current?.findIndex((r) => r && (r.id === u.id)));
     }
     return users;
   }, [users]);
@@ -54,118 +54,123 @@ export default function SelectSearchUser({
 
   return (
     <>
-      <Autocomplete
-        multiple
-        value={value}
-        onChange={(event, newValue) => handleChange(newValue)}
-        filterOptions={(options, params) => {
-          const { inputValue } = params;
+      {
+        users.length > 0 && <>
+          <Autocomplete
+            multiple
+            value={value}
+            onChange={(event, newValue) => handleChange(newValue)}
+            filterOptions={(options, params) => {
+              const { inputValue } = params;
 
-          return options.filter((option) => {
-            const { author, username } = option;
-            if (username.toLowerCase().includes(inputValue.toLowerCase()))
-              return true;
-            const regex = /0x.+/g;
-            const matches = author?.id.match(regex);
-            if (matches) {
-              const address = matches[0];
-              if (address.toLowerCase().includes(inputValue.toLowerCase()))
-                return true;
-            }
-            return false;
-          });
-        }}
-        options={options}
-        getOptionLabel={(option) => {
-          return option.username;
-        }}
-        renderOption={(props, option) => {
-          const { key, ...optionProps } = props as any;
-          return (
-            <li key={option.id} {...optionProps}>
-              <Box
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-                justifyContent="space-between"
-                width="100%"
-              >
-                <Stack direction={'row'} alignItems="center" spacing="10px">
-                  <Image
-                    src={option.avatar || '/user/avatar_icon.png'}
-                    width={26}
-                    height={26}
-                    alt="avatar"
-                  />
-                  <ListItemText primary={option.username} />
-                </Stack>
-                <Checkbox
-                  checked={
-                    value.findIndex((item) => item.id === option.id) > -1
-                  }
-                />
-              </Box>
-            </li>
-          );
-        }}
-        renderInput={(params) => {
-          return (
-            <TextField
-              {...params}
-              placeholder="Search a person"
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <>
-                    <SearchIcon
-                      sx={{
-                        color: 'rgba(255, 255, 255, 0.6)',
-                      }}
+              return options.filter((option) => {
+                const { author, username } = option;
+                if (username.toLowerCase().includes(inputValue.toLowerCase()))
+                  return true;
+                const regex = /0x.+/g;
+                const matches = author?.id.match(regex);
+                if (matches) {
+                  const address = matches[0];
+                  if (address.toLowerCase().includes(inputValue.toLowerCase()))
+                    return true;
+                }
+                return false;
+              });
+            }}
+            options={options}
+            getOptionLabel={(option) => {
+              return option ? option.username : '';
+            }}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props as any;
+              return (
+                option ? <li key={option.id} {...optionProps}>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
+                    <Stack direction={'row'} alignItems="center" spacing="10px">
+                      <Image
+                        src={option.avatar || '/user/avatar_icon.png'}
+                        width={26}
+                        height={26}
+                        alt="avatar"
+                      />
+                      <ListItemText primary={option.username} />
+                    </Stack>
+                    <Checkbox
+                      checked={
+                        value.findIndex((item) => item && (item.id === option.id)) > -1
+                      }
                     />
-                  </>
-                ),
-              }}
-            />
-          );
-        }}
-      />
-      <Box display="flex" flexDirection="row" gap="10px" flexWrap="wrap">
-        {value.map((i, index) => {
-          const isInitialUser = initialUsers.some((user) => user.id === i.id);
-          return (
-            <Chip
-              label={
-                <Stack direction="row" alignItems="center" spacing="10px">
-                  <Image
-                    src={i.avatar || '/user/avatar_icon.png'}
-                    width={26}
-                    height={26}
-                    alt="avatar"
-                  />
-                  <Typography variant="bodyMB" sx={{ lineHeight: 1.6 }}>
-                    {i.username}
-                  </Typography>
-                </Stack>
-              }
-              sx={{
-                borderRadius: '10px',
-                padding: '6px 0',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              }}
-              onDelete={
-                isInitialUser
-                  ? undefined
-                  : () => {
-                      const newArray = value.filter((item) => item.id !== i.id);
-                      setValue(newArray);
-                      onChange(newArray);
-                    }
-              }
-              key={`Selected_Speaker${index}`}
-            />
-          );
-        })}
-      </Box>
+                  </Box>
+                </li>
+                : <></>
+              );
+            }}
+            renderInput={(params) => {
+              return (
+                <TextField
+                  {...params}
+                  placeholder="Search a person"
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <SearchIcon
+                          sx={{
+                            color: 'rgba(255, 255, 255, 0.6)',
+                          }}
+                        />
+                      </>
+                    ),
+                  }}
+                />
+              );
+            }}
+          />
+          <Box display="flex" flexDirection="row" gap="10px" flexWrap="wrap">
+            {value.map((i, index) => {
+              const isInitialUser = initialUsers.length > 0 && initialUsers.some((user) => user && user.id === i.id);
+              return (
+                i && <Chip
+                  label={
+                    <Stack direction="row" alignItems="center" spacing="10px">
+                      <Image
+                        src={i.avatar || '/user/avatar_icon.png'}
+                        width={26}
+                        height={26}
+                        alt="avatar"
+                      />
+                      <Typography variant="bodyMB" sx={{ lineHeight: 1.6 }}>
+                        {i.username}
+                      </Typography>
+                    </Stack>
+                  }
+                  sx={{
+                    borderRadius: '10px',
+                    padding: '6px 0',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  }}
+                  onDelete={
+                    isInitialUser
+                      ? undefined
+                      : () => {
+                        const newArray = value.filter((item) => item.id !== i.id);
+                        setValue(newArray);
+                        onChange(newArray);
+                      }
+                  }
+                  key={`Selected_Speaker${index}`}
+                />
+              );
+            })}
+          </Box>
+        </>
+      }
     </>
   );
 }

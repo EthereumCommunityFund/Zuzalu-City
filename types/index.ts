@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction } from 'react';
+import { CSSProperties, Dispatch, SetStateAction } from 'react';
+import { ITimezoneOption } from 'react-timezone-select';
 
 export type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -318,3 +319,8 @@ export type AvailableType = {
   endTime: string;
   error?: string;
 };
+
+export interface TimezoneSelectorProps {
+  sx: CSSProperties;
+  setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>
+}
