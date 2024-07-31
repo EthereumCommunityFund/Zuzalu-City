@@ -17,7 +17,6 @@ export function FilterSessionPop({
   handleClear,
   ...props
 }: FilterSessionsPopComponentProps) {
-
   return (
     <SwipeableDrawer {...props}>
       <Stack

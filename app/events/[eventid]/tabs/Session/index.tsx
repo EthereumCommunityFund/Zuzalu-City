@@ -540,7 +540,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const handleFilterSessionClearButton = () => {
     setIsRSVPFiltered(false);
     setIsManagedFiltered(false);
-  }
+  };
 
   const handleChange = (val: string[]) => {
     setSessionTags(val);
@@ -695,15 +695,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime
         ? dayjs(sessionStartTime)
-          .utc()
-          .format('YYYY-MM-DDTHH:mm:ss[Z]')
-          .toString()
+            .utc()
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
         : null,
       endTime: sessionEndTime
         ? dayjs(sessionEndTime)
-          .utc()
-          .format('YYYY-MM-DDTHH:mm:ss[Z]')
-          .toString()
+            .utc()
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
         : null,
       profileId,
       eventId,
@@ -1449,9 +1449,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   {sessionLocation &&
                     sessionDate &&
                     sessionStartTime !==
-                    dayjs().set('hour', 0).set('minute', 0) &&
+                      dayjs().set('hour', 0).set('minute', 0) &&
                     sessionEndTime !==
-                    dayjs().set('hour', 0).set('minute', 0) && (
+                      dayjs().set('hour', 0).set('minute', 0) && (
                       <Stack spacing="10px">
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -1650,9 +1650,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   {sessionLocation &&
                     sessionDate &&
                     sessionStartTime !==
-                    dayjs().set('hour', 0).set('minute', 0) &&
+                      dayjs().set('hour', 0).set('minute', 0) &&
                     sessionEndTime !==
-                    dayjs().set('hour', 0).set('minute', 0) && (
+                      dayjs().set('hour', 0).set('minute', 0) && (
                       <Stack spacing="10px">
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -2029,9 +2029,16 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             setShowDeleteButton={setShowDeleteButton}
                             setLocationAvatar={setLocationAvatar}
                             isLive={
-                              dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') > dayjs(session.startTime)
+                              dayjs(new Date())
                                 .tz(eventData?.timezone)
-                                .format('dddd, MMMM D') && dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') < dayjs(session.endTime)
+                                .format('dddd, MMMM D') >
+                                dayjs(session.startTime)
+                                  .tz(eventData?.timezone)
+                                  .format('dddd, MMMM D') &&
+                              dayjs(new Date())
+                                .tz(eventData?.timezone)
+                                .format('dddd, MMMM D') <
+                                dayjs(session.endTime)
                                   .tz(eventData?.timezone)
                                   .format('dddd, MMMM D')
                             }
@@ -2377,26 +2384,33 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               </Stack>
               <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
-                  {
-                    dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') > dayjs(selectedSession.startTime)
+                  {dayjs(new Date())
+                    .tz(eventData?.timezone)
+                    .format('dddd, MMMM D') >
+                    dayjs(selectedSession.startTime)
                       .tz(eventData?.timezone)
-                      .format('dddd, MMMM D') && dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') < dayjs(selectedSession.endTime)
+                      .format('dddd, MMMM D') &&
+                    dayjs(new Date())
+                      .tz(eventData?.timezone)
+                      .format('dddd, MMMM D') <
+                      dayjs(selectedSession.endTime)
                         .tz(eventData?.timezone)
-                        .format('dddd, MMMM D') && <Stack direction="row" spacing="10px" alignItems="center">
-                      <Typography
-                        bgcolor="#7DFFD11A"
-                        padding="2px 4px"
-                        color="#7DFFD1"
-                        variant="bodyX"
-                        borderRadius="2px"
-                      >
-                        · LIVE
-                      </Typography>
-                      <Typography variant="caption" textTransform="uppercase">
-                        {selectedSession.track}
-                      </Typography>
-                    </Stack>
-                  }
+                        .format('dddd, MMMM D') && (
+                      <Stack direction="row" spacing="10px" alignItems="center">
+                        <Typography
+                          bgcolor="#7DFFD11A"
+                          padding="2px 4px"
+                          color="#7DFFD1"
+                          variant="bodyX"
+                          borderRadius="2px"
+                        >
+                          · LIVE
+                        </Typography>
+                        <Typography variant="caption" textTransform="uppercase">
+                          {selectedSession.track}
+                        </Typography>
+                      </Stack>
+                    )}
 
                   <Stack direction="row" alignItems="center" spacing="14px">
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
@@ -2756,8 +2770,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             },
             [theme.breakpoints.down('sm')]: {
               width: '100%',
-              padding: '0px'
-            }
+              padding: '0px',
+            },
           }}
           anchor="right"
           open={state['right']}

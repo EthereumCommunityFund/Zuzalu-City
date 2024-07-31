@@ -31,9 +31,8 @@ const SessionCard: React.FC<SessionCardProps> = ({
   setIsRsvped,
   setShowDeleteButton,
   setLocationAvatar,
-  isLive
+  isLive,
 }) => {
-
   const [hover, setHover] = useState<boolean>(false);
 
   const router = useRouter();
@@ -61,8 +60,8 @@ const SessionCard: React.FC<SessionCardProps> = ({
       }}
     >
       <Stack spacing="10px" flex={1}>
-        {
-          isLive && <Stack direction="row" spacing="10px" alignItems="center">
+        {isLive && (
+          <Stack direction="row" spacing="10px" alignItems="center">
             <Typography
               bgcolor="#7DFFD11A"
               padding="2px 4px"
@@ -76,7 +75,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
               {session.track}
             </Typography>
           </Stack>
-        }
+        )}
         <Typography variant="bodyB">
           {dayjs(session.startTime).tz(session.timezone).format('h:mm A')} -{' '}
           {dayjs(session.endTime).tz(session.timezone).format('h:mm A')}
@@ -90,38 +89,40 @@ const SessionCard: React.FC<SessionCardProps> = ({
           ) : null}
           {session.speakers
             ? JSON.parse(session.speakers).map(
-              (speaker: any, index: number) => (
-                <Stack
-                  key={`Speaker-${index}`}
-                  direction={'row'}
-                  spacing={0.5}
-                  alignItems={'center'}
-                >
-                  <Box
-                    component={'img'}
-                    height={20}
-                    width={20}
-                    borderRadius={10}
-                    src={speaker.avatar || '/user/avatar_p.png'}
-                  />
-                  <Typography variant="bodyS">{speaker.username}</Typography>
-                </Stack>
-              ),
-            )
+                (speaker: any, index: number) => (
+                  <Stack
+                    key={`Speaker-${index}`}
+                    direction={'row'}
+                    spacing={0.5}
+                    alignItems={'center'}
+                  >
+                    <Box
+                      component={'img'}
+                      height={20}
+                      width={20}
+                      borderRadius={10}
+                      src={speaker.avatar || '/user/avatar_p.png'}
+                    />
+                    <Typography variant="bodyS">{speaker.username}</Typography>
+                  </Stack>
+                ),
+              )
             : null}
         </Stack>
         <Stack direction={'row'} alignItems={'center'} spacing={1}>
           <MapIcon size={4} />
-          <Typography variant="caption" sx={{ opacity: 0.5 }} textTransform={'uppercase'}>
+          <Typography
+            variant="caption"
+            sx={{ opacity: 0.5 }}
+            textTransform={'uppercase'}
+          >
             {session.format === 'online' ? session.video_url : session.location}
           </Typography>
         </Stack>
       </Stack>
-      <Stack
-        gap={'10px'}
-      >
-        {
-          session.creatorDID === userDID && <Stack
+      <Stack gap={'10px'}>
+        {session.creatorDID === userDID && (
+          <Stack
             direction={'row'}
             gap={'4px'}
             padding={'2px 5px'}
@@ -129,9 +130,16 @@ const SessionCard: React.FC<SessionCardProps> = ({
             borderRadius={'2px'}
           >
             <UserCircleIcon color={'#FFCC66'} />
-            <Typography textTransform={'uppercase'} fontWeight={700} fontSize={'10px'} color={'#FFC77D'}>My Session</Typography>
+            <Typography
+              textTransform={'uppercase'}
+              fontWeight={700}
+              fontSize={'10px'}
+              color={'#FFC77D'}
+            >
+              My Session
+            </Typography>
           </Stack>
-        }
+        )}
         <Stack
           padding="4px"
           spacing="4px"
@@ -144,16 +152,14 @@ const SessionCard: React.FC<SessionCardProps> = ({
             opacity: 0.7,
             '&:hover': {
               backgroundColor: 'rgba(125, 255, 209, 0.10)',
-              color: '#7DFFD1'
+              color: '#7DFFD1',
             },
             color: 'white',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)'
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
           }}
           height="fit-content"
         >
-          <SessionIcon
-            fill={hover ? '#7DFFD1' : 'white'}
-          />
+          <SessionIcon fill={hover ? '#7DFFD1' : 'white'} />
           <Typography variant="bodyS">{session.rsvpNb || 0}</Typography>
         </Stack>
       </Stack>
