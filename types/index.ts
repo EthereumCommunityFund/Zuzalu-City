@@ -322,5 +322,5 @@ export type AvailableType = {
 
 export interface TimezoneSelectorProps {
   sx: CSSProperties;
-  setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>
+  setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>;
 }

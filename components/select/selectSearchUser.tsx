@@ -36,7 +36,9 @@ export default function SelectSearchUser({
 
   const options = useMemo(() => {
     if (ref.current && users.length > 0) {
-      return users.filter((u) => ref.current?.findIndex((r) => r && (r.id === u.id)));
+      return users.filter((u) =>
+        ref.current?.findIndex((r) => r && r.id === u.id),
+      );
     }
     return users;
   }, [users]);
@@ -54,8 +56,8 @@ export default function SelectSearchUser({
 
   return (
     <>
-      {
-        users.length > 0 && <>
+      {users.length > 0 && (
+        <>
           <Autocomplete
             multiple
             value={value}
@@ -83,8 +85,8 @@ export default function SelectSearchUser({
             }}
             renderOption={(props, option) => {
               const { key, ...optionProps } = props as any;
-              return (
-                option ? <li key={option.id} {...optionProps}>
+              return option ? (
+                <li key={option.id} {...optionProps}>
                   <Box
                     display="flex"
                     flexDirection="row"
@@ -103,12 +105,15 @@ export default function SelectSearchUser({
                     </Stack>
                     <Checkbox
                       checked={
-                        value.findIndex((item) => item && (item.id === option.id)) > -1
+                        value.findIndex(
+                          (item) => item && item.id === option.id,
+                        ) > -1
                       }
                     />
                   </Box>
                 </li>
-                : <></>
+              ) : (
+                <></>
               );
             }}
             renderInput={(params) => {
@@ -134,43 +139,49 @@ export default function SelectSearchUser({
           />
           <Box display="flex" flexDirection="row" gap="10px" flexWrap="wrap">
             {value.map((i, index) => {
-              const isInitialUser = initialUsers.length > 0 && initialUsers.some((user) => user && user.id === i.id);
+              const isInitialUser =
+                initialUsers.length > 0 &&
+                initialUsers.some((user) => user && user.id === i.id);
               return (
-                i && <Chip
-                  label={
-                    <Stack direction="row" alignItems="center" spacing="10px">
-                      <Image
-                        src={i.avatar || '/user/avatar_icon.png'}
-                        width={26}
-                        height={26}
-                        alt="avatar"
-                      />
-                      <Typography variant="bodyMB" sx={{ lineHeight: 1.6 }}>
-                        {i.username}
-                      </Typography>
-                    </Stack>
-                  }
-                  sx={{
-                    borderRadius: '10px',
-                    padding: '6px 0',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  }}
-                  onDelete={
-                    isInitialUser
-                      ? undefined
-                      : () => {
-                        const newArray = value.filter((item) => item.id !== i.id);
-                        setValue(newArray);
-                        onChange(newArray);
-                      }
-                  }
-                  key={`Selected_Speaker${index}`}
-                />
+                i && (
+                  <Chip
+                    label={
+                      <Stack direction="row" alignItems="center" spacing="10px">
+                        <Image
+                          src={i.avatar || '/user/avatar_icon.png'}
+                          width={26}
+                          height={26}
+                          alt="avatar"
+                        />
+                        <Typography variant="bodyMB" sx={{ lineHeight: 1.6 }}>
+                          {i.username}
+                        </Typography>
+                      </Stack>
+                    }
+                    sx={{
+                      borderRadius: '10px',
+                      padding: '6px 0',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    }}
+                    onDelete={
+                      isInitialUser
+                        ? undefined
+                        : () => {
+                            const newArray = value.filter(
+                              (item) => item.id !== i.id,
+                            );
+                            setValue(newArray);
+                            onChange(newArray);
+                          }
+                    }
+                    key={`Selected_Speaker${index}`}
+                  />
+                )
               );
             })}
           </Box>
         </>
-      }
+      )}
     </>
   );
 }

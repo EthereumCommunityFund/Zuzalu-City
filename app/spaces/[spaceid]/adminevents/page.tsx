@@ -290,7 +290,9 @@ const Home = () => {
     const descriptionEditorStore = useEditorStore();
     const [avatar, setAvatar] = useState<SelectedFile>();
     const avatarUploader = useUploaderPreview();
-    const [selectedTimezone, setSelectedTimezone] = useState<ITimezoneOption>({} as ITimezoneOption);
+    const [selectedTimezone, setSelectedTimezone] = useState<ITimezoneOption>(
+      {} as ITimezoneOption,
+    );
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
     const socialLinksRef = useRef<HTMLDivElement>(null);
@@ -392,7 +394,9 @@ const Home = () => {
             external_url: inputs.external_url,
             person: person,
             locations: locations,
-            timezone: selectedTimezone ? selectedTimezone.value : dayjs.tz.guess(),
+            timezone: selectedTimezone
+              ? selectedTimezone.value
+              : dayjs.tz.guess(),
           };
           /*const update: any = await composeClient.executeQuery(
           const update: any = await composeClient.executeQuery(
@@ -702,7 +706,7 @@ const Home = () => {
                   <TimezoneSelector
                     setSelectedTimezone={setSelectedTimezone}
                     sx={{
-                      width: '100%'
+                      width: '100%',
                     }}
                   />
                 </Stack>

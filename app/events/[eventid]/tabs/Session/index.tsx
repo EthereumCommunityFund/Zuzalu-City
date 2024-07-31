@@ -173,7 +173,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedTimezone, setSelectedTimezone] = useState<ITimezoneOption>({} as ITimezoneOption);
+  const [selectedTimezone, setSelectedTimezone] = useState<ITimezoneOption>(
+    {} as ITimezoneOption,
+  );
   const router = useRouter();
 
   const groupSessionByDate = (
@@ -366,8 +368,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     let timezone = eventData?.timezone;
-    if(selectedTimezone.value) {
-      timezone = selectedTimezone.value
+    if (selectedTimezone.value) {
+      timezone = selectedTimezone.value;
     }
     if (sessionDate == null) return true;
     const formattedTime = date.format('HH:mm');
@@ -546,17 +548,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const newSessionEnd = endTime;
     let timezone = eventData?.timezone;
 
-    if(selectedTimezone.value) {
+    if (selectedTimezone.value) {
       timezone = selectedTimezone.value;
     }
 
     for (let session of bookedSessions) {
-      const sessionStart = dayjs(session.startTime)
-        .tz('UTC')
-        .tz(timezone);
-      const sessionEnd = dayjs(session.endTime)
-        .tz('UTC')
-        .tz(timezone);
+      const sessionStart = dayjs(session.startTime).tz('UTC').tz(timezone);
+      const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
 
       if (
         (newSessionStart.isSameOrBefore(sessionEnd) &&
@@ -579,7 +577,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
     let timezone = eventData?.timezone;
 
-    if(selectedTimezone.value) {
+    if (selectedTimezone.value) {
       timezone = selectedTimezone.value;
     }
 
@@ -686,9 +684,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   useEffect(() => {
     const fetchData = async () => {
       let timezone = eventData?.timezone;
-      
-      if(selectedTimezone.value) {
-        timezone = selectedTimezone.value
+
+      if (selectedTimezone.value) {
+        timezone = selectedTimezone.value;
       }
 
       await getPeople();
@@ -1156,12 +1154,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           location
                         </Typography>
                         <Typography variant="bodyB">
-                          Your booking will be at this timezone: {selectedTimezone.value ? selectedTimezone.value : eventData?.timezone}
+                          Your booking will be at this timezone:{' '}
+                          {selectedTimezone.value
+                            ? selectedTimezone.value
+                            : eventData?.timezone}
                         </Typography>
-                        <TimezoneSelector 
+                        <TimezoneSelector
                           setSelectedTimezone={setSelectedTimezone}
                           sx={{
-                            width: '100%'
+                            width: '100%',
                           }}
                         />
                         <DesktopDatePicker
