@@ -14,11 +14,7 @@ interface SessionCardProps {
   session: Session;
   eventId: string;
   spaceId?: string;
-  setSelectedSession?: React.Dispatch<React.SetStateAction<Session>> | any;
   userDID: string;
-  setIsRsvped: React.Dispatch<React.SetStateAction<boolean>> | any;
-  setShowDeleteButton: React.Dispatch<React.SetStateAction<boolean>> | any;
-  setLocationAvatar: React.Dispatch<React.SetStateAction<string>> | any;
   isLive: boolean;
 }
 
@@ -26,11 +22,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
   session,
   eventId,
   spaceId,
-  setSelectedSession,
   userDID,
-  setIsRsvped,
-  setShowDeleteButton,
-  setLocationAvatar,
   isLive,
 }) => {
   const [hover, setHover] = useState<boolean>(false);

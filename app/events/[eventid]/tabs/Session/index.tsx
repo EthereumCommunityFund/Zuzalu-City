@@ -118,6 +118,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [directions, setDirections] = useState<string>('');
   const [customLocation, setCustomLocation] = useState<string>('');
   const [isDirections, setIsDirections] = useState<boolean>(false);
+  const [showDeleteButton, setShowDeleteButton] = useState<boolean>(false);
+  const [isCanCollapse, setIsCanCollapse] = useState<boolean>(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   const [state, setState] = useState({
     top: false,
     left: false,
@@ -2023,11 +2026,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           <SessionCard
                             key={`SessionCard-${index}`}
                             session={session}
-                            setSelectedSession={setSelectedSession}
-                            setIsRsvped={setIsRsvped}
                             userDID={adminId}
-                            setShowDeleteButton={setShowDeleteButton}
-                            setLocationAvatar={setLocationAvatar}
+                            eventId={eventId}
                             isLive={
                               dayjs(new Date())
                                 .tz(eventData?.timezone)
@@ -2728,7 +2728,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       borderRadius="10px"
                       width="80px"
                       height="80px"
-                      src={locationAvatar || '/26.png'}
+                      src={'/26.png'}
                     />
                     <Stack alignItems="center">
                       <Typography variant="bodyM">
