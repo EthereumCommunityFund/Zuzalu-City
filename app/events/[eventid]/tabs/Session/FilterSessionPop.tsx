@@ -14,8 +14,10 @@ export function FilterSessionPop({
   handleManagedSwitchChange,
   location,
   track,
+  handleClear,
   ...props
 }: FilterSessionsPopComponentProps) {
+
   return (
     <SwipeableDrawer {...props}>
       <Stack
@@ -36,6 +38,7 @@ export function FilterSessionPop({
                 borderRadius: '10px',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
               }}
+              onClick={props.onClose}
             >
               <ArrowLeftIcon />
             </ZuButton>
@@ -174,6 +177,7 @@ export function FilterSessionPop({
             sx={{
               flex: '1',
             }}
+            onClick={handleClear}
           >
             Clear
           </ZuButton>
@@ -182,6 +186,7 @@ export function FilterSessionPop({
             sx={{
               flex: '1',
             }}
+            onClick={props.onClose}
           >
             Apply
           </ZuButton>

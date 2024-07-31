@@ -537,6 +537,11 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     }
   };
 
+  const handleFilterSessionClearButton = () => {
+    setIsRSVPFiltered(false);
+    setIsManagedFiltered(false);
+  }
+
   const handleChange = (val: string[]) => {
     setSessionTags(val);
   };
@@ -690,15 +695,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
       startTime: sessionStartTime
         ? dayjs(sessionStartTime)
-            .utc()
-            .format('YYYY-MM-DDTHH:mm:ss[Z]')
-            .toString()
+          .utc()
+          .format('YYYY-MM-DDTHH:mm:ss[Z]')
+          .toString()
         : null,
       endTime: sessionEndTime
         ? dayjs(sessionEndTime)
-            .utc()
-            .format('YYYY-MM-DDTHH:mm:ss[Z]')
-            .toString()
+          .utc()
+          .format('YYYY-MM-DDTHH:mm:ss[Z]')
+          .toString()
         : null,
       profileId,
       eventId,
@@ -1444,9 +1449,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   {sessionLocation &&
                     sessionDate &&
                     sessionStartTime !==
-                      dayjs().set('hour', 0).set('minute', 0) &&
+                    dayjs().set('hour', 0).set('minute', 0) &&
                     sessionEndTime !==
-                      dayjs().set('hour', 0).set('minute', 0) && (
+                    dayjs().set('hour', 0).set('minute', 0) && (
                       <Stack spacing="10px">
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -1645,9 +1650,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   {sessionLocation &&
                     sessionDate &&
                     sessionStartTime !==
-                      dayjs().set('hour', 0).set('minute', 0) &&
+                    dayjs().set('hour', 0).set('minute', 0) &&
                     sessionEndTime !==
-                      dayjs().set('hour', 0).set('minute', 0) && (
+                    dayjs().set('hour', 0).set('minute', 0) && (
                       <Stack spacing="10px">
                         <Stack alignItems="center">
                           <ArrowDownIcon />
@@ -1783,7 +1788,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         justifyContent={'center'}
         boxSizing={'border-box'}
         sx={{
-          py: '40px',
+          padding: '40px 20px',
           [theme.breakpoints.down('md')]: {
             padding: '20px',
           },
@@ -1806,19 +1811,20 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             {isTablet && (
               <Stack gap={'20px'} width={'100%'}>
                 <Stack
-                  width={'100%'}
-                  padding="10px"
-                  borderRadius={'10px'}
-                  border={'solid 1px rgba(255, 255, 255, 0.10)'}
-                  bgcolor={'rgba(255, 255, 255, 0.02)'}
+                  borderRadius={'100%'}
+                  border={'3px solid rgba(255, 255, 255, 0.10)'}
+                  width={'64px'}
+                  height={'64px'}
+                  bgcolor={'rgba(255, 255, 255, 0.10)'}
+                  alignItems={'center'}
+                  justifyContent={'center'}
+                  position={'fixed'}
+                  bottom={'22px'}
+                  right={'22px'}
+                  zIndex={10}
+                  onClick={() => toggleDrawer('right', true)}
                 >
-                  <ZuButton
-                    startIcon={<PlusCircleIcon />}
-                    sx={{ width: '100%' }}
-                    onClick={() => toggleDrawer('right', true)}
-                  >
-                    Add a Session
-                  </ZuButton>
+                  <PlusIcon size={10} />
                 </Stack>
                 <Stack direction={'row'} gap={'10px'}>
                   <ZuButton
@@ -1924,8 +1930,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               flex={8}
               position={'relative'}
               sx={{
-                width: '564px',
-                maxWidth: '564px',
+                width: '700px',
+                maxWidth: '700px',
                 [theme.breakpoints.down('md')]: {
                   width: '100%',
                   maxWidth: '100%',
@@ -2022,6 +2028,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             userDID={adminId}
                             setShowDeleteButton={setShowDeleteButton}
                             setLocationAvatar={setLocationAvatar}
+                            isLive={
+                              dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') > dayjs(session.startTime)
+                                .tz(eventData?.timezone)
+                                .format('dddd, MMMM D') && dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') < dayjs(session.endTime)
+                                  .tz(eventData?.timezone)
+                                  .format('dddd, MMMM D')
+                            }
                           />
                         ))
                       ) : (
@@ -2364,20 +2377,27 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               </Stack>
               <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
-                  <Stack direction="row" spacing="10px" alignItems="center">
-                    <Typography
-                      bgcolor="#7DFFD11A"
-                      padding="2px 4px"
-                      color="#7DFFD1"
-                      variant="bodyX"
-                      borderRadius="2px"
-                    >
-                      · LIVE
-                    </Typography>
-                    <Typography variant="caption" textTransform="uppercase">
-                      {selectedSession.track}
-                    </Typography>
-                  </Stack>
+                  {
+                    dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') > dayjs(selectedSession.startTime)
+                      .tz(eventData?.timezone)
+                      .format('dddd, MMMM D') && dayjs(new Date()).tz(eventData?.timezone).format('dddd, MMMM D') < dayjs(selectedSession.endTime)
+                        .tz(eventData?.timezone)
+                        .format('dddd, MMMM D') && <Stack direction="row" spacing="10px" alignItems="center">
+                      <Typography
+                        bgcolor="#7DFFD11A"
+                        padding="2px 4px"
+                        color="#7DFFD1"
+                        variant="bodyX"
+                        borderRadius="2px"
+                      >
+                        · LIVE
+                      </Typography>
+                      <Typography variant="caption" textTransform="uppercase">
+                        {selectedSession.track}
+                      </Typography>
+                    </Stack>
+                  }
+
                   <Stack direction="row" alignItems="center" spacing="14px">
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
                       {dayjs(selectedSession.startTime)
@@ -2723,41 +2743,29 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             </Stack>
           </Stack>
         )}
-        {!isMobile ? (
-          <SwipeableDrawer
-            hideBackdrop={true}
-            sx={{
-              position: 'relative',
-              zIndex: 3,
-              '& .MuiDrawer-paper': {
-                marginTop: '50px',
-                height: 'calc(100% - 50px)',
-                boxShadow: 'none',
-                backgroundColor: 'transparent',
-                paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
-              },
-            }}
-            anchor="right"
-            open={state['right']}
-            onClose={() => toggleDrawer('right', false)}
-            onOpen={() => toggleDrawer('right', true)}
-          >
-            {List('right')}
-          </SwipeableDrawer>
-        ) : state.right ? (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              zIndex: 100,
-            }}
-          >
-            {List('right')}
-          </Box>
-        ) : null}
+        <SwipeableDrawer
+          hideBackdrop={true}
+          sx={{
+            position: 'relative',
+            zIndex: 3,
+            '& .MuiDrawer-paper': {
+              marginTop: '50px',
+              height: 'calc(100% - 50px)',
+              boxShadow: 'none',
+              backgroundColor: 'transparent',
+            },
+            [theme.breakpoints.down('sm')]: {
+              width: '100%',
+              padding: '0px'
+            }
+          }}
+          anchor="right"
+          open={state['right']}
+          onClose={() => toggleDrawer('right', false)}
+          onOpen={() => toggleDrawer('right', true)}
+        >
+          {List('right')}
+        </SwipeableDrawer>
         <FilterSessionPop
           sx={{
             position: 'relative',
@@ -2782,6 +2790,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           handleManagedSwitchChange={handleManagedSwitchChange}
           location="Room One"
           track={eventData?.tracks ?? ''}
+          handleClear={handleFilterSessionClearButton}
         />
       </Stack>
     </LocalizationProvider>

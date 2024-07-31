@@ -321,7 +321,14 @@ export type AvailableType = {
   error?: string;
 };
 
-export interface TimezoneSelectorProps {
-  sx: CSSProperties;
-  setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>;
+export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
+  isRSVPFiltered: boolean;
+  handleRSVPSwitchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isManagedFiltered: boolean;
+  handleManagedSwitchChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
+  location: string;
+  track: string;
+  handleClear: () => void;
 }
