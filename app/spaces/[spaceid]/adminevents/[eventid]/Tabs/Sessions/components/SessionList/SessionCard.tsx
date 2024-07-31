@@ -14,8 +14,8 @@ interface SessionCardProps {
   session: Session;
   eventId: string;
   spaceId?: string;
-  userDID: string;
-  isLive: boolean;
+  userDID?: string;
+  isLive?: boolean;
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({
@@ -113,7 +113,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
         </Stack>
       </Stack>
       <Stack gap={'10px'}>
-        {session.creatorDID === userDID && (
+        {userDID && session.creatorDID === userDID && (
           <Stack
             direction={'row'}
             gap={'4px'}
