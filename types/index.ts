@@ -162,6 +162,7 @@ export interface Session {
   organizers: string;
   rsvpNb?: number;
   creatorDID?: string;
+  uuid: string;
 }
 export type SessionSupabaseData = {
   title: string;
@@ -182,6 +183,7 @@ export type SessionSupabaseData = {
   organizers?: string;
   speakers?: string;
   creatorDID: string;
+  uuid: string;
 };
 export interface SessionEdge {
   node: Session;

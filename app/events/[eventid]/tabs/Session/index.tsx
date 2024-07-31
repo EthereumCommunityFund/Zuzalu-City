@@ -87,6 +87,7 @@ import {
 } from '@/components/typography/formTypography';
 import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
+import { v4 as uuidv4 } from 'uuid';
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -119,8 +120,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [isManagedFiltered, setIsManagedFiltered] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Venue>();
   const [selectedSession, setSelectedSession] = useState<Session>();
-  const [showMore, setShowMore] = useState(false);
-  const [isContentLarge, setIsContentLarge] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isRsvped, setIsRsvped] = useState<boolean>(false);
   const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
@@ -129,8 +128,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
-  const [sessionsForCalendar, setSessionsForCalendar] = useState<Session[]>([]);
-
   const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
     [],
   );
@@ -147,10 +144,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [sessionTags, setSessionTags] = useState<string[]>([]);
   const sessionDescriptionEditorStore = useEditorStore();
   const [sessionType, setSessionType] = useState<string>('');
-  const [sessoinStatus, setSessionStatus] = useState<string>('');
-  const [sessionGated, setSessionGated] = useState<string>('');
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
-  const [isCanCollapse, setIsCanCollapse] = useState<boolean>(false);
   const [sessionExperienceLevel, setSessionExperienceLevel] =
     useState<string>('');
   // const [sessionFormat, setSessionFormat] = useState<string>("");
@@ -166,16 +159,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<any>>([
     profile,
   ]);
-  const [organizers, setOrganizers] = useState<Array<string>>([]);
   const [sessionSpeakers, setSessionSpeakers] = useState<Array<any>>([]);
-  const [speakers, setSpeakers] = useState<Array<string>>([]);
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [showDeleteButton, setShowDeleteButton] = useState(false);
-  const [locationAvatar, setLocationAvatar] = useState<string>('');
   const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -660,6 +649,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       organizers: JSON.stringify(sessionOrganizers),
       speakers: JSON.stringify(sessionSpeakers),
       creatorDID: adminId,
+      uuid: uuidv4(),
     };
     try {
       setBlockClickModal(true);
@@ -1863,11 +1853,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             <SessionCard
                               key={`SessionCard-${index}`}
                               session={session}
-                              setSelectedSession={setSelectedSession}
-                              setIsRsvped={setIsRsvped}
-                              userDID={adminId}
-                              setShowDeleteButton={setShowDeleteButton}
-                              setLocationAvatar={setLocationAvatar}
+                              eventId={eventId}
                             />
                           ))
                         ) : (
@@ -2051,392 +2037,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               </Grid>
             )}
           </Grid>
-        ) : (
-          <Stack
-            direction={isTablet ? 'column' : 'row'}
-            gap="20px"
-            justifyContent="center"
-          >
-            <Stack
-              borderRadius="10px"
-              border={!isMobile ? '1px solid #383838' : 'none'}
-              bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
-              width={isMobile ? '100%' : '600px'}
-            >
-              <Stack padding={!isMobile ? '10px' : '10px 10px 10px 0'}>
-                <ZuButton
-                  startIcon={<LeftArrowIcon />}
-                  onClick={() => {
-                    setSelectedSession(undefined);
-                    setIsRsvped(false);
-                    setShowDeleteButton(false);
-                    fetchAndFilterSessions();
-                  }}
-                >
-                  Back to List
-                </ZuButton>
-              </Stack>
-              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
-                <Stack spacing="10px">
-                  <Stack direction="row" spacing="10px" alignItems="center">
-                    <Typography
-                      bgcolor="#7DFFD11A"
-                      padding="2px 4px"
-                      color="#7DFFD1"
-                      variant="bodyX"
-                      borderRadius="2px"
-                    >
-                      · LIVE
-                    </Typography>
-                    <Typography variant="caption" textTransform="uppercase">
-                      {selectedSession.track}
-                    </Typography>
-                  </Stack>
-                  <Stack direction="row" alignItems="center" spacing="14px">
-                    <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                      {dayjs(selectedSession.startTime)
-                        .tz(eventData?.timezone)
-                        .format('dddd, MMMM D')}
-                    </Typography>
-                    <Typography variant="bodyS">
-                      {dayjs(selectedSession.startTime)
-                        .tz(eventData?.timezone)
-                        .format('h:mm A')}{' '}
-                      -{' '}
-                      {dayjs(selectedSession.endTime)
-                        .tz(eventData?.timezone)
-                        .format('h:mm A')}
-                    </Typography>
-                  </Stack>
-                </Stack>
-                <Typography variant="subtitleLB">
-                  {selectedSession.title}
-                </Typography>
-                <Stack spacing="10px">
-                  <Stack direction={'row'} alignItems={'center'} spacing={1}>
-                    <MapIcon size={4} />
-                    {selectedSession.format === 'online' ? (
-                      <Link
-                        href={selectedSession.video_url || ''}
-                        target="_blank"
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <Typography
-                          variant="bodyM"
-                          color="white"
-                          sx={{ opacity: 0.5 }}
-                        >
-                          {selectedSession.video_url}
-                        </Typography>
-                      </Link>
-                    ) : (
-                      <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
-                        {selectedSession.location}
-                      </Typography>
-                    )}
-                  </Stack>
-                  <Stack direction={'row'} spacing={1} alignItems="center">
-                    <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
-                      Speakers:
-                    </Typography>
-                    {JSON.parse(selectedSession.speakers).map(
-                      (speaker: any, index: number) => (
-                        <Stack
-                          key={`Speaker-${index}`}
-                          direction={'row'}
-                          spacing="4px"
-                          alignItems={'center'}
-                        >
-                          <Box
-                            component={'img'}
-                            height={24}
-                            width={24}
-                            borderRadius={12}
-                            src={speaker.avatar || '/user/avatar_p.png'}
-                          />
-                          <Typography variant="bodyB">
-                            {speaker.username}
-                          </Typography>
-                        </Stack>
-                      ),
-                    )}
-                  </Stack>
-                </Stack>
-                <Stack direction="row" justifyContent="end" spacing="5px">
-                  <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                    By:
-                  </Typography>
-                  <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                    {JSON.parse(selectedSession.organizers)[0].username}
-                  </Typography>
-                </Stack>
-                <Stack spacing="10px">
-                  <Stack
-                    direction="row"
-                    padding="10px 14px"
-                    alignItems="center"
-                    spacing="10px"
-                    border="1px solid rgba(255, 255, 255, 0.10)"
-                    borderRadius="10px"
-                    bgcolor="#383838"
-                    justifyContent="center"
-                  >
-                    <SessionIcon />
-                    {isRsvped ? (
-                      <Typography variant="bodyBB">RSVP Confirmed</Typography>
-                    ) : (
-                      <Typography
-                        variant="bodyBB"
-                        onClick={() => handleRSVPClick(selectedSession.id)}
-                      >
-                        RSVP Session
-                      </Typography>
-                    )}
-                  </Stack>
-                  {/*<Typography variant="bodyS">Attending: 000</Typography>*/}
-                </Stack>
-              </Stack>
-              {selectedSession.video_url && (
-                <Stack spacing="14px" padding="20px">
-                  <Typography variant="subtitleSB" sx={{ opacity: 0.6 }}>
-                    Video Stream
-                  </Typography>
-                  <Stack
-                    height="421px"
-                    borderRadius="10px"
-                    bgcolor="black"
-                  ></Stack>
-                </Stack>
-              )}
-              <Stack spacing="20px" padding={!isMobile ? '20px' : '0 0 20px'}>
-                <Typography variant="subtitleSB">Description</Typography>
-                <EditorPreview
-                  value={selectedSession.description}
-                  collapsed={isCollapsed}
-                  onCollapse={(collapsed) => {
-                    setIsCanCollapse((v) => {
-                      return v || collapsed;
-                    });
-                    setIsCollapsed(collapsed);
-                  }}
-                />
-                {isCanCollapse && (
-                  <ZuButton
-                    startIcon={
-                      isCollapsed ? (
-                        <ChevronDownIcon size={4} />
-                      ) : (
-                        <ChevronUpIcon size={4} />
-                      )
-                    }
-                    sx={{ backgroundColor: '#313131', width: '100%' }}
-                    onClick={() => setIsCollapsed((prev) => !prev)}
-                  >
-                    {isCollapsed ? 'Show More' : 'Show Less'}
-                  </ZuButton>
-                )}
-              </Stack>
-              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
-                <Stack spacing="10px">
-                  <Stack direction="row" spacing="10px">
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      Last Edited By:
-                    </Typography>
-                    <Typography variant="bodyS">
-                      {JSON.parse(selectedSession.organizers)[0].username}
-                    </Typography>
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      {formatDateAgo(selectedSession.createdAt)}
-                    </Typography>
-                  </Stack>
-                  <Stack direction="row" spacing="10px">
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      Edited By:
-                    </Typography>
-                    <Typography variant="bodyS">
-                      {JSON.parse(selectedSession.organizers)[0].username}
-                    </Typography>
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      {formatDateAgo(selectedSession.createdAt)}
-                    </Typography>
-                  </Stack>
-                </Stack>
-                <Typography variant="bodySB" sx={{ opacity: 0.5 }}>
-                  View All Edit Logs
-                </Typography>
-              </Stack>
-            </Stack>
-            <Stack spacing="20px" width={isMobile ? '100%' : '320px'}>
-              <Stack
-                padding="14px 14px 14px 0"
-                borderBottom="1px solid #383838"
-              >
-                <Typography variant="subtitleMB">Session Details</Typography>
-              </Stack>
-              <Stack spacing="10px">
-                <Stack direction="row" spacing="10px" alignItems="center">
-                  <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
-                    Format:
-                  </Typography>
-                  <Typography variant="bodyM" textTransform="uppercase">
-                    {selectedSession.format}
-                  </Typography>
-                </Stack>
-                <Stack direction="row" spacing="10px" alignItems="center">
-                  <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
-                    Type:
-                  </Typography>
-                  <Typography variant="bodyM">
-                    {selectedSession.type}
-                  </Typography>
-                </Stack>
-                <Stack direction="row" spacing="10px" alignItems="center">
-                  <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
-                    Experience Level:
-                  </Typography>
-                  <Typography variant="bodyM">
-                    {selectedSession.experience_level}
-                  </Typography>
-                </Stack>
-              </Stack>
-              <Stack
-                divider={<Divider sx={{ border: '1px solid #383838' }} />}
-                spacing="20px"
-              >
-                <Stack spacing="20px">
-                  <Stack direction="row" spacing="10px" alignItems="center">
-                    {/*<Cog6Icon size={5} />*/}
-                    <Typography variant="bodyM" sx={{ opacity: 0.7 }}>
-                      Session Organizers
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    flexWrap="wrap"
-                    gap="10px"
-                    direction="row"
-                    alignItems="center"
-                  >
-                    {JSON.parse(selectedSession.organizers).map(
-                      (organizer: any, index: number) => (
-                        <Stack
-                          key={`Speaker-${index}`}
-                          direction={'row'}
-                          spacing={0.5}
-                          alignItems={'center'}
-                        >
-                          <Box
-                            component={'img'}
-                            height={20}
-                            width={20}
-                            borderRadius={10}
-                            src={organizer.avatar || '/user/avatar_p.png'}
-                          />
-                          <Typography variant="bodyS">
-                            {organizer.username}
-                          </Typography>
-                        </Stack>
-                      ),
-                    )}
-                  </Stack>
-                </Stack>
-                <Stack spacing="20px">
-                  <Stack direction="row" spacing="10px">
-                    <MicrophoneIcon size={5} />
-                    <Typography variant="bodyM" sx={{ opacity: 0.7 }}>
-                      Speakers
-                    </Typography>
-                  </Stack>
-                  <Stack flexWrap="wrap" gap="10px" direction="row">
-                    {JSON.parse(selectedSession.speakers).map(
-                      (speaker: any, index: number) => (
-                        <Stack
-                          key={`Speaker-${index}`}
-                          direction={'row'}
-                          spacing={0.5}
-                          alignItems={'center'}
-                        >
-                          <Box
-                            component={'img'}
-                            height={20}
-                            width={20}
-                            borderRadius={10}
-                            src={speaker.avatar || '/user/avatar_p.png'}
-                          />
-                          <Typography variant="bodyS">
-                            {speaker.username}
-                          </Typography>
-                        </Stack>
-                      ),
-                    )}
-                  </Stack>
-                </Stack>
-                <Stack spacing="20px">
-                  <Stack direction="row" spacing="10px">
-                    <TagIcon size={5} />
-                    <Typography variant="bodyM" sx={{ opacity: 0.7 }}>
-                      Tags
-                    </Typography>
-                  </Stack>
-                  <Stack flexWrap="wrap" gap="10px" direction="row">
-                    {selectedSession.tags
-                      ?.split(',')
-                      .map((tag: any, index: number) => (
-                        <Stack
-                          key={`Speaker-${index}`}
-                          padding="4px 8px"
-                          alignItems={'center'}
-                          bgcolor="#2d2d2d"
-                          borderRadius="10px"
-                        >
-                          <Typography variant="bodyS" textTransform="uppercase">
-                            {tag}
-                          </Typography>
-                        </Stack>
-                      ))}
-                  </Stack>
-                </Stack>
-                <Stack spacing="20px">
-                  <Stack direction="row" spacing="10px">
-                    <MapIcon size={5} />
-                    <Typography variant="bodyM" sx={{ opacity: 0.7 }}>
-                      Location
-                    </Typography>
-                  </Stack>
-                  <Stack direction="row" spacing="20px">
-                    <Box
-                      component="img"
-                      borderRadius="10px"
-                      width="80px"
-                      height="80px"
-                      src={locationAvatar || '/26.png'}
-                    />
-                    <Stack alignItems="center">
-                      <Typography variant="bodyM">
-                        {selectedSession.location}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                </Stack>
-                {showDeleteButton && (
-                  <Stack
-                    direction="row"
-                    justifyContent="flex-start"
-                    spacing={2}
-                    sx={{ marginTop: 2 }}
-                  >
-                    <ZuButton
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleDelete(selectedSession.id)}
-                    >
-                      Delete
-                    </ZuButton>
-                  </Stack>
-                )}
-              </Stack>
-            </Stack>
-          </Stack>
-        )}
+        ) : null}
         {!isMobile ? (
           <SwipeableDrawer
             hideBackdrop={true}

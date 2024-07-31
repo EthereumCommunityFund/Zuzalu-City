@@ -58,6 +58,7 @@ import SelectSearchUser from '@/components/select/selectSearchUser';
 import { supaCreateSession } from '@/services/session';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
+import { v4 as uuidv4 } from 'uuid';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -443,6 +444,7 @@ const Sessions = () => {
       organizers: JSON.stringify(sessionOrganizers),
       speakers: JSON.stringify(sessionSpeakers),
       creatorDID: adminId,
+      uuid: uuidv4(),
     };
 
     try {

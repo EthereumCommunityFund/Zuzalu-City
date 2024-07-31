@@ -148,7 +148,7 @@ const Header = () => {
               height={24}
               width={24}
             />
-            {userName}
+            {username}
           </Button>
           <Menu
             anchorEl={anchorEl}
