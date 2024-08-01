@@ -71,6 +71,14 @@ const Home = () => {
                 title
                 links
               }
+              contractID
+              contracts {
+                contractAddress
+                description
+                image_url
+                status
+                type
+              }  
             }
           }
         }

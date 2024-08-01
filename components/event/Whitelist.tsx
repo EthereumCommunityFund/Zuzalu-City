@@ -7,6 +7,8 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   HeartIcon,
+  GoToExplorerIcon,
+  CopyIcon,
 } from '@/components/icons';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 import { client, config } from '@/context/WalletContext';
@@ -16,6 +18,8 @@ import {
   mUSDC_TOKEN,
   mUSDT_TOKEN,
   ticketFactoryGetContract,
+  isDev,
+  SCROLL_EXPLORER,
 } from '@/constant';
 import { Address } from 'viem';
 import dayjs, { Dayjs } from 'dayjs';
@@ -24,7 +28,7 @@ import { TICKET_ABI } from '@/utils/ticket_abi';
 import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import { Abi, AbiItem } from 'viem';
 import { ERC20_ABI } from '@/utils/erc20_abi';
-import { scrollSepolia } from 'viem/chains';
+import { scroll, scrollSepolia } from 'viem/chains';
 import { writeContract, waitForTransactionReceipt } from 'wagmi/actions';
 import { ZuButton, ZuInput } from '@/components/core';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
@@ -32,6 +36,8 @@ import { generateNFTMetadata } from '@/utils/generateNFTMetadata';
 import { createFileFromJSON } from '@/utils/generateNFTMetadata';
 import { fetchEmailJsConfig } from '@/utils/emailService';
 import { Event, Contract } from '@/types';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
+
 interface IProps {
   setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setIsAgree?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -47,6 +53,10 @@ interface IProps {
   setTokenId?: React.Dispatch<React.SetStateAction<string>> | any;
   ticketMinted?: any[];
   setTicketMinted?: React.Dispatch<React.SetStateAction<any[]>> | any;
+  mintedContract?: Contract;
+  setMintedContract?: React.Dispatch<React.SetStateAction<Contract>> | any;
+  transactionLog?: any;
+  setTransactionLog?: React.Dispatch<React.SetStateAction<any>> | any;
 }
 
 export const Verify: React.FC<IProps> = ({
@@ -64,7 +74,7 @@ export const Verify: React.FC<IProps> = ({
 
   const readFromContract = async () => {
     try {
-      //setVerifying(true);
+      setVerifying(true);
       const getTicketAddresses = (await client.readContract({
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI as Abi,
@@ -173,7 +183,6 @@ export const Verify: React.FC<IProps> = ({
           const newData = [result.ticketAddress, ...result.data];
           return newData;
         });
-
         setTickets(transformedResults);
         if (setFilteredResults) {
           setFilteredResults(transformedResults);
@@ -205,7 +214,7 @@ export const Verify: React.FC<IProps> = ({
             borderRadius="2px"
             src="/14.webp"
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">ZuVillage Georgia</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
@@ -324,7 +333,7 @@ export const Agree: React.FC<IProps> = ({ setIsVerify, setIsAgree }) => {
             borderRadius="2px"
             src="/14.webp"
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">ZuVillage Georgia</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
@@ -429,25 +438,33 @@ export const Mint: React.FC<IProps> = ({
   event,
   setTokenId,
   setTicketMinted,
+  setIsTransaction,
+  setMintedContract,
+  setTransactionLog,
 }) => {
   const [awaiting, setAwaiting] = useState<boolean>(false);
   const { address } = useAccount();
-  const filteredTickets = filteredResults.filter((ticket) => {
-    const contractAddress = ticket[0].trim().toLowerCase();
-    const match = event?.contracts?.some((contract) => {
-      if (!contract.contractAddress) {
-        return false;
-      }
-      const normalizedContractAddress = contract.contractAddress
-        .trim()
-        .toLowerCase();
-      const isMatch =
-        normalizedContractAddress === contractAddress &&
-        contract.type === 'Attendee';
-      return isMatch;
-    });
-    return match;
-  });
+  const [blockMintClickModal, setBlockMintClickModal] = useState(false);
+  const [blockTokenClickModal, setBlockTokenClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const filteredTickets = filteredResults
+    .map((ticket) => {
+      const contractAddress = ticket[0].trim().toLowerCase();
+      const matchingContract = event?.contracts?.find((contract) => {
+        if (!contract.contractAddress) {
+          return false;
+        }
+        const normalizedContractAddress = contract.contractAddress
+          .trim()
+          .toLowerCase();
+        return (
+          normalizedContractAddress === contractAddress &&
+          contract.type === 'Attendee'
+        );
+      });
+      return matchingContract ? { ticket, matchingContract } : null;
+    })
+    .filter(Boolean);
   const findMatchingContract = (
     contracts: Contract[],
     ticketAddress: string,
@@ -466,12 +483,13 @@ export const Mint: React.FC<IProps> = ({
   ) => {
     try {
       const approveHash = await writeContract(config, {
-        chainId: scrollSepolia.id,
+        chainId: isDev ? scrollSepolia.id : scroll.id,
         address: tokenAddress,
         functionName: 'approve',
         abi: ERC20_ABI,
         args: [ticketAddress, ticketPrice],
       });
+      setBlockTokenClickModal(true);
       const { status: approveStatus } = await waitForTransactionReceipt(
         config,
         {
@@ -480,6 +498,7 @@ export const Mint: React.FC<IProps> = ({
       );
 
       if (approveStatus === 'success') {
+        setBlockTokenClickModal(false);
         const metadata = generateNFTMetadata(
           ticketAddress,
           'NFT ticket',
@@ -504,13 +523,13 @@ export const Mint: React.FC<IProps> = ({
         );
         const ABI = TICKET_WITH_WHITELIST_ABI;
         const MintHash = await writeContract(config, {
-          chainId: scrollSepolia.id,
+          chainId: isDev ? scrollSepolia.id : scroll.id,
           address: ticketAddress,
           functionName: 'purchaseTicket',
           abi: ABI,
-          args: [address, `https://devnet.irys.xyz/${uploadedID}`, address],
+          args: [`https://devnet.irys.xyz/${uploadedID}`],
         });
-
+        setBlockMintClickModal(true);
         const { status: MintStatus, logs: MintLogs } =
           await waitForTransactionReceipt(config, {
             hash: MintHash,
@@ -518,10 +537,13 @@ export const Mint: React.FC<IProps> = ({
           });
 
         if (MintStatus === 'success') {
+          setBlockMintClickModal(false);
+          setShowModal(true);
           if (MintLogs.length > 0) {
             setTokenId(BigInt(MintLogs[3].data).toString());
+            setTransactionLog(MintHash);
             setIsAgree(false);
-            setIsMint(true);
+            setIsTransaction(true);
           }
         }
       }
@@ -532,6 +554,29 @@ export const Mint: React.FC<IProps> = ({
 
   return (
     <Stack>
+      <Dialog
+        title="Minted"
+        message="Your new NFT ticket is ready."
+        showModal={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+        onConfirm={() => {
+          setShowModal(false);
+        }}
+      />
+      <Dialog
+        showModal={blockTokenClickModal}
+        showActions={false}
+        title="Approving Tokens"
+        message="Please wait until the transaction is finished."
+      />
+      <Dialog
+        showModal={blockMintClickModal}
+        showActions={false}
+        title="Minting NFT"
+        message="Please wait until the transaction is finished."
+      />
       <Stack
         padding="20px"
         bgcolor="#262626"
@@ -546,7 +591,7 @@ export const Mint: React.FC<IProps> = ({
             borderRadius="2px"
             src="/14.webp"
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">ZuVillage Georgia</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
@@ -561,50 +606,62 @@ export const Mint: React.FC<IProps> = ({
       >
         <Stack spacing="20px">
           <Typography variant="subtitleLB">Your Ticket</Typography>
-          {filteredTickets.map((ticket, index) => (
-            <Stack key={index} alignItems="center" spacing="20px">
-              <Box
-                component="img"
-                width="250px"
-                height="250px"
-                borderRadius="20px"
-                src="/26.png"
-              />
-              <Stack
-                border="1px solid #383838"
-                borderRadius="20px"
-                divider={<Divider sx={{ border: '1px solid #383838' }} />}
-                spacing="10px"
-                padding="20px"
-              >
-                {ticket[1] && (
-                  <Stack direction="row" spacing="10px">
-                    <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
-                      Ticket Name:
-                    </Typography>
-                    <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
-                      {ticket[1].result.toString()}
-                    </Typography>
-                  </Stack>
-                )}
-                {ticket[4] && (
-                  <Stack direction="row" spacing="10px">
-                    <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
-                      Ticket Price:
-                    </Typography>
-                    <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
-                      {(ticket[4].result / BigInt(10 ** 18)).toString()}
-                    </Typography>
-                  </Stack>
-                )}
-                <ZuButton
-                  startIcon={<RightArrowIcon color="#67DBFF" />}
-                  onClick={() => {
-                    const matchingContract = findMatchingContract(
-                      event?.contracts as Contract[],
-                      ticket[0],
-                    );
-                    if (matchingContract) {
+          {filteredTickets.map((item, index) => {
+            if (!item) return null;
+            const { ticket, matchingContract } = item;
+            return (
+              <Stack key={index} alignItems="center" spacing="20px">
+                <Box
+                  component="img"
+                  width="250px"
+                  height="250px"
+                  borderRadius="20px"
+                  src={matchingContract.image_url}
+                />
+                <Stack
+                  border="1px solid #383838"
+                  borderRadius="20px"
+                  width="600px"
+                  divider={<Divider sx={{ border: '1px solid #383838' }} />}
+                  spacing="10px"
+                  padding="20px"
+                >
+                  {ticket[1] && (
+                    <Stack direction="row" spacing="10px">
+                      <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                        Ticket Name:
+                      </Typography>
+                      <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
+                        {ticket[1].result.toString()}
+                      </Typography>
+                    </Stack>
+                  )}
+                  {ticket[4] && (
+                    <Stack direction="row" spacing="10px">
+                      <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                        Contributing Amount to Mint:
+                      </Typography>
+                      <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
+                        {(ticket[4].result / BigInt(10 ** 18)).toString()}{' '}
+                        {ticket[3].result.toString() === mUSDT_TOKEN.toString()
+                          ? 'USDT'
+                          : 'USDC'}
+                      </Typography>
+                    </Stack>
+                  )}
+                  {ticket[0] && (
+                    <Stack direction="row" spacing="10px">
+                      <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                        Ticket Description:
+                      </Typography>
+                      <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
+                        {matchingContract.description}
+                      </Typography>
+                    </Stack>
+                  )}
+                  <ZuButton
+                    startIcon={<RightArrowIcon color="#67DBFF" />}
+                    onClick={() => {
                       handleMintTicket(
                         ticket[0],
                         ticket[3].result,
@@ -612,25 +669,21 @@ export const Mint: React.FC<IProps> = ({
                         matchingContract,
                       );
                       setTicketMinted(ticket);
-                    } else {
-                      console.error(
-                        'No matching contract found for ticket address:',
-                        ticket[0],
-                      );
-                    }
-                  }}
-                  sx={{
-                    width: '100%',
-                    color: '#67DBFF',
-                    backgroundColor: '#67DBFF33',
-                    border: 'border: 1px solid rgba(103, 219, 255, 0.20)',
-                  }}
-                >
-                  Mint Ticket
-                </ZuButton>
+                      setMintedContract(matchingContract);
+                    }}
+                    sx={{
+                      width: '100%',
+                      color: '#67DBFF',
+                      backgroundColor: '#67DBFF33',
+                      border: 'border: 1px solid rgba(103, 219, 255, 0.20)',
+                    }}
+                  >
+                    Mint Ticket
+                  </ZuButton>
+                </Stack>
               </Stack>
-            </Stack>
-          ))}
+            );
+          })}
         </Stack>
         <Typography
           variant="bodyS"
@@ -675,7 +728,7 @@ export const Transaction: React.FC<IProps> = ({
             borderRadius="2px"
             src="/14.webp"
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">ZuVillage Georgia</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
@@ -691,9 +744,7 @@ export const Transaction: React.FC<IProps> = ({
             bgcolor="#262626"
             borderRadius="10px"
           >
-            <Typography variant="subtitleLB">
-              Sign in Wallet define data that they interacting with contract
-            </Typography>
+            <Typography variant="subtitleLB">NFT Minting!</Typography>
             <Stack paddingY="20px" bgcolor="#FFFFFF0D" borderRadius="10px">
               <Typography variant="subtitleS" textAlign="center">
                 Awaiting transaction...
@@ -714,9 +765,7 @@ export const Transaction: React.FC<IProps> = ({
             bgcolor="#262626"
             borderRadius="10px"
           >
-            <Typography variant="subtitleLB">
-              Sign in Wallet define data that they interacting with contract
-            </Typography>
+            <Typography variant="subtitleLB">NFT Minted! </Typography>
             <Stack
               paddingY="20px"
               bgcolor="#FFFFFF0D"
@@ -750,10 +799,21 @@ export const Complete: React.FC<IProps> = ({
   handleClose,
   tokenId,
   ticketMinted,
+  mintedContract,
+  transactionLog,
 }) => {
-  const [view, setView] = useState<boolean>(false);
+  const [view, setView] = useState<boolean>(true);
+  const truncateHash = (hash: any, startLength = 6, endLength = 6) => {
+    if (!hash) return '';
+    return `${hash.slice(0, startLength)}...${hash.slice(-endLength)}`;
+  };
+  const onClose = () => {
+    if (handleClose) {
+      handleClose();
+    }
+  };
   return (
-    <Stack>
+    <Stack spacing="20px" padding="20px">
       <Stack
         padding="20px"
         bgcolor="#262626"
@@ -768,86 +828,38 @@ export const Complete: React.FC<IProps> = ({
             borderRadius="2px"
             src="/14.webp"
           />
-          <Typography variant="subtitleLB">EventName</Typography>
+          <Typography variant="subtitleLB">ZuVillage Georgia</Typography>
         </Stack>
         <Typography variant="bodyS" color="#FF9C66">
           Disclaimer: the ticketing system is in beta, please take caution
           moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px" spacing="30px" alignItems="center" height="100vh">
-        <Typography variant="subtitleLB">Congrats, you received</Typography>
-        <Box
-          component="img"
-          width="250px"
-          height="250px"
-          borderRadius="20px"
-          src="/26.png"
-        />
-        <Stack
-          borderRadius="10px"
-          border="1px solid #383838"
-          width="100%"
-          sx={{ cursor: 'pointer' }}
-          onClick={() => setView((prev) => !prev)}
-        >
-          <Stack direction="row" alignItems="center" spacing="20px">
-            <Typography variant="bodyM">Contract Address:</Typography>
-            <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
-              {ticketMinted ? ticketMinted[0] : ''}
-            </Typography>
-          </Stack>
-          <Stack direction="row" alignItems="center" spacing="20px">
-            <Typography variant="bodyMB">Token_ID:</Typography>
-            <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
-              {tokenId}
-            </Typography>
-          </Stack>
-          <Stack direction="row" alignItems="center" spacing="20px">
-            <Typography variant="bodyMB">
-              Ticket mint successfully, Feel free to add this NFT(SBT) into your
-              wallet
-            </Typography>
-          </Stack>
-          {!view ? (
-            <Stack
-              direction="row"
-              spacing="10px"
-              padding="10px 20px"
-              justifyContent="center"
-            >
-              <Typography variant="bodyM">View Transaction Details</Typography>
-              <ChevronDownIcon size={4.5} />
-            </Stack>
-          ) : (
-            <Stack padding="20px" spacing="10px">
-              <Stack direction="row" spacing="10px" justifyContent="center">
-                <Typography variant="bodyM">
-                  Close Transaction Details
-                </Typography>
-                <ChevronUpIcon size={4.5} />
-              </Stack>
+      {ticketMinted && (
+        <Stack padding="20px" spacing="10px" alignItems="center">
+          <Typography variant="subtitleLB">Congrats, you received</Typography>
+          <Stack width="100%" spacing="10px" sx={{ cursor: 'pointer' }}>
+            <Stack alignItems="center" spacing="20px">
+              <Box
+                component="img"
+                width="250px"
+                height="250px"
+                src={mintedContract?.image_url}
+              />
               <Stack
-                border="1px solid #383838"
                 borderRadius="20px"
+                border="1px solid #383838"
+                width="600px"
                 divider={<Divider sx={{ border: '1px solid #383838' }} />}
                 spacing="10px"
                 padding="20px"
               >
                 <Stack direction="row" spacing="10px">
                   <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
-                    Ticket:
+                    Ticket Name:
                   </Typography>
                   <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
-                    Full Pass
-                  </Typography>
-                </Stack>
-                <Stack direction="row" spacing="10px">
-                  <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
-                    Secondary Option:
-                  </Typography>
-                  <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
-                    Shared Room
+                    {ticketMinted[1].result.toString()}
                   </Typography>
                 </Stack>
                 <Stack direction="row" spacing="10px">
@@ -855,48 +867,175 @@ export const Complete: React.FC<IProps> = ({
                     Contributing Amount to Mint:
                   </Typography>
                   <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
-                    0000 USDT
+                    {(ticketMinted[4].result / BigInt(10 ** 18)).toString()}{' '}
+                    {ticketMinted[3].result.toString() ===
+                    mUSDT_TOKEN.toString()
+                      ? 'USDT'
+                      : 'USDC'}
                   </Typography>
                 </Stack>
-                <Stack spacing="10px">
+                <Stack direction="row" spacing="10px">
                   <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
-                    Ticket Description
+                    Ticket Description:
                   </Typography>
-                  <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                    Get ready to groove at the Summer Music Festival! Join us
-                    for a day filled with live music, food trucks, and good
-                    vibes.
+                  <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
+                    {mintedContract?.description}
                   </Typography>
                 </Stack>
               </Stack>
             </Stack>
-          )}
+            <Box display="flex" justifyContent="center" width="100%">
+              {!view ? (
+                <Stack
+                  direction="row"
+                  spacing="10px"
+                  padding="10px 20px"
+                  justifyContent="center"
+                  borderRadius="20px"
+                  width="600px"
+                  border="1px solid #383838"
+                  onClick={() => setView((prev) => !prev)}
+                >
+                  <Typography variant="bodyM">
+                    View Transaction Details
+                  </Typography>
+                  <ChevronDownIcon size={4.5} />
+                </Stack>
+              ) : (
+                <Stack
+                  direction="row"
+                  spacing="10px"
+                  padding="10px 20px"
+                  justifyContent="center"
+                  borderRadius="20px"
+                  width="600px"
+                  border="1px solid #383838"
+                  onClick={() => setView((prev) => !prev)}
+                >
+                  <Typography variant="bodyM">
+                    Close Transaction Details
+                  </Typography>
+                  <ChevronUpIcon size={4.5} />
+                </Stack>
+              )}
+            </Box>
+            {view && (
+              <Stack padding="20px" spacing="10px">
+                <Stack
+                  border="1px solid #383838"
+                  borderRadius="20px"
+                  divider={<Divider sx={{ border: '1px solid #383838' }} />}
+                  spacing="10px"
+                  padding="20px"
+                >
+                  <Stack direction="row" spacing="10px">
+                    <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                      Transaction ID:
+                    </Typography>
+                    <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
+                      {truncateHash(transactionLog)}
+                    </Typography>
+                    <Box
+                      marginLeft={'4px'}
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        navigator.clipboard.writeText(transactionLog.toString())
+                      }
+                    >
+                      <CopyIcon cursor="pointer" />
+                    </Box>
+                    <Box
+                      marginLeft={'4px'}
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        window.open(
+                          `${SCROLL_EXPLORER}/tx/${transactionLog.toString()}`,
+                          '_blank',
+                        )
+                      }
+                    >
+                      <GoToExplorerIcon cursor="pointer" />
+                    </Box>
+                  </Stack>
+                  <Stack spacing="10px">
+                    <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                      Ticket mint success. To add this NFT(SBT) to your wallet
+                      add the following contract address and token ID in your
+                      wallet:
+                    </Typography>
+                    <Stack direction="row" spacing="10px" alignItems="center">
+                      <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                        Contract Address:
+                      </Typography>
+                      <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
+                        {truncateHash(ticketMinted[0].toString())}
+                      </Typography>
+                      <Box
+                        marginLeft={'4px'}
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() =>
+                          navigator.clipboard.writeText(
+                            ticketMinted[0].toString(),
+                          )
+                        }
+                      >
+                        <CopyIcon cursor="pointer" />
+                      </Box>
+                      <Box
+                        marginLeft={'4px'}
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() =>
+                          window.open(
+                            `${SCROLL_EXPLORER}/address/${ticketMinted[0].toString()}`,
+                            '_blank',
+                          )
+                        }
+                      >
+                        <GoToExplorerIcon cursor="pointer" />
+                      </Box>
+                    </Stack>
+                  </Stack>
+                  <Stack direction="row" spacing="10px">
+                    <Typography variant="bodyM" sx={{ opacity: 0.6 }}>
+                      Token ID:
+                    </Typography>
+                    <Typography variant="bodyBB" sx={{ opacity: 0.8 }}>
+                      {tokenId}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Stack>
+            )}
+          </Stack>
         </Stack>
+      )}
+      <Box padding="20px" width="100%">
         <ZuButton
           startIcon={<ArrowUpLeftIcon size={5} color="#67DBFF" />}
           onClick={() => {
             setIsTransaction(false);
-            setIsComplete(false);
+            setIsComplete(true);
+            onClose();
           }}
           sx={{ width: '100%', backgroundColor: '#2c383b', color: '#67DBFF' }}
         >
           Back to Event View
         </ZuButton>
-        <Stack spacing="10px" alignItems="center">
-          <HeartIcon color="#FF5E5E" />
-          <Typography variant="bodyMB" color="#FF5E5E" textAlign="center">
-            Donate to the Event
-          </Typography>
-          <Typography variant="bodyBB">
-            Send your donated tokens to zuvillage.eth
-          </Typography>
-        </Stack>
-        <Stack direction="row" spacing="10px" justifyContent="center">
-          <Typography variant="caption" sx={{ opacity: 0.6 }}>
-            TICKETING PROTOCOL:
-          </Typography>
-          <ScrollIcon />
-        </Stack>
+      </Box>
+      <Stack spacing="10px" alignItems="center">
+        <HeartIcon color="#FF5E5E" />
+        <Typography variant="bodyMB" color="#FF5E5E" textAlign="center">
+          Donate to the Event
+        </Typography>
+        <Typography variant="bodyBB">
+          Send your donated tokens to zuvillage.eth
+        </Typography>
+      </Stack>
+      <Stack direction="row" spacing="10px" justifyContent="center">
+        <Typography variant="caption" sx={{ opacity: 0.6 }}>
+          TICKETING PROTOCOL:
+        </Typography>
+        <ScrollIcon />
       </Stack>
     </Stack>
   );

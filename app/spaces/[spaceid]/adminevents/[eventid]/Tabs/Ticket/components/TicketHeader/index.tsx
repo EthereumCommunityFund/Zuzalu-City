@@ -1,13 +1,14 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Typography, Stack } from '@mui/material';
 import { ZuSwitch } from 'components/core';
 import { GroupIcon, QRCodeIcon } from '@/components/icons';
 import { ZuButton } from 'components/core';
 import { useAccount } from 'wagmi';
-import { scrollSepolia } from 'viem/chains';
+import { scroll, scrollSepolia } from 'viem/chains';
 import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 import { client, config } from '@/context/WalletContext';
+import { isDev } from '@/constant';
 import {
   TICKET_FACTORY_ADDRESS,
   mUSDC_TOKEN,
@@ -19,36 +20,41 @@ import { convertDateToEpoch } from '@/utils/format';
 import { Event } from '@/types';
 import { ethers } from 'ethers';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { updateContractID } from '@/services/event/addContractID';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
+
 interface PropTypes {
   event?: Event;
   visible?: boolean;
 }
 const TicketHeader = ({ event, visible }: PropTypes) => {
-  const [isChecked, setIsChecked] = React.useState(true);
+  const [isChecked, setIsChecked] = useState(true);
   const { ceramic, composeClient, profile } = useCeramicContext();
   const { address } = useAccount();
-  const updateEventById = async (contractEventid: number) => {
-    const query = `
-          mutation {
-          updateEvent(input: {id: "${event?.id}", content: {contractID: ${contractEventid}}}) {
-            document {
-              id
-               contractID
-            }
-          }
-        }
-    `;
-
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const updateContract = async (contractEventid: number) => {
+    const addContractIDInput = {
+      eventId: event?.id as string,
+      contractID: contractEventid,
+    };
     try {
-      const result: any = await composeClient.executeQuery(query);
+      setBlockClickModal(true);
+      const response = await updateContractID(addContractIDInput);
+      if (response.status === 200) {
+        setShowModal(true);
+        window.location.reload();
+      }
     } catch (err) {
-      console.log('ERROR: Update: ', err);
+      console.log(err);
+    } finally {
+      setBlockClickModal(false);
     }
   };
   const createEventID = async () => {
     try {
       const createEventHash = await writeContract(config, {
-        chainId: scrollSepolia.id,
+        chainId: isDev ? scrollSepolia.id : scroll.id,
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI,
         functionName: 'createEvent',
@@ -79,7 +85,7 @@ const TicketHeader = ({ event, visible }: PropTypes) => {
           log.topics,
         );
         const eventTicketId = Number(decodedLog.eventId);
-        await updateEventById(eventTicketId);
+        await updateContract(eventTicketId);
       } else {
         console.error('EventCreated event not found in transaction receipt');
       }
@@ -95,6 +101,23 @@ const TicketHeader = ({ event, visible }: PropTypes) => {
       paddingBottom={'30px'}
       borderBottom={'1px solid rgba(255,255,255,0.10)'}
     >
+      <Dialog
+        title="Added"
+        message="You can create ticekts now."
+        showModal={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+        onConfirm={() => {
+          setShowModal(false);
+        }}
+      />
+      <Dialog
+        showModal={blockClickModal}
+        showActions={false}
+        title="Updating"
+        message="Please wait while the data is being updated..."
+      />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"

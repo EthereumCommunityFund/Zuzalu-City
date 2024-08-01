@@ -30,14 +30,20 @@ export const PROVIDER =
 
 export const CONTRACT_ADDRESS = '0xB05611bC75Fdd276b336eD8f2f3cE24d8A10a751';
 
-export const TICKET_FACTORY_ADDRESS =
-  '0xb13971d17286EF91bd6A076e4f046770EA81AC0B' as const;
-export const mUSDT_TOKEN =
-  '0xd61f92AA071012a7048B81b0B222a228503593e1' as const;
-export const mUSDC_TOKEN =
-  '0x0C9725edb55709994E0B4e07b8134fdfCBDB4aE5' as const;
+export const TICKET_FACTORY_ADDRESS = isDev
+  ? ('0x26CaC69619DDD18d9bf194F10fF2852Ac9dDDf0d' as const)
+  : ('0x47D5541aF9F4a8D613713F11f51Fa401f6D4D124' as const);
+export const mUSDT_TOKEN = isDev
+  ? ('0xd61f92AA071012a7048B81b0B222a228503593e1' as const)
+  : ('0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df' as const);
+export const mUSDC_TOKEN = isDev
+  ? ('0x0C9725edb55709994E0B4e07b8134fdfCBDB4aE5' as const)
+  : ('0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4' as const);
+
 export const OWNER = '0x8D5b0F873c00F8e8EA7FEF0C24DBdC5Ac2758D26' as const;
-export const SCROLL_EXPLORER = 'https://sepolia.scrollscan.com' as const;
+export const SCROLL_EXPLORER = isDev
+  ? ('https://sepolia.scrollscan.com' as const)
+  : ('https://scrollscan.com' as const);
 
 export const ticketFactoryContract = {
   address: TICKET_FACTORY_ADDRESS,

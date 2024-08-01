@@ -68,6 +68,13 @@ const Home = () => {
                 title
                 links
               }
+              contracts {
+                contractAddress
+                description
+                image_url
+                status
+                type
+              }
             }
           }
         }
