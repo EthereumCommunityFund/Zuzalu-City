@@ -498,7 +498,6 @@ export const Mint: React.FC<IProps> = ({
       );
 
       if (approveStatus === 'success') {
-        setBlockTokenClickModal(false);
         const metadata = generateNFTMetadata(
           ticketAddress,
           'NFT ticket',
@@ -522,6 +521,7 @@ export const Mint: React.FC<IProps> = ({
           'EVM',
         );
         const ABI = TICKET_WITH_WHITELIST_ABI;
+        setBlockTokenClickModal(false);
         const MintHash = await writeContract(config, {
           chainId: isDev ? scrollSepolia.id : scroll.id,
           address: ticketAddress,
