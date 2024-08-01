@@ -202,6 +202,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     setAnchorEl(null);
   };
 
+  const trackAnchorOpen = Boolean(trackAnchor);
+  const locationAnchorOpen = Boolean(locationAnchor);
+  const trackAnchorId = trackAnchorOpen ? 'track-filter-popup' : undefined;
+  const locationAnchorId = locationAnchorOpen
+    ? 'location-filter-popup'
+    : undefined;
+
   const handleTrackFilterClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setTrackAnchor(event.currentTarget);
   };
@@ -2268,9 +2275,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     padding={'10px'}
                     borderRadius={'10px'}
                     border={'solid 1px rgba(255, 255, 255, 0.10)'}
-                    aria-describedby={
-                      Boolean(trackAnchor) ? 'track-filter-popup' : undefined
-                    }
+                    aria-describedby={trackAnchorId}
                     onClick={handleTrackFilterClick}
                     sx={{
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
@@ -2309,8 +2314,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   </Stack>
 
                   <Popover
-                    id={Boolean(trackAnchor) ? 'track-filter-popup' : undefined}
-                    open={Boolean(trackAnchor)}
+                    id={trackAnchorId}
+                    open={trackAnchorOpen}
                     anchorEl={trackAnchor}
                     onClose={handleTrackFilterClose}
                     anchorOrigin={{
@@ -2369,11 +2374,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     padding={'10px'}
                     borderRadius={'10px'}
                     border={'solid 1px rgba(255, 255, 255, 0.10)'}
-                    aria-describedby={
-                      Boolean(locationAnchor)
-                        ? 'location-filter-popup'
-                        : undefined
-                    }
+                    aria-describedby={locationAnchorId}
                     onClick={handleLocationFilterClick}
                     sx={{
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
@@ -2411,12 +2412,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     </Stack>
                   </Stack>
                   <Popover
-                    id={
-                      Boolean(locationAnchor)
-                        ? 'location-filter-popup'
-                        : undefined
-                    }
-                    open={Boolean(locationAnchor)}
+                    id={locationAnchorId}
+                    open={locationAnchorOpen}
                     anchorEl={locationAnchor}
                     onClose={handleLocationFilterClose}
                     anchorOrigin={{
