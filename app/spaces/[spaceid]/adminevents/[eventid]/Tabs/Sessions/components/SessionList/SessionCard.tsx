@@ -68,7 +68,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
             </Typography>
           </Stack>
         )}
-        <Typography variant="bodyB">
+        <Typography variant="bodyB" sx={{ opacity: '0.6' }}>
           {dayjs(session.startTime).tz(session.timezone).format('h:mm A')} -{' '}
           {dayjs(session.endTime).tz(session.timezone).format('h:mm A')}
         </Typography>
@@ -101,7 +101,12 @@ const SessionCard: React.FC<SessionCardProps> = ({
               )
             : null}
         </Stack>
-        <Stack direction={'row'} alignItems={'center'} spacing={1}>
+        <Stack
+          direction={'row'}
+          alignItems={'center'}
+          spacing={1}
+          sx={{ opacity: '0.5' }}
+        >
           <MapIcon size={4} />
           <Typography
             variant="caption"
@@ -139,6 +144,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
           direction="row"
           alignItems="center"
           borderRadius="8px"
+          width={'100%'}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           sx={{

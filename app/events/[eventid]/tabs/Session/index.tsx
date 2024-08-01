@@ -379,6 +379,23 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             session.title?.toLowerCase().includes(searchQuery.toLowerCase()),
           );
         }
+
+        if (selectedTracks.length > 0) {
+          filteredSessions = filteredSessions?.filter((session) =>
+            session.track
+              ?.split(',')
+              .some((ele) => new Set(selectedTracks).has(ele)),
+          );
+        }
+
+        if (selectedLocations.length > 0) {
+          filteredSessions = filteredSessions?.filter((session) =>
+            session.location
+              ?.split(',')
+              .some((ele) => new Set(selectedLocations).has(ele)),
+          );
+        }
+
         if (filteredSessions && filteredSessions.length > 0) {
           setSessionsByDate(groupSessionByDate(filteredSessions));
         } else if (selectedDate) {
@@ -409,6 +426,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     isManagedFiltered,
     searchQuery,
     refreshFlag,
+    selectedTracks,
+    selectedLocations,
   ]);
   const handleRSVPSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,

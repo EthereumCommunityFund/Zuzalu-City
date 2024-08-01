@@ -59,7 +59,7 @@ const Subbar: React.FC<SubbarProps> = ({
         >
           {canViewSessions ? <SessionIcon /> : <LockIcon />}
           <Typography
-            onClick={() => canViewSessions && setTabName('Sessions')}
+            onClick={() => setTabName('Sessions')}
             color="white"
             variant="bodyMB"
             sx={{ cursor: canViewSessions ? 'pointer' : 'not-allowed' }}
