@@ -172,6 +172,33 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  useEffect(() => {
+    const dates = sessionsByDate
+      ? Object.keys(sessionsByDate)
+          .map((item) => +dayjs(item, 'MMMM D, YYYY').tz(eventData?.timezone))
+          .sort((a, b) => a - b)
+      : [];
+    const getDay = () => {
+      const today = +dayjs();
+      let nearToday;
+      let tmpTime = 1000000000000;
+      dates.forEach((item) => {
+        const time = Math.abs(item - today);
+        if (time < tmpTime) {
+          tmpTime = time;
+          nearToday = item;
+        }
+      });
+      return dayjs(nearToday).tz(eventData?.timezone).format('MMMM-D-YYYY');
+    };
+    const nearToday = getDay();
+    if (sessionsByDate && nearToday) {
+      const dom = document.getElementById(nearToday);
+      if (dom) {
+        dom.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [sessionsByDate]);
 
   const groupSessionByDate = (
     sessions: Session[] | undefined,
@@ -1835,6 +1862,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         spacing="10px"
                         padding="10px"
                         key={`Session-GroupByDate-${date}`}
+                        id={dayjs(date, 'MMMM D, YYYY')
+                          .tz(eventData?.timezone)
+                          .format('MMMM-D-YYYY')}
                       >
                         <Typography
                           borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
