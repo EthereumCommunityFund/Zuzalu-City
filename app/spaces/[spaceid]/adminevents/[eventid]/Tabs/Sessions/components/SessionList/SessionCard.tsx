@@ -52,8 +52,8 @@ const SessionCard: React.FC<SessionCardProps> = ({
       }}
     >
       <Stack spacing="10px" flex={1}>
-        {isLive && (
-          <Stack direction="row" spacing="10px" alignItems="center">
+        <Stack direction="row" spacing="10px" alignItems="center">
+          {isLive && (
             <Typography
               bgcolor="#7DFFD11A"
               padding="2px 4px"
@@ -63,11 +63,11 @@ const SessionCard: React.FC<SessionCardProps> = ({
             >
               · LIVE
             </Typography>
-            <Typography variant="caption" textTransform="uppercase">
-              {session.track}
-            </Typography>
-          </Stack>
-        )}
+          )}
+          <Typography variant="caption" textTransform="uppercase">
+            {session.track}
+          </Typography>
+        </Stack>
         <Typography variant="bodyB" sx={{ opacity: '0.6' }}>
           {dayjs(session.startTime).tz(session.timezone).format('h:mm A')} -{' '}
           {dayjs(session.endTime).tz(session.timezone).format('h:mm A')}
