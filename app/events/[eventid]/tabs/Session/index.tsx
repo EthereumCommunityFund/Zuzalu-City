@@ -88,8 +88,7 @@ import {
 import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
-import { ITimezoneOption } from 'react-timezone-select';
-import { TimezoneSelector } from '@/components/select/TimezoneSelector';
+
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -173,9 +172,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedTimezone, setSelectedTimezone] = useState<ITimezoneOption>(
-    {} as ITimezoneOption,
-  );
+
   const router = useRouter();
 
   const groupSessionByDate = (
@@ -368,9 +365,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     let timezone = eventData?.timezone;
-    if (selectedTimezone.value) {
-      timezone = selectedTimezone.value;
-    }
     if (sessionDate == null) return true;
     const formattedTime = date.format('HH:mm');
     const isWithinBookedSession = bookedSessionsForDay.some((session) => {
@@ -547,11 +541,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const newSessionStart = startTime;
     const newSessionEnd = endTime;
     let timezone = eventData?.timezone;
-
-    if (selectedTimezone.value) {
-      timezone = selectedTimezone.value;
-    }
-
     for (let session of bookedSessions) {
       const sessionStart = dayjs(session.startTime).tz('UTC').tz(timezone);
       const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
@@ -576,10 +565,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     }
 
     let timezone = eventData?.timezone;
-
-    if (selectedTimezone.value) {
-      timezone = selectedTimezone.value;
-    }
 
     const description = sessionDescriptionEditorStore.getValueString();
     const format = person ? 'person' : 'online';
@@ -684,11 +669,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   useEffect(() => {
     const fetchData = async () => {
       let timezone = eventData?.timezone;
-
-      if (selectedTimezone.value) {
-        timezone = selectedTimezone.value;
-      }
-
       await getPeople();
       await getLocation();
       if (option && option.length > 0) {
@@ -1154,17 +1134,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           location
                         </Typography>
                         <Typography variant="bodyB">
-                          Your booking will be at this timezone:{' '}
-                          {selectedTimezone.value
-                            ? selectedTimezone.value
-                            : eventData?.timezone}
+                          Your booking will be at the event timezone:{' '}
+                          {eventData?.timezone}
                         </Typography>
-                        <TimezoneSelector
-                          setSelectedTimezone={setSelectedTimezone}
-                          sx={{
-                            width: '100%',
-                          }}
-                        />
                         <DesktopDatePicker
                           onChange={(newValue) => {
                             if (newValue !== null) handleDateChange(newValue);
