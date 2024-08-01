@@ -1941,42 +1941,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                 },
               }}
             >
-              <Stack
-                sx={{
-                  borderTopRightRadius: '10px',
-                  borderTopLeftRadius: '10px',
-                  [theme.breakpoints.down('md')]: {
-                    display: 'none',
-                  },
-                }}
-                paddingX="10px"
-                direction="row"
-              >
-                <Stack
-                  direction="row"
-                  spacing="10px"
-                  padding="14px"
-                  sx={{
-                    cursor: 'pointer',
-                  }}
-                  alignItems="center"
-                >
-                  <QueueListIcon size={5} />
-                  <ZuButton
-                    onClick={() => {
-                      setSelectedDate(null);
-                    }}
-                    variant="text"
-                    sx={{
-                      textTransform: 'none',
-                      padding: 0,
-                      minWidth: 'auto',
-                    }}
-                  >
-                    <Typography variant="bodyS">Full Schedule</Typography>
-                  </ZuButton>
-                </Stack>
-              </Stack>
               {loading ? (
                 <Stack
                   borderRadius="10px"

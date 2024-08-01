@@ -120,8 +120,9 @@ const SessionCard: React.FC<SessionCardProps> = ({
             padding={'2px 5px'}
             bgcolor={'rgba(255, 199, 125, 0.10)'}
             borderRadius={'2px'}
+            alignItems={'center'}
           >
-            <UserCircleIcon color={'#FFCC66'} />
+            <UserCircleIcon color={'#FFCC66'} size={4} />
             <Typography
               textTransform={'uppercase'}
               fontWeight={700}
