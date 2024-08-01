@@ -1777,6 +1777,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                 border="1px solid #383838"
                 bgcolor="#262626"
                 flex={8}
+                sx={{
+                  height: 'calc(100vh - 156px)',
+                  overflowY: 'scroll',
+                }}
               >
                 <Stack
                   sx={{
