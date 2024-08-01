@@ -57,6 +57,7 @@ import {
   RightArrowIcon,
   CalendarIcon,
 } from '@/components/icons';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
@@ -185,9 +186,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [trackAnchor, setTrackAnchor] = useState<HTMLDivElement | null>(null);
+  const [locationAnchor, setLocationAnchor] = useState<HTMLDivElement | null>(
     null,
   );
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedTracks, setSelectedTracks] = useState<string[]>([]);
 
   const handleCalendarClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -195,6 +200,24 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   const handleCalendarClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleTrackFilterClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setTrackAnchor(event.currentTarget);
+  };
+
+  const handleTrackFilterClose = () => {
+    setTrackAnchor(null);
+  };
+
+  const handleLocationFilterClick = (
+    event: React.MouseEvent<HTMLDivElement>,
+  ) => {
+    setLocationAnchor(event.currentTarget);
+  };
+
+  const handleLocationFilterClose = () => {
+    setLocationAnchor(null);
   };
 
   const calendarOpen = Boolean(anchorEl);
@@ -2245,8 +2268,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     padding={'10px'}
                     borderRadius={'10px'}
                     border={'solid 1px rgba(255, 255, 255, 0.10)'}
+                    aria-describedby={
+                      Boolean(trackAnchor) ? 'track-filter-popup' : undefined
+                    }
+                    onClick={handleTrackFilterClick}
                     sx={{
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                      cursor: 'pointer',
                     }}
                   >
                     <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
@@ -2280,6 +2308,60 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     </Stack>
                   </Stack>
 
+                  <Popover
+                    id={Boolean(trackAnchor) ? 'track-filter-popup' : undefined}
+                    open={Boolean(trackAnchor)}
+                    anchorEl={trackAnchor}
+                    onClose={handleTrackFilterClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    slotProps={{
+                      paper: {
+                        sx: {
+                          maxHeight: '200px',
+                          backgroundColor: 'rgba(34, 34, 34, 0.8)',
+                          backdropFilter: 'blur(20px)',
+                          width: '344px',
+                        },
+                      },
+                    }}
+                  >
+                    {eventData &&
+                      eventData.tracks
+                        ?.split(',')
+                        .map((item: string, index) => {
+                          return (
+                            <MenuItem
+                              key={index}
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                              }}
+                              onClick={() => {
+                                if (selectedTracks.includes(item)) {
+                                  const temp = selectedTracks.filter(
+                                    (track) => track !== item,
+                                  );
+                                  setSelectedTracks(temp);
+                                } else {
+                                  const temp = [...selectedTracks, item];
+                                  const uniqueArray = [...new Set(temp)];
+                                  setSelectedTracks(uniqueArray);
+                                }
+                              }}
+                            >
+                              {item}
+                              {selectedTracks.includes(item) && (
+                                <HighlightOffIcon />
+                              )}
+                            </MenuItem>
+                          );
+                        })}
+                  </Popover>
                   <Stack
                     direction={'row'}
                     alignItems={'center'}
@@ -2287,8 +2369,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     padding={'10px'}
                     borderRadius={'10px'}
                     border={'solid 1px rgba(255, 255, 255, 0.10)'}
+                    aria-describedby={
+                      Boolean(locationAnchor)
+                        ? 'location-filter-popup'
+                        : undefined
+                    }
+                    onClick={handleLocationFilterClick}
                     sx={{
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                      cursor: 'pointer',
                     }}
                   >
                     <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
@@ -2312,11 +2401,71 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           opacity: '0.6',
                         }}
                       >
-                        Room One
+                        {sessionLocation
+                          ? sessionLocation.length > 10
+                            ? sessionLocation.substring(0, 10) + '...'
+                            : sessionLocation
+                          : ''}
                       </Typography>
                       <ChevronRightIcon />
                     </Stack>
                   </Stack>
+                  <Popover
+                    id={
+                      Boolean(locationAnchor)
+                        ? 'location-filter-popup'
+                        : undefined
+                    }
+                    open={Boolean(locationAnchor)}
+                    anchorEl={locationAnchor}
+                    onClose={handleLocationFilterClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    slotProps={{
+                      paper: {
+                        sx: {
+                          maxHeight: '200px',
+                          backgroundColor: 'rgba(34, 34, 34, 0.8)',
+                          backdropFilter: 'blur(20px)',
+                          width: '344px',
+                        },
+                      },
+                    }}
+                  >
+                    {sessionLocation &&
+                      sessionLocation.split(',').map((item, index) => {
+                        return (
+                          <MenuItem
+                            key={index}
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                            }}
+                            onClick={() => {
+                              if (selectedLocations.includes(item)) {
+                                const temp = selectedLocations.filter(
+                                  (location) => location !== item,
+                                );
+                                setSelectedLocations(temp);
+                              } else {
+                                const temp = [...selectedLocations, item];
+                                const uniqueArray = [...new Set(temp)];
+                                setSelectedLocations(uniqueArray);
+                              }
+                            }}
+                          >
+                            {item}
+                            {selectedLocations.includes(item) && (
+                              <HighlightOffIcon />
+                            )}
+                          </MenuItem>
+                        );
+                      })}
+                  </Popover>
                 </Stack>
               </Stack>
             )}
@@ -2769,6 +2918,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           location="Room One"
           track={eventData?.tracks ?? ''}
           handleClear={handleFilterSessionClearButton}
+          selectedLocations={selectedLocations}
+          setSelectedLocations={setSelectedLocations}
+          selectedTracks={selectedTracks}
+          setSelectedTracks={setSelectedTracks}
         />
       </Stack>
     </LocalizationProvider>

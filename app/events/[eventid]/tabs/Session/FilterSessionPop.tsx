@@ -1,11 +1,19 @@
 import { ZuButton, ZuSwitch } from '@/components/core';
 import { EditIcon, MapIcon, TicketIcon } from '@/components/icons';
 import { FilterSessionsPopComponentProps } from '@/types';
-import { Stack, SwipeableDrawer, Typography } from '@mui/material';
+import {
+  MenuItem,
+  Popover,
+  Stack,
+  SwipeableDrawer,
+  Typography,
+} from '@mui/material';
 import { ArrowLeftIcon } from '@mui/x-date-pickers';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { useState } from 'react';
 
 export function FilterSessionPop({
   isRSVPFiltered,
@@ -15,8 +23,35 @@ export function FilterSessionPop({
   location,
   track,
   handleClear,
+  selectedLocations,
+  setSelectedLocations,
+  selectedTracks,
+  setSelectedTracks,
   ...props
 }: FilterSessionsPopComponentProps) {
+  const [trackAnchor, setTrackAnchor] = useState<HTMLDivElement | null>(null);
+  const [locationAnchor, setLocationAnchor] = useState<HTMLDivElement | null>(
+    null,
+  );
+
+  const handleTrackFilterClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setTrackAnchor(event.currentTarget);
+  };
+
+  const handleTrackFilterClose = () => {
+    setTrackAnchor(null);
+  };
+
+  const handleLocationFilterClick = (
+    event: React.MouseEvent<HTMLDivElement>,
+  ) => {
+    setLocationAnchor(event.currentTarget);
+  };
+
+  const handleLocationFilterClose = () => {
+    setLocationAnchor(null);
+  };
+
   return (
     <SwipeableDrawer {...props}>
       <Stack
@@ -96,8 +131,13 @@ export function FilterSessionPop({
               padding={'10px'}
               borderRadius={'10px'}
               border={'solid 1px rgba(255, 255, 255, 0.10)'}
+              aria-describedby={
+                Boolean(trackAnchor) ? 'track-filter-popup' : undefined
+              }
+              onClick={handleTrackFilterClick}
               sx={{
                 backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                cursor: 'pointer',
               }}
             >
               <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
@@ -130,6 +170,56 @@ export function FilterSessionPop({
                 <ChevronRightIcon />
               </Stack>
             </Stack>
+            <Popover
+              id={Boolean(trackAnchor) ? 'track-filter-popup' : undefined}
+              open={Boolean(trackAnchor)}
+              anchorEl={trackAnchor}
+              onClose={handleTrackFilterClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              slotProps={{
+                paper: {
+                  sx: {
+                    maxHeight: '200px',
+                    backgroundColor: 'rgba(34, 34, 34, 0.8)',
+                    backdropFilter: 'blur(20px)',
+                    width: '344px',
+                  },
+                },
+              }}
+            >
+              {track &&
+                track.split(',').map((item: string, index) => {
+                  return (
+                    <MenuItem
+                      key={index}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                      onClick={() => {
+                        if (selectedTracks.includes(item)) {
+                          const temp = selectedTracks.filter(
+                            (track) => track !== item,
+                          );
+                          setSelectedTracks(temp);
+                        } else {
+                          const temp = [...selectedTracks, item];
+                          const uniqueArray = [...new Set(temp)];
+                          setSelectedTracks(uniqueArray);
+                        }
+                      }}
+                    >
+                      {item}
+                      {selectedTracks.includes(item) && <HighlightOffIcon />}
+                    </MenuItem>
+                  );
+                })}
+            </Popover>
 
             <Stack
               direction={'row'}
@@ -138,8 +228,13 @@ export function FilterSessionPop({
               padding={'10px'}
               borderRadius={'10px'}
               border={'solid 1px rgba(255, 255, 255, 0.10)'}
+              aria-describedby={
+                Boolean(locationAnchor) ? 'location-filter-popup' : undefined
+              }
+              onClick={handleLocationFilterClick}
               sx={{
                 backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                cursor: 'pointer',
               }}
             >
               <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
@@ -163,10 +258,69 @@ export function FilterSessionPop({
                     opacity: '0.6',
                   }}
                 >
-                  {location}
+                  {location
+                    ? location.length > 10
+                      ? location.substring(0, 10) + '...'
+                      : location
+                    : ''}
                 </Typography>
                 <ChevronRightIcon />
               </Stack>
+
+              <Popover
+                id={
+                  Boolean(locationAnchor) ? 'location-filter-popup' : undefined
+                }
+                open={Boolean(locationAnchor)}
+                anchorEl={locationAnchor}
+                onClose={handleLocationFilterClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      maxHeight: '200px',
+                      backgroundColor: 'rgba(34, 34, 34, 0.8)',
+                      backdropFilter: 'blur(20px)',
+                      width: '344px',
+                    },
+                  },
+                }}
+              >
+                {location &&
+                  location.split(',').map((item, index) => {
+                    return (
+                      <MenuItem
+                        key={index}
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                        onClick={() => {
+                          if (selectedLocations.includes(item)) {
+                            const temp = selectedLocations.filter(
+                              (location) => location !== item,
+                            );
+                            setSelectedLocations(temp);
+                          } else {
+                            const temp = [...selectedLocations, item];
+                            const uniqueArray = [...new Set(temp)];
+                            setSelectedLocations(uniqueArray);
+                          }
+                        }}
+                      >
+                        {item}
+                        {selectedLocations.includes(item) && (
+                          <HighlightOffIcon />
+                        )}
+                      </MenuItem>
+                    );
+                  })}
+              </Popover>
             </Stack>
           </Stack>
         </Stack>

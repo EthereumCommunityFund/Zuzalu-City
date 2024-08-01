@@ -331,6 +331,10 @@ export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
   location: string;
   track: string;
   handleClear: () => void;
+  setSelectedLocations: Dispatch<SetStateAction<string[]>>;
+  selectedLocations: string[];
+  setSelectedTracks: Dispatch<SetStateAction<string[]>>;
+  selectedTracks: string[];
 }
 
 export interface TimezoneSelectorProps {
