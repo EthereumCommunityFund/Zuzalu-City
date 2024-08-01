@@ -332,3 +332,8 @@ export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
   track: string;
   handleClear: () => void;
 }
+
+export interface TimezoneSelectorProps {
+  sx: CSSProperties;
+  setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>
+}
