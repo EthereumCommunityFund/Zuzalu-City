@@ -37,7 +37,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { SpaceCard } from '@/components/cards';
-import { Anchor } from '@/types';
+import { Anchor, Contract } from '@/types';
 import { LatLngLiteral } from 'leaflet';
 import getLatLngFromAddress from '@/utils/osm';
 
@@ -70,6 +70,8 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
   const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
   const [filteredResults, setFilteredResults] = useState<any[]>([]);
   const [ticketMinted, setTicketMinted] = useState<any[]>([]);
+  const [mintedContract, setMintedContract] = useState<Contract>();
+  const [transactionLog, setTransactionLog] = useState<any>();
   const params = useParams();
   const eventId = params.eventid.toString();
 
@@ -192,6 +194,9 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                   event={eventData}
                   setTokenId={setTokenId}
                   setTicketMinted={setTicketMinted}
+                  setIsTransaction={setIsTransaction}
+                  setMintedContract={setMintedContract}
+                  setTransactionLog={setTransactionLog}
                 />
               )}
             {!isVerify &&
@@ -216,6 +221,8 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                   handleClose={handleClose}
                   tokenId={tokenId}
                   ticketMinted={ticketMinted}
+                  mintedContract={mintedContract}
+                  transactionLog={transactionLog}
                 />
               )}
           </>
