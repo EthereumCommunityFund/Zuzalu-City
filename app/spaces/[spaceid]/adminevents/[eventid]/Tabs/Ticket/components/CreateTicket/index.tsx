@@ -586,7 +586,7 @@ export const CreateTicket = ({
   ticketImageURL,
   setTicketImageURL,
 }: IProps) => {
-  const avatarUploader = useUploaderPreview(setTicketImageURL);
+  const avatarUploader = useUploaderPreview();
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -1012,6 +1012,7 @@ export const CreateTicket = ({
 
           <Button
             onClick={() => {
+              setTicketImageURL(avatarUploader.getUrl());
               setIsConfirm(false), setGoToSummary(true);
             }}
             sx={{

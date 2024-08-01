@@ -31,9 +31,9 @@ export const InitialStep = ({
   handleStep,
 }: PropTypes) => {
   return (
-    <Stack spacing="20px" padding="10px 20px">
+    <Stack spacing="1px" padding="10px 20px">
       <Stack spacing="4px">
-        <Typography color="white" variant="bodyMB" sx={{ opacity: '0.7' }}>
+        {/*<Typography color="white" variant="bodyMB" sx={{ opacity: '0.7' }}>
           Get Ticket: (single)
         </Typography>
         <Typography color="#FF9C66" variant="bodyS" sx={{ opacity: '0.8' }}>
@@ -49,8 +49,8 @@ export const InitialStep = ({
           direction="row"
           borderRadius="10px"
           bgcolor="#2a2a2a"
-        >
-          {isOne ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />}
+        >*/}
+        {/*isOne ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />}
           <Stack spacing="5px" width={'100%'} flex={1}>
             <Stack
               alignItems="center"
@@ -83,8 +83,8 @@ export const InitialStep = ({
               This pass does not include accomodation.
             </Typography>
           </Stack>
-        </Stack>
-        {isOne && (
+        </Stack>*/}
+        {/*isOne && (
           <Stack>
             <Typography variant="bodyS" textAlign="center">
               Select Accommodation Type:
@@ -143,9 +143,9 @@ export const InitialStep = ({
           direction="row"
           borderRadius="10px"
           bgcolor="#2a2a2a"
-        >
-          {isTwo ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />}
-          <Stack spacing="5px" width={'100%'} flex={1}>
+        >*/}
+        {/*isTwo ? <ChevronUpIcon size={5} /> : <ChevronDownIcon size={5} />*/}
+        {/*<Stack spacing="5px" width={'100%'} flex={1}>
             <Stack
               alignItems="center"
               justifyContent="space-between"
@@ -176,8 +176,8 @@ export const InitialStep = ({
               one two three four five six seven eight nine ten elevane
             </Typography>
           </Stack>
-        </Stack>
-        {isTwo && (
+        </Stack>*/}
+        {/*isTwo && (
           <Stack>
             <Typography variant="bodyS" textAlign="center">
               Select Accommodation Type:
@@ -227,10 +227,10 @@ export const InitialStep = ({
               </Stack>
             </Stack>
           </Stack>
-        )}
+        )*/}
       </Stack>
       <Stack spacing="10px">
-        <ZuButton
+        {/*<ZuButton
           sx={{
             backgroundColor: '#373b36',
             color: '#D7FFC4',
@@ -249,7 +249,7 @@ export const InitialStep = ({
         </ZuButton>
         <Typography textAlign="center" variant="caption">
           OR
-        </Typography>
+        </Typography>*/}
         <ZuButton
           onClick={() => {
             setSponsor(false);
@@ -262,14 +262,14 @@ export const InitialStep = ({
         >
           Whitelisted Users
         </ZuButton>
-        <ZuButton
+        {/*<ZuButton
           sx={{
             width: '100%',
           }}
           onClick={() => handleStep(1)}
         >
           Register as Sponsor
-        </ZuButton>
+        </ZuButton>*/}
       </Stack>
     </Stack>
   );
