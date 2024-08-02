@@ -88,6 +88,7 @@ import {
 import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
+
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -151,11 +152,11 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   const [sessionDate, setSessionDate] = useState<Dayjs | null>();
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
-    dayjs().set('hour', 0).set('minute', 0),
+    dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
   );
   const adminId = ceramic?.did?.parent || '';
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
-    dayjs().set('hour', 0).set('minute', 0),
+    dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
   );
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<any>>([
     profile,
@@ -167,11 +168,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(0);
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
+
   const router = useRouter();
   useEffect(() => {
     let dates = sessionsByDate
@@ -345,6 +348,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     isRSVPFiltered,
     isManagedFiltered,
     searchQuery,
+    refreshFlag,
   ]);
   const handleRSVPSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -358,7 +362,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     setIsManagedFiltered(event.target.checked);
   };
 
-  const handleDateChange = (date: Dayjs) => {
+  const handleDateChange = async (date: Dayjs) => {
     if (date && person && sessionLocation !== 'Custom') {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
       const selectedDay = date.format('YYYY-MM-DD');
@@ -369,17 +373,24 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
       setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
-      const bookedSessionsDay = bookedSessions.filter((session) => {
-        const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+      const bookedSessions = await getBookedSession();
+      if (bookedSessions) {
+        const bookedSessionsDay = bookedSessions.filter((session) => {
+          const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
 
-        return sessionStartDay === selectedDay;
-      });
+          return sessionStartDay === selectedDay;
+        });
 
-      setBookedSessionsForDay(bookedSessionsDay);
+        setBookedSessionsForDay(bookedSessionsDay);
+      }
     }
     setSessionDate(date);
-    setSessionStartTime(dayjs().set('hour', 0).set('minute', 0));
-    setSessionEndTime(dayjs().set('hour', 0).set('minute', 0));
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
   };
 
   const isDateInRange = (
@@ -394,39 +405,40 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
+    let timezone = eventData?.timezone;
     if (sessionDate == null) return true;
     const formattedTime = date.format('HH:mm');
-    const isWithinBookedSession = bookedSessionsForDay.some((session) => {
+    const isNotWithinBookedSession = bookedSessionsForDay.every((session) => {
       const sessionStartTime = dayjs(session.startTime)
         .tz('UTC')
-        .tz(eventData?.timezone)
+        .tz(timezone)
         .format('HH:mm');
       const sessionEndTime = dayjs(session.endTime)
         .tz('UTC')
-        .tz(eventData?.timezone)
+        .tz(timezone)
         .format('HH:mm');
-      return (
-        (formattedTime >= sessionStartTime && formattedTime < sessionEndTime) ||
-        (formattedTime <= sessionStartTime &&
-          formattedTime >= sessionEndTime) ||
-        (isStart
-          ? formattedTime >= sessionStartTime && formattedTime < sessionEndTime
-          : formattedTime > sessionStartTime && formattedTime <= sessionEndTime)
-      );
-    });
 
-    const isMinuteIntervalValid = date.minute() % 30 === 0;
+      if (isStart) {
+        return (
+          formattedTime < sessionStartTime || formattedTime >= sessionEndTime
+        );
+      } else {
+        return (
+          formattedTime <= sessionStartTime || formattedTime > sessionEndTime
+        );
+      }
+    });
     const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
       let startTime;
       let endTime;
       if (isStart) {
         const startTime = dayjs
           .tz(slot.startTime, 'HH:mm', 'UTC')
-          .tz(eventData?.timezone)
+          .tz(timezone)
           .format('HH:mm');
         const endTime = dayjs
           .tz(slot.endTime, 'HH:mm', 'UTC')
-          .tz(eventData?.timezone)
+          .tz(timezone)
           .format('HH:mm');
         if (endTime >= startTime) {
           return formattedTime >= startTime && formattedTime < endTime;
@@ -434,10 +446,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           return !(formattedTime < startTime && formattedTime >= endTime);
         }
       } else {
-        startTime = sessionStartTime.tz(eventData?.timezone).format('HH:mm');
+        startTime = sessionStartTime.tz(timezone).format('HH:mm');
         endTime = dayjs
           .tz(slot.endTime, 'HH:mm', 'UTC')
-          .tz(eventData?.timezone)
+          .tz(timezone)
           .format('HH:mm');
         if (endTime >= startTime) {
           return formattedTime >= startTime && formattedTime <= endTime;
@@ -446,8 +458,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         }
       }
     });
-
-    return isWithinAvailableSlot && !isWithinBookedSession;
+    return isWithinAvailableSlot && isNotWithinBookedSession;
   };
 
   const getPeople = async () => {
@@ -569,20 +580,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   ) => {
     const newSessionStart = startTime;
     const newSessionEnd = endTime;
-
+    let timezone = eventData?.timezone;
     for (let session of bookedSessions) {
-      const sessionStart = dayjs(session.startTime)
-        .tz('UTC')
-        .tz(eventData?.timezone);
-      const sessionEnd = dayjs(session.endTime)
-        .tz('UTC')
-        .tz(eventData?.timezone);
-
+      const sessionStart = dayjs(session.startTime).tz('UTC').tz(timezone);
+      const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
       if (
-        (newSessionStart.isSameOrBefore(sessionEnd) &&
+        (newSessionStart.isBefore(sessionEnd) &&
           newSessionStart.isSameOrAfter(sessionStart)) ||
-        (newSessionEnd.isSameOrBefore(sessionEnd) &&
-          newSessionEnd.isSameOrAfter(sessionStart)) ||
+        (newSessionEnd.isAfter(sessionStart) &&
+          newSessionEnd.isSameOrBefore(sessionEnd)) ||
         (newSessionStart.isBefore(sessionStart) &&
           newSessionEnd.isAfter(sessionEnd))
       ) {
@@ -596,6 +602,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     if (!isAuthenticated) {
       return;
     }
+
+    let timezone = eventData?.timezone;
 
     const description = sessionDescriptionEditorStore.getValueString();
     const format = person ? 'person' : 'online';
@@ -621,8 +629,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     } else if (
       isSessionOverlap(
         bookedSessionsForDay,
-        dayjs(sessionStartTime).tz('UTC').tz(eventData?.timezone),
-        dayjs(sessionEndTime).tz('UTC').tz(eventData?.timezone),
+        dayjs(sessionStartTime).tz('UTC').tz(timezone),
+        dayjs(sessionEndTime).tz('UTC').tz(timezone),
       )
     ) {
       typeof window !== 'undefined' &&
@@ -648,7 +656,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         return;
       }
     }
-
     const formattedData: SessionSupabaseData = {
       title: sessionName,
       description,
@@ -672,7 +679,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       type: sessionType,
       format,
       track: sessionTrack,
-      timezone: eventData?.timezone,
+      timezone: timezone,
       video_url: sessionVideoURL,
       location:
         sessionLocation === 'Custom'
@@ -689,6 +696,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       if (response.status === 200) {
         await fetchAndFilterSessions();
         setShowModal(true);
+        resetForm();
       }
     } catch (err) {
       console.log(err);
@@ -696,9 +704,29 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       setBlockClickModal(false);
     }
   };
-
+  const resetForm = () => {
+    setSessionName('');
+    setSessionTrack('');
+    setSessionTags([]);
+    setSessionType('');
+    setSessionExperienceLevel('');
+    setSessionVideoURL('');
+    setSessionDate(null);
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionOrganizers([profile]);
+    setSessionSpeakers([]);
+    setSessionLocation('');
+    setCustomLocation('');
+    setDirections('');
+  };
   useEffect(() => {
     const fetchData = async () => {
+      let timezone = eventData?.timezone;
       await getPeople();
       await getLocation();
       if (option && option.length > 0) {
@@ -707,7 +735,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             setIsRSVPFiltered(true);
             break;
           case 'Today':
-            setSelectedDate(dayjs().tz(eventData?.timezone));
+            setSelectedDate(dayjs().tz(timezone));
             break;
           default:
             break;
@@ -731,12 +759,22 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         .eq('location', sessionLocation);
       if (data) {
         setBookedSessions(data);
+        return data;
       }
     } catch (err) {
       console.log(err);
     }
   };
 
+  useEffect(() => {
+    const intervalId = setInterval(
+      () => {
+        setRefreshFlag((prevFlag) => prevFlag + 1);
+      },
+      20 * 60 * 1000,
+    );
+    return () => clearInterval(intervalId);
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       await getBookedSession();
@@ -1169,7 +1207,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         </Typography>
                         <DesktopDatePicker
                           onChange={(newValue) => {
-                            if (newValue !== null) handleDateChange(newValue);
+                            if (newValue !== null) {
+                              handleDateChange(newValue);
+                            }
                           }}
                           shouldDisableDate={(date: Dayjs) =>
                             !isDateInRange(
@@ -1210,7 +1250,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                               ampm={false}
                               onChange={(newValue) => {
                                 if (newValue !== null) {
-                                  const combined = dayjs(sessionDate)
+                                  const combined = dayjs
+                                    .tz(sessionDate, eventData?.timezone)
                                     .set('hour', newValue.hour())
                                     .set('minute', newValue.minute());
                                   setSessionStartTime(combined);
@@ -1224,7 +1265,31 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                                   (view === 'minutes' || view === 'hours') &&
                                   sessionLocation !== 'Custom'
                                 ) {
-                                  return !isTimeAvailable(date, true);
+                                  if (view === 'hours') {
+                                    let availableMinutes = 0;
+                                    for (
+                                      let minute = 0;
+                                      minute < 60;
+                                      minute += 5
+                                    ) {
+                                      const checkTime = dayjs.tz(
+                                        date.set('minute', minute),
+                                        eventData?.timezone as string,
+                                      );
+                                      if (isTimeAvailable(checkTime, true)) {
+                                        availableMinutes += 5;
+                                      }
+                                    }
+                                    return availableMinutes < 5;
+                                  } else {
+                                    return !isTimeAvailable(
+                                      dayjs.tz(
+                                        date,
+                                        eventData?.timezone as string,
+                                      ),
+                                      true,
+                                    );
+                                  }
                                 }
                                 return false;
                               }}
@@ -1268,7 +1333,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                               ampm={false}
                               onChange={(newValue) => {
                                 if (newValue !== null) {
-                                  const combined = dayjs(sessionDate)
+                                  const combined = dayjs
+                                    .tz(sessionDate, eventData?.timezone)
                                     .set('hour', newValue.hour())
                                     .set('minute', newValue.minute());
                                   setSessionEndTime(combined);
@@ -1282,7 +1348,30 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                                   (view === 'minutes' || view === 'hours') &&
                                   sessionLocation !== 'Custom'
                                 ) {
-                                  return !isTimeAvailable(date, false);
+                                  if (view === 'hours') {
+                                    for (
+                                      let minute = 0;
+                                      minute < 60;
+                                      minute += 5
+                                    ) {
+                                      const checkTime = dayjs.tz(
+                                        date.set('minute', minute),
+                                        eventData?.timezone as string,
+                                      );
+                                      if (isTimeAvailable(checkTime, false)) {
+                                        return false;
+                                      }
+                                    }
+                                    return true;
+                                  } else {
+                                    return !isTimeAvailable(
+                                      dayjs.tz(
+                                        date,
+                                        eventData?.timezone as string,
+                                      ),
+                                      false,
+                                    );
+                                  }
                                 }
                                 return false;
                               }}
@@ -1390,7 +1479,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       </Typography>
                       <DesktopDatePicker
                         onChange={(newValue) => {
-                          if (newValue !== null) handleDateChange(newValue);
+                          if (newValue !== null) {
+                            handleDateChange(newValue);
+                          }
                         }}
                         shouldDisableDate={(date: Dayjs) =>
                           !isDateInRange(

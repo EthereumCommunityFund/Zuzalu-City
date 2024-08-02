@@ -1,11 +1,11 @@
-import { TICKET_FACTORY_ADDRESS, mUSDC_TOKEN } from '@/constant';
+import { TICKET_FACTORY_ADDRESS, mUSDC_TOKEN, isDev } from '@/constant';
 import { client, config } from '@/context/WalletContext';
 import { ERC20_ABI } from '@/utils/erc20_abi';
 import { TICKET_ABI } from '@/utils/ticket_abi';
 import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { Address, parseUnits } from 'viem';
-import { scrollSepolia } from 'viem/chains';
+import { scroll, scrollSepolia } from 'viem/chains';
 import { writeContract, waitForTransactionReceipt } from 'wagmi/actions';
 import { ZuButton, ZuInput } from '@/components/core';
 import {
@@ -128,7 +128,7 @@ export const WithdrawToken = ({
     try {
       const ABI = ticket[8]?.result ? TICKET_WITH_WHITELIST_ABI : TICKET_ABI;
       const withdrawHash = await writeContract(config, {
-        chainId: scrollSepolia.id,
+        chainId: isDev ? scrollSepolia.id : scroll.id,
         address: ticketAddress as Address,
         functionName: 'withdraw',
         abi: ABI,
@@ -408,7 +408,7 @@ export const SendNFTTicket = ({
       const uploadedID = await gaslessFundAndUpload(metadataFile, tags, 'EVM');
       const ABI = ticket[8]?.result ? TICKET_WITH_WHITELIST_ABI : TICKET_ABI;
       const adminMintHash = await writeContract(config, {
-        chainId: scrollSepolia.id,
+        chainId: isDev ? scrollSepolia.id : scroll.id,
         address: ticketAddress as Address,
         functionName: 'adminMint',
         abi: ABI,
@@ -966,7 +966,7 @@ export const Whitelist = ({
   const handleAddWhiteLIST = async () => {
     try {
       const appendHash = await writeContract(config, {
-        chainId: scrollSepolia.id,
+        chainId: isDev ? scrollSepolia.id : scroll.id,
         address: ticketAddress as Address,
         functionName: 'appendToWhitelist',
         abi: TICKET_WITH_WHITELIST_ABI,
@@ -1107,7 +1107,7 @@ export const Whitelist = ({
                   <ListItem key={index}>
                     <Typography
                       variant="h6"
-                      fontSize="8px"
+                      fontSize="4px"
                       fontFamily={'Inter'}
                       lineHeight={'120%'}
                       color="white"
