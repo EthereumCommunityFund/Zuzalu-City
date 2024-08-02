@@ -2353,9 +2353,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     }}
                   >
                     {eventData &&
-                      eventData.tracks
-                        ?.split(',')
-                        .map((item: string, index) => {
+                      [...new Set(eventData.tracks?.split(','))].map(
+                        (item: string, index) => {
                           return (
                             <MenuItem
                               key={index}
@@ -2384,7 +2383,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                               )}
                             </MenuItem>
                           );
-                        })}
+                        },
+                      )}
                   </Popover>
                   <Stack
                     direction={'row'}
@@ -2451,36 +2451,38 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     }}
                   >
                     {sessionLocation &&
-                      sessionLocation.split(',').map((item, index) => {
-                        return (
-                          <MenuItem
-                            key={index}
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                            }}
-                            onClick={() => {
-                              if (selectedLocations.includes(item)) {
-                                const temp = selectedLocations.filter(
-                                  (location) => location !== item,
-                                );
-                                setSelectedLocations(temp);
-                              } else {
-                                const temp = [...selectedLocations, item];
-                                const uniqueArray = [...new Set(temp)];
-                                setSelectedLocations(uniqueArray);
-                              }
-                            }}
-                          >
-                            {item}
-                            {selectedLocations.includes(item) && (
-                              <HighlightOffIcon />
-                            )}
-                          </MenuItem>
-                        );
-                      })}
+                      [...new Set(sessionLocation.split(','))].map(
+                        (item, index) => {
+                          return (
+                            <MenuItem
+                              key={index}
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                              }}
+                              onClick={() => {
+                                if (selectedLocations.includes(item)) {
+                                  const temp = selectedLocations.filter(
+                                    (location) => location !== item,
+                                  );
+                                  setSelectedLocations(temp);
+                                } else {
+                                  const temp = [...selectedLocations, item];
+                                  const uniqueArray = [...new Set(temp)];
+                                  setSelectedLocations(uniqueArray);
+                                }
+                              }}
+                            >
+                              {item}
+                              {selectedLocations.includes(item) && (
+                                <HighlightOffIcon />
+                              )}
+                            </MenuItem>
+                          );
+                        },
+                      )}
                   </Popover>
                 </Stack>
               </Stack>

@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { Stack, Typography, Box } from '@mui/material';
+import {
+  Stack,
+  Typography,
+  Box,
+  Tooltip,
+  CircularProgress,
+} from '@mui/material';
 import {
   EditIcon,
   MapIcon,
@@ -10,6 +16,7 @@ import {
 import { Session } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import CancelIcon from '@mui/icons-material/Cancel';
 interface SessionCardProps {
   session: Session;
   eventId: string;
@@ -26,6 +33,8 @@ const SessionCard: React.FC<SessionCardProps> = ({
   isLive,
 }) => {
   const [hover, setHover] = useState<boolean>(false);
+  const [isRSVP, setIsRSVP] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const handleClick = async () => {
@@ -37,6 +46,89 @@ const SessionCard: React.FC<SessionCardProps> = ({
       router.push(`/events/${eventId}/sessions/${session.uuid}`);
     }
   };
+
+  const getRSVPSessionByID = async (sessionID: number, userDID: string) => {
+    const { data, error } = await supabase
+      .from('rsvp')
+      .select('*')
+      .match({ sessionID, userDID });
+    if (error) {
+      console.log('Failed to get RSVP session by ID: ', error);
+      return;
+    }
+    if (data.length > 0) {
+      setIsRSVP(true);
+      return;
+    }
+    setIsRSVP(false);
+  };
+
+  const setRSVPSession = async (sessionID: number, userDID: string) => {
+    setIsLoading(true);
+    const { error } = await supabase
+      .from('rsvp')
+      .insert({ sessionID, userDID });
+    if (error) {
+      console.log('Failed to set as RSVP: ', error);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(false);
+    setIsRSVP(true);
+  };
+
+  const removeRSVPSession = async (sessionID: number) => {
+    setIsLoading(true);
+    const { error } = await supabase
+      .from('rsvp')
+      .delete()
+      .eq('sessionID', sessionID);
+    if (error) {
+      console.log('Failed to cancel RSVP: ', error);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(false);
+    setIsRSVP(false);
+  };
+
+  const handleRSVPTicketTooltip = (
+    e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (userDID) {
+      setRSVPSession(Number(session.id), userDID);
+    }
+  };
+
+  const handleCancelTicketTooltip = (
+    e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    removeRSVPSession(Number(session.id));
+  };
+
+  const handleTicketClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isRSVP) {
+      removeRSVPSession(Number(session.id));
+    } else {
+      if (userDID) {
+        setRSVPSession(Number(session.id), userDID);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (userDID) {
+      getRSVPSessionByID(Number(session.id), userDID);
+    }
+  }, [session, userDID]);
 
   return (
     <Stack
@@ -117,7 +209,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
           </Typography>
         </Stack>
       </Stack>
-      <Stack gap={'10px'}>
+      <Stack gap={'10px'} alignItems={'flex-end'}>
         {userDID && session.creatorDID === userDID && (
           <Stack
             direction={'row'}
@@ -138,29 +230,64 @@ const SessionCard: React.FC<SessionCardProps> = ({
             </Typography>
           </Stack>
         )}
-        <Stack
-          padding="4px"
-          spacing="4px"
-          direction="row"
-          alignItems="center"
-          borderRadius="8px"
-          width={'100%'}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          sx={{
-            opacity: 0.7,
-            '&:hover': {
-              backgroundColor: 'rgba(125, 255, 209, 0.10)',
-              color: '#7DFFD1',
-            },
-            color: 'white',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-          }}
-          height="fit-content"
+        <Tooltip
+          title={
+            !isRSVP ? (
+              <Typography
+                sx={{ cursor: 'pointer' }}
+                fontSize={'14px'}
+                onClick={handleRSVPTicketTooltip}
+              >
+                RSVP
+              </Typography>
+            ) : (
+              <Typography
+                sx={{ cursor: 'pointer' }}
+                fontSize={'14px'}
+                onClick={handleCancelTicketTooltip}
+              >
+                Cancel
+              </Typography>
+            )
+          }
+          sx={{ cursor: 'pointer', borderRadius: '8px' }}
         >
-          <SessionIcon fill={hover ? '#7DFFD1' : 'white'} />
-          <Typography variant="bodyS">{session.rsvpNb || 0}</Typography>
-        </Stack>
+          <Stack
+            padding="4px"
+            spacing="4px"
+            direction="row"
+            alignItems="center"
+            borderRadius="8px"
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            sx={{
+              opacity: 0.7,
+              color: isRSVP ? '#7DFFD1' : 'white',
+              backgroundColor: isRSVP
+                ? 'rgba(125, 255, 209, 0.10)'
+                : 'rgba(255, 255, 255, 0.05)',
+              width: 'fit-content',
+            }}
+            height="fit-content"
+            onClick={handleTicketClick}
+          >
+            {isLoading ? (
+              <CircularProgress
+                size={'24px'}
+                sx={{ color: '#7DFFD1' }}
+              ></CircularProgress>
+            ) : isRSVP ? (
+              hover ? (
+                <CancelIcon />
+              ) : (
+                <SessionIcon fill={'#7DFFD1'} />
+              )
+            ) : (
+              <SessionIcon fill={'white'} />
+            )}
+            <Typography variant="bodyS">{session.rsvpNb || 0}</Typography>
+          </Stack>
+        </Tooltip>
       </Stack>
     </Stack>
   );

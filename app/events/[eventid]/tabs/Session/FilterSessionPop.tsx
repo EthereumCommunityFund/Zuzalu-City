@@ -196,7 +196,7 @@ export function FilterSessionPop({
               }}
             >
               {track &&
-                track.split(',').map((item: string, index) => {
+                [...new Set(track.split(','))].map((item: string, index) => {
                   return (
                     <MenuItem
                       key={index}
@@ -269,60 +269,57 @@ export function FilterSessionPop({
                 </Typography>
                 <ChevronRightIcon />
               </Stack>
-
-              <Popover
-                id={locationAnchorId}
-                open={locationAnchorOpen}
-                anchorEl={locationAnchor}
-                onClose={handleLocationFilterClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                slotProps={{
-                  paper: {
-                    sx: {
-                      maxHeight: '200px',
-                      backgroundColor: 'rgba(34, 34, 34, 0.8)',
-                      backdropFilter: 'blur(20px)',
-                      width: '344px',
-                    },
-                  },
-                }}
-              >
-                {location &&
-                  location.split(',').map((item, index) => {
-                    return (
-                      <MenuItem
-                        key={index}
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                        }}
-                        onClick={() => {
-                          if (selectedLocations.includes(item)) {
-                            const temp = selectedLocations.filter(
-                              (location) => location !== item,
-                            );
-                            setSelectedLocations(temp);
-                          } else {
-                            const temp = [...selectedLocations, item];
-                            const uniqueArray = [...new Set(temp)];
-                            setSelectedLocations(uniqueArray);
-                          }
-                        }}
-                      >
-                        {item}
-                        {selectedLocations.includes(item) && (
-                          <HighlightOffIcon />
-                        )}
-                      </MenuItem>
-                    );
-                  })}
-              </Popover>
             </Stack>
+            <Popover
+              id={locationAnchorId}
+              open={locationAnchorOpen}
+              anchorEl={locationAnchor}
+              onClose={handleLocationFilterClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              slotProps={{
+                paper: {
+                  sx: {
+                    maxHeight: '200px',
+                    backgroundColor: 'rgba(34, 34, 34, 0.8)',
+                    backdropFilter: 'blur(20px)',
+                    width: '344px',
+                  },
+                },
+              }}
+            >
+              {location &&
+                [...new Set(location.split(','))].map((item, index) => {
+                  return (
+                    <MenuItem
+                      key={index}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                      onClick={() => {
+                        if (selectedLocations.includes(item)) {
+                          const temp = selectedLocations.filter(
+                            (location) => location !== item,
+                          );
+                          setSelectedLocations(temp);
+                        } else {
+                          const temp = [...selectedLocations, item];
+                          const uniqueArray = [...new Set(temp)];
+                          setSelectedLocations(uniqueArray);
+                        }
+                      }}
+                    >
+                      {item}
+                      {selectedLocations.includes(item) && <HighlightOffIcon />}
+                    </MenuItem>
+                  );
+                })}
+            </Popover>
           </Stack>
         </Stack>
 
