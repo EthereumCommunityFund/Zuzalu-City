@@ -60,6 +60,8 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import timezone from 'dayjs/plugin/timezone';
+import { TimezoneSelector } from '@/components/select/TimezoneSelector';
+import { ITimezoneOption } from 'react-timezone-select';
 dayjs.extend(timezone);
 interface Inputs {
   name: string;
@@ -288,6 +290,9 @@ const Home = () => {
     const descriptionEditorStore = useEditorStore();
     const [avatar, setAvatar] = useState<SelectedFile>();
     const avatarUploader = useUploaderPreview();
+    const [selectedTimezone, setSelectedTimezone] = useState<ITimezoneOption>(
+      {} as ITimezoneOption,
+    );
     const [startTime, setStartTime] = useState<Dayjs | null>(dayjs());
     const [endTime, setEndTime] = useState<Dayjs | null>(dayjs());
     const socialLinksRef = useRef<HTMLDivElement>(null);
@@ -389,7 +394,9 @@ const Home = () => {
             external_url: inputs.external_url,
             person: person,
             locations: locations,
-            timezone: dayjs.tz.guess(),
+            timezone: selectedTimezone
+              ? selectedTimezone.value
+              : dayjs.tz.guess(),
           };
           /*const update: any = await composeClient.executeQuery(
           const update: any = await composeClient.executeQuery(
@@ -694,6 +701,15 @@ const Home = () => {
                     />
                   </Stack>
                 </Box>
+                <Stack spacing={'10px'}>
+                  <FormLabel>Timezone</FormLabel>
+                  <TimezoneSelector
+                    setSelectedTimezone={setSelectedTimezone}
+                    sx={{
+                      width: '100%',
+                    }}
+                  />
+                </Stack>
               </Stack>
               <Stack spacing="10px" padding="20px">
                 <FormLabel>External_URL</FormLabel>

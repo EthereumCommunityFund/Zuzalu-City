@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Stack, Box, SwipeableDrawer, Typography } from '@mui/material';
 import {
   TicketHeader,
@@ -14,7 +14,7 @@ import {
 } from './components';
 import { ZuButton } from 'components/core';
 import { useAccount } from 'wagmi';
-import { scrollSepolia } from 'viem/chains';
+import { scroll, scrollSepolia } from 'viem/chains';
 import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 import { client, config } from '@/context/WalletContext';
@@ -23,6 +23,7 @@ import {
   mUSDC_TOKEN,
   mUSDT_TOKEN,
   ticketFactoryGetContract,
+  isDev,
 } from '@/constant';
 import { Address, parseUnits } from 'viem';
 import dayjs, { Dayjs } from 'dayjs';
@@ -37,6 +38,9 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { Abi, AbiItem } from 'viem';
 import { TicketType } from './components/CreateTicket';
 import { Uploader3, SelectedFile } from '@lxdao/uploader3';
+import { updateTicketContract } from '@/services/event/addTicketContract';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
+
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface PropTypes {
   event?: Event;
@@ -97,6 +101,8 @@ const Ticket = ({ event }: PropTypes) => {
   const [ticketMintDeadline, setTicketMintDeadline] =
     React.useState<Dayjs | null>(dayjs());
   const [vaultIndex, setVaultIndex] = React.useState<number>(0);
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const handleFileChange = (event: { target: { files: any[] } }) => {
     const file = event.target.files[0];
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
@@ -120,49 +126,34 @@ const Ticket = ({ event }: PropTypes) => {
     [],
   );
   const initialWhitelist = ['0x0000000000000000000000000000000000000000'];
-  const updateEventById = async (
-    type?: string,
-    contractAddress?: string,
-    description?: string,
-    image_url?: string,
-    status?: string,
+  const updateEventContract = async (
+    type: string,
+    contractAddress: string,
+    description: string,
+    image_url: string,
+    status: string,
   ) => {
-    const existingContracts: Contract[] = Array.isArray(event?.contracts)
-      ? event.contracts
-      : [];
-    const newContract: Contract = {
-      type,
-      contractAddress,
-      description,
-      image_url,
-      status,
+    const addTicketContractInput = {
+      eventId: event?.id as string,
+      type: type,
+      contractAddress: contractAddress,
+      description: description,
+      image_url: image_url,
+      status: status,
     };
-    const updatedContracts: Contract[] = [...existingContracts, newContract];
-    const query = `
-         mutation UpdateEvent($i: UpdateEventInput!) {
-          updateEvent(input: $i) {
-            document {
-              id
-            }
-      }
-    }
-  `;
-
-    const variables = {
-      i: {
-        id: event?.id,
-        content: {
-          contracts: updatedContracts,
-        },
-      },
-    };
-
     try {
-      const result: any = await composeClient.executeQuery(query, variables);
+      setBlockClickModal(true);
+      const response = await updateTicketContract(addTicketContractInput);
+      if (response.status === 200) {
+        setShowModal(true);
+      }
     } catch (err) {
-      console.log('ERROR: Update: ', err);
+      console.log(err);
+    } finally {
+      setBlockClickModal(false);
     }
   };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -191,7 +182,7 @@ const Ticket = ({ event }: PropTypes) => {
       })) as number;
 
       const createTicketHash = await writeContract(config, {
-        chainId: scrollSepolia.id,
+        chainId: isDev ? scrollSepolia.id : scroll.id,
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI,
         functionName: 'createNewTicket',
@@ -234,7 +225,7 @@ const Ticket = ({ event }: PropTypes) => {
 
         if (createTicketLogs.length > 0) {
           const newContractAddress = createTicketLogs[0].address;
-          updateEventById(
+          updateEventContract(
             selectedType,
             newContractAddress?.toString(),
             ticketInfo?.description,
@@ -528,6 +519,23 @@ const Ticket = ({ event }: PropTypes) => {
 
   return (
     <Stack spacing={2}>
+      <Dialog
+        title="Created"
+        message="Your new NFT ticket is created."
+        showModal={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+        onConfirm={() => {
+          setShowModal(false);
+        }}
+      />
+      <Dialog
+        showModal={blockClickModal}
+        showActions={false}
+        title="Updating"
+        message="Please wait while the data is being updated..."
+      />
       <TicketHeader event={event} visible={event?.contractID === null} />
       {isLoading ? (
         <Box>

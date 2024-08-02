@@ -26,6 +26,7 @@ import {
   EventEdge,
   Anchor,
   Coordinates,
+  Contract,
 } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
@@ -89,6 +90,10 @@ const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
   const [isSponsorTransaction, setIsSponsorTransaction] =
     useState<boolean>(false);
   const [isSponsorComplete, setIsSponsorComplete] = useState<boolean>(false);
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
+  const [ticketMinted, setTicketMinted] = useState<any[]>([]);
+  const [mintedContract, setMintedContract] = useState<Contract>();
+  const [transactionLog, setTransactionLog] = useState<any>();
   const getEventDetailInfo = async () => {
     try {
       const response: CeramicResponseType<EventEdge> =
@@ -137,6 +142,14 @@ const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
               customLinks {
                 title
                 links
+              }
+              contractID
+              contracts {
+                contractAddress
+                description
+                image_url
+                status
+                type
               }
             }
           }
@@ -233,7 +246,13 @@ const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
               !isAgree &&
               !isMint &&
               !isTransaction &&
-              !isComplete && <Verify setIsVerify={setIsVerify} />}
+              !isComplete && (
+                <Verify
+                  setIsVerify={setIsVerify}
+                  eventContractID={eventData?.contractID}
+                  setFilteredResults={setFilteredResults}
+                />
+              )}
             {isVerify &&
               !isAgree &&
               !isMint &&
@@ -246,7 +265,17 @@ const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
               !isMint &&
               !isTransaction &&
               !isComplete && (
-                <Mint setIsAgree={setIsAgree} setIsMint={setIsMint} />
+                <Mint
+                  setIsAgree={setIsAgree}
+                  setIsMint={setIsMint}
+                  filteredResults={filteredResults}
+                  event={eventData}
+                  setTokenId={setTokenId}
+                  setTicketMinted={setTicketMinted}
+                  setIsTransaction={setIsTransaction}
+                  setMintedContract={setMintedContract}
+                  setTransactionLog={setTransactionLog}
+                />
               )}
             {!isVerify &&
               !isAgree &&
@@ -268,6 +297,10 @@ const About: React.FC<IAbout> = ({ eventData, setEventData, setVerify }) => {
                   setIsTransaction={setIsTransaction}
                   setIsComplete={setIsComplete}
                   handleClose={handleClose}
+                  tokenId={tokenId}
+                  ticketMinted={ticketMinted}
+                  mintedContract={mintedContract}
+                  transactionLog={transactionLog}
                 />
               )}
           </>
