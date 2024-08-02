@@ -625,7 +625,7 @@ const Home = () => {
               )}
               <Stack spacing="20px" padding={!isMobile ? '20px' : '0 0 20px'}>
                 <Typography variant="subtitleSB">Description</Typography>
-                {/*<EditorPreview
+                <EditorPreview
                   value={session.description}
                   collapsed={isCollapsed}
                   onCollapse={(collapsed) => {
@@ -634,7 +634,7 @@ const Home = () => {
                     });
                     setIsCollapsed(collapsed);
                   }}
-                />*/}
+                />
                 {isCanCollapse && (
                   <ZuButton
                     startIcon={
