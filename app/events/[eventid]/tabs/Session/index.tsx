@@ -151,11 +151,11 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [sessionVideoURL, setSessionVideoURL] = useState<string>('');
   const [sessionDate, setSessionDate] = useState<Dayjs | null>();
   const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
-    dayjs().set('hour', 0).set('minute', 0),
+    dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
   );
   const adminId = ceramic?.did?.parent || '';
   const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
-    dayjs().set('hour', 0).set('minute', 0),
+    dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
   );
   const [sessionOrganizers, setSessionOrganizers] = useState<Array<any>>([
     profile,
