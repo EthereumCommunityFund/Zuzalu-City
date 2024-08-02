@@ -353,8 +353,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       }
     }
     setSessionDate(date);
-    setSessionStartTime(dayjs().set('hour', 0).set('minute', 0));
-    setSessionEndTime(dayjs().set('hour', 0).set('minute', 0));
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
   };
 
   const isDateInRange = (
@@ -660,6 +664,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       if (response.status === 200) {
         await fetchAndFilterSessions();
         setShowModal(true);
+        resetForm();
       }
     } catch (err) {
       console.log(err);
@@ -667,7 +672,26 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       setBlockClickModal(false);
     }
   };
-
+  const resetForm = () => {
+    setSessionName('');
+    setSessionTrack('');
+    setSessionTags([]);
+    setSessionType('');
+    setSessionExperienceLevel('');
+    setSessionVideoURL('');
+    setSessionDate(null);
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionOrganizers([profile]);
+    setSessionSpeakers([]);
+    setSessionLocation('');
+    setCustomLocation('');
+    setDirections('');
+  };
   useEffect(() => {
     const fetchData = async () => {
       let timezone = eventData?.timezone;
