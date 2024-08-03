@@ -179,30 +179,30 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     let dates = sessionsByDate
       ? Object.keys(sessionsByDate)
           .map((item) =>
-            dayjs(item, 'MMMM D, YYYY').tz(eventData?.timezone).valueOf(),
+            dayjs(item, 'MMMM D, YYYY').tz(eventData?.timezone, true).valueOf(),
           )
           .sort((a, b) => a - b)
       : [];
 
-    if (
-      dates.some((date) => date >= dayjs().tz(eventData?.timezone).valueOf())
-    ) {
-      dates = dates.filter(
-        (date) => date >= dayjs().tz(eventData?.timezone).valueOf(),
-      );
+    const tmpToday = dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD')
+      .tz(eventData?.timezone, true)
+      .valueOf();
+    if (dates.some((date) => date >= tmpToday)) {
+      dates = dates.filter((date) => date >= tmpToday);
     }
     const getDay = () => {
-      const today = dayjs().tz(eventData?.timezone).valueOf();
       let nearToday;
       let tmpTime = 1000000000000;
       dates.forEach((item) => {
-        const time = Math.abs(item - today);
+        const time = Math.abs(item - tmpToday);
         if (time < tmpTime) {
           tmpTime = time;
           nearToday = item;
         }
       });
-      return dayjs(nearToday).tz(eventData?.timezone).format('MMMM-D-YYYY');
+      return dayjs(nearToday)
+        .tz(eventData?.timezone, true)
+        .format('MMMM-D-YYYY');
     };
     const nearToday = getDay();
     if (sessionsByDate && nearToday) {
@@ -1971,7 +1971,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           padding="10px"
                           key={`Session-GroupByDate-${date}`}
                           id={dayjs(date, 'MMMM D, YYYY')
-                            .tz(eventData?.timezone)
+                            .tz(eventData?.timezone, true)
                             .format('MMMM-D-YYYY')}
                         >
                           <Typography
@@ -1983,7 +1983,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             sx={{ opacity: 0.6 }}
                           >
                             {dayjs(date, 'MMMM D, YYYY')
-                              .tz(eventData?.timezone)
+                              .tz(eventData?.timezone, true)
                               .format('dddd · DD MMM YYYY')}
                           </Typography>
                           {dateSessions && dateSessions.length > 0 ? (
