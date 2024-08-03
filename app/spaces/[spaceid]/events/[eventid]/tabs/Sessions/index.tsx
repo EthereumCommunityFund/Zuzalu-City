@@ -182,7 +182,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           .sort((a, b) => a - b)
       : [];
 
-    if (dates.some((date) => date > +dayjs())) {
+    if (dates.some((date) => date >= +dayjs())) {
       dates = dates.filter((date) => date >= +dayjs());
     }
     const getDay = () => {
