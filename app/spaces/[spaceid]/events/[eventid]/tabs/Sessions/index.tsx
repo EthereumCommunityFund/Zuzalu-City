@@ -174,8 +174,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingFake, setLoadingFake] = useState(false);
-
   const router = useRouter();
   useEffect(() => {
     let dates = sessionsByDate
@@ -207,9 +205,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         dom.scrollIntoView({ behavior: 'instant' });
       }
     }
-    setTimeout(() => {
-      setLoadingFake(false);
-    }, 100);
   }, [sessionsByDate]);
 
   const groupSessionByDate = (
@@ -325,7 +320,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         }
         if (filteredSessions && filteredSessions.length > 0) {
           setSessionsByDate(groupSessionByDate(filteredSessions));
-          setLoadingFake(true);
         } else if (selectedDate) {
           setSessionsByDate({
             [dayjs(selectedDate)
@@ -749,9 +743,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         const sessions = await getSession();
         const sessionsbydate = groupSessionByDate(sessions);
         setSessionsByDate(sessionsbydate);
-        if (Object.keys(sessionsbydate).length) {
-          setLoadingFake(true);
-        }
       }
     };
     fetchData();
@@ -1942,36 +1933,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   sx={{
                     height: 'calc(100vh - 156px)',
                     overflowY: 'scroll',
-                    position: 'relative',
-                    zIndex: 1,
                   }}
                 >
-                  {loadingFake && (
-                    <Stack
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        zIndex: 2,
-                        width: '100%',
-                        height: '10000000000px',
-                      }}
-                      bgcolor={'#000'}
-                    >
-                      <Box
-                        sx={{
-                          position: 'fixed',
-                          top: '50%',
-                          left: '50%',
-                          marginLeft: '-300px',
-                          zIndex: 2,
-                          fontSize: '48px',
-                        }}
-                      >
-                        loading...
-                      </Box>
-                    </Stack>
-                  )}
                   {loading ? (
                     <Stack
                       borderRadius="10px"
