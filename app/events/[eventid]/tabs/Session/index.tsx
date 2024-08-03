@@ -866,6 +866,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               <Stack spacing="10px">
                 <Typography variant="bodyBB">Session Name*</Typography>
                 <ZuInput
+                  value={sessionName}
                   onChange={(e) => setSessionName(e.target.value)}
                   placeholder="Input a name"
                 />
