@@ -178,15 +178,21 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   useEffect(() => {
     let dates = sessionsByDate
       ? Object.keys(sessionsByDate)
-          .map((item) => +dayjs(item, 'MMMM D, YYYY').tz(eventData?.timezone))
+          .map((item) =>
+            dayjs(item, 'MMMM D, YYYY').tz(eventData?.timezone).valueOf(),
+          )
           .sort((a, b) => a - b)
       : [];
 
-    if (dates.some((date) => date >= +dayjs())) {
-      dates = dates.filter((date) => date >= +dayjs());
+    if (
+      dates.some((date) => date >= dayjs().tz(eventData?.timezone).valueOf())
+    ) {
+      dates = dates.filter(
+        (date) => date >= dayjs().tz(eventData?.timezone).valueOf(),
+      );
     }
     const getDay = () => {
-      const today = +dayjs();
+      const today = dayjs().tz(eventData?.timezone).valueOf();
       let nearToday;
       let tmpTime = 1000000000000;
       dates.forEach((item) => {
