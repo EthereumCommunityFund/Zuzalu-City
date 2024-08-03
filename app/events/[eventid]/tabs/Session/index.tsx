@@ -175,6 +175,37 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  useEffect(() => {
+    let dates = sessionsByDate
+      ? Object.keys(sessionsByDate)
+          .map((item) => +dayjs(item, 'MMMM D, YYYY').tz(eventData?.timezone))
+          .sort((a, b) => a - b)
+      : [];
+
+    if (dates.some((date) => date > +dayjs())) {
+      dates = dates.filter((date) => date > +dayjs());
+    }
+    const getDay = () => {
+      const today = +dayjs();
+      let nearToday;
+      let tmpTime = 1000000000000;
+      dates.forEach((item) => {
+        const time = Math.abs(item - today);
+        if (time < tmpTime) {
+          tmpTime = time;
+          nearToday = item;
+        }
+      });
+      return dayjs(nearToday).tz(eventData?.timezone).format('MMMM-D-YYYY');
+    };
+    const nearToday = getDay();
+    if (sessionsByDate && nearToday) {
+      const dom = document.getElementById(nearToday);
+      if (dom) {
+        dom.scrollIntoView({ behavior: 'instant' });
+      }
+    }
+  }, [sessionsByDate]);
 
   const groupSessionByDate = (
     sessions: Session[] | undefined,
@@ -1898,101 +1929,111 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     </ZuButton>
                   </Stack>
                 </Stack>
-                {loading ? (
-                  <Stack
-                    borderRadius="10px"
-                    border="1px solid #383838"
-                    bgcolor="#262626"
-                    flex={8}
-                  >
-                    <Typography variant="bodyS">Loading...</Typography>
-                  </Stack>
-                ) : sessionsByDate &&
-                  Object.keys(sessionsByDate).length !== 0 ? (
-                  Object.entries(sessionsByDate)
-                    .sort(([a], [b]) => {
-                      const dateA = dayjs(a, 'MMMM D, YYYY')
-                        .tz(eventData?.timezone)
-                        .toDate()
-                        .getTime();
-                      const dateB = dayjs(b, 'MMMM D, YYYY')
-                        .tz(eventData?.timezone)
-                        .toDate()
-                        .getTime();
-                      return dateA - dateB;
-                    })
-                    .map(([date, dateSessions]) => (
-                      <Stack
-                        spacing="10px"
-                        padding="10px"
-                        key={`Session-GroupByDate-${date}`}
-                      >
-                        <Typography
-                          borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
-                          padding="8px 10px"
-                          variant="bodySB"
-                          bgcolor="rgba(255, 255, 255, 0.05)"
-                          borderRadius="10px"
-                          sx={{ opacity: 0.6 }}
-                        >
-                          {dayjs(date, 'MMMM D, YYYY')
-                            .tz(eventData?.timezone)
-                            .format('dddd · DD MMM YYYY')}
-                        </Typography>
-                        {dateSessions && dateSessions.length > 0 ? (
-                          dateSessions.map((session, index) => (
-                            <SessionCard
-                              key={`SessionCard-${index}`}
-                              session={session}
-                              eventId={eventId}
-                            />
-                          ))
-                        ) : (
-                          <Stack padding="20px">
-                            <Stack
-                              direction="column"
-                              alignItems="center"
-                              bgcolor="#2d2d2d"
-                              padding="20px"
-                              borderRadius="10px"
-                              sx={{ cursor: 'pointer' }}
-                            >
-                              <PlusCircleIcon color="#6c6c6c" size={15} />
-                              <Typography variant="subtitle2">
-                                No Sessions
-                              </Typography>
-                              <ZuButton
-                                onClick={() => toggleDrawer('right', true)}
-                              >
-                                <Typography variant="subtitle2">
-                                  Create a Session
-                                </Typography>
-                              </ZuButton>
-                            </Stack>
-                          </Stack>
-                        )}
-                      </Stack>
-                    ))
-                ) : (
-                  <Stack padding="20px">
+                <Stack
+                  sx={{
+                    height: 'calc(100vh - 156px)',
+                    overflowY: 'scroll',
+                  }}
+                >
+                  {loading ? (
                     <Stack
-                      direction="column"
-                      alignItems="center"
-                      bgcolor="#2d2d2d"
-                      padding="20px"
                       borderRadius="10px"
-                      sx={{ cursor: 'pointer' }}
+                      border="1px solid #383838"
+                      bgcolor="#262626"
+                      flex={8}
                     >
-                      <PlusCircleIcon color="#6c6c6c" size={15} />
-                      <Typography variant="subtitle2">No Sessions</Typography>
-                      <ZuButton onClick={() => toggleDrawer('right', true)}>
-                        <Typography variant="subtitle2">
-                          Create a Session
-                        </Typography>
-                      </ZuButton>
+                      <Typography variant="bodyS">Loading...</Typography>
                     </Stack>
-                  </Stack>
-                )}
+                  ) : sessionsByDate &&
+                    Object.keys(sessionsByDate).length !== 0 ? (
+                    Object.entries(sessionsByDate)
+                      .sort(([a], [b]) => {
+                        const dateA = dayjs(a, 'MMMM D, YYYY')
+                          .tz(eventData?.timezone)
+                          .toDate()
+                          .getTime();
+                        const dateB = dayjs(b, 'MMMM D, YYYY')
+                          .tz(eventData?.timezone)
+                          .toDate()
+                          .getTime();
+                        return dateA - dateB;
+                      })
+                      .map(([date, dateSessions]) => (
+                        <Stack
+                          spacing="10px"
+                          padding="10px"
+                          key={`Session-GroupByDate-${date}`}
+                          id={dayjs(date, 'MMMM D, YYYY')
+                            .tz(eventData?.timezone)
+                            .format('MMMM-D-YYYY')}
+                        >
+                          <Typography
+                            borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
+                            padding="8px 10px"
+                            variant="bodySB"
+                            bgcolor="rgba(255, 255, 255, 0.05)"
+                            borderRadius="10px"
+                            sx={{ opacity: 0.6 }}
+                          >
+                            {dayjs(date, 'MMMM D, YYYY')
+                              .tz(eventData?.timezone)
+                              .format('dddd · DD MMM YYYY')}
+                          </Typography>
+                          {dateSessions && dateSessions.length > 0 ? (
+                            dateSessions.map((session, index) => (
+                              <SessionCard
+                                key={`SessionCard-${index}`}
+                                session={session}
+                                eventId={eventId}
+                              />
+                            ))
+                          ) : (
+                            <Stack padding="20px">
+                              <Stack
+                                direction="column"
+                                alignItems="center"
+                                bgcolor="#2d2d2d"
+                                padding="20px"
+                                borderRadius="10px"
+                                sx={{ cursor: 'pointer' }}
+                              >
+                                <PlusCircleIcon color="#6c6c6c" size={15} />
+                                <Typography variant="subtitle2">
+                                  No Sessions
+                                </Typography>
+                                <ZuButton
+                                  onClick={() => toggleDrawer('right', true)}
+                                >
+                                  <Typography variant="subtitle2">
+                                    Create a Session
+                                  </Typography>
+                                </ZuButton>
+                              </Stack>
+                            </Stack>
+                          )}
+                        </Stack>
+                      ))
+                  ) : (
+                    <Stack padding="20px">
+                      <Stack
+                        direction="column"
+                        alignItems="center"
+                        bgcolor="#2d2d2d"
+                        padding="20px"
+                        borderRadius="10px"
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <PlusCircleIcon color="#6c6c6c" size={15} />
+                        <Typography variant="subtitle2">No Sessions</Typography>
+                        <ZuButton onClick={() => toggleDrawer('right', true)}>
+                          <Typography variant="subtitle2">
+                            Create a Session
+                          </Typography>
+                        </ZuButton>
+                      </Stack>
+                    </Stack>
+                  )}
+                </Stack>
               </Stack>
             </Grid>
             {!isMobile && (
