@@ -1074,7 +1074,7 @@ export const Whitelist = ({
                       Upload addresses file
                       <VisuallyHiddenInput
                         onChange={handleChangeFile}
-                        accept=".csv"
+                        accept=".csv, .text, .txt"
                         type="file"
                       />
                     </Button>
