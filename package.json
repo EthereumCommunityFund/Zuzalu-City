@@ -41,7 +41,6 @@
     "@emotion/styled": "^11.11.5",
     "@hookform/resolvers": "^3.9.0",
     "@irys/sdk": "^0.2.6",
-    "@json2csv/plainjs": "^7.0.6",
     "@lxdao/img3": "1.0.1",
     "@lxdao/uploader3": "^1.5.4",
     "@lxdao/uploader3-connector": "1.2.0",

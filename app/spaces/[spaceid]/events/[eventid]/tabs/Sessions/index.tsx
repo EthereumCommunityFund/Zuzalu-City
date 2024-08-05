@@ -88,7 +88,6 @@ import {
 import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
-import { Parser } from '@json2csv/plainjs';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -607,20 +606,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const handleDownload = (date: string) => () => {
     if (!sessionsByDate) return;
     const data = sessionsByDate[date];
-    // console.log(JSON.stringify(data));
-    // type SessionType = {
-    //   title: string;
-    //   time: string;
-    //   speakers: string;
-    //   location: string;
-    // };
-    const json2csvParser = new Parser();
-    const csv = json2csvParser.parse(data);
+    let txt = `${date}\n\n`;
+    data.forEach((session: Session) => {
+      txt += `${dayjs(session.startTime).tz(eventData?.timezone).format('h:mm A')}-${dayjs(session.endTime).tz(eventData?.timezone).format('h:mm A')} · ${session.location}\n## ${session.title}\n\n`;
+    });
 
     const eleLink = document.createElement('a');
-    eleLink.download = `${date}.csv`;
+    eleLink.download = `${date}.text`;
     eleLink.style.display = 'none';
-    const blob = new Blob([csv]);
+    const blob = new Blob([txt]);
     eleLink.href = URL.createObjectURL(blob);
     document.body.appendChild(eleLink);
     eleLink.click();
@@ -2012,19 +2006,16 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                                 .tz(eventData?.timezone, true)
                                 .format('dddd · DD MMM YYYY')}
                             </Typography>
-                            <Typography
-                              component={'span'}
-                              sx={{
-                                cursor: 'pointer',
-                              }}
+                            <ZuButton
+                              sx={{ height: '24px' }}
                               onClick={handleDownload(
                                 dayjs(date, 'MMMM D, YYYY')
                                   .tz(eventData?.timezone, true)
                                   .format('MMMM D, YYYY'),
                               )}
                             >
-                              export csv
-                            </Typography>
+                              export
+                            </ZuButton>
                           </Typography>
                           {dateSessions && dateSessions.length > 0 ? (
                             dateSessions.map((session, index) => (
