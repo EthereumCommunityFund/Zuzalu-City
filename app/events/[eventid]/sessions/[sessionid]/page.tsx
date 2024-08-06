@@ -192,12 +192,16 @@ const Home = () => {
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
   const [descriptiontext, setDescriptionText] = useState('');
+  const [sessionUpdated, setSessionUpdated] = useState<boolean>(false);
+  const [tagsChanged, setTagsChanged] = useState<boolean>(false);
+
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
 
   const handleChange = (val: string[]) => {
     setSessionTags(val);
+    setTagsChanged(true);
   };
   const getEventDetailInfo = async () => {
     try {
@@ -312,20 +316,6 @@ const Home = () => {
         setSessionEndTime(sessionEndTime);
         setSessionOrganizers(JSON.parse(sessionData.organizers));
         setSessionSpeakers(JSON.parse(sessionData.speakers));
-        const parsedObject = JSON.parse(
-          sessionData.description.replace(/\\/g, ''),
-        );
-
-        const outputData: OutputData = {
-          version: parsedObject.version,
-          time: parsedObject.time,
-          blocks: parsedObject.blocks.map((block: any) => ({
-            id: block.id,
-            type: block.type,
-            data: block.data,
-            tunes: block.tunes || {},
-          })),
-        };
         sessionDescriptionEditorStore.setValue(
           JSON.stringify(sessionData.description)
             .slice(1, -1)
@@ -495,6 +485,7 @@ const Home = () => {
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     let timezone = eventData?.timezone;
+
     if (sessionDate == null) return true;
     const formattedTime = date.format('HH:mm');
     const isNotWithinBookedSession = bookedSessionsForDay.every((session) => {
@@ -633,6 +624,53 @@ const Home = () => {
       console.log(err);
     }
   };
+  const resetDateAndTime = async (sessionLocation: string) => {
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setCustomLocation('');
+    setDirections('');
+    setIsDirections(false);
+    if (
+      person &&
+      sessionLocation &&
+      sessionLocation !== 'Custom' &&
+      sessionDate
+    ) {
+      setSelectedRoom(
+        venues.filter((item) => item.name === sessionLocation)[0],
+      );
+      const dayName = sessionDate.format('dddd');
+      const selectedDay = sessionDate.format('YYYY-MM-DD');
+      if (sessionLocation == '') {
+        return;
+      }
+      const available = JSON.parse(
+        venues.filter((item) => item.name === sessionLocation)[0].bookings,
+      );
+      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+      const { data: bookedSessions } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('location', sessionLocation);
+      if (bookedSessions) {
+        const bookedSessionsDay = bookedSessions.filter((session) => {
+          const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+
+          return (
+            sessionStartDay === selectedDay &&
+            session.uuid !== params.sessionid.toString()
+          );
+        });
+        setBookedSessionsForDay(bookedSessionsDay);
+      } else {
+        setBookedSessionsForDay([]);
+      }
+    }
+  };
   const isSessionOverlap = (
     bookedSessions: Session[],
     startTime: Dayjs,
@@ -662,9 +700,23 @@ const Home = () => {
     if (!isAuthenticated) {
       return;
     }
+    const bookedSessions = await getBookedSession();
+    let bookedSessionsForDay: any[] = [];
+    if (bookedSessions) {
+      const bookedSessionsDay = bookedSessions.filter((session) => {
+        const sessionStartDay = dayjs(session.startTime)
+          .utc()
+          .format('YYYY-MM-DD');
 
+        return (
+          sessionStartDay ===
+            dayjs(sessionStartTime).utc().format('YYYY-MM-DD') &&
+          session.uuid !== params.sessionid.toString()
+        );
+      });
+      bookedSessionsForDay = bookedSessionsDay;
+    }
     let timezone = eventData?.timezone;
-
     const description = sessionDescriptionEditorStore.getValueString();
     const format = person ? 'person' : 'online';
 
@@ -694,7 +746,9 @@ const Home = () => {
       )
     ) {
       typeof window !== 'undefined' &&
-        window.alert('The new session overlaps with an existing session');
+        window.alert(
+          'The new session overlaps with an existing session, please refresh and choose another venue/time',
+        );
       return;
     }
 
@@ -735,7 +789,7 @@ const Home = () => {
         : null,
       profileId,
       eventId,
-      tags: sessionTags.join(','),
+      tags: tagsChanged ? sessionTags.join(',') : session?.tags,
       type: sessionType,
       format,
       track: sessionTrack,
@@ -756,6 +810,7 @@ const Home = () => {
       const response = await supaEditSession(formattedData);
       if (response.status === 200) {
         setShowModal(true);
+        setSessionUpdated((prevState) => !prevState);
       }
     } catch (err) {
       console.log(err);
@@ -808,7 +863,7 @@ const Home = () => {
       }
     };
     fetchData();
-  }, [ceramic?.did?.parent, updateSession]);
+  }, [ceramic?.did?.parent, sessionUpdated]);
   const List = (anchor: Anchor) => {
     if (!state['right']) return null;
     return (
@@ -1094,12 +1149,13 @@ const Home = () => {
                     </Typography>
                     <Select
                       value={sessionLocation}
-                      onChange={(e) => {
-                        const selectedRoom = venues.filter(
+                      onChange={async (e) => {
+                        const selectedRoom = venues.find(
                           (item) => item.name === e.target.value,
-                        )[0];
+                        );
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
+                        await resetDateAndTime(e.target.value);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1243,6 +1299,7 @@ const Home = () => {
                         </Typography>
                         <DesktopDatePicker
                           defaultValue={sessionDate}
+                          value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
                               handleDateChange(newValue);
@@ -1283,6 +1340,7 @@ const Home = () => {
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">Start Time</Typography>
                             <DesktopTimePicker
+                              key={sessionLocation}
                               value={sessionStartTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1366,6 +1424,7 @@ const Home = () => {
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">End Time</Typography>
                             <DesktopTimePicker
+                              key={sessionLocation}
                               value={sessionEndTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1747,8 +1806,6 @@ const Home = () => {
                   users={people}
                   onChange={handleSpeakerChange}
                   initialUsers={sessionSpeakers}
-                  fixedUsers={[profile as Profile]}
-                  removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>
             </Stack>

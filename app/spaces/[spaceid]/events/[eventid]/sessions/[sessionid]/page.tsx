@@ -60,7 +60,6 @@ import {
   ShareIcon,
 } from '@/components/icons';
 import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
-import BpCheckbox from '@/components/event/Checkbox';
 import {
   Anchor,
   Session,
@@ -72,48 +71,36 @@ import {
   Venue,
   Event,
   FilmOptionType,
-  FilmOptionType,
 } from '@/types';
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
 import { SessionSupabaseData } from '@/types';
-import { supaCreateSession } from '@/services/session';
+import { supaEditSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
 import SlotDate from '@/components/calendar/SlotDate';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
-import SelectCategories from '@/components/select/selectCategories';
-import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import { SuperEditor } from '@/components/editor/SuperEditor';
-import {
-  useEditorStore,
-  decodeOutputData,
-} from '@/components/editor/useEditorStore';
-import {
-  FormLabel,
-  FormLabelDesc,
-  FormTitle,
-} from '@/components/typography/formTypography';
+import { FormTitle } from '@/components/typography/formTypography';
 import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
-import { IconSidebar, Header, Thumb, Sidebar } from '../../components';
-import { EditorPreview } from '@/components/editor/EditorPreview';
 import SelectCategories from '@/components/select/selectCategories';
 import { SuperEditor } from '@/components/editor/SuperEditor';
+import {
+  useEditorStore,
+  decodeOutputData,
+} from '@/components/editor/useEditorStore';
 import BpCheckbox from '@/components/event/Checkbox';
 import {
   FormLabel,
   FormLabelDesc,
 } from '@/components/typography/formTypography';
-import { DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
-import { TimeView } from '@mui/x-date-pickers/models';
+
 import SelectSearchUser from '@/components/select/selectSearchUser';
-import { useEditorStore } from '@/components/editor/useEditorStore';
 import { OutputData } from '@editorjs/editorjs';
 
 const Home = () => {
@@ -208,12 +195,16 @@ const Home = () => {
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
   const [descriptiontext, setDescriptionText] = useState('');
+  const [sessionUpdated, setSessionUpdated] = useState<boolean>(false);
+  const [tagsChanged, setTagsChanged] = useState<boolean>(false);
+
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
   };
 
   const handleChange = (val: string[]) => {
     setSessionTags(val);
+    setTagsChanged(true);
   };
   const getEventDetailInfo = async () => {
     try {
@@ -310,13 +301,6 @@ const Home = () => {
             isAdd: true,
           })),
         );
-        console.log(
-          sessionData.tags.split(',').map((item: string) => ({
-            value: item.trim(),
-            label: `Add "${item.trim()}"`,
-            isAdd: true,
-          })),
-        );
         setSessionType(sessionData.type);
         setSessionExperienceLevel(sessionData.experience_level);
         setSessionLiveStreamLink(sessionData.liveStreamLink);
@@ -335,20 +319,6 @@ const Home = () => {
         setSessionEndTime(sessionEndTime);
         setSessionOrganizers(JSON.parse(sessionData.organizers));
         setSessionSpeakers(JSON.parse(sessionData.speakers));
-        const parsedObject = JSON.parse(
-          sessionData.description.replace(/\\/g, ''),
-        );
-
-        const outputData: OutputData = {
-          version: parsedObject.version,
-          time: parsedObject.time,
-          blocks: parsedObject.blocks.map((block: any) => ({
-            id: block.id,
-            type: block.type,
-            data: block.data,
-            tunes: block.tunes || {},
-          })),
-        };
         sessionDescriptionEditorStore.setValue(
           JSON.stringify(sessionData.description)
             .slice(1, -1)
@@ -518,6 +488,7 @@ const Home = () => {
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     let timezone = eventData?.timezone;
+
     if (sessionDate == null) return true;
     const formattedTime = date.format('HH:mm');
     const isNotWithinBookedSession = bookedSessionsForDay.every((session) => {
@@ -622,7 +593,7 @@ const Home = () => {
         throw error;
       }
       sessionStorage.setItem('tab', 'Sessions');
-      router.push(`/spaces/${spaceId}/events/${eventId}`);
+      router.push(`spaces/${spaceId}/events/${eventId}`);
     } catch (error) {
       console.log(error);
     }
@@ -654,6 +625,200 @@ const Home = () => {
       }
     } catch (err) {
       console.log(err);
+    }
+  };
+  const resetDateAndTime = async (sessionLocation: string) => {
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setCustomLocation('');
+    setDirections('');
+    setIsDirections(false);
+    if (
+      person &&
+      sessionLocation &&
+      sessionLocation !== 'Custom' &&
+      sessionDate
+    ) {
+      setSelectedRoom(
+        venues.filter((item) => item.name === sessionLocation)[0],
+      );
+      const dayName = sessionDate.format('dddd');
+      const selectedDay = sessionDate.format('YYYY-MM-DD');
+      if (sessionLocation == '') {
+        return;
+      }
+      const available = JSON.parse(
+        venues.filter((item) => item.name === sessionLocation)[0].bookings,
+      );
+      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+      const { data: bookedSessions } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('location', sessionLocation);
+      if (bookedSessions) {
+        const bookedSessionsDay = bookedSessions.filter((session) => {
+          const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+
+          return (
+            sessionStartDay === selectedDay &&
+            session.uuid !== params.sessionid.toString()
+          );
+        });
+        setBookedSessionsForDay(bookedSessionsDay);
+      } else {
+        setBookedSessionsForDay([]);
+      }
+    }
+  };
+  const isSessionOverlap = (
+    bookedSessions: Session[],
+    startTime: Dayjs,
+    endTime: Dayjs,
+  ) => {
+    const newSessionStart = startTime;
+    const newSessionEnd = endTime;
+    let timezone = eventData?.timezone;
+    for (let session of bookedSessions) {
+      const sessionStart = dayjs(session.startTime).tz('UTC').tz(timezone);
+      const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
+      if (
+        (newSessionStart.isBefore(sessionEnd) &&
+          newSessionStart.isSameOrAfter(sessionStart)) ||
+        (newSessionEnd.isAfter(sessionStart) &&
+          newSessionEnd.isSameOrBefore(sessionEnd)) ||
+        (newSessionStart.isBefore(sessionStart) &&
+          newSessionEnd.isAfter(sessionEnd))
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const updateSession = async () => {
+    if (!isAuthenticated) {
+      return;
+    }
+    const bookedSessions = await getBookedSession();
+    let bookedSessionsForDay: any[] = [];
+    if (bookedSessions) {
+      const bookedSessionsDay = bookedSessions.filter((session) => {
+        const sessionStartDay = dayjs(session.startTime)
+          .utc()
+          .format('YYYY-MM-DD');
+
+        return (
+          sessionStartDay ===
+            dayjs(sessionStartTime).utc().format('YYYY-MM-DD') &&
+          session.uuid !== params.sessionid.toString()
+        );
+      });
+      bookedSessionsForDay = bookedSessionsDay;
+    }
+    let timezone = eventData?.timezone;
+    const description = sessionDescriptionEditorStore.getValueString();
+    const format = person ? 'person' : 'online';
+
+    const error =
+      !eventId ||
+      !sessionStartTime ||
+      !description ||
+      !sessionEndTime ||
+      !sessionName ||
+      !sessionTrack ||
+      !sessionOrganizers ||
+      !profileId;
+
+    if (error) {
+      typeof window !== 'undefined' &&
+        window.alert('Please fill necessary fields!');
+      return;
+    } else if (dayjs(sessionEndTime).utc() <= dayjs(sessionStartTime).utc()) {
+      typeof window !== 'undefined' &&
+        window.alert('Please check the input session time');
+      return;
+    } else if (
+      isSessionOverlap(
+        bookedSessionsForDay,
+        dayjs(sessionStartTime).tz('UTC').tz(timezone),
+        dayjs(sessionEndTime).tz('UTC').tz(timezone),
+      )
+    ) {
+      typeof window !== 'undefined' &&
+        window.alert(
+          'The new session overlaps with an existing session, please refresh and choose another venue/time',
+        );
+      return;
+    }
+
+    if (format === 'person') {
+      if (sessionLocation === 'Custom' && !customLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill custom location field');
+        return;
+      }
+      if (!sessionLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill location field');
+        return;
+      }
+    } else {
+      if (!sessionVideoURL) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill virtual location field');
+        return;
+      }
+    }
+    const formattedData: SessionSupabaseData = {
+      title: sessionName,
+      description,
+      experience_level: sessionExperienceLevel,
+      createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      startTime: sessionStartTime
+        ? dayjs(sessionStartTime)
+            .utc()
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
+        : null,
+      endTime: sessionEndTime
+        ? dayjs(sessionEndTime)
+            .utc()
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
+        : null,
+      profileId,
+      eventId,
+      tags: tagsChanged ? sessionTags.join(',') : session?.tags,
+      type: sessionType,
+      format,
+      track: sessionTrack,
+      timezone: timezone,
+      video_url: sessionVideoURL,
+      location:
+        sessionLocation === 'Custom'
+          ? `Custom Location: ${customLocation} ${directions}`
+          : sessionLocation,
+      organizers: JSON.stringify(sessionOrganizers),
+      speakers: JSON.stringify(sessionSpeakers),
+      creatorDID: adminId,
+      uuid: params.sessionid.toString(),
+      liveStreamLink: sessionLiveStreamLink,
+    };
+    try {
+      setBlockClickModal(true);
+      const response = await supaEditSession(formattedData);
+      if (response.status === 200) {
+        setShowModal(true);
+        setSessionUpdated((prevState) => !prevState);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setBlockClickModal(false);
     }
   };
   useEffect(() => {
@@ -701,13 +866,13 @@ const Home = () => {
       }
     };
     fetchData();
-  }, [ceramic?.did?.parent]);
+  }, [ceramic?.did?.parent, sessionUpdated]);
   const List = (anchor: Anchor) => {
     if (!state['right']) return null;
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Dialog
-          title="Session Created"
+          title="Session Updated it"
           message="Please view it."
           showModal={showModal}
           onClose={() => {
@@ -722,8 +887,8 @@ const Home = () => {
         <Dialog
           showModal={blockClickModal}
           showActions={false}
-          title="Creating Session"
-          message="Please wait while the session is being created..."
+          title="Updating Session"
+          message="Please wait while the session is being updated..."
         />
         <Box
           sx={{
@@ -987,12 +1152,13 @@ const Home = () => {
                     </Typography>
                     <Select
                       value={sessionLocation}
-                      onChange={(e) => {
-                        const selectedRoom = venues.filter(
+                      onChange={async (e) => {
+                        const selectedRoom = venues.find(
                           (item) => item.name === e.target.value,
-                        )[0];
+                        );
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
+                        await resetDateAndTime(e.target.value);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1136,6 +1302,7 @@ const Home = () => {
                         </Typography>
                         <DesktopDatePicker
                           defaultValue={sessionDate}
+                          value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
                               handleDateChange(newValue);
@@ -1176,6 +1343,7 @@ const Home = () => {
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">Start Time</Typography>
                             <DesktopTimePicker
+                              key={sessionLocation}
                               value={sessionStartTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1259,6 +1427,7 @@ const Home = () => {
                           <Stack spacing="10px" flex={1}>
                             <Typography variant="bodyBB">End Time</Typography>
                             <DesktopTimePicker
+                              key={sessionLocation}
                               value={sessionEndTime}
                               ampm={false}
                               onChange={(newValue) => {
@@ -1640,8 +1809,6 @@ const Home = () => {
                   users={people}
                   onChange={handleSpeakerChange}
                   initialUsers={sessionSpeakers}
-                  fixedUsers={[profile as Profile]}
-                  removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>
             </Stack>
@@ -1668,7 +1835,7 @@ const Home = () => {
                   width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
-                //onClick={}
+                onClick={updateSession}
               >
                 Modify Session
               </ZuButton>
