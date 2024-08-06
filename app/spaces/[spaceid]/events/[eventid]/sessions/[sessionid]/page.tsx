@@ -72,6 +72,7 @@ import {
   Venue,
   Event,
   FilmOptionType,
+  FilmOptionType,
 } from '@/types';
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -100,7 +101,20 @@ import SlotDates from '@/components/calendar/SlotDate';
 import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
-import { OutputData, OutputBlockData } from '@editorjs/editorjs';
+import { IconSidebar, Header, Thumb, Sidebar } from '../../components';
+import { EditorPreview } from '@/components/editor/EditorPreview';
+import SelectCategories from '@/components/select/selectCategories';
+import { SuperEditor } from '@/components/editor/SuperEditor';
+import BpCheckbox from '@/components/event/Checkbox';
+import {
+  FormLabel,
+  FormLabelDesc,
+} from '@/components/typography/formTypography';
+import { DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
+import { TimeView } from '@mui/x-date-pickers/models';
+import SelectSearchUser from '@/components/select/selectSearchUser';
+import { useEditorStore } from '@/components/editor/useEditorStore';
+import { OutputData } from '@editorjs/editorjs';
 
 const Home = () => {
   const theme = useTheme();
