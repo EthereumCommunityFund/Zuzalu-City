@@ -76,7 +76,7 @@ import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
 import { SessionSupabaseData } from '@/types';
-import { supaCreateSession } from '@/services/session';
+import { supaEditSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
 import SlotDate from '@/components/calendar/SlotDate';
@@ -288,13 +288,6 @@ const Home = () => {
         setSessionTrack(sessionData.track);
         setSessionTags(sessionData.tags);
         setIntialSessionTags(
-          sessionData.tags.split(',').map((item: string) => ({
-            value: item.trim(),
-            label: `Add "${item.trim()}"`,
-            isAdd: true,
-          })),
-        );
-        console.log(
           sessionData.tags.split(',').map((item: string) => ({
             value: item.trim(),
             label: `Add "${item.trim()}"`,
@@ -640,6 +633,136 @@ const Home = () => {
       console.log(err);
     }
   };
+  const isSessionOverlap = (
+    bookedSessions: Session[],
+    startTime: Dayjs,
+    endTime: Dayjs,
+  ) => {
+    const newSessionStart = startTime;
+    const newSessionEnd = endTime;
+    let timezone = eventData?.timezone;
+    for (let session of bookedSessions) {
+      const sessionStart = dayjs(session.startTime).tz('UTC').tz(timezone);
+      const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
+      if (
+        (newSessionStart.isBefore(sessionEnd) &&
+          newSessionStart.isSameOrAfter(sessionStart)) ||
+        (newSessionEnd.isAfter(sessionStart) &&
+          newSessionEnd.isSameOrBefore(sessionEnd)) ||
+        (newSessionStart.isBefore(sessionStart) &&
+          newSessionEnd.isAfter(sessionEnd))
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const updateSession = async () => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    let timezone = eventData?.timezone;
+
+    const description = sessionDescriptionEditorStore.getValueString();
+    const format = person ? 'person' : 'online';
+
+    const error =
+      !eventId ||
+      !sessionStartTime ||
+      !description ||
+      !sessionEndTime ||
+      !sessionName ||
+      !sessionTrack ||
+      !sessionOrganizers ||
+      !profileId;
+
+    if (error) {
+      typeof window !== 'undefined' &&
+        window.alert('Please fill necessary fields!');
+      return;
+    } else if (dayjs(sessionEndTime).utc() <= dayjs(sessionStartTime).utc()) {
+      typeof window !== 'undefined' &&
+        window.alert('Please check the input session time');
+      return;
+    } else if (
+      isSessionOverlap(
+        bookedSessionsForDay,
+        dayjs(sessionStartTime).tz('UTC').tz(timezone),
+        dayjs(sessionEndTime).tz('UTC').tz(timezone),
+      )
+    ) {
+      typeof window !== 'undefined' &&
+        window.alert('The new session overlaps with an existing session');
+      return;
+    }
+
+    if (format === 'person') {
+      if (sessionLocation === 'Custom' && !customLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill custom location field');
+        return;
+      }
+      if (!sessionLocation) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill location field');
+        return;
+      }
+    } else {
+      if (!sessionVideoURL) {
+        typeof window !== 'undefined' &&
+          window.alert('Please fill virtual location field');
+        return;
+      }
+    }
+    const formattedData: SessionSupabaseData = {
+      title: sessionName,
+      description,
+      experience_level: sessionExperienceLevel,
+      createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]').toString(),
+      startTime: sessionStartTime
+        ? dayjs(sessionStartTime)
+            .utc()
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
+        : null,
+      endTime: sessionEndTime
+        ? dayjs(sessionEndTime)
+            .utc()
+            .format('YYYY-MM-DDTHH:mm:ss[Z]')
+            .toString()
+        : null,
+      profileId,
+      eventId,
+      tags: sessionTags.join(','),
+      type: sessionType,
+      format,
+      track: sessionTrack,
+      timezone: timezone,
+      video_url: sessionVideoURL,
+      location:
+        sessionLocation === 'Custom'
+          ? `Custom Location: ${customLocation} ${directions}`
+          : sessionLocation,
+      organizers: JSON.stringify(sessionOrganizers),
+      speakers: JSON.stringify(sessionSpeakers),
+      creatorDID: adminId,
+      uuid: params.sessionid.toString(),
+      liveStreamLink: sessionLiveStreamLink,
+    };
+    try {
+      setBlockClickModal(true);
+      const response = await supaEditSession(formattedData);
+      if (response.status === 200) {
+        setShowModal(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setBlockClickModal(false);
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       setCurrentHref(window.location.href);
@@ -685,13 +808,13 @@ const Home = () => {
       }
     };
     fetchData();
-  }, [ceramic?.did?.parent]);
+  }, [ceramic?.did?.parent, updateSession]);
   const List = (anchor: Anchor) => {
     if (!state['right']) return null;
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Dialog
-          title="Session Created"
+          title="Session Updated it"
           message="Please view it."
           showModal={showModal}
           onClose={() => {
@@ -706,8 +829,8 @@ const Home = () => {
         <Dialog
           showModal={blockClickModal}
           showActions={false}
-          title="Creating Session"
-          message="Please wait while the session is being created..."
+          title="Updating Session"
+          message="Please wait while the session is being updated..."
         />
         <Box
           sx={{
@@ -1652,7 +1775,7 @@ const Home = () => {
                   width: isMobile ? '100%' : 'auto',
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" />}
-                //onClick={}
+                onClick={updateSession}
               >
                 Modify Session
               </ZuButton>

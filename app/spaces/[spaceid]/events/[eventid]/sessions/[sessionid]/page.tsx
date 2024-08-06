@@ -23,11 +23,17 @@ import {
   useMediaQuery,
   Snackbar,
   Alert,
+  TextField,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { DesktopTimePicker } from '@mui/x-date-pickers';
+import { TimeView } from '@mui/x-date-pickers/models';
+import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from '@/utils/dayjs';
 import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
+import { IconSidebar, Header, Thumb, Sidebar } from '../../components';
 import {
   PlusCircleIcon,
   LockIcon,
@@ -53,6 +59,8 @@ import {
   CalendarIcon,
   ShareIcon,
 } from '@/components/icons';
+import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
+import BpCheckbox from '@/components/event/Checkbox';
 import {
   Anchor,
   Session,
@@ -63,6 +71,7 @@ import {
   EventEdge,
   Venue,
   Event,
+  FilmOptionType,
 } from '@/types';
 import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -71,20 +80,38 @@ import { SessionSupabaseData } from '@/types';
 import { supaCreateSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
+import SlotDate from '@/components/calendar/SlotDate';
+import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
+import SelectCategories from '@/components/select/selectCategories';
+import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import { SuperEditor } from '@/components/editor/SuperEditor';
+import {
+  useEditorStore,
+  decodeOutputData,
+} from '@/components/editor/useEditorStore';
+import {
+  FormLabel,
+  FormLabelDesc,
+  FormTitle,
+} from '@/components/typography/formTypography';
+import { EditorPreview } from '@/components/editor/EditorPreview';
+import SlotDates from '@/components/calendar/SlotDate';
+import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
-import { IconSidebar, Header, Thumb, Sidebar } from '../../components';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 
 const Home = () => {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
   const [tabName, setTabName] = useState('Sessions');
   const params = useParams();
   const [eventData, setEventData] = useState<Event>();
-  const { authenticate, composeClient, ceramic } = useCeramicContext();
+  const { authenticate, composeClient, ceramic, isAuthenticated, profile } =
+    useCeramicContext();
   const [sessionView, setSessionView] = useState<boolean>(false);
   const [verify, setVerify] = useState<boolean>(false);
   const eventId = params.eventid.toString();
@@ -109,10 +136,70 @@ const Home = () => {
     bottom: false,
     right: false,
   });
-  const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
-
+  const profileId = profile?.id || '';
+  const [directions, setDirections] = useState<string>('');
+  const [customLocation, setCustomLocation] = useState<string>('');
+  const [isDirections, setIsDirections] = useState<boolean>(false);
+  const [isRSVPFiltered, setIsRSVPFiltered] = useState(false);
+  const [isManagedFiltered, setIsManagedFiltered] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<Venue>();
+  const [selectedSession, setSelectedSession] = useState<Session>();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
+    dayjs(new Date()),
+  );
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [sessionsByDate, setSessionsByDate] =
+    useState<Record<string, Session[]>>();
+  const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
+    [],
+  );
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<any[]>([]);
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [people, setPeople] = useState<Profile[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [person, setPerson] = useState(true);
+  const [online, setOnline] = useState(false);
+  const [sessionName, setSessionName] = useState<string>('');
+  const [sessionTrack, setSessionTrack] = useState<string>(
+    session?.track ?? '',
+  );
+  const [sessionTags, setSessionTags] = useState<string[]>([]);
+  const [initialSessionTags, setIntialSessionTags] = useState<FilmOptionType[]>(
+    [],
+  );
+  const sessionDescriptionEditorStore = useEditorStore();
+  const [sessionType, setSessionType] = useState<string>('');
+  const [sessionExperienceLevel, setSessionExperienceLevel] =
+    useState<string>(' ');
+  const [sessionVideoURL, setSessionVideoURL] = useState<string>(' ');
+  const [sessionDate, setSessionDate] = useState<Dayjs | null>();
+  const [sessionStartTime, setSessionStartTime] = useState<Dayjs>(
+    dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+  );
+  const adminId = ceramic?.did?.parent || '';
+  const [sessionEndTime, setSessionEndTime] = useState<Dayjs>(
+    dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+  );
+  const [sessionOrganizers, setSessionOrganizers] = useState<Array<any>>([
+    profile,
+  ]);
+  const [sessionSpeakers, setSessionSpeakers] = useState<Array<any>>([]);
+  const [sessionLocation, setSessionLocation] = useState<string>('');
+  const [sessionLiveStreamLink, setSessionLiveStreamLink] =
+    useState<string>('');
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(0);
+  const [bookedSessions, setBookedSessions] = useState<Session[]>([]);
+  const [descriptiontext, setDescriptionText] = useState('');
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
+  };
+
+  const handleChange = (val: string[]) => {
+    setSessionTags(val);
   };
   const getEventDetailInfo = async () => {
     try {
@@ -185,15 +272,121 @@ const Home = () => {
       console.log('Failed to fetch event: ', err);
     }
   };
+
   const getSession = async () => {
     try {
+      const { data: venueData } = await supabase
+        .from('venues')
+        .select('*')
+        .eq('eventId', eventId);
       const { data: sessionData, error: sessionError } = await supabase
         .from('sessions')
         .select('*')
         .eq('uuid', params.sessionid.toString())
         .single();
-      if (sessionData) {
+      if (sessionData && profile) {
         setSession(sessionData);
+        setSessionName(sessionData.title);
+        setSessionTrack(sessionData.track);
+        setSessionTags(sessionData.tags);
+        setIntialSessionTags(
+          sessionData.tags.split(',').map((item: string) => ({
+            value: item.trim(),
+            label: `Add "${item.trim()}"`,
+            isAdd: true,
+          })),
+        );
+        console.log(
+          sessionData.tags.split(',').map((item: string) => ({
+            value: item.trim(),
+            label: `Add "${item.trim()}"`,
+            isAdd: true,
+          })),
+        );
+        setSessionType(sessionData.type);
+        setSessionExperienceLevel(sessionData.experience_level);
+        setSessionLiveStreamLink(sessionData.liveStreamLink);
+        setSessionVideoURL(sessionData.video_url);
+        const sessionDate = dayjs(sessionData.startTime).startOf('day');
+        setSessionDate(sessionDate);
+        const sessionStartTime = dayjs()
+          .hour(dayjs(sessionData.startTime).tz(eventData?.timezone).hour())
+          .minute(
+            dayjs(sessionData.startTime).tz(eventData?.timezone).minute(),
+          );
+        setSessionStartTime(sessionStartTime);
+        const sessionEndTime = dayjs()
+          .hour(dayjs(sessionData.endTime).tz(eventData?.timezone).hour())
+          .minute(dayjs(sessionData.endTime).tz(eventData?.timezone).minute());
+        setSessionEndTime(sessionEndTime);
+        setSessionOrganizers(JSON.parse(sessionData.organizers));
+        setSessionSpeakers(JSON.parse(sessionData.speakers));
+        const parsedObject = JSON.parse(
+          sessionData.description.replace(/\\/g, ''),
+        );
+
+        const outputData: OutputData = {
+          version: parsedObject.version,
+          time: parsedObject.time,
+          blocks: parsedObject.blocks.map((block: any) => ({
+            id: block.id,
+            type: block.type,
+            data: block.data,
+            tunes: block.tunes || {},
+          })),
+        };
+        sessionDescriptionEditorStore.setValue(
+          JSON.stringify(sessionData.description)
+            .slice(1, -1)
+            .replace(/\\\\/g, '\\')
+            .replace(/\\"/g, '"'),
+        );
+        const isCustomLocation =
+          sessionData.location.startsWith('Custom Location:');
+        setSessionLocation(isCustomLocation ? 'Custom' : sessionData.location);
+
+        if (isCustomLocation) {
+          setCustomLocation(
+            sessionData.location.replace('Custom Location: ', ''),
+          );
+        }
+
+        if (sessionData.format === 'online') {
+          setPerson(false);
+          setOnline(true);
+        }
+        if (sessionData.format === 'person' && !isCustomLocation) {
+          setSelectedRoom(
+            venueData?.filter((item) => item.name === sessionData.location)[0],
+          );
+          const dayName = sessionDate.format('dddd');
+          const selectedDay = sessionDate.format('YYYY-MM-DD');
+          if (sessionData.location == '') {
+            return;
+          }
+          const available = JSON.parse(
+            venueData?.filter((item) => item.name === sessionData.location)[0]
+              .bookings,
+          );
+          setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+          const { data: bookedSessions } = await supabase
+            .from('sessions')
+            .select('*')
+            .eq('location', sessionData.location);
+          if (bookedSessions) {
+            const bookedSessionsDay = bookedSessions.filter((session) => {
+              const sessionStartDay = dayjs(session.startTime).format(
+                'YYYY-MM-DD',
+              );
+
+              return (
+                sessionStartDay === selectedDay && session.id !== sessionData.id
+              );
+            });
+
+            setBookedSessionsForDay(bookedSessionsDay);
+          }
+        }
       }
       const { data: rsvpData, error: rsvpError } = await supabase
         .from('rsvp')
@@ -267,6 +460,144 @@ const Home = () => {
       console.log(error);
     }
   };
+  const handleDateChange = async (date: Dayjs) => {
+    if (date && person && sessionLocation !== 'Custom') {
+      const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
+      const selectedDay = date.format('YYYY-MM-DD');
+      if (sessionLocation == '') {
+        return;
+      }
+      const available = JSON.parse(
+        venues.filter((item) => item.name === sessionLocation)[0].bookings,
+      );
+      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+      const bookedSessions = await getBookedSession();
+      if (bookedSessions) {
+        const bookedSessionsDay = bookedSessions.filter((session) => {
+          const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+
+          return sessionStartDay === selectedDay;
+        });
+
+        setBookedSessionsForDay(bookedSessionsDay);
+      }
+    }
+    setSessionDate(date);
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+  };
+
+  const isDateInRange = (
+    date: Dayjs,
+    startDate?: string,
+    endDate?: string,
+  ): boolean => {
+    return (
+      date.isAfter(dayjs(startDate).subtract(1, 'day')) &&
+      date.isBefore(dayjs(endDate).add(1, 'day'))
+    );
+  };
+
+  const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
+    let timezone = eventData?.timezone;
+    if (sessionDate == null) return true;
+    const formattedTime = date.format('HH:mm');
+    const isNotWithinBookedSession = bookedSessionsForDay.every((session) => {
+      const sessionStartTime = dayjs(session.startTime)
+        .tz('UTC')
+        .tz(timezone)
+        .format('HH:mm');
+      const sessionEndTime = dayjs(session.endTime)
+        .tz('UTC')
+        .tz(timezone)
+        .format('HH:mm');
+
+      if (isStart) {
+        return (
+          formattedTime < sessionStartTime || formattedTime >= sessionEndTime
+        );
+      } else {
+        return (
+          formattedTime <= sessionStartTime || formattedTime > sessionEndTime
+        );
+      }
+    });
+    const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
+      let startTime;
+      let endTime;
+      if (isStart) {
+        const startTime = dayjs
+          .tz(slot.startTime, 'HH:mm', 'UTC')
+          .tz(timezone)
+          .format('HH:mm');
+        const endTime = dayjs
+          .tz(slot.endTime, 'HH:mm', 'UTC')
+          .tz(timezone)
+          .format('HH:mm');
+        if (endTime >= startTime) {
+          return formattedTime >= startTime && formattedTime < endTime;
+        } else {
+          return !(formattedTime < startTime && formattedTime >= endTime);
+        }
+      } else {
+        startTime = sessionStartTime.tz(timezone).format('HH:mm');
+        endTime = dayjs
+          .tz(slot.endTime, 'HH:mm', 'UTC')
+          .tz(timezone)
+          .format('HH:mm');
+        if (endTime >= startTime) {
+          return formattedTime >= startTime && formattedTime <= endTime;
+        } else {
+          return !(formattedTime < startTime && formattedTime > endTime);
+        }
+      }
+    });
+    return isWithinAvailableSlot && isNotWithinBookedSession;
+  };
+
+  const getPeople: () => Promise<void> = async () => {
+    try {
+      const response: any = await composeClient.executeQuery(`
+        query MyQuery {
+          mVPProfileIndex(first: 1000) {
+            edges {
+              node {
+                id
+                username
+                avatar
+                author {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `);
+
+      if ('mVPProfileIndex' in response.data) {
+        const profileData: ProfileEdge = response.data as ProfileEdge;
+        const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
+          (edge) => edge.node,
+        );
+        setPeople(fetchedPeople);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch sesssions:', error);
+    }
+  };
+  const handleSpeakerChange = (users: Profile[]) => {
+    setSessionSpeakers(users);
+  };
+
+  const handleOrganizerChange = (users: Profile[]) => {
+    setSessionOrganizers(users);
+  };
   const handleDelete = async (sessionID: string) => {
     try {
       const { data, error } = await supabase
@@ -280,6 +611,35 @@ const Home = () => {
       router.push(`/spaces/${spaceId}/events/${eventId}`);
     } catch (error) {
       console.log(error);
+    }
+  };
+  const getBookedSession = async () => {
+    try {
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('location', sessionLocation);
+      if (data) {
+        setBookedSessions(data);
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const getLocation = async () => {
+    try {
+      const { data } = await supabase
+        .from('venues')
+        .select('*')
+        .eq('eventId', eventId);
+      if (data !== null) {
+        setVenues(data);
+        const locations = data.map((item) => item.name);
+        setLocations(locations);
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
   useEffect(() => {
@@ -310,7 +670,9 @@ const Home = () => {
             admins.includes(adminId) ||
             members.includes(adminId)
           ) {
+            await getPeople();
             await getSession();
+            await getLocation();
             setCanViewSessions(true);
           } else {
             setDialogTitle('You are not a member of this event');
@@ -326,6 +688,982 @@ const Home = () => {
     };
     fetchData();
   }, [ceramic?.did?.parent]);
+  const List = (anchor: Anchor) => {
+    if (!state['right']) return null;
+    return (
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Dialog
+          title="Session Created"
+          message="Please view it."
+          showModal={showModal}
+          onClose={() => {
+            toggleDrawer('right', false);
+            setShowModal(false);
+          }}
+          onConfirm={() => {
+            toggleDrawer('right', false);
+            setShowModal(false);
+          }}
+        />
+        <Dialog
+          showModal={blockClickModal}
+          showActions={false}
+          title="Creating Session"
+          message="Please wait while the session is being created..."
+        />
+        <Box
+          sx={{
+            width:
+              anchor === 'top' || anchor === 'bottom'
+                ? 'auto'
+                : isMobile
+                  ? '100%'
+                  : '762px',
+            backgroundColor: '#222222',
+          }}
+          role="presentation"
+          zIndex="100"
+          borderLeft="1px solid #383838"
+        >
+          <Box
+            display="flex"
+            alignItems="center"
+            height="50px"
+            borderBottom="1px solid #383838"
+            paddingX={3}
+            gap={2}
+          >
+            <ZuButton
+              startIcon={<XMarkIcon />}
+              onClick={() => toggleDrawer('right', false)}
+              sx={{
+                backgroundColor: 'transparent',
+              }}
+            >
+              Close
+            </ZuButton>
+            <Typography variant="subtitleSB">Modify Session</Typography>
+          </Box>
+          <Box display="flex" flexDirection="column" gap="20px" padding={3}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Typography variant="subtitleMB">Modify Session</Typography>
+              {/*<ZuButton
+                startIcon={<ArchiveBoxIcon size={5} />}
+                sx={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                }}
+              >
+                Save Draft
+              </ZuButton>*/}
+            </Stack>
+            <Stack
+              direction={'column'}
+              spacing="30px"
+              bgcolor="#262626"
+              padding="20px"
+              borderRadius="10px"
+            >
+              <Typography variant="subtitleMB">Session Details</Typography>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">New Session Name*</Typography>
+                <ZuInput
+                  value={sessionName}
+                  onChange={(e) => setSessionName(e.target.value)}
+                  placeholder="Change Name"
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Select a New Track*</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Attach a relevant track this session relates to
+                </Typography>
+                <Select
+                  value={sessionTrack}
+                  style={{ width: '100%' }}
+                  onChange={(e) => setSessionTrack(e.target.value)}
+                  input={<OutlinedInput label="Name" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                        maxHeight: 200,
+                        overflow: 'auto',
+                      },
+                    },
+                  }}
+                >
+                  {eventData?.tracks?.split(',').map((i, index) => {
+                    return (
+                      <MenuItem value={i} key={`EventTrack_Index${index}`}>
+                        {i}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </Stack>
+              <Stack spacing="20px">
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">New Session Tags</Typography>
+                  <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                    Search or create categories related to your space
+                  </Typography>
+                </Stack>
+                <SelectCategories
+                  onChange={handleChange}
+                  initialValues={initialSessionTags}
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">
+                  New Session Description*
+                </Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Write new introduction for this session
+                </Typography>
+                <SuperEditor
+                  value={sessionDescriptionEditorStore.value}
+                  onChange={(val) => {
+                    sessionDescriptionEditorStore.setValue(val);
+                  }}
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">New Session Type</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Choose a type for your session to relay its nature to guests
+                </Typography>
+                <ZuInput
+                  value={sessionType}
+                  onChange={(e) => setSessionType(e.target.value)}
+                  placeholder="Meetup, Activity, Party, etc.."
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">New Experience Level</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Select a level experience may be needed for this session
+                </Typography>
+                <Select
+                  value={sessionExperienceLevel}
+                  style={{ width: '100%' }}
+                  onChange={(e) => setSessionExperienceLevel(e.target.value)}
+                  input={<OutlinedInput label="Experience_Level" />}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        backgroundColor: '#222222',
+                      },
+                    },
+                  }}
+                >
+                  {EXPREIENCE_LEVEL_TYPES.map((i, index) => {
+                    return (
+                      <MenuItem value={i.key} key={`Speaker_Index${index}`}>
+                        {i.value}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Live-Stream Link</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Enter a link for where this session will be streamed
+                </Typography>
+                <ZuInput
+                  value={sessionLiveStreamLink}
+                  onChange={(e) => setSessionLiveStreamLink(e.target.value)}
+                  placeholder="https://"
+                />
+              </Stack>
+            </Stack>
+            <Stack
+              direction={'column'}
+              spacing="30px"
+              bgcolor="#262626"
+              padding="20px"
+              borderRadius="10px"
+            >
+              <Typography variant="subtitleMB">Location & Booking</Typography>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Session Format*</Typography>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  gap="20px"
+                  flexDirection={isMobile ? 'column' : 'row'}
+                >
+                  <Box
+                    bgcolor={person ? '#484E45' : '#373737'}
+                    borderRadius="10px"
+                    padding="10px"
+                    display="flex"
+                    alignItems="center"
+                    gap="10px"
+                    flex={1}
+                    onClick={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
+                  >
+                    <BpCheckbox checked={person} />
+                    <Stack>
+                      <Typography
+                        color="white"
+                        fontSize="16px"
+                        fontWeight={600}
+                        fontFamily="Inter"
+                      >
+                        In-Person
+                      </Typography>
+                      <Typography
+                        color="white"
+                        fontSize="10px"
+                        fontFamily="Inter"
+                      >
+                        This is a physical event
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <Box
+                    bgcolor={online ? '#484E45' : '#373737'}
+                    borderRadius="10px"
+                    padding="10px"
+                    display="flex"
+                    alignItems="center"
+                    gap="10px"
+                    flex={1}
+                    onClick={() => {
+                      setPerson((prev) => !prev);
+                      setOnline((prev) => !prev);
+                    }}
+                  >
+                    <BpCheckbox checked={online} />
+                    <Stack>
+                      <Typography
+                        color="white"
+                        fontSize="16px"
+                        fontWeight={600}
+                        fontFamily="Inter"
+                      >
+                        Online
+                      </Typography>
+                      <Typography
+                        color="white"
+                        fontSize="10px"
+                        fontFamily="Inter"
+                      >
+                        Specially Online Event
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </Box>
+              </Stack>
+              {person && (
+                <Stack spacing="30px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Select Location*</Typography>
+                    <Typography variant="bodyS">
+                      Book a location to host this session
+                    </Typography>
+                    <Select
+                      value={sessionLocation}
+                      onChange={(e) => {
+                        const selectedRoom = venues.filter(
+                          (item) => item.name === e.target.value,
+                        )[0];
+                        setSelectedRoom(selectedRoom);
+                        setSessionLocation(e.target.value);
+                      }}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            backgroundColor: '#222222',
+                            maxHeight: 200,
+                            overflow: 'auto',
+                          },
+                        },
+                      }}
+                    >
+                      {locations.map((location, index) => (
+                        <MenuItem
+                          key={`Location-Index${index}`}
+                          value={location}
+                        >
+                          {location}
+                        </MenuItem>
+                      ))}
+                      <MenuItem key="custom_location" value="Custom">
+                        Custom
+                      </MenuItem>
+                    </Select>
+                    {sessionLocation && sessionLocation !== 'Custom' && (
+                      <Stack>
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack
+                          borderRadius="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          spacing="10px"
+                          padding="10px"
+                        >
+                          <Typography variant="caption">
+                            Your are booking at:
+                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            direction="row"
+                            spacing="10px"
+                          >
+                            <Box
+                              component="img"
+                              width="60px"
+                              height="60px"
+                              borderRadius="8px"
+                              src={selectedRoom?.avatar}
+                            />
+                            <Stack spacing="4px">
+                              <Typography variant="bodyBB">
+                                {sessionLocation}
+                              </Typography>
+                              {/*<Typography variant="bodyS">
+                                Sessions booked: {bookedSessions.length}
+                              </Typography>*/}
+                              <Typography variant="caption">
+                                Capacity: {selectedRoom?.capacity}
+                              </Typography>
+                            </Stack>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    )}
+                    {sessionLocation && sessionLocation === 'Custom' && (
+                      <Stack spacing="10px">
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack spacing="10px">
+                          <FormLabel>Custom Location</FormLabel>
+                          <FormLabelDesc>
+                            Write name of the location
+                          </FormLabelDesc>
+                          <ZuInput
+                            value={customLocation}
+                            placeholder="Type location name"
+                            onChange={(e) => setCustomLocation(e.target.value)}
+                          />
+                          <ZuButton
+                            endIcon={
+                              !isDirections ? (
+                                <PlusIcon size={4} />
+                              ) : (
+                                <MinusIcon size={4} />
+                              )
+                            }
+                            onClick={() => setIsDirections((prev) => !prev)}
+                          >
+                            {!isDirections
+                              ? 'Add Directions'
+                              : 'Remove Directions'}
+                          </ZuButton>
+                          {isDirections && (
+                            <ZuInput
+                              placeholder="Directions description"
+                              onChange={(e) => setDirections(e.target.value)}
+                            />
+                          )}
+                          {customLocation && (
+                            <Stack
+                              borderRadius="10px"
+                              border="1px solid #383838"
+                              padding="10px"
+                              spacing="10px"
+                            >
+                              <Typography variant="caption">
+                                CUSTOM LOCATIONS:
+                              </Typography>
+                              <Stack
+                                borderRadius="10px"
+                                bgcolor="#373737"
+                                padding="10px"
+                              >
+                                <Typography variant="bodyBB">
+                                  {customLocation}
+                                </Typography>
+                                <Typography variant="bodyS">
+                                  {directions}
+                                </Typography>
+                              </Stack>
+                            </Stack>
+                          )}
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Stack>
+                  {sessionLocation && (
+                    <Stack spacing="20px">
+                      <Stack spacing="10px">
+                        <Typography variant="bodyBB">Book a Date*</Typography>
+                        <Typography variant="bodyS">
+                          View and select the available dates and times for this
+                          location
+                        </Typography>
+                        <Typography variant="bodyB">
+                          Your booking will be at the event timezone:{' '}
+                          {eventData?.timezone}
+                        </Typography>
+                        <DesktopDatePicker
+                          defaultValue={sessionDate}
+                          onChange={(newValue) => {
+                            if (newValue !== null) {
+                              handleDateChange(newValue);
+                            }
+                          }}
+                          shouldDisableDate={(date: Dayjs) =>
+                            !isDateInRange(
+                              date,
+                              eventData?.startTime,
+                              eventData?.endTime,
+                            )
+                          }
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              color: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              border: 'none',
+                            },
+                          }}
+                          slotProps={{
+                            popper: {
+                              sx: {
+                                '& .MuiPickersDay-root': { color: 'black' },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                  backgroundColor: '#D7FFC4',
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                  color: 'black',
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </Stack>
+                      {sessionDate && (
+                        <Stack direction="row" spacing="20px">
+                          <Stack spacing="10px" flex={1}>
+                            <Typography variant="bodyBB">Start Time</Typography>
+                            <DesktopTimePicker
+                              value={sessionStartTime}
+                              ampm={false}
+                              onChange={(newValue) => {
+                                if (newValue !== null) {
+                                  const combined = dayjs
+                                    .tz(sessionDate, eventData?.timezone)
+                                    .set('hour', newValue.hour())
+                                    .set('minute', newValue.minute());
+                                  setSessionStartTime(combined);
+                                }
+                              }}
+                              shouldDisableTime={(
+                                date: Dayjs,
+                                view: TimeView,
+                              ) => {
+                                if (
+                                  (view === 'minutes' || view === 'hours') &&
+                                  sessionLocation !== 'Custom'
+                                ) {
+                                  if (view === 'hours') {
+                                    let availableMinutes = 0;
+                                    for (
+                                      let minute = 0;
+                                      minute < 60;
+                                      minute += 5
+                                    ) {
+                                      const checkTime = dayjs.tz(
+                                        date.set('minute', minute),
+                                        eventData?.timezone as string,
+                                      );
+                                      if (isTimeAvailable(checkTime, true)) {
+                                        availableMinutes += 5;
+                                      }
+                                    }
+                                    return availableMinutes < 5;
+                                  } else {
+                                    return !isTimeAvailable(
+                                      dayjs.tz(
+                                        date,
+                                        eventData?.timezone as string,
+                                      ),
+                                      true,
+                                    );
+                                  }
+                                }
+                                return false;
+                              }}
+                              sx={{
+                                '& .MuiSvgIcon-root': {
+                                  color: 'white',
+                                },
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                  border: 'none',
+                                },
+                                '& .MuiOutlinedInput-root': {
+                                  backgroundColor: '#313131',
+                                  borderRadius: '10px',
+                                },
+                              }}
+                              slotProps={{
+                                field: {
+                                  readOnly: true,
+                                },
+                                popper: {
+                                  sx: {
+                                    '& .MuiPickersDay-root': { color: 'black' },
+                                    '& .MuiPickersDay-root.Mui-selected': {
+                                      backgroundColor: '#D7FFC4',
+                                    },
+                                    '& .MuiPickersCalendarHeader-root': {
+                                      color: 'black',
+                                    },
+                                    '& .MuiMultiSectionDigitalClock-root': {
+                                      color: 'black',
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          </Stack>
+                          <Stack spacing="10px" flex={1}>
+                            <Typography variant="bodyBB">End Time</Typography>
+                            <DesktopTimePicker
+                              value={sessionEndTime}
+                              ampm={false}
+                              onChange={(newValue) => {
+                                if (newValue !== null) {
+                                  const combined = dayjs
+                                    .tz(sessionDate, eventData?.timezone)
+                                    .set('hour', newValue.hour())
+                                    .set('minute', newValue.minute());
+                                  setSessionEndTime(combined);
+                                }
+                              }}
+                              shouldDisableTime={(
+                                date: Dayjs,
+                                view: TimeView,
+                              ) => {
+                                if (
+                                  (view === 'minutes' || view === 'hours') &&
+                                  sessionLocation !== 'Custom'
+                                ) {
+                                  if (view === 'hours') {
+                                    for (
+                                      let minute = 0;
+                                      minute < 60;
+                                      minute += 5
+                                    ) {
+                                      const checkTime = dayjs.tz(
+                                        date.set('minute', minute),
+                                        eventData?.timezone as string,
+                                      );
+                                      if (isTimeAvailable(checkTime, false)) {
+                                        return false;
+                                      }
+                                    }
+                                    return true;
+                                  } else {
+                                    return !isTimeAvailable(
+                                      dayjs.tz(
+                                        date,
+                                        eventData?.timezone as string,
+                                      ),
+                                      false,
+                                    );
+                                  }
+                                }
+                                return false;
+                              }}
+                              sx={{
+                                '& .MuiSvgIcon-root': {
+                                  color: 'white',
+                                },
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                  border: 'none',
+                                },
+                                '& .MuiOutlinedInput-root': {
+                                  backgroundColor: '#313131',
+                                  borderRadius: '10px',
+                                },
+                              }}
+                              slotProps={{
+                                field: {
+                                  readOnly: true,
+                                },
+                                popper: {
+                                  sx: {
+                                    '& .MuiPickersDay-root': { color: 'black' },
+                                    '& .MuiPickersDay-root.Mui-selected': {
+                                      backgroundColor: '#D7FFC4',
+                                    },
+                                    '& .MuiPickersCalendarHeader-root': {
+                                      color: 'black',
+                                    },
+                                    '& .MuiMultiSectionDigitalClock-root': {
+                                      color: 'black',
+                                    },
+                                  },
+                                },
+                              }}
+                            />
+                          </Stack>
+                        </Stack>
+                      )}
+                    </Stack>
+                  )}
+
+                  {sessionLocation &&
+                    sessionDate &&
+                    sessionStartTime !==
+                      dayjs().set('hour', 0).set('minute', 0) &&
+                    sessionEndTime !==
+                      dayjs().set('hour', 0).set('minute', 0) && (
+                      <Stack spacing="10px">
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack
+                          spacing="10px"
+                          padding="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          borderRadius="10px"
+                        >
+                          <Typography variant="caption">
+                            Date & times your are booking:
+                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            spacing="10px"
+                          >
+                            <Typography variant="bodyBB">
+                              {`${sessionDate.format('MMMM')}` +
+                                ' ' +
+                                `${sessionDate.format('DD')}` +
+                                ', ' +
+                                `${sessionDate.format('YYYY')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              Start Time:{' '}
+                              {`${sessionStartTime.format('hh:mm A')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              End Time: :{' '}
+                              {`${sessionEndTime.format('hh:mm A')}`}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    )}
+                </Stack>
+              )}
+              {online && (
+                <Stack spacing="30px">
+                  <Stack spacing="10px">
+                    <Typography variant="bodyBB">Virtual Location</Typography>
+                    <Typography variant="bodyS">
+                      Provide a URL where this session will be hosted
+                    </Typography>
+                    <ZuInput
+                      onChange={(e) => setSessionVideoURL(e.target.value)}
+                      placeholder="https://"
+                    />
+                  </Stack>
+                  <Stack spacing="20px">
+                    <Stack spacing="10px">
+                      <Typography variant="bodyBB">Select a Date</Typography>
+                      <Typography variant="bodyS">
+                        Pick a date for this session
+                      </Typography>
+                      <DesktopDatePicker
+                        onChange={(newValue) => {
+                          if (newValue !== null) {
+                            handleDateChange(newValue);
+                          }
+                        }}
+                        shouldDisableDate={(date: Dayjs) =>
+                          !isDateInRange(
+                            date,
+                            eventData?.startTime,
+                            eventData?.endTime,
+                          )
+                        }
+                        sx={{
+                          '& .MuiSvgIcon-root': {
+                            color: 'white',
+                          },
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            border: 'none',
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              ...{
+                                '& .MuiPickersDay-root': { color: 'black' },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                  backgroundColor: '#D7FFC4',
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                  color: 'black',
+                                },
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Stack>
+                    <Stack direction="row" spacing="20px">
+                      <Stack spacing="10px" flex={1}>
+                        <Typography variant="bodyBB">Start Time</Typography>
+                        <DesktopTimePicker
+                          value={sessionStartTime}
+                          ampm={false}
+                          onChange={(newValue) => {
+                            if (newValue !== null) {
+                              const combined = dayjs(sessionDate)
+                                .set('hour', newValue.hour())
+                                .set('minute', newValue.minute());
+                              setSessionStartTime(combined);
+                            }
+                          }}
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              color: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              border: 'none',
+                            },
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#313131',
+                              borderRadius: '10px',
+                            },
+                          }}
+                          slotProps={{
+                            field: {
+                              readOnly: true,
+                            },
+                            popper: {
+                              sx: {
+                                ...{
+                                  '& .MuiPickersDay-root': { color: 'black' },
+                                  '& .MuiPickersDay-root.Mui-selected': {
+                                    backgroundColor: '#D7FFC4',
+                                  },
+                                  '& .MuiPickersCalendarHeader-root': {
+                                    color: 'black',
+                                  },
+                                  '& .MuiMultiSectionDigitalClock-root': {
+                                    color: 'black',
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </Stack>
+                      <Stack spacing="10px" flex={1}>
+                        <Typography variant="bodyBB">End Time</Typography>
+                        <DesktopTimePicker
+                          value={sessionEndTime}
+                          ampm={false}
+                          onChange={(newValue) => {
+                            if (newValue !== null) {
+                              const combined = dayjs(sessionDate)
+                                .set('hour', newValue.hour())
+                                .set('minute', newValue.minute());
+                              setSessionEndTime(combined);
+                            }
+                          }}
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              color: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              border: 'none',
+                            },
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#313131',
+                              borderRadius: '10px',
+                            },
+                          }}
+                          slotProps={{
+                            field: {
+                              readOnly: true,
+                            },
+                            popper: {
+                              sx: {
+                                ...{
+                                  '& .MuiPickersDay-root': { color: 'black' },
+                                  '& .MuiPickersDay-root.Mui-selected': {
+                                    backgroundColor: '#D7FFC4',
+                                  },
+                                  '& .MuiPickersCalendarHeader-root': {
+                                    color: 'black',
+                                  },
+                                  '& .MuiMultiSectionDigitalClock-root': {
+                                    color: 'black',
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                  {sessionLocation &&
+                    sessionDate &&
+                    sessionStartTime !==
+                      dayjs().set('hour', 0).set('minute', 0) &&
+                    sessionEndTime !==
+                      dayjs().set('hour', 0).set('minute', 0) && (
+                      <Stack spacing="10px">
+                        <Stack alignItems="center">
+                          <ArrowDownIcon />
+                        </Stack>
+                        <Stack
+                          spacing="10px"
+                          padding="10px"
+                          border="1px solid rgba(255, 255, 255, 0.10)"
+                          borderRadius="10px"
+                        >
+                          <Typography variant="caption">
+                            Date & times your are booking:
+                          </Typography>
+                          <Stack
+                            borderRadius="10px"
+                            padding="10px"
+                            bgcolor="#313131"
+                            spacing="10px"
+                          >
+                            <Typography variant="bodyBB">
+                              {`${sessionDate.format('MMMM')}` +
+                                ' ' +
+                                `${sessionDate.format('DD')}` +
+                                ', ' +
+                                `${sessionDate.format('YYYY')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              Start Time:{' '}
+                              {`${sessionStartTime.format('hh:mm A')}`}
+                            </Typography>
+                            <Typography variant="bodyS">
+                              End Time: :{' '}
+                              {`${sessionEndTime.format('hh:mm A')}`}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    )}
+                </Stack>
+              )}
+            </Stack>
+            <Stack
+              direction={'column'}
+              spacing="30px"
+              bgcolor="#262626"
+              padding="20px"
+              borderRadius="10px"
+            >
+              <Typography variant="subtitleMB">Session Participants</Typography>
+              <Stack direction={'row'} spacing="10px">
+                <ZuSwitch
+                  checked={hiddenOrganizer}
+                  onChange={() => setHiddenOrganizer((v) => !v)}
+                />
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">
+                    Hide yourself as an organizer for this session
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    By default the creator of a session is listed as an
+                    organizer of it
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Stack spacing="20px">
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">Organizers*</Typography>
+                  <Typography variant="bodyS">
+                    Type or search a person
+                  </Typography>
+                </Stack>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleOrganizerChange}
+                  initialUsers={sessionOrganizers}
+                  fixedUsers={[profile as Profile]}
+                  removedInitialUsers={hiddenOrganizer}
+                />
+              </Stack>
+              <Stack spacing="20px">
+                <Stack spacing="10px">
+                  <Typography variant="bodyBB">Speakers</Typography>
+                  <Typography variant="bodyS">
+                    Type or search a person
+                  </Typography>
+                </Stack>
+                <SelectSearchUser
+                  users={people}
+                  onChange={handleSpeakerChange}
+                  initialUsers={sessionSpeakers}
+                  fixedUsers={[profile as Profile]}
+                  removedInitialUsers={hiddenOrganizer}
+                />
+              </Stack>
+            </Stack>
+            <Box
+              display="flex"
+              gap="20px"
+              flexDirection={isMobile ? 'column' : 'row'}
+            >
+              <ZuButton
+                sx={{
+                  flex: 1,
+                  width: isMobile ? '100%' : 'auto',
+                }}
+                startIcon={<XMarkIcon />}
+                onClick={() => toggleDrawer('right', false)}
+              >
+                Discard
+              </ZuButton>
+              <ZuButton
+                sx={{
+                  color: '#67DBFF',
+                  backgroundColor: 'rgba(103, 219, 255, 0.10)',
+                  flex: 1,
+                  width: isMobile ? '100%' : 'auto',
+                }}
+                startIcon={<PlusCircleIcon color="#67DBFF" />}
+                //onClick={}
+              >
+                Modify Session
+              </ZuButton>
+            </Box>
+          </Box>
+        </Box>
+      </LocalizationProvider>
+    );
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -866,6 +2204,13 @@ const Home = () => {
                         <ZuButton
                           variant="contained"
                           color="error"
+                          onClick={() => toggleDrawer('right', true)}
+                        >
+                          Edit
+                        </ZuButton>
+                        <ZuButton
+                          variant="contained"
+                          color="error"
                           onClick={() => handleDelete(session.id)}
                         >
                           Delete
@@ -879,6 +2224,41 @@ const Home = () => {
           )}
         </Stack>
       </Stack>
+      {!isMobile ? (
+        <SwipeableDrawer
+          hideBackdrop={true}
+          sx={{
+            position: 'relative',
+            zIndex: 3,
+            '& .MuiDrawer-paper': {
+              marginTop: '50px',
+              height: 'calc(100% - 50px)',
+              boxShadow: 'none',
+              backgroundColor: 'transparent',
+              paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
+            },
+          }}
+          anchor="right"
+          open={state['right']}
+          onClose={() => toggleDrawer('right', false)}
+          onOpen={() => toggleDrawer('right', true)}
+        >
+          {List('right')}
+        </SwipeableDrawer>
+      ) : state.right ? (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 100,
+          }}
+        >
+          {List('right')}
+        </Box>
+      ) : null}
     </LocalizationProvider>
   );
 };
