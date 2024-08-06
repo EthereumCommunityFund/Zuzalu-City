@@ -65,6 +65,7 @@ const Overview = () => {
       setName(editSpace.name);
       avatarUploader.setUrl(editSpace.avatar);
       bannerUploader.setUrl(editSpace.banner);
+      console.log(editSpace.description);
       descriptionEditorStore.setValue(editSpace.description);
       setTagline(editSpace.tagline);
     } catch (error) {

@@ -381,7 +381,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       if (bookedSessions) {
         const bookedSessionsDay = bookedSessions.filter((session) => {
           const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
-
           return sessionStartDay === selectedDay;
         });
 
@@ -389,6 +388,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       }
     }
     setSessionDate(date);
+    console.log(date);
     setSessionStartTime(
       dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
@@ -516,6 +516,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   const handleChange = (val: string[]) => {
     setSessionTags(val);
+    console.log(val);
   };
 
   const handleSpeakerChange = (users: Profile[]) => {
@@ -693,6 +694,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       speakers: JSON.stringify(sessionSpeakers),
       creatorDID: adminId,
       uuid: uuidv4(),
+      liveStreamLink: sessionLiveStreamLink,
     };
     try {
       setBlockClickModal(true);
@@ -708,6 +710,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       setBlockClickModal(false);
     }
   };
+
   const resetForm = () => {
     setSessionName('');
     setSessionTrack('');
@@ -1700,7 +1703,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   users={people}
                   onChange={handleOrganizerChange}
                   initialUsers={[profile as Profile]}
-                  removedInitialUsers={hiddenOrganizer}
+                  //removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>
               <Stack spacing="20px">

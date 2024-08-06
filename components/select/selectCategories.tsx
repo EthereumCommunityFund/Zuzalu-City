@@ -10,10 +10,14 @@ const filter = createFilterOptions<FilmOptionType>();
 
 interface IProps {
   onChange: (value: string[]) => void;
+  initialValues?: FilmOptionType[];
 }
 
-export default function SelectCategories({ onChange }: IProps) {
-  const [value, setValue] = React.useState<FilmOptionType[]>([]);
+export default function SelectCategories({
+  onChange,
+  initialValues = [],
+}: IProps) {
+  const [value, setValue] = React.useState<FilmOptionType[]>(initialValues);
 
   const handleChange = useCallback(
     (value: FilmOptionType[]) => {

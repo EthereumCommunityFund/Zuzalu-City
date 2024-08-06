@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     organizers,
     speakers,
     creatorDID,
+    liveStreamLink,
   }: SessionSupabaseData = await req.json();
 
   try {
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
       organizers,
       speakers,
       creatorDID,
+      liveStreamLink,
     });
 
     if (error) {
