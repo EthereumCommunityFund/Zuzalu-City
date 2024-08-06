@@ -335,18 +335,25 @@ const Home = () => {
         };
         sessionDescriptionEditorStore.setValue(
           JSON.stringify(sessionData.description)
-            .replace(/\\/g, '\\\\')
-            .replace(/\"/g, '\\"'),
+            .slice(1, -1)
+            .replace(/\\\\/g, '\\')
+            .replace(/\\"/g, '"'),
         );
-        setSessionLocation(sessionData.location);
+        const isCustomLocation =
+          sessionData.location.startsWith('Custom Location:');
+        setSessionLocation(isCustomLocation ? 'Custom' : sessionData.location);
+
+        if (isCustomLocation) {
+          setCustomLocation(
+            sessionData.location.replace('Custom Location: ', ''),
+          );
+        }
+
         if (sessionData.format === 'online') {
           setPerson(false);
           setOnline(true);
         }
-        if (
-          sessionData.format === 'person' &&
-          !sessionData.location.startsWith('Custom Location:')
-        ) {
+        if (sessionData.format === 'person' && !isCustomLocation) {
           setSelectedRoom(
             venueData?.filter((item) => item.name === sessionData.location)[0],
           );
@@ -680,6 +687,7 @@ const Home = () => {
     fetchData();
   }, [ceramic?.did?.parent]);
   const List = (anchor: Anchor) => {
+    if (!state['right']) return null;
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Dialog
@@ -1046,6 +1054,7 @@ const Home = () => {
                             Write name of the location
                           </FormLabelDesc>
                           <ZuInput
+                            value={customLocation}
                             placeholder="Type location name"
                             onChange={(e) => setCustomLocation(e.target.value)}
                           />
@@ -1600,7 +1609,8 @@ const Home = () => {
                   users={people}
                   onChange={handleOrganizerChange}
                   initialUsers={sessionOrganizers}
-                  //removedInitialUsers={hiddenOrganizer}
+                  fixedUsers={[profile as Profile]}
+                  removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>
               <Stack spacing="20px">
@@ -1614,6 +1624,8 @@ const Home = () => {
                   users={people}
                   onChange={handleSpeakerChange}
                   initialUsers={sessionSpeakers}
+                  fixedUsers={[profile as Profile]}
+                  removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>
             </Stack>

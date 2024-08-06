@@ -1703,6 +1703,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   users={people}
                   onChange={handleOrganizerChange}
                   initialUsers={[profile as Profile]}
+                  fixedUsers={[profile as Profile]}
                   //removedInitialUsers={hiddenOrganizer}
                 />
               </Stack>

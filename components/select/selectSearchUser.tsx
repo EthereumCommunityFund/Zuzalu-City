@@ -12,6 +12,7 @@ interface IProps {
   users: Profile[];
   onChange: (value: Profile[]) => void;
   initialUsers?: Profile[];
+  fixedUsers?: Profile[];
   removedInitialUsers?: boolean;
 }
 
@@ -19,29 +20,30 @@ export default function SelectSearchUser({
   onChange,
   users,
   initialUsers = [],
+  fixedUsers = [],
   removedInitialUsers = false,
 }: IProps) {
   const [value, setValue] = React.useState<Profile[]>(initialUsers || []);
-  const ref = React.useRef(initialUsers);
+  const ref = React.useRef(fixedUsers);
 
   const handleChange = useCallback(
     (newValue: Profile[]) => {
-      const fixedValue = !removedInitialUsers ? initialUsers : [];
-      const updatedValue = Array.from(new Set([...fixedValue, ...newValue]));
-      setValue(updatedValue);
-      onChange(updatedValue);
+      // const fixedValue = !removedInitialUsers ? fixedUsers : [];
+      // const updatedValue = Array.from(new Set([...fixedValue, ...newValue]));
+      setValue(newValue);
+      onChange(newValue);
     },
-    [removedInitialUsers, initialUsers, onChange],
+    [onChange],
   );
 
   const options = useMemo(() => {
-    if (ref.current && users.length > 0) {
+    if (ref.current && users.length > 0 && !removedInitialUsers) {
       return users.filter((u) =>
         ref.current?.findIndex((r) => r && r.id === u.id),
       );
     }
     return users;
-  }, [users]);
+  }, [users, removedInitialUsers]);
 
   useEffect(() => {
     if (removedInitialUsers && ref.current) {
@@ -50,7 +52,11 @@ export default function SelectSearchUser({
       });
     }
     if (!removedInitialUsers && ref.current) {
-      setValue((v) => Array.from(new Set([...ref.current, ...v])));
+      setValue((v) => {
+        return v.find((u) => !ref.current.includes(u))
+          ? v
+          : [...ref.current, ...v];
+      });
     }
   }, [removedInitialUsers]);
 
@@ -140,8 +146,9 @@ export default function SelectSearchUser({
           <Box display="flex" flexDirection="row" gap="10px" flexWrap="wrap">
             {value.map((i, index) => {
               const isInitialUser =
-                initialUsers.length > 0 &&
-                initialUsers.some((user) => user && user.id === i.id);
+                !removedInitialUsers &&
+                fixedUsers.length > 0 &&
+                fixedUsers.some((user) => user && user.id === i.id);
               return (
                 i && (
                   <Chip
