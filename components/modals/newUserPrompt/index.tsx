@@ -146,7 +146,7 @@ export default function NewUserPromptModal({
                 onChange={(e) => setHaveRead(e.target.checked)}
               ></Checkbox>
               <Typography fontSize={'18px'}>
-                I've read the above and understand that Zuzalu.city is Beta
+                I have read the above and understand that Zuzalu.city is Beta
                 software
               </Typography>
             </Box>
