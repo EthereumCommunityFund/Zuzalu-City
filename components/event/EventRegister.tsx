@@ -66,7 +66,14 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   //   window.open(external_url, '_blank');
   // };
   const { disconnect } = useDisconnect();
-  const { ceramic, isAuthenticated, showAuthPrompt, profile, authenticate, logout: CeramicLogout } = useCeramicContext();
+  const {
+    ceramic,
+    isAuthenticated,
+    showAuthPrompt,
+    profile,
+    authenticate,
+    logout: CeramicLogout,
+  } = useCeramicContext();
   const handleZupass = () => {
     if (!ceramic?.did?.parent) {
       setModalTitle('Please login');
@@ -139,7 +146,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
         onClose={() => setShowModal(false)}
         onConfirm={() => setShowModal(false)}
       /> */}
-      <NewUserPromptModal 
+      <NewUserPromptModal
         showModal={showModal}
         onClose={() => setShowModal(false)}
       />
@@ -153,12 +160,17 @@ const EventRegister: React.FC<EventRegisterProps> = ({
         <Typography color="white" variant="subtitleS">
           Event Registration
         </Typography>
-        <Typography color="white" variant="subtitleS" sx={{ fontSize: '10px' }} textTransform={'uppercase'}>
+        <Typography
+          color="white"
+          variant="subtitleS"
+          sx={{ fontSize: '10px' }}
+          textTransform={'uppercase'}
+        >
           External Registration
         </Typography>
       </Stack>
-      {
-        stage === "Initial" && <>
+      {stage === 'Initial' && (
+        <>
           <Stack
             padding={'24px 20px'}
             border={'1px solid rgba(255, 255, 255, 0.10)'}
@@ -423,7 +435,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               sx={{
                 width: '100%',
                 opacity: '0.7',
-                border: '1px solid rgba(255, 255, 255, 0.10)'
+                border: '1px solid rgba(255, 255, 255, 0.10)',
               }}
               startIcon={<ArrowCircleRightIcon />}
             >
@@ -436,24 +448,39 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             gap={'14px'}
             alignItems={'center'}
           >
-            <Typography textTransform={'uppercase'} fontSize={'10px'} sx={{ opacity: 0.6 }}>First Time?</Typography>
+            <Typography
+              textTransform={'uppercase'}
+              fontSize={'10px'}
+              sx={{ opacity: 0.6 }}
+            >
+              First Time?
+            </Typography>
             <ZuButton
-              startIcon={<Image src="/user/wallet.png" alt="wallet" height={24} width={24} />}
+              startIcon={
+                <Image
+                  src="/user/wallet.png"
+                  alt="wallet"
+                  height={24}
+                  width={24}
+                />
+              }
               sx={{
                 width: '100%',
-                border: '1px solid rgba(255, 255, 255, 0.10)'
+                border: '1px solid rgba(255, 255, 255, 0.10)',
               }}
               onClick={() => setStage('ZuPass')}
             >
               Check-in
             </ZuButton>
-            <Typography fontSize={'10px'} sx={{ opacity: 0.6 }}>Already Checked-in?</Typography>
+            <Typography fontSize={'10px'} sx={{ opacity: 0.6 }}>
+              Already Checked-in?
+            </Typography>
             <ZuButton
               sx={{
                 width: '100%',
                 opacity: '0.7',
                 border: '1px solid rgba(215, 255, 196, 0.20)',
-                backgroundColor: 'rgba(215, 255, 196, 0.10)'
+                backgroundColor: 'rgba(215, 255, 196, 0.10)',
               }}
               startIcon={<ArrowCircleRightIcon />}
               onClick={() => setStage('Signed-in')}
@@ -470,9 +497,9 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
           </Stack>
         </>
-      }
-      {
-        stage === "ZuPass" && <Stack
+      )}
+      {stage === 'ZuPass' && (
+        <Stack
           padding="14px 20px 20px 20px"
           width="100%"
           gap="20px"
@@ -485,22 +512,18 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             sx={{
               padding: '10px 26px',
               border: '1px solid rgba(255, 255, 255, 0.10)',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)'
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
             }}
             onClick={() => setStage('Initial')}
           >
             Go Back
           </ZuButton>
-          <Stack
-            gap={'14px'}
-            alignItems={'center'}
-            width={'100%'}
-          >
+          <Stack gap={'14px'} alignItems={'center'} width={'100%'}>
             <Typography>Check-in with your pass</Typography>
             <ZuButton
               startIcon={<ZuPassIcon />}
               sx={{
-                width: '100%'
+                width: '100%',
               }}
               onClick={() => setStage('Wallet Link')}
             >
@@ -508,9 +531,9 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             </ZuButton>
           </Stack>
         </Stack>
-      }
-      {
-        stage === "Wallet Link" && <Stack
+      )}
+      {stage === 'Wallet Link' && (
+        <Stack
           padding="14px 20px 20px 20px"
           width="100%"
           gap="18px"
@@ -529,7 +552,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               mounted,
             }) => {
               const ready = mounted && authenticationStatus !== 'loading';
-              console.log('authenticationStatus: ', authenticationStatus)
+              console.log('authenticationStatus: ', authenticationStatus);
               const connected =
                 ready &&
                 account &&
@@ -540,11 +563,11 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               return (
                 <div
                   style={{
-                    width: '100%'
+                    width: '100%',
                   }}
                   {...(!ready && {
                     'aria-hidden': true,
-                    'style': {
+                    style: {
                       opacity: 0,
                       pointerEvents: 'none',
                       userSelect: 'none',
@@ -561,8 +584,14 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                           alignItems={'center'}
                           justifyContent={'center'}
                         >
-                          <Typography fontSize={'14px'} textAlign={'center'} sx={{ opacity: '0.7' }}>
-                            Choose the wallet to be used to sign in to this specific event, if you need to change it contact the event organizer
+                          <Typography
+                            fontSize={'14px'}
+                            textAlign={'center'}
+                            sx={{ opacity: '0.7' }}
+                          >
+                            Choose the wallet to be used to sign in to this
+                            specific event, if you need to change it contact the
+                            event organizer
                           </Typography>
                           <ZuButton
                             startIcon={<ArrowCircleRightIcon />}
@@ -570,15 +599,20 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                               width: '100%',
                               border: '1px solid rgba(215, 255, 196, 0.20)',
                               backgroundColor: 'rgba(215, 255, 196, 0.10)',
-                              color: '#D7FFC4'
+                              color: '#D7FFC4',
                             }}
                             onClick={() => {
-                              openConnectModal()
+                              openConnectModal();
                             }}
                           >
                             Link Your Wallet
                           </ZuButton>
-                          <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+                          <Image
+                            src="/ceramic.png"
+                            alt="wallet"
+                            width={78}
+                            height={15.5}
+                          />
                         </Stack>
                       );
                     }
@@ -593,23 +627,35 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                           justifyContent={'center'}
                         >
                           <ZuButton
-                            startIcon={<Image src="/user/wallet.png" alt="wallet" height={24} width={24} />}
+                            startIcon={
+                              <Image
+                                src="/user/wallet.png"
+                                alt="wallet"
+                                height={24}
+                                width={24}
+                              />
+                            }
                             endIcon={<KeyboardArrowDownIcon />}
                             sx={{
                               width: '100%',
                               border: '1px solid rgba(255, 255, 255, 0.10)',
-                              backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                              backgroundColor: 'rgba(255, 255, 255, 0.05)',
                             }}
                             onClick={() => {
-                              openAccountModal()
+                              openAccountModal();
                             }}
                           >
-                            {
-                              account.address.slice(0, 10) + "..."
-                            }
+                            {account.address.slice(0, 10) + '...'}
                           </ZuButton>
-                          <Typography textAlign={'center'} fontSize={'14px'} sx={{ opacity: '0.7' }}>
-                            This wallet is going to be used to sign in to this event with a <u>Ceramic DID</u>. <br></br>If you need to change it in the future contact the event organizer
+                          <Typography
+                            textAlign={'center'}
+                            fontSize={'14px'}
+                            sx={{ opacity: '0.7' }}
+                          >
+                            This wallet is going to be used to sign in to this
+                            event with a <u>Ceramic DID</u>. <br></br>If you
+                            need to change it in the future contact the event
+                            organizer
                           </Typography>
                           <ZuButton
                             startIcon={<ArrowCircleRightIcon />}
@@ -617,18 +663,23 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                               width: '100%',
                               color: '#D7FFC4',
                               border: '1px solid rgba(215, 255, 196, 0.20)',
-                              backgroundColor: 'rgba(215, 255, 196, 0.10)'
+                              backgroundColor: 'rgba(215, 255, 196, 0.10)',
                             }}
                             onClick={() => {
                               setShowModal(true);
-                              setStage('Checked-in')
+                              setStage('Checked-in');
                             }}
                           >
                             Confirm This Wallet
                           </ZuButton>
-                          <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+                          <Image
+                            src="/ceramic.png"
+                            alt="wallet"
+                            width={78}
+                            height={15.5}
+                          />
                         </Stack>
-                      )
+                      );
                     }
 
                     if (chain.unsupported) {
@@ -644,9 +695,9 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             }}
           </ConnectButton.Custom>
         </Stack>
-      }
-      {
-        stage === "Checked-in" && <Stack
+      )}
+      {stage === 'Checked-in' && (
+        <Stack
           width="100%"
           height={'300px'}
           alignItems={'center'}
@@ -659,8 +710,22 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             width={'100%'}
             bgcolor={'rgba(215, 255, 196, 0.10)'}
           >
-            <Typography color={'#D7FFC4'} fontSize={'14px'} fontWeight={600} textAlign={'center'}>You have Checked-in</Typography>
-            <Typography textAlign={'center'} fontSize={'13px'} color={'#D7FFC4'} sx={{ opacity: '0.8' }}>You are now signed-in to the event</Typography>
+            <Typography
+              color={'#D7FFC4'}
+              fontSize={'14px'}
+              fontWeight={600}
+              textAlign={'center'}
+            >
+              You have Checked-in
+            </Typography>
+            <Typography
+              textAlign={'center'}
+              fontSize={'13px'}
+              color={'#D7FFC4'}
+              sx={{ opacity: '0.8' }}
+            >
+              You are now signed-in to the event
+            </Typography>
           </Stack>
           <Stack
             padding="14px 20px 20px 20px"
@@ -675,12 +740,12 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                 width: '100%',
                 border: '1px solid rgba(235, 87, 87, 0.30)',
                 backgroundColor: '#2F2121',
-                color: '#FF5E5E'
+                color: '#FF5E5E',
               }}
               onClick={() => {
                 CeramicLogout();
                 disconnect();
-                setStage('Initial')
+                setStage('Initial');
               }}
             >
               Sign out
@@ -689,17 +754,18 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               fontSize={'14px'}
               textAlign={'center'}
               sx={{
-                opacity: '0.7'
+                opacity: '0.7',
               }}
             >
-              you can be signed in multiple events with different wallets in order to preserve your privacy
+              you can be signed in multiple events with different wallets in
+              order to preserve your privacy
             </Typography>
             <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
           </Stack>
         </Stack>
-      }
-      {
-        stage === "Signed-in" && <Stack
+      )}
+      {stage === 'Signed-in' && (
+        <Stack
           padding="14px 20px 20px 20px"
           width="100%"
           height={'300px'}
@@ -714,7 +780,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               width: '100%',
               border: '1px solid rgba(235, 87, 87, 0.30)',
               backgroundColor: '#2F2121',
-              color: '#FF5E5E'
+              color: '#FF5E5E',
             }}
             onClick={() => {
               CeramicLogout();
@@ -728,15 +794,15 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             fontSize={'14px'}
             textAlign={'center'}
             sx={{
-              opacity: '0.7'
+              opacity: '0.7',
             }}
           >
-            you can be signed in multiple events with different wallets in order to preserve your privacy
+            you can be signed in multiple events with different wallets in order
+            to preserve your privacy
           </Typography>
           <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
         </Stack>
-      }
-
+      )}
     </Stack>
   );
 };
