@@ -28,8 +28,6 @@ export default function SelectSearchUser({
 
   const handleChange = useCallback(
     (newValue: Profile[]) => {
-      // const fixedValue = !removedInitialUsers ? fixedUsers : [];
-      // const updatedValue = Array.from(new Set([...fixedValue, ...newValue]));
       setValue(newValue);
       onChange(newValue);
     },
@@ -37,25 +35,26 @@ export default function SelectSearchUser({
   );
 
   const options = useMemo(() => {
-    if (ref.current && users.length > 0 && !removedInitialUsers) {
+    if (ref.current && users.length > 0) {
       return users.filter((u) =>
         ref.current?.findIndex((r) => r && r.id === u.id),
       );
     }
     return users;
-  }, [users, removedInitialUsers]);
+  }, [users]);
 
   useEffect(() => {
     if (removedInitialUsers && ref.current) {
       setValue((v) => {
-        return v.filter((u) => !ref.current.includes(u));
+        return v.filter((u) => ref.current.findIndex((r) => r.id === u.id));
       });
     }
     if (!removedInitialUsers && ref.current) {
       setValue((v) => {
-        return v.find((u) => !ref.current.includes(u))
-          ? v
-          : [...ref.current, ...v];
+        return [
+          ...ref.current,
+          ...v.filter((u) => ref.current?.findIndex((r) => r.id === u.id)),
+        ];
       });
     }
   }, [removedInitialUsers]);
