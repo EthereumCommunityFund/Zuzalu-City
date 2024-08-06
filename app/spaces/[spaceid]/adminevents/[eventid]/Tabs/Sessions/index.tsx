@@ -587,6 +587,7 @@ const Sessions = () => {
                   Choose a type for your session to relay its nature to guests
                 </FormLabelDesc>
                 <ZuInput
+                  value={sessionType}
                   onChange={(e) => setSessionType(e.target.value)}
                   placeholder="Meetup, Activity, Party, etc.."
                 />
