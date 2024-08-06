@@ -70,7 +70,7 @@ export default function SelectSearchUser({
             filterOptions={(options, params) => {
               const { inputValue } = params;
 
-              return options.filter((option) => {
+              const data = options.filter((option) => {
                 const { author, username } = option;
                 if (username.toLowerCase().includes(inputValue.toLowerCase()))
                   return true;
@@ -83,6 +83,19 @@ export default function SelectSearchUser({
                 }
                 return false;
               });
+
+              if (!data.length) {
+                data.push({
+                  id: '',
+                  username: params.inputValue,
+                  avatar: '',
+                  author: {
+                    id: '',
+                  },
+                });
+              }
+
+              return data;
             }}
             options={options}
             getOptionLabel={(option) => {
@@ -90,6 +103,21 @@ export default function SelectSearchUser({
             }}
             renderOption={(props, option) => {
               const { key, ...optionProps } = props as any;
+              if (!option.id) {
+                return (
+                  <li {...optionProps}>
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      width="100%"
+                    >
+                      <ListItemText primary={`Add ${option.username} user`} />
+                    </Box>
+                  </li>
+                );
+              }
               return option ? (
                 <li key={option.id} {...optionProps}>
                   <Box
@@ -173,9 +201,10 @@ export default function SelectSearchUser({
                       isInitialUser
                         ? undefined
                         : () => {
-                            const newArray = value.filter(
-                              (item) => item.id !== i.id,
-                            );
+                            const newArray = value.filter((item) => {
+                              if (!item.id) return item.username !== i.username;
+                              return item.id !== i.id;
+                            });
                             setValue(newArray);
                             onChange(newArray);
                           }
