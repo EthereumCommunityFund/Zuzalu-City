@@ -14,6 +14,8 @@ import { updateAdmin } from '@/services/event/addAdmin';
 import { updateMember } from '@/services/event/addMember';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { tempUpdateTrack } from '@/services/event/tempAddTrack';
+import { download } from '@/utils/download';
+
 interface IMember {
   id: string;
   mvpProfile?: {
@@ -166,6 +168,15 @@ const OverviewInvite = ({ event }: PropTypes) => {
     };
     fetchData();
   }, []);
+
+  const handleClickExport = () => {
+    let txt = 'Members: \n\n';
+    members.forEach((member) => {
+      txt += member.id.split(':').pop() + '\n';
+    });
+    download('members.text', txt);
+  };
+
   return (
     <Stack direction="column" spacing={3} marginBottom={3}>
       <Dialog
@@ -380,7 +391,12 @@ const OverviewInvite = ({ event }: PropTypes) => {
           </Stack>
         </Stack>
         <Stack spacing="10px">
-          <Typography variant="bodySB">Members</Typography>
+          <div style={{ display: 'flex' }}>
+            <Typography variant="bodySB" flex={1}>
+              Members
+            </Typography>
+            <ZuButton onClick={handleClickExport}>export</ZuButton>
+          </div>
           {members !== null &&
             members.map((member: IMember, index: number) => (
               <Stack

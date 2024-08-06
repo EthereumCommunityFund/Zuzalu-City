@@ -37,6 +37,8 @@ import {
   List,
   ListItem,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 import { generateNFTMetadata } from '@/utils/generateNFTMetadata';
 import { createFileFromJSON } from '@/utils/generateNFTMetadata';
@@ -987,6 +989,42 @@ export const Whitelist = ({
       console.log(error);
     }
   };
+
+  const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+  });
+
+  const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    let reader = new FileReader();
+    reader.onload = function () {
+      const text = reader.result as string;
+      const lines = text.split('\n').map((line) => line.trim());
+      const newAddress = [...addresses];
+      const isAddress = (add: string) => {
+        if (add.length !== 42) return false;
+        return /^0x[a-fA-F0-9]{40}$/.test(add);
+      };
+      lines.forEach((line) => {
+        if (isAddress(line) && !newAddress.includes(line)) {
+          newAddress.push(line);
+        }
+      });
+
+      setAddresses(newAddress);
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <Stack spacing="30px">
       <Stack spacing="10px">
@@ -1021,6 +1059,25 @@ export const Whitelist = ({
                     Upload addresses of individuals to directly gain access to
                     mint this ticket. These users will interact and pay the set
                     contributing amount of the ticket.
+                  </Typography>
+                </Stack>
+                <Stack spacing="20px">
+                  <Typography variant="bodyBB">Upload file</Typography>
+                  <Typography variant="bodyM">
+                    <Button
+                      component="label"
+                      role={undefined}
+                      variant="contained"
+                      tabIndex={-1}
+                      startIcon={<CloudUploadIcon />}
+                    >
+                      Upload addresses file
+                      <VisuallyHiddenInput
+                        onChange={handleChangeFile}
+                        accept=".csv, .text, .txt"
+                        type="file"
+                      />
+                    </Button>
                   </Typography>
                 </Stack>
                 <Stack spacing="20px">

@@ -128,7 +128,7 @@ const Home = () => {
       }
     };
     fetchData();
-  }, [verify]);
+  }, [ceramic?.did?.parent, verify]);
 
   return (
     <Stack
