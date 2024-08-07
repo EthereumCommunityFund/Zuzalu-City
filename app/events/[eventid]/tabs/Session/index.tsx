@@ -264,12 +264,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const nearToday = getDay();
     if (sessionsByDate && nearToday) {
       const dom = document.getElementById(nearToday);
-      console.log(dom);
       if (dom) {
-        dom.scrollIntoView({
+        window.scrollTo({
           behavior: 'instant',
-          block: 'start',
-          inline: 'start',
+          top: dom.offsetTop + 120,
         });
       }
     }
@@ -2043,7 +2041,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         variant="bodySB"
                         bgcolor="rgba(255, 255, 255, 0.05)"
                         borderRadius="10px"
-                        sx={{ opacity: 0.6, backdropFilter: 'blur(10px)' }}
+                        sx={{ backdropFilter: 'blur(10px)' }}
                         position={'sticky'}
                         top={'100px'}
                         zIndex={2}
