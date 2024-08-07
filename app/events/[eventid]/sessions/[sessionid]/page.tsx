@@ -1992,41 +1992,44 @@ const Home = () => {
             justifyContent="center"
           >
             <Stack gap="20px">
-              <Stack
-                padding="10px"
-                bgcolor="#ffc77d1a"
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                width="100%"
-                border="1px solid rgba(255, 199, 125, .1)"
-                borderRadius={'8px'}
-              >
-                <Typography
-                  fontSize={'14px'}
-                  lineHeight={'160%'}
-                  color={'rgba(255, 199, 125, 1)'}
-                  fontWeight={600}
+              {session.creatorDID === adminId && (
+                <Stack
+                  padding="10px"
+                  bgcolor="#ffc77d1a"
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  width="100%"
+                  border="1px solid rgba(255, 199, 125, .1)"
+                  borderRadius={'8px'}
                 >
-                  You created this session
-                </Typography>
-                <ZuButton
-                  startIcon={<EditIcon size={5} />}
-                  sx={{
-                    padding: '6px 10px',
-                    backgroundColor: 'rgba(255, 199, 125, 0.05)',
-                    gap: '10px',
-                    '& > span': {
-                      margin: '0px',
-                    },
-                    color: 'rgba(255, 199, 125, 1)',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                  }}
-                >
-                  Edit
-                </ZuButton>
-              </Stack>
+                  <Typography
+                    fontSize={'14px'}
+                    lineHeight={'160%'}
+                    color={'rgba(255, 199, 125, 1)'}
+                    fontWeight={600}
+                  >
+                    You created this session
+                  </Typography>
+                  <ZuButton
+                    startIcon={<EditIcon size={5} />}
+                    sx={{
+                      padding: '6px 10px',
+                      backgroundColor: 'rgba(255, 199, 125, 0.05)',
+                      gap: '10px',
+                      '& > span': {
+                        margin: '0px',
+                      },
+                      color: 'rgba(255, 199, 125, 1)',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Edit
+                  </ZuButton>
+                </Stack>
+              )}
+
               <Stack
                 borderRadius="10px"
                 border={!isMobile ? '1px solid #383838' : 'none'}
