@@ -1902,28 +1902,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     sx={{ cursor: 'pointer' }}
                     alignItems="center"
                   >
-                    <QueueListIcon size={5} />
-                    <ZuButton
-                      onClick={() => {
-                        setSelectedDate(null);
-                      }}
-                      variant="text"
-                      sx={{
-                        textTransform: 'none',
-                        padding: 0,
-                        minWidth: 'auto',
-                      }}
-                    >
-                      <Typography variant="bodyS">Full Schedule</Typography>
-                    </ZuButton>
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="10px"
-                    padding="14px"
-                    sx={{ cursor: 'pointer' }}
-                    alignItems="center"
-                  >
                     <ChevronDoubleRightIcon size={5} />
                     <ZuButton
                       onClick={() => {

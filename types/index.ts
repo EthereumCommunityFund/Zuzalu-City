@@ -1,3 +1,4 @@
+import { SwipeableDrawerProps } from '@mui/material';
 import { CSSProperties, Dispatch, SetStateAction } from 'react';
 import { ITimezoneOption } from 'react-timezone-select';
 
@@ -320,6 +321,22 @@ export type AvailableType = {
   endTime: string;
   error?: string;
 };
+
+export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
+  isRSVPFiltered: boolean;
+  handleRSVPSwitchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isManagedFiltered: boolean;
+  handleManagedSwitchChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
+  location: string;
+  track: string;
+  handleClear: () => void;
+  setSelectedLocations: Dispatch<SetStateAction<string[]>>;
+  selectedLocations: string[];
+  setSelectedTracks: Dispatch<SetStateAction<string[]>>;
+  selectedTracks: string[];
+}
 
 export interface TimezoneSelectorProps {
   sx: CSSProperties;
