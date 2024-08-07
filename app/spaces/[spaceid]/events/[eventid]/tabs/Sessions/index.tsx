@@ -88,6 +88,7 @@ import {
 import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
+import { useQuery } from '@tanstack/react-query';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -343,18 +344,23 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     }
   };
 
-  useEffect(() => {
-    fetchAndFilterSessions().catch((error) => {
-      console.error('An error occurred:', error);
-    });
-  }, [
-    selectedDate,
-    dateForCalendar,
-    isRSVPFiltered,
-    isManagedFiltered,
-    searchQuery,
-    refreshFlag,
-  ]);
+  useQuery({
+    queryKey: [
+      'fetchAndFilterSessions',
+      selectedDate,
+      dateForCalendar,
+      isRSVPFiltered,
+      isManagedFiltered,
+      searchQuery,
+      refreshFlag,
+    ],
+    queryFn: async () => {
+      fetchAndFilterSessions().catch((error) => {
+        console.error('An error occurred:', error);
+      });
+    },
+  });
+
   const handleRSVPSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -1943,7 +1949,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     overflowY: 'scroll',
                   }}
                 >
-                  {loading ? (
+                  {loading &&
+                  sessionsByDate &&
+                  Object.keys(sessionsByDate).length === 0 ? (
                     <Stack
                       borderRadius="10px"
                       border="1px solid #383838"

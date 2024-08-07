@@ -101,6 +101,7 @@ import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
+import { useQuery } from '@tanstack/react-query';
 
 const Home = () => {
   const theme = useTheme();
@@ -818,8 +819,10 @@ const Home = () => {
       setBlockClickModal(false);
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
+
+  useQuery({
+    queryKey: ['eventSessionDetail', ceramic?.did?.parent, sessionUpdated],
+    queryFn: async () => {
       setCurrentHref(window.location.href);
 
       try {
@@ -846,9 +849,9 @@ const Home = () => {
             admins.includes(adminId) ||
             members.includes(adminId)
           ) {
-            await getPeople();
-            await getSession();
-            await getLocation();
+            getPeople();
+            getSession();
+            getLocation();
             setCanViewSessions(true);
           } else {
             setDialogTitle('You are not a member of this event');
@@ -861,9 +864,9 @@ const Home = () => {
       } catch (err) {
         console.log(err);
       }
-    };
-    fetchData();
-  }, [ceramic?.did?.parent, sessionUpdated]);
+    },
+  });
+
   const List = (anchor: Anchor) => {
     if (!state['right']) return null;
     return (
