@@ -2028,6 +2028,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       padding="10px"
                       key={`Session-GroupByDate-${date}`}
                       position={'relative'}
+                      id={dayjs(date, 'MMMM D, YYYY')
+                        .tz(eventData?.timezone, true)
+                        .format('MMMM-D-YYYY')}
                     >
                       <Typography
                         borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
