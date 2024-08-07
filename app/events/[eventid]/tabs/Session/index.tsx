@@ -426,8 +426,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       isManagedFiltered,
       searchQuery,
       refreshFlag,
-        selectedTracks,
-        selectedLocations,
+      selectedTracks,
+      selectedLocations,
     ],
     queryFn: async () => {
       fetchAndFilterSessions().catch((error) => {
