@@ -186,6 +186,7 @@ export type SessionSupabaseData = {
   speakers?: string;
   creatorDID: string;
   uuid: string;
+  liveStreamLink?: string;
 };
 export interface SessionEdge {
   node: Session;
@@ -340,4 +341,10 @@ export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
 export interface TimezoneSelectorProps {
   sx: CSSProperties;
   setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>;
+}
+
+export interface FilmOptionType {
+  value: string;
+  label: string;
+  isAdd?: boolean;
 }

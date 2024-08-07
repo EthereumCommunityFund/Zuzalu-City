@@ -63,10 +63,10 @@ export const ZupassProvider = ({ children }: any) => {
         const result = await zuAuthPopup({
           zupassUrl: process.env.NEXT_PUBLIC_ZUPASS_SERVER_URL as string,
           fieldsToReveal: {
-            revealAttendeeEmail: true,
-            revealAttendeeName: true,
+            revealAttendeeEmail: false,
+            revealAttendeeName: false,
             revealEventId: true,
-            revealProductId: true,
+            revealProductId: false,
           },
           watermark,
           config: Zuconfig,

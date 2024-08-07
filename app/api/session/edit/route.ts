@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     speakers,
     creatorDID,
     liveStreamLink,
+    uuid,
   }: SessionSupabaseData = await req.json();
 
   try {
@@ -89,27 +90,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    const { data, error } = await supabase.from('sessions').insert({
-      title,
-      description,
-      experience_level,
-      createdAt,
-      startTime,
-      endTime,
-      profileId,
-      eventId,
-      tags,
-      type,
-      format,
-      track,
-      timezone,
-      video_url,
-      location,
-      organizers,
-      speakers,
-      creatorDID,
-      liveStreamLink,
-    });
+    const { data, error } = await supabase
+      .from('sessions')
+      .update({
+        title,
+        description,
+        experience_level,
+        createdAt,
+        startTime,
+        endTime,
+        profileId,
+        eventId,
+        tags,
+        type,
+        format,
+        track,
+        timezone,
+        video_url,
+        location,
+        organizers,
+        speakers,
+        creatorDID,
+        liveStreamLink,
+      })
+      .eq('uuid', uuid);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
