@@ -1,4 +1,5 @@
 import { ZuButton, ZuInput } from '@/components/core';
+import { useCeramicContext } from '@/context/CeramicContext';
 import {
   Box,
   Checkbox,
@@ -25,6 +26,12 @@ export default function NewUserPromptModal({
   const [stage, setStage] = useState('Initial');
   const [nickname, setNickName] = useState<string>('');
   const [haveRead, setHaveRead] = useState<boolean>(false);
+  const { createProfile } = useCeramicContext();
+
+  const handleConinue = async () => {
+    await createProfile(nickname);
+    setStage('Final');
+  };
 
   useEffect(() => {
     setStage('Initial');
@@ -179,7 +186,7 @@ export default function NewUserPromptModal({
             </Stack>
             <ZuButton
               disabled={!nickname}
-              onClick={() => setStage('Final')}
+              onClick={handleConinue}
               sx={{
                 width: '100%',
               }}

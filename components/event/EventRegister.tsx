@@ -483,7 +483,10 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                 backgroundColor: 'rgba(215, 255, 196, 0.10)',
               }}
               startIcon={<ArrowCircleRightIcon />}
-              onClick={() => setStage('Signed-in')}
+              onClick={() => {
+                showAuthPrompt();
+                setStage('Signed-in');
+              }}
             >
               Sign In
             </ZuButton>
