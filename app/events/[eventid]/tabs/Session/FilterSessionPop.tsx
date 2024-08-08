@@ -290,7 +290,6 @@ export function FilterSessionPop({
                 location
                   .filter((v) => v.name)
                   .map((item, index) => {
-                    console.log(item.name);
                     return (
                       <MenuItem
                         key={index}

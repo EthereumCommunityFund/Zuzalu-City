@@ -142,6 +142,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     dayjs(new Date()),
   );
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [selectDateRange, setSelectDateRange] = useState<Dayjs[] | null>(null);
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
   const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
@@ -202,6 +203,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   const handleCalendarClose = () => {
     setAnchorEl(null);
+  };
+
+  const resetDateFilter = () => {
+    setSelectDateRange(null);
+    setSelectedDate(null);
+    setDateForCalendar(dayjs(new Date()));
   };
 
   const trackAnchorOpen = Boolean(trackAnchor);
@@ -324,14 +331,32 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     setSearchQuery(event.target.value);
   };
   const getSessionsByDate = async (targetDate: string) => {
-    const sessions = await getSession();
     if (sessions) {
-      return sessions.filter(
-        (session) =>
+      return sessions.filter((session) => {
+        console.log(
+          dayjs(session.startTime).tz(session.timezone).format('MMMM D, YYYY'),
+          targetDate,
+        );
+        return (
           dayjs(session.startTime)
             .tz(session.timezone)
-            .format('MMMM D, YYYY') === targetDate,
-      );
+            .format('MMMM D, YYYY') === targetDate
+        );
+      });
+    }
+  };
+  const getSessionsByRange = async (targetDate: Dayjs[]) => {
+    if (sessions) {
+      return sessions.filter((session) => {
+        const [start, end] = targetDate;
+        const isAfter = dayjs(session.startTime)
+          .tz(session.timezone)
+          .isSameOrAfter(start);
+        const isBefore = end
+          ? dayjs(session.startTime).tz(session.timezone).isSameOrBefore(end)
+          : true;
+        return isAfter && isBefore;
+      });
     }
   };
   const getSessionsByMonth = async (dateForCalendar: dayjs.Dayjs) => {
@@ -385,6 +410,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           filteredSessions = await getSessionsByDate(
             dayjs(selectedDate).tz(eventData?.timezone).format('MMMM D, YYYY'),
           );
+        }
+        if (selectDateRange) {
+          filteredSessions = await getSessionsByRange(selectDateRange);
         }
         if (isManagedFiltered) {
           filteredSessions = filteredSessions?.filter(
@@ -442,6 +470,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     queryKey: [
       'fetchAndFilterSessions',
       selectedDate,
+      selectDateRange,
       dateForCalendar,
       isRSVPFiltered,
       isManagedFiltered,
@@ -1929,9 +1958,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       !isMobile ? <ChevronDoubleRightIcon size={5} /> : null
                     }
                     sx={{ width: '100%', flex: '1 0 0' }}
-                    onClick={() =>
-                      setSelectedDate(dayjs().tz(eventData?.timezone))
-                    }
+                    onClick={() => {
+                      resetDateFilter();
+                      setSelectedDate(dayjs().tz(eventData?.timezone));
+                    }}
                   >
                     To Today
                   </ZuButton>
@@ -1967,6 +1997,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     <ZuCalendar
                       value={selectedDate}
                       onChange={(val) => {
+                        resetDateFilter();
                         setSelectedDate(val);
                       }}
                       slots={{ day: SlotDates }}
@@ -2000,8 +2031,14 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             }),
                         } as any,
                       }}
-                      onMonthChange={(val) => setDateForCalendar(val)}
-                      onYearChange={(val) => setDateForCalendar(val)}
+                      onMonthChange={(val) => {
+                        resetDateFilter();
+                        setDateForCalendar(val);
+                      }}
+                      onYearChange={(val) => {
+                        resetDateFilter();
+                        setDateForCalendar(val);
+                      }}
                     />
                   </Popover>
                 </Stack>
@@ -2066,21 +2103,21 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         zIndex={2}
                         display={'flex'}
                       >
-                          <Typography component={'span'} flex={1}>
-                              {dayjs(date, 'MMMM D, YYYY')
-                                  .tz(eventData?.timezone, true)
-                                  .format('dddd · DD MMM YYYY')}
-                          </Typography>
-                          <ZuButton
-                              sx={{ height: '24px' }}
-                              onClick={handleDownload(
-                                  dayjs(date, 'MMMM D, YYYY')
-                                      .tz(eventData?.timezone, true)
-                                      .format('MMMM D, YYYY'),
-                              )}
-                          >
-                              export
-                          </ZuButton>
+                        <Typography component={'span'} flex={1}>
+                          {dayjs(date, 'MMMM D, YYYY')
+                            .tz(eventData?.timezone, true)
+                            .format('dddd · DD MMM YYYY')}
+                        </Typography>
+                        <ZuButton
+                          sx={{ height: '24px' }}
+                          onClick={handleDownload(
+                            dayjs(date, 'MMMM D, YYYY')
+                              .tz(eventData?.timezone, true)
+                              .format('MMMM D, YYYY'),
+                          )}
+                        >
+                          export
+                        </ZuButton>
                       </Typography>
                       {dateSessions && dateSessions.length > 0 ? (
                         dateSessions.map((session, index) => (
@@ -2274,7 +2311,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       width="100%"
                       borderRadius={'10px'}
                       onClick={() => {
-                        setSelectedDate(dayjs().tz(eventData?.timezone));
+                        resetDateFilter();
+                        setSelectDateRange([dayjs().tz(eventData?.timezone)]);
                       }}
                     >
                       <ChevronDoubleRightIcon size={5} />
@@ -2294,6 +2332,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   <ZuCalendar
                     value={selectedDate}
                     onChange={(val) => {
+                      resetDateFilter();
                       setSelectedDate(val);
                     }}
                     slots={{ day: SlotDates }}
@@ -2327,8 +2366,14 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           }),
                       } as any,
                     }}
-                    onMonthChange={(val) => setDateForCalendar(val)}
-                    onYearChange={(val) => setDateForCalendar(val)}
+                    onMonthChange={(val) => {
+                      resetDateFilter();
+                      setDateForCalendar(val);
+                    }}
+                    onYearChange={(val) => {
+                      resetDateFilter();
+                      setDateForCalendar(val);
+                    }}
                     sx={{
                       border: 'none',
                     }}
