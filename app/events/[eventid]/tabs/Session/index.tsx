@@ -602,6 +602,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const handleFilterSessionClearButton = () => {
     setIsRSVPFiltered(false);
     setIsManagedFiltered(false);
+    setSelectedTracks([]);
+    setSelectedLocations([]);
   };
 
   const handleChange = (val: string[]) => {
