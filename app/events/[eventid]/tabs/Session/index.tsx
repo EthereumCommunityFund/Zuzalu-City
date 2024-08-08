@@ -377,11 +377,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       .from('rsvp')
       .select('sessionID')
       .eq('userDID', adminId);
+    console.log(data);
     if (error) {
       console.error('Failed to fetch RSVP sessions:', error);
       return [];
     }
-    return data.map((rsvp: { sessionID: string }) => rsvp.sessionID);
+    const validSessions = data
+      .filter((rsvp: { sessionID: string | null }) => rsvp.sessionID !== null)
+      .map((rsvp: { sessionID: string }) => rsvp.sessionID);
+    return validSessions;
   };
   const getSession = async () => {
     try {
@@ -2109,7 +2113,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             .format('dddd · DD MMM YYYY')}
                         </Typography>
                         <ZuButton
-                          sx={{ height: '24px' }}
+                          sx={{ height: '20px' }}
                           onClick={handleDownload(
                             dayjs(date, 'MMMM D, YYYY')
                               .tz(eventData?.timezone, true)

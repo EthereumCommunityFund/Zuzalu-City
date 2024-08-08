@@ -594,7 +594,7 @@ const Home = () => {
         throw error;
       }
       sessionStorage.setItem('tab', 'Sessions');
-      router.push(`spaces/${spaceId}/events/${eventId}`);
+      router.push(`/spaces/${spaceId}/events/${eventId}`);
     } catch (error) {
       console.log(error);
     }
