@@ -1967,22 +1967,6 @@ const Home = () => {
                   bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
                   width={isMobile ? '100%' : '600px'}
                 >
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    padding={!isMobile ? '10px' : '10px 10px 10px 0'}
-                  >
-                    {/* <ZuButton
-                      startIcon={<LeftArrowIcon />}
-                      onClick={() => {
-                        sessionStorage.setItem('tab', 'Sessions');
-                        router.push(`/spaces/${spaceId}/events/${eventId}`);
-                      }}
-                    >
-                      Back to List
-                    </ZuButton> */}
-                  </Stack>
                   <Snackbar
                     anchorOrigin={{
                       vertical: 'bottom',
