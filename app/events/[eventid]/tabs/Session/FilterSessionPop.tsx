@@ -59,8 +59,6 @@ export function FilterSessionPop({
     setLocationAnchor(null);
   };
 
-  console.log(location);
-
   return (
     <SwipeableDrawer {...props}>
       <Stack
@@ -146,6 +144,7 @@ export function FilterSessionPop({
                 backgroundColor: 'rgba(255, 255, 255, 0.02)',
                 cursor: 'pointer',
               }}
+              spacing={'10px'}
             >
               <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
                 <MapOutlinedIcon />
@@ -237,6 +236,7 @@ export function FilterSessionPop({
                 backgroundColor: 'rgba(255, 255, 255, 0.02)',
                 cursor: 'pointer',
               }}
+              spacing={'10px'}
             >
               <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
                 <MapIcon />

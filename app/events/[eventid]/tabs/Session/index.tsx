@@ -2316,6 +2316,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
                       cursor: 'pointer',
                     }}
+                    spacing={'10px'}
                   >
                     <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
                       <MapOutlinedIcon />
@@ -2338,11 +2339,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           opacity: '0.6',
                         }}
                       >
-                        {eventData?.tracks
-                          ? eventData.tracks.length > 10
-                            ? eventData.tracks.substring(0, 10) + '...'
-                            : eventData.tracks
-                          : ''}
+                        {selectedTracks.length
+                          ? selectedTracks.join(', ')
+                          : 'All'}
                       </Typography>
                       <ChevronRightIcon />
                     </Stack>
@@ -2415,6 +2414,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
                       cursor: 'pointer',
                     }}
+                    spacing={'10px'}
                   >
                     <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
                       <MapIcon />
@@ -2437,11 +2437,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           opacity: '0.6',
                         }}
                       >
-                        {sessionLocation
-                          ? sessionLocation.length > 10
-                            ? sessionLocation.substring(0, 10) + '...'
-                            : sessionLocation
-                          : ''}
+                        {selectedLocations.length
+                          ? selectedLocations.join(', ')
+                          : 'All'}
                       </Typography>
                       <ChevronRightIcon />
                     </Stack>
@@ -2466,9 +2464,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       },
                     }}
                   >
-                    {sessionLocation &&
-                      [...new Set(sessionLocation.split(','))].map(
-                        (item, index) => {
+                    {venues &&
+                      venues
+                        .filter((v) => v.name)
+                        .map((item, index) => {
                           return (
                             <MenuItem
                               key={index}
@@ -2479,26 +2478,28 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                                 justifyContent: 'space-between',
                               }}
                               onClick={() => {
-                                if (selectedLocations.includes(item)) {
+                                if (selectedLocations.includes(item.name)) {
                                   const temp = selectedLocations.filter(
-                                    (location) => location !== item,
+                                    (location) => location !== item.name,
                                   );
                                   setSelectedLocations(temp);
                                 } else {
-                                  const temp = [...selectedLocations, item];
+                                  const temp = [
+                                    ...selectedLocations,
+                                    item.name,
+                                  ];
                                   const uniqueArray = [...new Set(temp)];
                                   setSelectedLocations(uniqueArray);
                                 }
                               }}
                             >
-                              {item}
-                              {selectedLocations.includes(item) && (
+                              {item.name}
+                              {selectedLocations.includes(item.name) && (
                                 <HighlightOffIcon />
                               )}
                             </MenuItem>
                           );
-                        },
-                      )}
+                        })}
                   </Popover>
                 </Stack>
               </Stack>
