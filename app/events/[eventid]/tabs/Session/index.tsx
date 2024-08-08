@@ -2070,21 +2070,21 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         zIndex={2}
                         display={'flex'}
                       >
-                          <Typography component={'span'} flex={1}>
-                              {dayjs(date, 'MMMM D, YYYY')
-                                  .tz(eventData?.timezone, true)
-                                  .format('dddd · DD MMM YYYY')}
-                          </Typography>
-                          <ZuButton
-                              sx={{ height: '24px' }}
-                              onClick={handleDownload(
-                                  dayjs(date, 'MMMM D, YYYY')
-                                      .tz(eventData?.timezone, true)
-                                      .format('MMMM D, YYYY'),
-                              )}
-                          >
-                              export
-                          </ZuButton>
+                        <Typography component={'span'} flex={1}>
+                          {dayjs(date, 'MMMM D, YYYY')
+                            .tz(eventData?.timezone, true)
+                            .format('dddd · DD MMM YYYY')}
+                        </Typography>
+                        <ZuButton
+                          sx={{ height: '20px' }}
+                          onClick={handleDownload(
+                            dayjs(date, 'MMMM D, YYYY')
+                              .tz(eventData?.timezone, true)
+                              .format('MMMM D, YYYY'),
+                          )}
+                        >
+                          export
+                        </ZuButton>
                       </Typography>
                       {dateSessions && dateSessions.length > 0 ? (
                         dateSessions.map((session, index) => (
