@@ -272,6 +272,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const nearToday = getDay();
     if (sessionsByDate && nearToday) {
       const dom = document.getElementById(nearToday);
+      console.log(dom, 'dom', nearToday, 'nearToday');
       if (dom) {
         window.scrollTo({
           behavior: 'instant',
