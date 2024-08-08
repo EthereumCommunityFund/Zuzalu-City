@@ -273,6 +273,24 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     }
   }, [sessionsByDate]);
 
+  const handleDownload = (date: string) => () => {
+    if (!sessionsByDate) return;
+    const data = sessionsByDate[date];
+    let txt = `${date}\n\n`;
+    data.forEach((session: Session) => {
+      txt += `${dayjs(session.startTime).tz(eventData?.timezone).format('h:mm A')}-${dayjs(session.endTime).tz(eventData?.timezone).format('h:mm A')} · ${session.location}\n## ${session.title}\n\n`;
+    });
+
+    const eleLink = document.createElement('a');
+    eleLink.download = `${date}.text`;
+    eleLink.style.display = 'none';
+    const blob = new Blob([txt]);
+    eleLink.href = URL.createObjectURL(blob);
+    document.body.appendChild(eleLink);
+    eleLink.click();
+    document.body.removeChild(eleLink);
+  };
+
   const groupSessionByDate = (
     sessions: Session[] | undefined,
   ): Record<string, Session[]> => {
@@ -2046,10 +2064,23 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         position={'sticky'}
                         top={'100px'}
                         zIndex={2}
+                        display={'flex'}
                       >
-                        {dayjs(date, 'MMMM D, YYYY')
-                          .tz(eventData?.timezone)
-                          .format('dddd · DD MMM YYYY')}
+                          <Typography component={'span'} flex={1}>
+                              {dayjs(date, 'MMMM D, YYYY')
+                                  .tz(eventData?.timezone, true)
+                                  .format('dddd · DD MMM YYYY')}
+                          </Typography>
+                          <ZuButton
+                              sx={{ height: '24px' }}
+                              onClick={handleDownload(
+                                  dayjs(date, 'MMMM D, YYYY')
+                                      .tz(eventData?.timezone, true)
+                                      .format('MMMM D, YYYY'),
+                              )}
+                          >
+                              export
+                          </ZuButton>
                       </Typography>
                       {dateSessions && dateSessions.length > 0 ? (
                         dateSessions.map((session, index) => (
