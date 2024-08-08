@@ -334,11 +334,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       .from('rsvp')
       .select('sessionID')
       .eq('userDID', adminId);
+    console.log(data);
     if (error) {
       console.error('Failed to fetch RSVP sessions:', error);
       return [];
     }
-    return data.map((rsvp: { sessionID: string }) => rsvp.sessionID);
+    const validSessions = data
+      .filter((rsvp: { sessionID: string | null }) => rsvp.sessionID !== null)
+      .map((rsvp: { sessionID: string }) => rsvp.sessionID);
+    return validSessions;
   };
   const getSession = async () => {
     try {
