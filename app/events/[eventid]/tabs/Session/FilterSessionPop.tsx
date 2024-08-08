@@ -59,6 +59,8 @@ export function FilterSessionPop({
     setLocationAnchor(null);
   };
 
+  console.log(location);
+
   return (
     <SwipeableDrawer {...props}>
       <Stack
@@ -166,11 +168,7 @@ export function FilterSessionPop({
                     opacity: '0.6',
                   }}
                 >
-                  {track
-                    ? track.length > 10
-                      ? track.substring(0, 10) + '...'
-                      : track
-                    : ''}
+                  {selectedTracks.length ? selectedTracks.join(', ') : 'All'}
                 </Typography>
                 <ChevronRightIcon />
               </Stack>
@@ -261,11 +259,9 @@ export function FilterSessionPop({
                     opacity: '0.6',
                   }}
                 >
-                  {location
-                    ? location.length > 10
-                      ? location.substring(0, 10) + '...'
-                      : location
-                    : ''}
+                  {selectedLocations.length
+                    ? selectedLocations.join(', ')
+                    : 'All'}
                 </Typography>
                 <ChevronRightIcon />
               </Stack>
@@ -291,34 +287,39 @@ export function FilterSessionPop({
               }}
             >
               {location &&
-                [...new Set(location.split(','))].map((item, index) => {
-                  return (
-                    <MenuItem
-                      key={index}
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                      onClick={() => {
-                        if (selectedLocations.includes(item)) {
-                          const temp = selectedLocations.filter(
-                            (location) => location !== item,
-                          );
-                          setSelectedLocations(temp);
-                        } else {
-                          const temp = [...selectedLocations, item];
-                          const uniqueArray = [...new Set(temp)];
-                          setSelectedLocations(uniqueArray);
-                        }
-                      }}
-                    >
-                      {item}
-                      {selectedLocations.includes(item) && <HighlightOffIcon />}
-                    </MenuItem>
-                  );
-                })}
+                location
+                  .filter((v) => v.name)
+                  .map((item, index) => {
+                    console.log(item.name);
+                    return (
+                      <MenuItem
+                        key={index}
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                        onClick={() => {
+                          if (selectedLocations.includes(item.name)) {
+                            const temp = selectedLocations.filter(
+                              (location) => location !== item.name,
+                            );
+                            setSelectedLocations(temp);
+                          } else {
+                            const temp = [...selectedLocations, item.name];
+                            const uniqueArray = [...new Set(temp)];
+                            setSelectedLocations(uniqueArray);
+                          }
+                        }}
+                      >
+                        {item.name}
+                        {selectedLocations.includes(item.name) && (
+                          <HighlightOffIcon />
+                        )}
+                      </MenuItem>
+                    );
+                  })}
             </Popover>
           </Stack>
         </Stack>

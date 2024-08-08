@@ -2949,7 +2949,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           handleRSVPSwitchChange={handleRSVPSwitchChange}
           isManagedFiltered={isManagedFiltered}
           handleManagedSwitchChange={handleManagedSwitchChange}
-          location="Room One"
+          location={venues}
           track={eventData?.tracks ?? ''}
           handleClear={handleFilterSessionClearButton}
           selectedLocations={selectedLocations}
