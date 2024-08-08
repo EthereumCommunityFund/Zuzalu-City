@@ -1944,12 +1944,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   <PlusIcon size={10} />
                 </Stack>
                 <Stack direction={'row'} gap={'10px'}>
-                  <ZuButton
+                  {/*<ZuButton
                     sx={{ width: '100%', flex: '0' }}
                     onClick={() => toggleDrawer('right', true)}
                   >
                     <SearchIcon />
-                  </ZuButton>
+                  </ZuButton>*/}
                   <ZuButton
                     startIcon={<TuneOutlinedIcon />}
                     sx={{ width: '100%', flex: '1 0 0' }}
