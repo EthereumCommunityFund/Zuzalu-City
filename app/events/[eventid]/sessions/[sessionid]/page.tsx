@@ -822,6 +822,7 @@ const Home = () => {
 
   useQuery({
     queryKey: ['eventSessionDetail', ceramic?.did?.parent, sessionUpdated],
+    enabled: !!profileId,
     queryFn: async () => {
       setCurrentHref(window.location.href);
 
@@ -861,6 +862,7 @@ const Home = () => {
             setShowModal(true);
           }
         }
+        return {};
       } catch (err) {
         console.log(err);
       }
