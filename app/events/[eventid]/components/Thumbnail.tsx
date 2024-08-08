@@ -46,7 +46,7 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
           {name}
         </Typography>
       </Stack>
-      <Stack direction="row" gap={1}>
+      {/* <Stack direction="row" gap={1}>
         <Stack
           direction="row"
           padding={1}
@@ -70,7 +70,7 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
         >
           <MoreIcon />
         </Stack>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 };
