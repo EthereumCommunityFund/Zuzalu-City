@@ -825,6 +825,7 @@ const Home = () => {
 
   useQuery({
     queryKey: ['spaceSessionDetail', ceramic?.did?.parent, sessionUpdated],
+    enabled: !!profileId,
     queryFn: async () => {
       setCurrentHref(window.location.href);
 
