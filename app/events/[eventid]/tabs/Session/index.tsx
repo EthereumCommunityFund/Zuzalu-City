@@ -608,7 +608,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   const handleChange = (val: string[]) => {
     setSessionTags(val);
-    console.log(val);
   };
 
   const handleSpeakerChange = (users: Profile[]) => {
@@ -2911,10 +2910,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           hideBackdrop={true}
           sx={{
             position: 'relative',
-            zIndex: 3,
+            zIndex: 1001,
             '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
+              height: '100vh',
               boxShadow: 'none',
               backgroundColor: 'transparent',
             },
