@@ -1895,7 +1895,14 @@ const Home = () => {
             flexDirection: 'column',
           }}
         >
-          <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
+          <Header
+            name={eventData?.title}
+            spaceId={params.spaceid.toString()}
+            backFun={() => {
+              sessionStorage.setItem('tab', 'Sessions');
+              router.push(`/spaces/${spaceId}/events/${eventId}`);
+            }}
+          />
           <Stack
             direction="row"
             paddingX={2}
@@ -1967,47 +1974,6 @@ const Home = () => {
                   bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
                   width={isMobile ? '100%' : '600px'}
                 >
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    padding={!isMobile ? '10px' : '10px 10px 10px 0'}
-                  >
-                    <ZuButton
-                      startIcon={<LeftArrowIcon />}
-                      onClick={() => {
-                        sessionStorage.setItem('tab', 'Sessions');
-                        router.push(`/spaces/${spaceId}/events/${eventId}`);
-                      }}
-                    >
-                      Back to List
-                    </ZuButton>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        gap: '10px',
-                      }}
-                    >
-                      <CopyToClipboard
-                        text={currentHref}
-                        onCopy={() => {
-                          setShowCopyToast(true);
-                        }}
-                      >
-                        <SidebarButton
-                          sx={{
-                            padding: '10px',
-                            borderRadius: '10px',
-                            backgroundColor: '#ffffff0a',
-                            '&:hover': { backgroundColor: '#ffffff1a' },
-                            cursor: 'pointer',
-                          }}
-                          icon={<ShareIcon />}
-                        />
-                      </CopyToClipboard>
-                    </Box>
-                  </Stack>
                   <Snackbar
                     anchorOrigin={{
                       vertical: 'bottom',
@@ -2029,18 +1995,42 @@ const Home = () => {
                   >
                     <Stack spacing="10px">
                       <Stack direction="row" spacing="10px" alignItems="center">
-                        <Typography
-                          bgcolor="#7DFFD11A"
-                          padding="2px 4px"
-                          color="#7DFFD1"
-                          variant="bodyX"
-                          borderRadius="2px"
-                        >
-                          · LIVE
-                        </Typography>
-                        <Typography variant="caption" textTransform="uppercase">
-                          {session.track}
-                        </Typography>
+                        <Box flex={1}>
+                          <Typography
+                            bgcolor="#7DFFD11A"
+                            padding="2px 4px"
+                            color="#7DFFD1"
+                            variant="bodyX"
+                            borderRadius="2px"
+                          >
+                            · LIVE
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            textTransform="uppercase"
+                          >
+                            {session.track}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <CopyToClipboard
+                            text={currentHref}
+                            onCopy={() => {
+                              setShowCopyToast(true);
+                            }}
+                          >
+                            <SidebarButton
+                              sx={{
+                                padding: '10px',
+                                borderRadius: '10px',
+                                backgroundColor: '#ffffff0a',
+                                '&:hover': { backgroundColor: '#ffffff1a' },
+                                cursor: 'pointer',
+                              }}
+                              icon={<ShareIcon />}
+                            />
+                          </CopyToClipboard>
+                        </Box>
                       </Stack>
                       <Stack direction="row" alignItems="center" spacing="14px">
                         <Typography variant="bodyS" sx={{ opacity: 0.8 }}>

@@ -9,9 +9,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface IThumbnail {
   name?: string;
+  backFun?: Function;
 }
 
-const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
+const Thumbnail: React.FC<IThumbnail> = ({ name, backFun }) => {
   const router = useRouter();
   const { breakpoints } = useTheme();
 
@@ -29,7 +30,7 @@ const Thumbnail: React.FC<IThumbnail> = ({ name }) => {
             backgroundColor: '#333333',
             minWidth: 'unset',
           }}
-          onClick={() => router.push('/')}
+          onClick={() => (backFun ? backFun() : router.push('/'))}
         >
           <ArrowBackIcon />
           <Typography
