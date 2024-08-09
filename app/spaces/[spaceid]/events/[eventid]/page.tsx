@@ -6,12 +6,12 @@ import { IconSidebar, Header, Thumb, Sidebar } from './components';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
-
+import { useRouter } from 'next/navigation';
 const Home = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.down('xl'));
   const params = useParams();
-
+  const router = useRouter();
   const [tabName, setTabName] = useState<string>('About');
   const [eventData, setEventData] = useState<Event>();
   const [sessionView, setSessionView] = useState<boolean>(false);
@@ -98,7 +98,7 @@ const Home = () => {
     }
   };
   useEffect(() => {
-    const fetchData = async () => {
+    /* const fetchData = async () => {
       try {
         const eventDetails = await getEventDetailInfo();
         const admins =
@@ -127,7 +127,8 @@ const Home = () => {
         console.log(err);
       }
     };
-    fetchData();
+    fetchData();*/
+    router.push(`/events/${eventId}`);
   }, [ceramic?.did?.parent, verify]);
 
   return (
@@ -147,14 +148,7 @@ const Home = () => {
           banner={eventData?.space?.banner}
         />
       )}
-      <Stack
-        flex={1}
-        borderLeft="1px solid #383838"
-        sx={{
-          height: '100%',
-          overflowY: 'auto',
-        }}
-      >
+      <Stack color="white">
         <Header name={eventData?.title} spaceId={params.spaceid.toString()} />
         <Thumb
           tabName={tabName}

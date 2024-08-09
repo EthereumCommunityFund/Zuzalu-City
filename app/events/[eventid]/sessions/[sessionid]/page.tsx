@@ -101,6 +101,7 @@ import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
+import { useQuery } from '@tanstack/react-query';
 
 const Home = () => {
   const theme = useTheme();
@@ -818,8 +819,11 @@ const Home = () => {
       setBlockClickModal(false);
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
+
+  useQuery({
+    queryKey: ['eventSessionDetail', ceramic?.did?.parent, sessionUpdated],
+    enabled: !!profileId,
+    queryFn: async () => {
       setCurrentHref(window.location.href);
 
       try {
@@ -846,9 +850,9 @@ const Home = () => {
             admins.includes(adminId) ||
             members.includes(adminId)
           ) {
-            await getPeople();
-            await getSession();
-            await getLocation();
+            getPeople();
+            getSession();
+            getLocation();
             setCanViewSessions(true);
           } else {
             setDialogTitle('You are not a member of this event');
@@ -858,12 +862,13 @@ const Home = () => {
             setShowModal(true);
           }
         }
+        return {};
       } catch (err) {
         console.log(err);
       }
-    };
-    fetchData();
-  }, [ceramic?.did?.parent, sessionUpdated]);
+    },
+  });
+
   const List = (anchor: Anchor) => {
     if (!state['right']) return null;
     return (
@@ -1941,6 +1946,47 @@ const Home = () => {
               bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
               width={isMobile ? '100%' : '600px'}
             >
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                padding={!isMobile ? '10px' : '10px 10px 10px 0'}
+              >
+                <ZuButton
+                  startIcon={<LeftArrowIcon />}
+                  onClick={() => {
+                    sessionStorage.setItem('tab', 'Sessions');
+                    router.push(`/events/${eventId}`);
+                  }}
+                >
+                  Back to List
+                </ZuButton>
+                {/* <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '10px',
+                  }}
+                >
+                  <CopyToClipboard
+                    text={currentHref}
+                    onCopy={() => {
+                      setShowCopyToast(true);
+                    }}
+                  >
+                    <SidebarButton
+                      sx={{
+                        padding: '10px',
+                        borderRadius: '10px',
+                        backgroundColor: '#ffffff0a',
+                        '&:hover': { backgroundColor: '#ffffff1a' },
+                        cursor: 'pointer',
+                      }}
+                      icon={<ShareIcon />}
+                    />
+                  </CopyToClipboard>
+                </Box> */}
+              </Stack>
               <Snackbar
                 anchorOrigin={{
                   vertical: 'bottom',

@@ -102,6 +102,7 @@ import {
 
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import { OutputData } from '@editorjs/editorjs';
+import { useQuery } from '@tanstack/react-query';
 
 const Home = () => {
   const theme = useTheme();
@@ -427,9 +428,7 @@ const Home = () => {
       if (sessionFetchError) {
         throw sessionFetchError;
       }
-
       const currentRsvpNb = sessionData.rsvpNb || 0;
-
       const { error: sessionUpdateError } = await supabase
         .from('sessions')
         .update({ rsvpNb: currentRsvpNb + 1 })
@@ -444,6 +443,7 @@ const Home = () => {
       console.log(error);
     }
   };
+
   const handleDateChange = async (date: Dayjs) => {
     if (date && person && sessionLocation !== 'Custom') {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
@@ -488,7 +488,6 @@ const Home = () => {
 
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     let timezone = eventData?.timezone;
-
     if (sessionDate == null) return true;
     const formattedTime = date.format('HH:mm');
     const isNotWithinBookedSession = bookedSessionsForDay.every((session) => {
@@ -511,6 +510,7 @@ const Home = () => {
         );
       }
     });
+
     const isWithinAvailableSlot = availableTimeSlots.some((slot: any) => {
       let startTime;
       let endTime;
@@ -576,6 +576,7 @@ const Home = () => {
       console.error('Failed to fetch sesssions:', error);
     }
   };
+
   const handleSpeakerChange = (users: Profile[]) => {
     setSessionSpeakers(users);
   };
@@ -583,6 +584,7 @@ const Home = () => {
   const handleOrganizerChange = (users: Profile[]) => {
     setSessionOrganizers(users);
   };
+
   const handleDelete = async (sessionID: string) => {
     try {
       const { data, error } = await supabase
@@ -593,11 +595,12 @@ const Home = () => {
         throw error;
       }
       sessionStorage.setItem('tab', 'Sessions');
-      router.push(`spaces/${spaceId}/events/${eventId}`);
+      router.push(`/spaces/${spaceId}/events/${eventId}`);
     } catch (error) {
       console.log(error);
     }
   };
+
   const getBookedSession = async () => {
     try {
       const { data } = await supabase
@@ -612,6 +615,7 @@ const Home = () => {
       console.log(err);
     }
   };
+
   const getLocation = async () => {
     try {
       const { data } = await supabase
@@ -821,8 +825,11 @@ const Home = () => {
       setBlockClickModal(false);
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
+
+  useQuery({
+    queryKey: ['spaceSessionDetail', ceramic?.did?.parent, sessionUpdated],
+    enabled: !!profileId,
+    queryFn: async () => {
       setCurrentHref(window.location.href);
 
       try {
@@ -849,9 +856,9 @@ const Home = () => {
             admins.includes(adminId) ||
             members.includes(adminId)
           ) {
-            await getPeople();
-            await getSession();
-            await getLocation();
+            getPeople();
+            getSession();
+            getLocation();
             setCanViewSessions(true);
           } else {
             setDialogTitle('You are not a member of this event');
@@ -864,9 +871,9 @@ const Home = () => {
       } catch (err) {
         console.log(err);
       }
-    };
-    fetchData();
-  }, [ceramic?.did?.parent, sessionUpdated]);
+    },
+  });
+
   const List = (anchor: Anchor) => {
     if (!state['right']) return null;
     return (

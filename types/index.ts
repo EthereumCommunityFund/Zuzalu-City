@@ -329,7 +329,7 @@ export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
   handleManagedSwitchChange: (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
-  location: string;
+  location: Venue[];
   track: string;
   handleClear: () => void;
   setSelectedLocations: Dispatch<SetStateAction<string[]>>;
