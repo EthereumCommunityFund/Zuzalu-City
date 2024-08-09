@@ -87,19 +87,12 @@ export default function NewUserPromptModal({
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('isAuthenticated');
-      console.log(
-        nullifierHash,
-        'nullifierHash',
-        ceramic,
-        'ceramic',
-        hasProcessedNullifier,
-      );
       if (
         nullifierHash &&
         ceramic?.did?.parent &&
         !hasProcessedNullifier.current
       ) {
+        setStage('Updating');
         const addZupassMemberInput = {
           eventId: eventId,
           memberDID: ceramic?.did?.parent,
@@ -179,6 +172,7 @@ export default function NewUserPromptModal({
         {stage === 'Initial' && 'Welcome to Zuzalu.City'}
         {stage === 'Nickname' && 'Welcome to Zuzalu City'}
         {stage === 'Double Check-in' && 'You have checked in'}
+        {stage === 'Updating' && 'Updating your DID to the whitelist'}
         {stage === 'Final' && `Welcome, ${username}`}
       </DialogTitle>
       <DialogContent style={{ width: '100%', color: 'white', padding: '10px' }}>
