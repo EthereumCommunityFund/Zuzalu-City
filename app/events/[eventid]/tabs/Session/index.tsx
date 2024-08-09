@@ -8,6 +8,36 @@ import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import BpCheckbox from '@/components/event/Checkbox';
 import {
+  Stack,
+  Grid,
+  Typography,
+  SwipeableDrawer,
+  Divider,
+  Box,
+  Select,
+  OutlinedInput,
+  MenuItem,
+  Chip,
+  InputAdornment,
+  useTheme,
+  useMediaQuery,
+  Menu,
+  Popover,
+} from '@mui/material';
+import Snackbar from '@mui/joy/Snackbar'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { DesktopTimePicker } from '@mui/x-date-pickers';
+import { TimeView } from '@mui/x-date-pickers/models';
+import { TimeStepOptions } from '@mui/x-date-pickers/models';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from '@/utils/dayjs';
+import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
+import {
+  PlusCircleIcon,
+  LockIcon,
+  XMarkIcon,
+  ArchiveBoxIcon,
   ArrowDownIcon,
   CalendarIcon,
   ChevronDoubleRightIcon,
@@ -76,6 +106,10 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
+import { useQuery } from '@tanstack/react-query';
+
+import ErrorIcon from '@mui/icons-material/Error';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -174,6 +208,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   );
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedTracks, setSelectedTracks] = useState<string[]>([]);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showSnack, setShowSnack] = useState(false);
+  const [errorStatus, setErrorStatus] = useState(false);
 
   const handleCalendarClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -369,6 +406,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       .map((rsvp: { sessionID: string }) => rsvp.sessionID);
     return validSessions;
   };
+
   const getSession = async () => {
     try {
       const { data } = await supabase
@@ -825,11 +863,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       const response = await supaCreateSession(formattedData);
       if (response.status === 200) {
         await fetchAndFilterSessions();
+        setShowSnack(false)
         setShowModal(true);
         resetForm();
       }
     } catch (err) {
       console.log(err);
+      setShowSnack(true);
+      setErrorStatus(true);
+      setAlertMessage("Not Authorized");
     } finally {
       setBlockClickModal(false);
     }
@@ -890,10 +932,14 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         .eq('location', sessionLocation);
       if (data) {
         setBookedSessions(data);
+        setErrorStatus(false);
         return data;
       }
     } catch (err) {
       console.log(err);
+      setShowSnack(true);
+      setAlertMessage("Error: Try Again");
+      setErrorStatus(true);
     }
   };
 
@@ -916,6 +962,21 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const List = (anchor: Anchor) => {
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Snackbar
+          open={showSnack}
+          onClose={() => {
+            setErrorStatus(false);
+            setShowSnack(false)
+          }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          endDecorator={
+            errorStatus ? <ErrorIcon /> : <CheckCircleIcon />
+          }
+        >
+          {
+            alertMessage
+          }
+        </Snackbar>
         <Dialog
           title="Session Created"
           message="Please view it."
