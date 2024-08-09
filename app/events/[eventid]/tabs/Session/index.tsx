@@ -24,7 +24,7 @@ import {
   Menu,
   Popover,
 } from '@mui/material';
-import Snackbar from '@mui/joy/Snackbar'
+import Snackbar from '@mui/joy/Snackbar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 import { DesktopTimePicker } from '@mui/x-date-pickers';
@@ -208,7 +208,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   );
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedTracks, setSelectedTracks] = useState<string[]>([]);
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alertMessage, setAlertMessage] = useState('');
   const [showSnack, setShowSnack] = useState(false);
   const [errorStatus, setErrorStatus] = useState(false);
 
@@ -863,7 +863,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       const response = await supaCreateSession(formattedData);
       if (response.status === 200) {
         await fetchAndFilterSessions();
-        setShowSnack(false)
+        setShowSnack(false);
         setShowModal(true);
         resetForm();
       }
@@ -871,7 +871,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       console.log(err);
       setShowSnack(true);
       setErrorStatus(true);
-      setAlertMessage("Not Authorized");
+      setAlertMessage('Not Authorized');
     } finally {
       setBlockClickModal(false);
     }
@@ -938,7 +938,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     } catch (err) {
       console.log(err);
       setShowSnack(true);
-      setAlertMessage("Error: Try Again");
+      setAlertMessage('Error: Try Again');
       setErrorStatus(true);
     }
   };
@@ -966,16 +966,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           open={showSnack}
           onClose={() => {
             setErrorStatus(false);
-            setShowSnack(false)
+            setShowSnack(false);
           }}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          endDecorator={
-            errorStatus ? <ErrorIcon /> : <CheckCircleIcon />
-          }
+          endDecorator={errorStatus ? <ErrorIcon /> : <CheckCircleIcon />}
         >
-          {
-            alertMessage
-          }
+          {alertMessage}
         </Snackbar>
         <Dialog
           title="Session Created"
