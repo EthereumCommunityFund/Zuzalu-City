@@ -35,7 +35,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
   const [hover, setHover] = useState<boolean>(false);
   const [isRSVP, setIsRSVP] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [rsvpNb, setRsvpNb] = useState<number>();
   const router = useRouter();
   const handleClick = async () => {
     if (spaceId) {
@@ -46,7 +46,18 @@ const SessionCard: React.FC<SessionCardProps> = ({
       router.push(`/events/${eventId}/sessions/${session.uuid}`);
     }
   };
+  const getRSVPNB = async (sessionID: number) => {
+    const { data: sessionData, error: sessionFetchError } = await supabase
+      .from('sessions')
+      .select('rsvpNb')
+      .eq('id', sessionID)
+      .single();
 
+    if (sessionFetchError) {
+      throw sessionFetchError;
+    }
+    setRsvpNb(sessionData.rsvpNb ?? 0);
+  };
   const getRSVPSessionByID = async (sessionID: number, userDID: string) => {
     const { data, error } = await supabase
       .from('rsvp')
@@ -73,21 +84,72 @@ const SessionCard: React.FC<SessionCardProps> = ({
       setIsLoading(false);
       return;
     }
+    const { data: sessionData, error: sessionFetchError } = await supabase
+      .from('sessions')
+      .select('rsvpNb')
+      .eq('id', sessionID)
+      .single();
+
+    if (sessionFetchError) {
+      throw sessionFetchError;
+    }
+
+    const currentRsvpNb = sessionData.rsvpNb || 0;
+
+    const { error: sessionUpdateError } = await supabase
+      .from('sessions')
+      .update({ rsvpNb: currentRsvpNb + 1 })
+      .eq('id', sessionID);
+
+    if (sessionUpdateError) {
+      throw sessionUpdateError;
+    }
+    setRsvpNb(currentRsvpNb + 1);
+
     setIsLoading(false);
     setIsRSVP(true);
   };
 
-  const removeRSVPSession = async (sessionID: number) => {
+  const removeRSVPSession = async (sessionID: number, userDID: string) => {
     setIsLoading(true);
-    const { error } = await supabase
+
+    const { error: deleteError } = await supabase
       .from('rsvp')
       .delete()
-      .eq('sessionID', sessionID);
-    if (error) {
-      console.log('Failed to cancel RSVP: ', error);
+      .match({ sessionID, userDID });
+
+    if (deleteError) {
+      console.log('Failed to cancel RSVP:', deleteError);
       setIsLoading(false);
       return;
     }
+
+    const { data: sessionData, error: sessionFetchError } = await supabase
+      .from('sessions')
+      .select('rsvpNb')
+      .eq('id', sessionID)
+      .single();
+
+    if (sessionFetchError) {
+      console.log('Failed to fetch session data:', sessionFetchError);
+      setIsLoading(false);
+      return;
+    }
+
+    const currentRsvpNb = sessionData.rsvpNb || 0;
+
+    const { error: sessionUpdateError } = await supabase
+      .from('sessions')
+      .update({ rsvpNb: Math.max(0, currentRsvpNb - 1) })
+      .eq('id', sessionID);
+
+    if (sessionUpdateError) {
+      console.log('Failed to update RSVP number:', sessionUpdateError);
+      setIsLoading(false);
+      return;
+    }
+    setRsvpNb(Math.max(0, currentRsvpNb - 1));
+
     setIsLoading(false);
     setIsRSVP(false);
   };
@@ -107,7 +169,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
   ) => {
     e.stopPropagation();
     e.preventDefault();
-    removeRSVPSession(Number(session.id));
+    removeRSVPSession(Number(session.id), userDID as string);
   };
 
   const handleTicketClick = (
@@ -116,7 +178,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
     e.stopPropagation();
     e.preventDefault();
     if (isRSVP) {
-      removeRSVPSession(Number(session.id));
+      removeRSVPSession(Number(session.id), userDID as string);
     } else {
       if (userDID) {
         setRSVPSession(Number(session.id), userDID);
@@ -127,6 +189,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
   useEffect(() => {
     if (userDID) {
       getRSVPSessionByID(Number(session.id), userDID);
+      getRSVPNB(Number(session.id));
     }
   }, [session, userDID]);
 
@@ -285,7 +348,9 @@ const SessionCard: React.FC<SessionCardProps> = ({
             ) : (
               <SessionIcon fill={'white'} />
             )}
-            <Typography variant="bodyS">{session.rsvpNb || 0}</Typography>
+            <Typography variant="bodyS">
+              {rsvpNb !== undefined ? rsvpNb : 0}
+            </Typography>
           </Stack>
         </Tooltip>
       </Stack>

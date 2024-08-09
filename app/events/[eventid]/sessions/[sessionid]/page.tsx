@@ -101,6 +101,7 @@ import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
+import { useQuery } from '@tanstack/react-query';
 
 const Home = () => {
   const theme = useTheme();
@@ -818,8 +819,11 @@ const Home = () => {
       setBlockClickModal(false);
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
+
+  useQuery({
+    queryKey: ['eventSessionDetail', ceramic?.did?.parent, sessionUpdated],
+    enabled: !!profileId,
+    queryFn: async () => {
       setCurrentHref(window.location.href);
 
       try {
@@ -846,9 +850,9 @@ const Home = () => {
             admins.includes(adminId) ||
             members.includes(adminId)
           ) {
-            await getPeople();
-            await getSession();
-            await getLocation();
+            getPeople();
+            getSession();
+            getLocation();
             setCanViewSessions(true);
           } else {
             setDialogTitle('You are not a member of this event');
@@ -858,12 +862,13 @@ const Home = () => {
             setShowModal(true);
           }
         }
+        return {};
       } catch (err) {
         console.log(err);
       }
-    };
-    fetchData();
-  }, [ceramic?.did?.parent, sessionUpdated]);
+    },
+  });
+
   const List = (anchor: Anchor) => {
     if (!state['right']) return null;
     return (
@@ -1858,7 +1863,13 @@ const Home = () => {
         }}
       />
       <Stack color="white">
-        <Thumbnail name={eventData?.title} />
+        <Thumbnail
+          name={eventData?.title}
+          backFun={() => {
+            sessionStorage.setItem('tab', 'Sessions');
+            router.push(`/events/${eventId}`);
+          }}
+        />
         <Stack
           direction="row"
           paddingX={2}
@@ -1950,7 +1961,7 @@ const Home = () => {
                 >
                   Back to List
                 </ZuButton>
-                <Box
+                {/* <Box
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -1974,7 +1985,7 @@ const Home = () => {
                       icon={<ShareIcon />}
                     />
                   </CopyToClipboard>
-                </Box>
+                </Box> */}
               </Stack>
               <Snackbar
                 anchorOrigin={{
@@ -1994,18 +2005,45 @@ const Home = () => {
               <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                 <Stack spacing="10px">
                   <Stack direction="row" spacing="10px" alignItems="center">
-                    <Typography
-                      bgcolor="#7DFFD11A"
-                      padding="2px 4px"
-                      color="#7DFFD1"
-                      variant="bodyX"
-                      borderRadius="2px"
+                    <Box flex={1}>
+                      <Typography
+                        bgcolor="#7DFFD11A"
+                        padding="2px 4px"
+                        color="#7DFFD1"
+                        variant="bodyX"
+                        borderRadius="2px"
+                      >
+                        · LIVE
+                      </Typography>
+                      <Typography variant="caption" textTransform="uppercase">
+                        {session.track}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        gap: '10px',
+                      }}
                     >
-                      · LIVE
-                    </Typography>
-                    <Typography variant="caption" textTransform="uppercase">
-                      {session.track}
-                    </Typography>
+                      <CopyToClipboard
+                        text={currentHref}
+                        onCopy={() => {
+                          setShowCopyToast(true);
+                        }}
+                      >
+                        <SidebarButton
+                          sx={{
+                            padding: '10px',
+                            borderRadius: '10px',
+                            backgroundColor: '#ffffff0a',
+                            '&:hover': { backgroundColor: '#ffffff1a' },
+                            cursor: 'pointer',
+                          }}
+                          icon={<ShareIcon />}
+                        />
+                      </CopyToClipboard>
+                    </Box>
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing="14px">
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>

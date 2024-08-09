@@ -97,6 +97,8 @@ import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
+import { useQuery } from '@tanstack/react-query';
+
 const Custom_Option: TimeStepOptions = {
   hours: 1,
   minutes: 30,
@@ -140,6 +142,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     dayjs(new Date()),
   );
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [selectDateRange, setSelectDateRange] = useState<Dayjs[] | null>(null);
   const [sessionsByDate, setSessionsByDate] =
     useState<Record<string, Session[]>>();
   const [bookedSessionsForDay, setBookedSessionsForDay] = useState<Session[]>(
@@ -202,6 +205,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     setAnchorEl(null);
   };
 
+  const resetDateFilter = () => {
+    setSelectDateRange(null);
+    setSelectedDate(null);
+    setDateForCalendar(dayjs(new Date()));
+  };
+
   const trackAnchorOpen = Boolean(trackAnchor);
   const locationAnchorOpen = Boolean(locationAnchor);
   const trackAnchorId = trackAnchorOpen ? 'track-filter-popup' : undefined;
@@ -262,11 +271,34 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const nearToday = getDay();
     if (sessionsByDate && nearToday) {
       const dom = document.getElementById(nearToday);
+      console.log(dom, 'dom', nearToday, 'nearToday');
+
       if (dom) {
-        dom.scrollIntoView({ behavior: 'instant' });
+        window.scrollTo({
+          behavior: 'instant',
+          top: dom.offsetTop + 120,
+        });
       }
     }
   }, [sessionsByDate]);
+
+  const handleDownload = (date: string) => () => {
+    if (!sessionsByDate) return;
+    const data = sessionsByDate[date];
+    let txt = `${date}\n\n`;
+    data.forEach((session: Session) => {
+      txt += `${dayjs(session.startTime).tz(eventData?.timezone).format('h:mm A')}-${dayjs(session.endTime).tz(eventData?.timezone).format('h:mm A')} · ${session.location}\n## ${session.title}\n\n`;
+    });
+
+    const eleLink = document.createElement('a');
+    eleLink.download = `${date}.text`;
+    eleLink.style.display = 'none';
+    const blob = new Blob([txt]);
+    eleLink.href = URL.createObjectURL(blob);
+    document.body.appendChild(eleLink);
+    eleLink.click();
+    document.body.removeChild(eleLink);
+  };
 
   const groupSessionByDate = (
     sessions: Session[] | undefined,
@@ -301,14 +333,32 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     setSearchQuery(event.target.value);
   };
   const getSessionsByDate = async (targetDate: string) => {
-    const sessions = await getSession();
     if (sessions) {
-      return sessions.filter(
-        (session) =>
+      return sessions.filter((session) => {
+        console.log(
+          dayjs(session.startTime).tz(session.timezone).format('MMMM D, YYYY'),
+          targetDate,
+        );
+        return (
           dayjs(session.startTime)
             .tz(session.timezone)
-            .format('MMMM D, YYYY') === targetDate,
-      );
+            .format('MMMM D, YYYY') === targetDate
+        );
+      });
+    }
+  };
+  const getSessionsByRange = async (targetDate: Dayjs[]) => {
+    if (sessions) {
+      return sessions.filter((session) => {
+        const [start, end] = targetDate;
+        const isAfter = dayjs(session.startTime)
+          .tz(session.timezone)
+          .isSameOrAfter(start);
+        const isBefore = end
+          ? dayjs(session.startTime).tz(session.timezone).isSameOrBefore(end)
+          : true;
+        return isAfter && isBefore;
+      });
     }
   };
   const getSessionsByMonth = async (dateForCalendar: dayjs.Dayjs) => {
@@ -329,11 +379,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       .from('rsvp')
       .select('sessionID')
       .eq('userDID', adminId);
+    console.log(data);
     if (error) {
       console.error('Failed to fetch RSVP sessions:', error);
       return [];
     }
-    return data.map((rsvp: { sessionID: string }) => rsvp.sessionID);
+    const validSessions = data
+      .filter((rsvp: { sessionID: string | null }) => rsvp.sessionID !== null)
+      .map((rsvp: { sessionID: string }) => rsvp.sessionID);
+    return validSessions;
   };
   const getSession = async () => {
     try {
@@ -362,6 +416,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           filteredSessions = await getSessionsByDate(
             dayjs(selectedDate).tz(eventData?.timezone).format('MMMM D, YYYY'),
           );
+        }
+        if (selectDateRange) {
+          filteredSessions = await getSessionsByRange(selectDateRange);
         }
         if (isManagedFiltered) {
           filteredSessions = filteredSessions?.filter(
@@ -415,20 +472,26 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     }
   };
 
-  useEffect(() => {
-    fetchAndFilterSessions().catch((error) => {
-      console.error('An error occurred:', error);
-    });
-  }, [
-    selectedDate,
-    dateForCalendar,
-    isRSVPFiltered,
-    isManagedFiltered,
-    searchQuery,
-    refreshFlag,
-    selectedTracks,
-    selectedLocations,
-  ]);
+  useQuery({
+    queryKey: [
+      'fetchAndFilterSessions',
+      selectedDate,
+      selectDateRange,
+      dateForCalendar,
+      isRSVPFiltered,
+      isManagedFiltered,
+      searchQuery,
+      refreshFlag,
+      selectedTracks,
+      selectedLocations,
+    ],
+    queryFn: async () => {
+      fetchAndFilterSessions().catch((error) => {
+        console.error('An error occurred:', error);
+      });
+    },
+  });
+
   const handleRSVPSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -592,11 +655,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const handleFilterSessionClearButton = () => {
     setIsRSVPFiltered(false);
     setIsManagedFiltered(false);
+    setSelectedTracks([]);
+    setSelectedLocations([]);
   };
 
   const handleChange = (val: string[]) => {
     setSessionTags(val);
-    console.log(val);
   };
 
   const handleSpeakerChange = (users: Profile[]) => {
@@ -1882,12 +1946,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   <PlusIcon size={10} />
                 </Stack>
                 <Stack direction={'row'} gap={'10px'}>
-                  <ZuButton
+                  {/*<ZuButton
                     sx={{ width: '100%', flex: '0' }}
                     onClick={() => toggleDrawer('right', true)}
                   >
                     <SearchIcon />
-                  </ZuButton>
+                  </ZuButton>*/}
                   <ZuButton
                     startIcon={<TuneOutlinedIcon />}
                     sx={{ width: '100%', flex: '1 0 0' }}
@@ -1900,9 +1964,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       !isMobile ? <ChevronDoubleRightIcon size={5} /> : null
                     }
                     sx={{ width: '100%', flex: '1 0 0' }}
-                    onClick={() =>
-                      setSelectedDate(dayjs().tz(eventData?.timezone))
-                    }
+                    onClick={() => {
+                      resetDateFilter();
+                      setSelectedDate(dayjs().tz(eventData?.timezone));
+                    }}
                   >
                     To Today
                   </ZuButton>
@@ -1938,6 +2003,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     <ZuCalendar
                       value={selectedDate}
                       onChange={(val) => {
+                        resetDateFilter();
                         setSelectedDate(val);
                       }}
                       slots={{ day: SlotDates }}
@@ -1971,8 +2037,14 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             }),
                         } as any,
                       }}
-                      onMonthChange={(val) => setDateForCalendar(val)}
-                      onYearChange={(val) => setDateForCalendar(val)}
+                      onMonthChange={(val) => {
+                        resetDateFilter();
+                        setDateForCalendar(val);
+                      }}
+                      onYearChange={(val) => {
+                        resetDateFilter();
+                        setDateForCalendar(val);
+                      }}
                     />
                   </Popover>
                 </Stack>
@@ -2021,6 +2093,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       padding="10px"
                       key={`Session-GroupByDate-${date}`}
                       position={'relative'}
+                      id={dayjs(date, 'MMMM D, YYYY')
+                        .tz(eventData?.timezone, true)
+                        .format('MMMM-D-YYYY')}
                     >
                       <Typography
                         borderTop="1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))"
@@ -2028,14 +2103,27 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         variant="bodySB"
                         bgcolor="rgba(255, 255, 255, 0.05)"
                         borderRadius="10px"
-                        sx={{ opacity: 0.6, backdropFilter: 'blur(10px)' }}
+                        sx={{ backdropFilter: 'blur(10px)' }}
                         position={'sticky'}
                         top={'100px'}
                         zIndex={2}
+                        display={'flex'}
                       >
-                        {dayjs(date, 'MMMM D, YYYY')
-                          .tz(eventData?.timezone)
-                          .format('dddd · DD MMM YYYY')}
+                        <Typography component={'span'} flex={1}>
+                          {dayjs(date, 'MMMM D, YYYY')
+                            .tz(eventData?.timezone, true)
+                            .format('dddd · DD MMM YYYY')}
+                        </Typography>
+                        <ZuButton
+                          sx={{ height: '20px' }}
+                          onClick={handleDownload(
+                            dayjs(date, 'MMMM D, YYYY')
+                              .tz(eventData?.timezone, true)
+                              .format('MMMM D, YYYY'),
+                          )}
+                        >
+                          export
+                        </ZuButton>
                       </Typography>
                       {dateSessions && dateSessions.length > 0 ? (
                         dateSessions.map((session, index) => (
@@ -2229,7 +2317,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       width="100%"
                       borderRadius={'10px'}
                       onClick={() => {
-                        setSelectedDate(dayjs().tz(eventData?.timezone));
+                        resetDateFilter();
+                        setSelectDateRange([dayjs().tz(eventData?.timezone)]);
                       }}
                     >
                       <ChevronDoubleRightIcon size={5} />
@@ -2249,6 +2338,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   <ZuCalendar
                     value={selectedDate}
                     onChange={(val) => {
+                      resetDateFilter();
                       setSelectedDate(val);
                     }}
                     slots={{ day: SlotDates }}
@@ -2282,8 +2372,14 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           }),
                       } as any,
                     }}
-                    onMonthChange={(val) => setDateForCalendar(val)}
-                    onYearChange={(val) => setDateForCalendar(val)}
+                    onMonthChange={(val) => {
+                      resetDateFilter();
+                      setDateForCalendar(val);
+                    }}
+                    onYearChange={(val) => {
+                      resetDateFilter();
+                      setDateForCalendar(val);
+                    }}
                     sx={{
                       border: 'none',
                     }}
@@ -2303,6 +2399,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
                       cursor: 'pointer',
                     }}
+                    spacing={'10px'}
                   >
                     <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
                       <MapOutlinedIcon />
@@ -2325,11 +2422,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           opacity: '0.6',
                         }}
                       >
-                        {eventData?.tracks
-                          ? eventData.tracks.length > 10
-                            ? eventData.tracks.substring(0, 10) + '...'
-                            : eventData.tracks
-                          : ''}
+                        {selectedTracks.length
+                          ? selectedTracks.join(', ')
+                          : 'All'}
                       </Typography>
                       <ChevronRightIcon />
                     </Stack>
@@ -2402,6 +2497,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       backgroundColor: 'rgba(255, 255, 255, 0.02)',
                       cursor: 'pointer',
                     }}
+                    spacing={'10px'}
                   >
                     <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
                       <MapIcon />
@@ -2424,11 +2520,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           opacity: '0.6',
                         }}
                       >
-                        {sessionLocation
-                          ? sessionLocation.length > 10
-                            ? sessionLocation.substring(0, 10) + '...'
-                            : sessionLocation
-                          : ''}
+                        {selectedLocations.length
+                          ? selectedLocations.join(', ')
+                          : 'All'}
                       </Typography>
                       <ChevronRightIcon />
                     </Stack>
@@ -2453,9 +2547,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       },
                     }}
                   >
-                    {sessionLocation &&
-                      [...new Set(sessionLocation.split(','))].map(
-                        (item, index) => {
+                    {venues &&
+                      venues
+                        .filter((v) => v.name)
+                        .map((item, index) => {
                           return (
                             <MenuItem
                               key={index}
@@ -2466,26 +2561,28 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                                 justifyContent: 'space-between',
                               }}
                               onClick={() => {
-                                if (selectedLocations.includes(item)) {
+                                if (selectedLocations.includes(item.name)) {
                                   const temp = selectedLocations.filter(
-                                    (location) => location !== item,
+                                    (location) => location !== item.name,
                                   );
                                   setSelectedLocations(temp);
                                 } else {
-                                  const temp = [...selectedLocations, item];
+                                  const temp = [
+                                    ...selectedLocations,
+                                    item.name,
+                                  ];
                                   const uniqueArray = [...new Set(temp)];
                                   setSelectedLocations(uniqueArray);
                                 }
                               }}
                             >
-                              {item}
-                              {selectedLocations.includes(item) && (
+                              {item.name}
+                              {selectedLocations.includes(item.name) && (
                                 <HighlightOffIcon />
                               )}
                             </MenuItem>
                           );
-                        },
-                      )}
+                        })}
                   </Popover>
                 </Stack>
               </Stack>
@@ -2895,10 +2992,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           hideBackdrop={true}
           sx={{
             position: 'relative',
-            zIndex: 3,
+            zIndex: 1001,
             '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
+              height: '100vh',
               boxShadow: 'none',
               backgroundColor: 'transparent',
             },
@@ -2936,7 +3032,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           handleRSVPSwitchChange={handleRSVPSwitchChange}
           isManagedFiltered={isManagedFiltered}
           handleManagedSwitchChange={handleManagedSwitchChange}
-          location="Room One"
+          location={venues}
           track={eventData?.tracks ?? ''}
           handleClear={handleFilterSessionClearButton}
           selectedLocations={selectedLocations}

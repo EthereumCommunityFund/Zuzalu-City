@@ -8,9 +8,10 @@ import { ZuButton } from 'components/core';
 interface IHeader {
   name?: string;
   spaceId?: string;
+  backFun?: Function;
 }
 
-const Header: React.FC<IHeader> = ({ name, spaceId }) => {
+const Header: React.FC<IHeader> = ({ name, spaceId, backFun }) => {
   const router = useRouter();
   return (
     <Stack
@@ -24,7 +25,10 @@ const Header: React.FC<IHeader> = ({ name, spaceId }) => {
       }}
     >
       <Stack direction="row" spacing={2} alignItems="center">
-        <ZuButton startIcon={<LeftArrowIcon />} onClick={() => router.back()}>
+        <ZuButton
+          startIcon={<LeftArrowIcon />}
+          onClick={() => (backFun ? backFun() : router.back())}
+        >
           Back
         </ZuButton>
         <Typography variant="h6" color="white" lineHeight="40px">
