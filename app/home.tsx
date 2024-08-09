@@ -41,6 +41,7 @@ import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import MiniDashboard from './components/MiniDashboard';
 import { dashboardEvent } from '@/constant';
+import { EventStaticCard } from '@/components/staticCards/EventStaticCard';
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -568,6 +569,7 @@ const Home: React.FC = () => {
                       },
                     )
                   )}
+                  <EventStaticCard />
                 </Box>
                 <Box>
                   {!isTablet && (
