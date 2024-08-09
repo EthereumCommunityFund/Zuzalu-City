@@ -1966,10 +1966,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     sx={{ width: '100%', flex: '1 0 0' }}
                     onClick={() => {
                       resetDateFilter();
-                      setSelectedDate(dayjs().tz(eventData?.timezone));
+                      setSelectDateRange([dayjs().tz(eventData?.timezone)]);
                     }}
                   >
-                    To Today
+                    Show From Today
                   </ZuButton>
                   <ZuButton
                     sx={{ width: '100%', flex: '0' }}
