@@ -395,7 +395,7 @@ const Home: React.FC = () => {
               overflowX: 'hidden',
             }}
           >
-            {ceramic && targetEvent && targetEventView && (
+            {targetEvent && (
               <MiniDashboard
                 imageUrl={targetEvent.image_url}
                 spaceName={targetEvent.title}
@@ -410,6 +410,7 @@ const Home: React.FC = () => {
                 }
                 eventId={targetEvent.id}
                 spaceId={targetEvent.spaceId as string}
+                loggedIn={ceramic && targetEventView}
               />
             )}
 
@@ -494,7 +495,7 @@ const Home: React.FC = () => {
                 </Box>
               )}
 
-              {/*<LotteryCard />*/}
+              <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   position="relative"

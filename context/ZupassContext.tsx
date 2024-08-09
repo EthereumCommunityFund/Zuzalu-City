@@ -66,7 +66,7 @@ export const ZupassProvider = ({ children }: any) => {
             revealAttendeeEmail: false,
             revealAttendeeName: false,
             revealEventId: true,
-            revealProductId: false,
+            revealProductId: true,
           },
           watermark,
           config: Zuconfig,

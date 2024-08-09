@@ -31,7 +31,12 @@ export const InitialStep = ({
   handleStep,
 }: PropTypes) => {
   return (
-    <Stack spacing="1px" padding="10px 20px">
+    <Stack
+      spacing="1px"
+      sx={{
+        width: '100%',
+      }}
+    >
       <Stack spacing="4px">
         {/*<Typography color="white" variant="bodyMB" sx={{ opacity: '0.7' }}>
           Get Ticket: (single)
@@ -260,7 +265,7 @@ export const InitialStep = ({
             width: '100%',
           }}
         >
-          Whitelisted Users
+          Mint your NFT (Coming soon)
         </ZuButton>
         {/*<ZuButton
           sx={{

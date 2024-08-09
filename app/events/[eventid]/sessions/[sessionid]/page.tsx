@@ -1946,13 +1946,13 @@ const Home = () => {
               bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
               width={isMobile ? '100%' : '600px'}
             >
-              <Stack
+              {/*<Stack
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
                 padding={!isMobile ? '10px' : '10px 10px 10px 0'}
               >
-                <ZuButton
+                 <ZuButton
                   startIcon={<LeftArrowIcon />}
                   onClick={() => {
                     sessionStorage.setItem('tab', 'Sessions');
@@ -1961,7 +1961,7 @@ const Home = () => {
                 >
                   Back to List
                 </ZuButton>
-                {/* <Box
+                 <Box
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -1985,8 +1985,8 @@ const Home = () => {
                       icon={<ShareIcon />}
                     />
                   </CopyToClipboard>
-                </Box> */}
-              </Stack>
+                </Box> 
+              </Stack>*/}
               <Snackbar
                 anchorOrigin={{
                   vertical: 'bottom',
