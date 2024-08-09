@@ -87,7 +87,7 @@ export default function MiniDashboard({
             }}
           >
             {loggedIn ? (
-              <Stack>
+              <Stack direction="row" alignItems="center" gap="10px">
                 <Typography
                   fontSize={'18px'}
                   fontWeight={700}
