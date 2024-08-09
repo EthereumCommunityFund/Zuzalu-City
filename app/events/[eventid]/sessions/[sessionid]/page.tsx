@@ -1955,7 +1955,7 @@ const Home = () => {
                 >
                   Back to List
                 </ZuButton>
-                <Box
+                {/* <Box
                   sx={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -1979,7 +1979,7 @@ const Home = () => {
                       icon={<ShareIcon />}
                     />
                   </CopyToClipboard>
-                </Box>
+                </Box> */}
               </Stack>
               <Snackbar
                 anchorOrigin={{
