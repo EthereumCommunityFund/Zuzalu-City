@@ -173,7 +173,7 @@ export default function NewUserPromptModal({
         {stage === 'Nickname' && 'Welcome to Zuzalu City'}
         {stage === 'Double Check-in' &&
           'You have already used this ZuPass to check in'}
-        {stage === 'Updating' && 'Processing'}
+        {stage === 'Updating' && 'Please wait...'}
         {stage === 'Final' && `Welcome, ${username}`}
       </DialogTitle>
       <DialogContent style={{ width: '100%', color: 'white', padding: '10px' }}>
@@ -215,8 +215,7 @@ export default function NewUserPromptModal({
           {stage === 'Nickname' && (
             <>
               <Typography fontSize={'18px'} sx={{ opacity: '0.7' }}>
-                Let’s get started with your nickname. You can change it later or
-                skip this and show your wallet or ENS address
+                Let’s get started with your nickname. You can change it later
               </Typography>
             </>
           )}
