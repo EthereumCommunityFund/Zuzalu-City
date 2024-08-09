@@ -886,7 +886,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
             setIsRSVPFiltered(true);
             break;
           case 'Today':
-            setSelectedDate(dayjs().tz(timezone));
+            setSelectDateRange([dayjs().tz(eventData?.timezone)]);
             break;
           default:
             break;
