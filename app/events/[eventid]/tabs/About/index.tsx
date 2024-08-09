@@ -40,6 +40,7 @@ import { SpaceCard } from '@/components/cards';
 import { Anchor, Contract } from '@/types';
 import { LatLngLiteral } from 'leaflet';
 import getLatLngFromAddress from '@/utils/osm';
+import LotteryCard from '@/components/cards/LotteryCard';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -468,6 +469,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
+            <LotteryCard inEvent />
             <EventDetail
               status={eventData.status}
               links={eventData.customLinks}
