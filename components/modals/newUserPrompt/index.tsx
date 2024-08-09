@@ -227,6 +227,13 @@ export default function NewUserPromptModal({
               </Typography>
             </>
           )}
+          {stage === 'Updating' && (
+            <>
+              <Typography fontSize={'18px'} sx={{ opacity: '0.7' }}>
+                Please wait while updating on Ceramic
+              </Typography>
+            </>
+          )}
           {stage === 'Final' && (
             <>
               <Typography fontSize={'18px'} sx={{ opacity: '0.7' }}>
