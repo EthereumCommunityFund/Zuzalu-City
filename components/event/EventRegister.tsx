@@ -145,56 +145,16 @@ const EventRegister: React.FC<EventRegisterProps> = ({
       }
     };
     if (localStorage.getItem('username') && !authenticateCalled.current) {
-      authenticateUser(false);
+      if (stage === 'Wallet Link') {
+        setStage('Signed-in');
+      } else {
+        authenticateUser(false);
+      }
     }
   }, [localStorage.getItem('username')]);
   useEffect(() => {
     if (isAuthenticated) {
-      if (stage === 'Wallet Link') {
-        if (
-          nullifierHash &&
-          ceramic?.did?.parent &&
-          !hasProcessedNullifier.current
-        ) {
-          const addZupassMemberInput = {
-            eventId: eventId,
-            memberDID: ceramic?.did?.parent,
-            memberZupass: nullifierHash,
-          };
-          updateZupassMember(addZupassMemberInput)
-            .then((result) => {
-              hasProcessedNullifier.current = true;
-              if (result.status === 200) {
-                setModalTitle('Successfully updated!');
-                setModalText(
-                  'You are now a member of this event! Please check out the sessions',
-                );
-                setShowZupassModal(true);
-                setVerify(true);
-                setStage('Checked-in');
-              }
-            })
-            .catch((error) => {
-              const errorMessage =
-                typeof error === 'string'
-                  ? error
-                  : error instanceof Error
-                    ? error.message
-                    : 'An unknown error occurred';
-              if (errorMessage === 'You are already whitelisted') {
-                setModalTitle('Double checked in');
-                setVerify(true);
-                setStage('Checked-in');
-              } else if (errorMessage === 'Zupass already existed') {
-                setModalTitle('Double checked in');
-              } else {
-                setModalTitle('Error updating member:');
-              }
-              setModalText(errorMessage);
-              setShowZupassModal(true);
-            });
-        }
-      } else {
+      if (stage !== 'Wallet Link') {
         setVerify(true);
       }
     }
@@ -235,6 +195,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
         showModal={showModal}
         onClose={() => setShowModal(false)}
         setVerify={setVerify}
+        eventId={eventId}
       />
       <Stack
         padding="10px 14px"

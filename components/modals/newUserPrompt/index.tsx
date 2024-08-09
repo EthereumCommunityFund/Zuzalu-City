@@ -12,23 +12,31 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useZupassContext } from '@/context/ZupassContext';
+import { updateZupassMember } from '@/services/event/addZupassMember';
+import { useDisconnect } from 'wagmi';
 
 interface NewUserPromprtModalProps {
   showModal: boolean;
   onClose: () => void;
   setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
+  eventId: string;
 }
 
 export default function NewUserPromptModal({
   showModal,
   onClose,
   setVerify,
+  eventId,
 }: NewUserPromprtModalProps) {
   const [stage, setStage] = useState('Initial');
   const [nickname, setNickName] = useState<string>('');
   const [haveRead, setHaveRead] = useState<boolean>(false);
   const maxCharacters = 15;
+  const [showZupassModal, setShowZupassModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState<string>('');
+  const [modalText, setModalText] = useState<string>('');
   const charactersLeft = maxCharacters - nickname.length;
   const {
     ceramic,
@@ -40,6 +48,19 @@ export default function NewUserPromptModal({
     logout: CeramicLogout,
     createProfile,
   } = useCeramicContext();
+  const {
+    pcdStr,
+    authState,
+    log,
+    user,
+    auth,
+    logout,
+    nullifierHash,
+    setNullifierHash,
+  } = useZupassContext();
+  const hasProcessedNullifier = useRef(false);
+  const { disconnect } = useDisconnect();
+
   const handleConinue = async () => {
     await createProfile(nickname);
     setStage('Final');
@@ -49,6 +70,11 @@ export default function NewUserPromptModal({
     if (newNickname.length <= maxCharacters) {
       setNickName(newNickname);
     }
+  };
+  const handleLogout = () => {
+    disconnect();
+    CeramicLogout();
+    window.location.reload();
   };
   useEffect(() => {
     if (username) {
@@ -61,10 +87,58 @@ export default function NewUserPromptModal({
 
   useEffect(() => {
     if (isAuthenticated) {
-      if (username) {
-        setStage('Final');
-      } else {
-        setStage('Nickname');
+      console.log('isAuthenticated');
+      console.log(
+        nullifierHash,
+        'nullifierHash',
+        ceramic,
+        'ceramic',
+        hasProcessedNullifier,
+      );
+      if (
+        nullifierHash &&
+        ceramic?.did?.parent &&
+        !hasProcessedNullifier.current
+      ) {
+        const addZupassMemberInput = {
+          eventId: eventId,
+          memberDID: ceramic?.did?.parent,
+          memberZupass: nullifierHash,
+        };
+        updateZupassMember(addZupassMemberInput)
+          .then((result) => {
+            hasProcessedNullifier.current = true;
+            if (result.status === 200) {
+              setVerify(true);
+              if (username) {
+                setStage('Final');
+              } else {
+                setStage('Nickname');
+              }
+            }
+          })
+          .catch((error) => {
+            const errorMessage =
+              typeof error === 'string'
+                ? error
+                : error instanceof Error
+                  ? error.message
+                  : 'An unknown error occurred';
+            if (errorMessage === 'You are already whitelisted') {
+              setVerify(true);
+              if (username) {
+                setStage('Final');
+              } else {
+                setStage('Nickname');
+              }
+            } else if (
+              errorMessage ===
+              'You have already use this zupass to whitelist an account, please login with that address'
+            ) {
+              setStage('Double Check-in');
+              console.log('Double Check-in');
+            }
+          });
       }
     }
   }, [isAuthenticated]);
@@ -104,6 +178,7 @@ export default function NewUserPromptModal({
       >
         {stage === 'Initial' && 'Welcome to Zuzalu.City'}
         {stage === 'Nickname' && 'Welcome to Zuzalu City'}
+        {stage === 'Double Check-in' && 'You have checked in'}
         {stage === 'Final' && `Welcome, ${username}`}
       </DialogTitle>
       <DialogContent style={{ width: '100%', color: 'white', padding: '10px' }}>
@@ -147,6 +222,14 @@ export default function NewUserPromptModal({
               <Typography fontSize={'18px'} sx={{ opacity: '0.7' }}>
                 Let’s get started with your nickname. You can change it later or
                 skip this and show your wallet or ENS address
+              </Typography>
+            </>
+          )}
+          {stage === 'Double Check-in' && (
+            <>
+              <Typography fontSize={'18px'} sx={{ opacity: '0.7' }}>
+                You have already use this zupass to check in, please change to
+                the right address or contact the event organizer
               </Typography>
             </>
           )}
@@ -237,10 +320,22 @@ export default function NewUserPromptModal({
             </ZuButton>
           </Stack>
         )}
+        {stage === 'Double Check-in' && (
+          <ZuButton
+            sx={{
+              width: '100%',
+              fontSize: '18px',
+            }}
+            onClick={handleLogout}
+          >
+            Logout
+          </ZuButton>
+        )}
         {stage === 'Final' && (
           <ZuButton
             sx={{
               width: '100%',
+              fontSize: '18px',
             }}
             onClick={onClose}
           >
