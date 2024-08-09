@@ -17,27 +17,57 @@ import { useEffect, useState } from 'react';
 interface NewUserPromprtModalProps {
   showModal: boolean;
   onClose: () => void;
+  setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
 
 export default function NewUserPromptModal({
   showModal,
   onClose,
+  setVerify,
 }: NewUserPromprtModalProps) {
   const [stage, setStage] = useState('Initial');
   const [nickname, setNickName] = useState<string>('');
   const [haveRead, setHaveRead] = useState<boolean>(false);
-  const { createProfile } = useCeramicContext();
-
+  const maxCharacters = 15;
+  const charactersLeft = maxCharacters - nickname.length;
+  const {
+    ceramic,
+    isAuthenticated,
+    showAuthPrompt,
+    profile,
+    username,
+    authenticate,
+    logout: CeramicLogout,
+    createProfile,
+  } = useCeramicContext();
   const handleConinue = async () => {
     await createProfile(nickname);
     setStage('Final');
   };
-
+  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newNickname = e.target.value;
+    if (newNickname.length <= maxCharacters) {
+      setNickName(newNickname);
+    }
+  };
   useEffect(() => {
-    setStage('Initial');
-    setNickName('');
+    if (username) {
+      setStage('Final');
+    } else {
+      setStage('Initial');
+      setNickName('');
+    }
   }, [showModal]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (username) {
+        setStage('Final');
+      } else {
+        setStage('Nickname');
+      }
+    }
+  }, [isAuthenticated]);
   return (
     <Dialog
       open={showModal}
@@ -74,7 +104,7 @@ export default function NewUserPromptModal({
       >
         {stage === 'Initial' && 'Welcome to Zuzalu.City'}
         {stage === 'Nickname' && 'Welcome to Zuzalu City'}
-        {stage === 'Final' && `Welcome, ${nickname}`}
+        {stage === 'Final' && `Welcome, ${username}`}
       </DialogTitle>
       <DialogContent style={{ width: '100%', color: 'white', padding: '10px' }}>
         <Stack
@@ -160,9 +190,17 @@ export default function NewUserPromptModal({
             <ZuButton
               sx={{
                 width: '100%',
+                marginTop: '20px',
+                fontSize: '18px',
               }}
               disabled={!haveRead}
-              onClick={() => setStage('Nickname')}
+              onClick={async () => {
+                try {
+                  await authenticate();
+                } catch (error) {
+                  console.error('Authentication failed:', error);
+                }
+              }}
             >
               Continue
             </ZuButton>
@@ -174,14 +212,16 @@ export default function NewUserPromptModal({
               <ZuInput
                 placeholder="Type a nick name"
                 value={nickname}
-                onChange={(e) => setNickName(e.target.value)}
+                onChange={handleNicknameChange}
                 sx={{
                   padding: '12px',
                   width: '100%',
+                  marginTop: '20px',
+                  fontSize: '18px',
                 }}
               ></ZuInput>
               <Typography fontSize={'10px'} sx={{ opacity: '0.7' }}>
-                00 Characters Left
+                {charactersLeft} Characters Left{' '}
               </Typography>
             </Stack>
             <ZuButton
@@ -189,6 +229,8 @@ export default function NewUserPromptModal({
               onClick={handleConinue}
               sx={{
                 width: '100%',
+                marginTop: '20px',
+                fontSize: '18px',
               }}
             >
               Continue

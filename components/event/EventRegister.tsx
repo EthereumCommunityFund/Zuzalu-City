@@ -26,6 +26,7 @@ import { ZuPassIcon } from '../icons/ZuPassIcon';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useDisconnect } from 'wagmi';
 import NewUserPromptModal from '../modals/newUserPrompt';
+import { useConnect, useAccount } from 'wagmi';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
@@ -44,12 +45,17 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   eventId,
   setVerify,
 }) => {
-  // const [isOne, setIsOne] = useState<boolean>(false);
-  // const [isTwo, setIsTwo] = useState<boolean>(false);
+  const [isOne, setIsOne] = useState<boolean>(false);
+  const [isTwo, setIsTwo] = useState<boolean>(false);
   const [stage, setStage] = useState<string>('Initial');
   const [showModal, setShowModal] = useState(false);
+  const [showZupassModal, setShowZupassModal] = useState(false);
   const [modalTitle, setModalTitle] = useState<string>('');
+  const { connect, connectors, error } = useConnect();
+  const { isConnected } = useAccount();
   const [modalText, setModalText] = useState<string>('');
+  const authenticateCalled = useRef(false);
+
   const {
     pcdStr,
     authState,
@@ -62,9 +68,6 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   } = useZupassContext();
   const hasProcessedNullifier = useRef(false);
 
-  // const handleClick = () => {
-  //   window.open(external_url, '_blank');
-  // };
   const { disconnect } = useDisconnect();
   const {
     ceramic,
@@ -75,15 +78,20 @@ const EventRegister: React.FC<EventRegisterProps> = ({
     logout: CeramicLogout,
   } = useCeramicContext();
   const handleZupass = () => {
-    if (!ceramic?.did?.parent) {
+    /*if (!ceramic?.did?.parent) {
       setModalTitle('Please login');
       setModalText('Please login to perform this action');
-      setShowModal(true);
+      setShowZupassModal(true);
     } else {
       auth();
+    }*/
+    if (!nullifierHash) {
+      auth();
+    } else {
+      setStage('Wallet Link');
     }
   };
-  useEffect(() => {
+  /*useEffect(() => {
     if (
       nullifierHash &&
       ceramic?.did?.parent &&
@@ -105,6 +113,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             );
             setShowModal(true);
             setVerify(true);
+            setStage('Wallet Link');
           }
         })
         .catch((error) => {
@@ -119,7 +128,77 @@ const EventRegister: React.FC<EventRegisterProps> = ({
           setShowModal(true);
         });
     }
+  }, [nullifierHash]);*/
+  useEffect(() => {
+    if (nullifierHash) {
+      setStage('Wallet Link');
+    }
   }, [nullifierHash]);
+  useEffect(() => {
+    const authenticateUser = async (needSetState = true) => {
+      try {
+        authenticateCalled.current = true;
+        await authenticate();
+        setStage('Signed-in');
+      } catch (error) {
+        console.error('Authentication failed:', error);
+      }
+    };
+    if (localStorage.getItem('username') && !authenticateCalled.current) {
+      authenticateUser(false);
+    }
+  }, [localStorage.getItem('username')]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (stage === 'Wallet Link') {
+        if (
+          nullifierHash &&
+          ceramic?.did?.parent &&
+          !hasProcessedNullifier.current
+        ) {
+          const addZupassMemberInput = {
+            eventId: eventId,
+            memberDID: ceramic?.did?.parent,
+            memberZupass: nullifierHash,
+          };
+          updateZupassMember(addZupassMemberInput)
+            .then((result) => {
+              hasProcessedNullifier.current = true;
+              if (result.status === 200) {
+                setModalTitle('Successfully updated!');
+                setModalText(
+                  'You are now a member of this event! Please check out the sessions',
+                );
+                setShowZupassModal(true);
+                setVerify(true);
+                setStage('Checked-in');
+              }
+            })
+            .catch((error) => {
+              const errorMessage =
+                typeof error === 'string'
+                  ? error
+                  : error instanceof Error
+                    ? error.message
+                    : 'An unknown error occurred';
+              if (errorMessage === 'You are already whitelisted') {
+                setModalTitle('Double checked in');
+                setVerify(true);
+                setStage('Checked-in');
+              } else if (errorMessage === 'Zupass already existed') {
+                setModalTitle('Double checked in');
+              } else {
+                setModalTitle('Error updating member:');
+              }
+              setModalText(errorMessage);
+              setShowZupassModal(true);
+            });
+        }
+      } else {
+        setVerify(true);
+      }
+    }
+  }, [isAuthenticated]);
 
   const [currentStep, setCurrentStep] = useState<number>(0);
   const handleRegisterAsSponsor = () => {
@@ -127,11 +206,17 @@ const EventRegister: React.FC<EventRegisterProps> = ({
     setWhitelist(false);
     onToggle('right', true);
   };
-
+  const handleClick = () => {
+    window.open(external_url, '_blank');
+  };
   const handleStep = (val: number) => {
     setCurrentStep(val);
   };
-
+  const handleLogout = () => {
+    disconnect();
+    CeramicLogout();
+    window.location.reload();
+  };
   return (
     <Stack
       borderRadius="10px"
@@ -139,16 +224,17 @@ const EventRegister: React.FC<EventRegisterProps> = ({
       border="1px solid #383838"
       bgcolor="#262626"
     >
-      {/* <Dialog
+      <Dialog
         title={modalTitle}
         message={modalText}
-        showModal={showModal}
-        onClose={() => setShowModal(false)}
-        onConfirm={() => setShowModal(false)}
-      /> */}
+        showModal={showZupassModal}
+        onClose={() => setShowZupassModal(false)}
+        onConfirm={() => setShowZupassModal(false)}
+      />
       <NewUserPromptModal
         showModal={showModal}
         onClose={() => setShowModal(false)}
+        setVerify={setVerify}
       />
       <Stack
         padding="10px 14px"
@@ -413,18 +499,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             </Box>
           </Box>
         </Stack> */}
-            {/* {currentStep === 0 && (
-          <InitialStep
-            handleStep={handleStep}
-            isOne={isOne}
-            isTwo={isTwo}
-            setIsOne={setIsOne}
-            setIsTwo={setIsTwo}
-            onToggle={onToggle}
-            setSponsor={setSponsor}
-            setWhitelist={setWhitelist}
-          />
-        )} */}
+
             {/*currentStep === 1 && (
           <FirstStep
             handleStep={handleStep}
@@ -437,6 +512,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                 opacity: '0.7',
                 border: '1px solid rgba(255, 255, 255, 0.10)',
               }}
+              onClick={handleClick}
               startIcon={<ArrowCircleRightIcon />}
             >
               Apply to join
@@ -480,7 +556,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                 width: '100%',
                 opacity: '0.7',
                 border: '1px solid rgba(215, 255, 196, 0.20)',
-                backgroundColor: 'rgba(215, 255, 196, 0.10)',
+                backgroundColor: 'rgba(215, 255, 196, 0.15)',
               }}
               startIcon={<ArrowCircleRightIcon />}
               onClick={() => {
@@ -490,14 +566,23 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             >
               Sign In
             </ZuButton>
-            <ZuButton
-              sx={{
-                width: '100%',
-              }}
-            >
-              Mint Your NFT
-            </ZuButton>
-            <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+
+            {currentStep === 0 && (
+              <InitialStep
+                handleStep={handleStep}
+                isOne={isOne}
+                isTwo={isTwo}
+                setIsOne={setIsOne}
+                setIsTwo={setIsTwo}
+                onToggle={onToggle}
+                setSponsor={setSponsor}
+                setWhitelist={setWhitelist}
+              />
+            )}
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+              <ScrollIcon />
+            </Stack>
           </Stack>
         </>
       )}
@@ -528,11 +613,19 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               sx={{
                 width: '100%',
               }}
-              onClick={() => setStage('Wallet Link')}
+              onClick={() => handleZupass()}
             >
               ZuPass
             </ZuButton>
           </Stack>
+          {ceramic.did?.parent && (
+            <Stack gap={'14px'} alignItems={'center'} width={'100%'}>
+              <Typography>
+                You are signed in, please make sure if you need to check in
+                again.
+              </Typography>
+            </Stack>
+          )}
         </Stack>
       )}
       {stage === 'Wallet Link' && (
@@ -555,7 +648,6 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               mounted,
             }) => {
               const ready = mounted && authenticationStatus !== 'loading';
-              console.log('authenticationStatus: ', authenticationStatus);
               const connected =
                 ready &&
                 account &&
@@ -656,9 +748,21 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                             sx={{ opacity: '0.7' }}
                           >
                             This wallet is going to be used to sign in to this
-                            event with a <u>Ceramic DID</u>. <br></br>If you
-                            need to change it in the future contact the event
-                            organizer
+                            event with a{' '}
+                            <a
+                              href="https://ceramic.network/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: 'inherit',
+                                textDecoration: 'none',
+                                borderBottom: '1px solid',
+                              }}
+                            >
+                              <u>Ceramic DID</u>
+                            </a>
+                            . <br></br>If you need to change it in the future
+                            contact the event organizer
                           </Typography>
                           <ZuButton
                             startIcon={<ArrowCircleRightIcon />}
@@ -670,7 +774,6 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                             }}
                             onClick={() => {
                               setShowModal(true);
-                              setStage('Checked-in');
                             }}
                           >
                             Confirm This Wallet
@@ -746,9 +849,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                 color: '#FF5E5E',
               }}
               onClick={() => {
-                CeramicLogout();
-                disconnect();
-                setStage('Initial');
+                handleLogout();
               }}
             >
               Sign out
@@ -763,7 +864,22 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               you can be signed in multiple events with different wallets in
               order to preserve your privacy
             </Typography>
-            <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+            {currentStep === 0 && (
+              <InitialStep
+                handleStep={handleStep}
+                isOne={isOne}
+                isTwo={isTwo}
+                setIsOne={setIsOne}
+                setIsTwo={setIsTwo}
+                onToggle={onToggle}
+                setSponsor={setSponsor}
+                setWhitelist={setWhitelist}
+              />
+            )}
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+              <ScrollIcon />
+            </Stack>
           </Stack>
         </Stack>
       )}
@@ -786,9 +902,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               color: '#FF5E5E',
             }}
             onClick={() => {
-              CeramicLogout();
-              disconnect();
-              setStage('Initial');
+              handleLogout();
             }}
           >
             Sign out
@@ -803,7 +917,22 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             you can be signed in multiple events with different wallets in order
             to preserve your privacy
           </Typography>
-          <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+          {currentStep === 0 && (
+            <InitialStep
+              handleStep={handleStep}
+              isOne={isOne}
+              isTwo={isTwo}
+              setIsOne={setIsOne}
+              setIsTwo={setIsTwo}
+              onToggle={onToggle}
+              setSponsor={setSponsor}
+              setWhitelist={setWhitelist}
+            />
+          )}
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+            <ScrollIcon />
+          </Stack>
         </Stack>
       )}
     </Stack>
