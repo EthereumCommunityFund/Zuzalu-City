@@ -85,7 +85,7 @@ const LotteryCard = ({ inEvent = false }: IProps) => {
               marginBottom: '5px',
             }}
           >
-            Zuzalu City Lottery
+            ZuVillage Georgia Lottery
           </Box>
           <Box
             component="span"
@@ -96,7 +96,8 @@ const LotteryCard = ({ inEvent = false }: IProps) => {
               fontFamily: 'Inter',
             }}
           >
-            Donate to ZuCity Development for a chance to win!
+            Buy a Ticket for ZuVillage Lottery with LottoPGF for a chance to
+            win!
           </Box>
         </Box>
         <Box
