@@ -522,7 +522,6 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               startIcon={<ArrowCircleRightIcon />}
               onClick={() => {
                 showAuthPrompt();
-                setStage('Signed-in');
               }}
             >
               Sign In
