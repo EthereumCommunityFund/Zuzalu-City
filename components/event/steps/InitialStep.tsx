@@ -265,7 +265,7 @@ export const InitialStep = ({
             width: '100%',
           }}
         >
-          Mint your NFT
+          Mint your NFT (Coming soon)
         </ZuButton>
         {/*<ZuButton
           sx={{

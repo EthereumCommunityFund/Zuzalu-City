@@ -171,8 +171,9 @@ export default function NewUserPromptModal({
       >
         {stage === 'Initial' && 'Welcome to Zuzalu.City'}
         {stage === 'Nickname' && 'Welcome to Zuzalu City'}
-        {stage === 'Double Check-in' && 'You have checked in'}
-        {stage === 'Updating' && 'Updating your DID to the whitelist'}
+        {stage === 'Double Check-in' &&
+          'You have already used this ZuPass to check in'}
+        {stage === 'Updating' && 'Processing'}
         {stage === 'Final' && `Welcome, ${username}`}
       </DialogTitle>
       <DialogContent style={{ width: '100%', color: 'white', padding: '10px' }}>
@@ -222,8 +223,8 @@ export default function NewUserPromptModal({
           {stage === 'Double Check-in' && (
             <>
               <Typography fontSize={'18px'} sx={{ opacity: '0.7' }}>
-                You have already use this zupass to check in, please change to
-                the right address or contact the event organizer
+                Please connect with the wallet you initially chose or reach the
+                event organizer to change it
               </Typography>
             </>
           )}
