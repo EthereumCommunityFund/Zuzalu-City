@@ -298,7 +298,7 @@ const Header = () => {
           </Menu>
         </>
       ) : (
-        <Button
+        /*<Button
           sx={{
             textAlign: 'center',
             color: 'white',
@@ -319,7 +319,8 @@ const Header = () => {
         >
           <Image src="/user/wallet.png" alt="wallet" height={24} width={24} />
           Connect
-        </Button>
+        </Button>*/
+        <Image src="/user/avatar_p.png" alt="avatar" height={30} width={30} />
       )}
       <SidebarDrawer
         selected={'Home'}
