@@ -2,20 +2,31 @@ import '@rainbow-me/rainbowkit/styles.css';
 import {
   RainbowKitProvider,
   darkTheme,
-  getDefaultWallets,
   connectorsForWallets,
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { scroll, scrollSepolia } from 'wagmi/chains';
 import React, { ReactNode } from 'react';
 import { createPublicClient } from 'viem';
+import {
+  rainbowWallet,
+  walletConnectWallet,
+  metaMaskWallet,
+} from '@rainbow-me/rainbowkit/wallets';
 
-const { wallets } = getDefaultWallets();
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [metaMaskWallet, walletConnectWallet, rainbowWallet],
+    },
+  ],
+  {
+    appName: 'Zuzalu City',
+    projectId: '6c190133ca2cec0744761447d868de85',
+  },
+);
 
-const connectors = connectorsForWallets([...wallets], {
-  appName: 'Zuzalu City',
-  projectId: '6c190133ca2cec0744761447d868de85',
-});
 const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
 
 const selectedChain = isDev ? scrollSepolia : scroll;
