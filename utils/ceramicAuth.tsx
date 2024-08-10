@@ -6,6 +6,8 @@ import { DID } from 'dids';
 import { DIDSession } from 'did-session';
 import { EthereumWebAuth, getAccountId } from '@didtools/pkh-ethereum';
 import { CeramicClient } from '@ceramicnetwork/http-client';
+import { getAccount } from '@wagmi/core';
+import { config } from '@/context/WalletContext';
 
 const DID_SEED_KEY = 'ceramic:did_seed';
 
@@ -75,19 +77,16 @@ const authenticateEthPKH = async (
   }
 
   if (!session || (session.hasSession && session.isExpired)) {
-    const ethereum =
-      typeof window === 'undefined' ? undefined : window.ethereum;
-    if (ethereum === null || ethereum === undefined) {
-      throw new Error('No injected Ethereum provider found.');
-    }
+    const account = getAccount(config);
+    // const ethereum =
+    //   typeof window === 'undefined' ? undefined : window.ethereum;
 
     // We enable the ethereum provider to get the user's addresses.
-    const ethProvider = typeof window !== 'undefined' && window.ethereum;
-    // request ethereum accounts.
-    const addresses = await ethProvider.enable({
-      method: 'eth_requestAccounts',
-    });
-    const accountId = await getAccountId(ethProvider, addresses[0]);
+    const ethProvider = await account.connector?.getProvider();
+    if (!ethProvider) {
+      throw new Error('No injected Ethereum provider found.');
+    }
+    const accountId = await getAccountId(ethProvider, account.address!);
     const authMethod = await EthereumWebAuth.getAuthMethod(
       ethProvider,
       accountId,

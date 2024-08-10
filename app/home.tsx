@@ -40,7 +40,7 @@ import SlotDates from '@/components/calendar/SlotDate';
 import { dayjs, Dayjs } from '@/utils/dayjs';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import MiniDashboard from './components/MiniDashboard';
-import { dashboardEvent } from '@/constant';
+import { dashboardEvent, isDev } from '@/constant';
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -82,7 +82,7 @@ const Home: React.FC = () => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          spaceIndex(first: 20) {
+          spaceIndex(first: ${isDev ? 20 : 2}) {
             edges {
               node {
                 id
