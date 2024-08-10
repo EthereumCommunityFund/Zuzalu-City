@@ -67,9 +67,16 @@ export async function POST(req: Request) {
       getEventResponse.data.node.zupassHash?.map(
         (zupass: any) => zupass.hash,
       ) ?? [];
-
+    const existedMembers =
+      getEventResponse.data.node.members?.map((member: any) => member.id) ?? [];
+    if (existedMembers.includes(memberDID)) {
+      return new NextResponse('You are already whitelisted', { status: 500 });
+    }
     if (existedZupass.includes(hashAndEncodeBase58(memberZupass))) {
-      return new NextResponse('Zupass already existed', { status: 500 });
+      return new NextResponse(
+        'You have already use this zupass to whitelist an account, please login with that address',
+        { status: 500 },
+      );
     } else {
       const updatedMembers = getEventResponse.data.node.members
         ? [

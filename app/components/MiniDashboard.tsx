@@ -19,6 +19,7 @@ interface PropTypes {
   showManage: boolean;
   eventId: string;
   spaceId: string;
+  loggedIn: boolean;
 }
 
 export default function MiniDashboard({
@@ -29,13 +30,16 @@ export default function MiniDashboard({
   showManage,
   eventId,
   spaceId,
+  loggedIn,
 }: PropTypes) {
   const { breakpoints } = useTheme();
   const router = useRouter();
-  const handleNavigation = (tab: string, option: string) => {
+  const handleNavigation = (tab: string, option?: string) => {
     router.push(`/events/${eventId}`);
     sessionStorage.setItem('tab', tab);
-    sessionStorage.setItem('option', option);
+    if (option) {
+      sessionStorage.setItem('option', option);
+    }
   };
   const externalNavigation = (url: string) => {
     window.open(url, '_blank');
@@ -55,156 +59,72 @@ export default function MiniDashboard({
       }}
       borderRadius={'10px'}
     >
-      <Stack gap={'10px'} direction={'row'} alignItems={'center'}>
-        <Box
-          component={'img'}
-          width={'40px'}
-          height={'40px'}
-          src={imageUrl ? imageUrl : '/14.webp'}
-          borderRadius={'4px '}
-        />
-        <Stack
-          direction={'row'}
-          gap={'10px'}
-          alignItems={'center'}
-          height={'100%'}
-          sx={{
-            [breakpoints.down('md')]: {
-              flexDirection: 'column',
-              gap: '5px',
-              alignItems: 'flex-start',
-            },
-          }}
-        >
-          <Typography
-            fontSize={'18px'}
-            fontWeight={700}
-            lineHeight={'120%'}
-            color={'white'}
-          >
-            {`Welcome to ${spaceName}`}
-          </Typography>
-          <Typography
-            fontSize={'14px'}
-            fontWeight={500}
-            lineHeight={'120%'}
-            color={'white'}
-            sx={{ opacity: '0.8' }}
-          >
-            {`${startTime} - ${endTime}`}
-          </Typography>
-        </Stack>
-      </Stack>
       <Stack
-        direction={'row'}
         gap={'10px'}
-        sx={{
-          flexWrap: 'wrap',
-          [breakpoints.down('md')]: {
-            flexDirection: 'column',
-          },
-        }}
+        direction={'row'}
+        alignItems={'center'}
+        justifyContent={'space-between'}
       >
-        <ZuButton
-          onClick={() => handleNavigation('Sessions', 'Today')}
-          sx={{
-            borderRadius: '10px',
-            border: '1px solid rgba(255, 255, 255, 0.10)',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            padding: '6px 10px',
-            fontSize: '14px',
-            fontWeight: '700',
-            gap: '10px',
-            '& > span': {
-              margin: '0px',
-            },
-            [breakpoints.down('md')]: {
-              width: '100%',
-              justifyContent: 'flex-start',
-            },
-          }}
-          startIcon={<ClockIcon />}
-        >
-          {`Today's Schedule`}
-        </ZuButton>
-
-        <ZuButton
-          onClick={() => handleNavigation('Sessions', 'RSVP')}
-          sx={{
-            borderRadius: '10px',
-            border: '1px solid rgba(255, 255, 255, 0.10)',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            padding: '6px 10px',
-            fontSize: '14px',
-            fontWeight: '700',
-            gap: '10px',
-            '& > span': {
-              margin: '0px',
-            },
-            [breakpoints.down('md')]: {
-              width: '100%',
-              justifyContent: 'flex-start',
-            },
-          }}
-          startIcon={<TicketIcon />}
-        >
-          {'My RSVPs'}
-        </ZuButton>
-        <ZuButton
-          onClick={() =>
-            externalNavigation('https://matrix.to/#/#welcome-zg:matrix.org')
-          }
-          sx={{
-            borderRadius: '10px',
-            border: '1px solid rgba(255, 255, 255, 0.10)',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            padding: '6px 10px',
-            fontSize: '14px',
-            fontWeight: '700',
-            gap: '10px',
-            '& > span': {
-              margin: '0px',
-            },
-            [breakpoints.down('md')]: {
-              width: '100%',
-              justifyContent: 'flex-start',
-            },
-          }}
-          startIcon={<ChatsIcon />}
-        >
-          {'Join Conversation'}
-        </ZuButton>
-        <ZuButton
-          onClick={() =>
-            externalNavigation('https://zuvillage-georgia.framer.website/')
-          }
-          sx={{
-            borderRadius: '10px',
-            border: '1px solid rgba(255, 255, 255, 0.10)',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            padding: '6px 10px',
-            fontSize: '14px',
-            fontWeight: '700',
-            gap: '10px',
-            '& > span': {
-              margin: '0px',
-            },
-            [breakpoints.down('md')]: {
-              width: '100%',
-              justifyContent: 'flex-start',
-            },
-          }}
-          startIcon={<ArrowTopRightSquareIcon />}
-        >
-          {'About ZuVillage'}
-        </ZuButton>
-        {showManage && (
+        <Stack direction={'row'} alignItems={'center'} gap={'10px'}>
+          <Box
+            component={'img'}
+            width={'40px'}
+            height={'40px'}
+            src={imageUrl ? imageUrl : '/14.webp'}
+            borderRadius={'4px '}
+          />
+          <Stack
+            direction={'row'}
+            gap={'10px'}
+            alignItems={'center'}
+            height={'100%'}
+            sx={{
+              [breakpoints.down('md')]: {
+                flexDirection: 'column',
+                gap: '5px',
+                alignItems: 'flex-start',
+              },
+            }}
+          >
+            {loggedIn ? (
+              <Stack direction="row" alignItems="center" gap="10px">
+                <Typography
+                  fontSize={'18px'}
+                  fontWeight={700}
+                  lineHeight={'120%'}
+                  color={'white'}
+                >
+                  {`Welcome to ${spaceName}`}
+                </Typography>
+                <Typography
+                  fontSize={'14px'}
+                  fontWeight={500}
+                  lineHeight={'120%'}
+                  color={'white'}
+                  sx={{ opacity: '0.8' }}
+                >
+                  {`${startTime} - ${endTime}`}
+                </Typography>
+              </Stack>
+            ) : (
+              <Typography
+                fontSize={'18px'}
+                fontWeight={700}
+                lineHeight={'120%'}
+                color={'white'}
+              >
+                Are You Attending ZuVillage?
+              </Typography>
+            )}
+          </Stack>
+        </Stack>
+        {!loggedIn && (
           <ZuButton
-            onClick={manageEventNavigation}
+            onClick={() => handleNavigation('About')}
             sx={{
               borderRadius: '10px',
               border: '1px solid rgba(255, 255, 255, 0.10)',
-              backgroundColor: 'rgba(255, 199, 125, 0.10)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
               padding: '6px 10px',
               fontSize: '14px',
               fontWeight: '700',
@@ -212,18 +132,148 @@ export default function MiniDashboard({
               '& > span': {
                 margin: '0px',
               },
-              color: '#FFC77D',
               [breakpoints.down('md')]: {
                 width: '100%',
                 justifyContent: 'flex-start',
               },
             }}
-            startIcon={<SettingIcon color="#FFC77D" />}
+            startIcon={<ArrowTopRightSquareIcon />}
           >
-            {'Manage The Event'}
+            {'Discover'}
           </ZuButton>
         )}
       </Stack>
+      {loggedIn && (
+        <Stack
+          direction={'row'}
+          gap={'10px'}
+          sx={{
+            flexWrap: 'wrap',
+            [breakpoints.down('md')]: {
+              flexDirection: 'column',
+            },
+          }}
+        >
+          <ZuButton
+            onClick={() => handleNavigation('Sessions', 'Today')}
+            sx={{
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.10)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              padding: '6px 10px',
+              fontSize: '14px',
+              fontWeight: '700',
+              gap: '10px',
+              '& > span': {
+                margin: '0px',
+              },
+              [breakpoints.down('md')]: {
+                width: '100%',
+                justifyContent: 'flex-start',
+              },
+            }}
+            startIcon={<ClockIcon />}
+          >
+            {`Today's Schedule`}
+          </ZuButton>
+
+          <ZuButton
+            onClick={() => handleNavigation('Sessions', 'RSVP')}
+            sx={{
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.10)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              padding: '6px 10px',
+              fontSize: '14px',
+              fontWeight: '700',
+              gap: '10px',
+              '& > span': {
+                margin: '0px',
+              },
+              [breakpoints.down('md')]: {
+                width: '100%',
+                justifyContent: 'flex-start',
+              },
+            }}
+            startIcon={<TicketIcon />}
+          >
+            {'My RSVPs'}
+          </ZuButton>
+          <ZuButton
+            onClick={() =>
+              externalNavigation('https://matrix.to/#/#welcome-zg:matrix.org')
+            }
+            sx={{
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.10)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              padding: '6px 10px',
+              fontSize: '14px',
+              fontWeight: '700',
+              gap: '10px',
+              '& > span': {
+                margin: '0px',
+              },
+              [breakpoints.down('md')]: {
+                width: '100%',
+                justifyContent: 'flex-start',
+              },
+            }}
+            startIcon={<ChatsIcon />}
+          >
+            {'Join Conversation'}
+          </ZuButton>
+          <ZuButton
+            onClick={() =>
+              externalNavigation('https://zuvillage-georgia.framer.website/')
+            }
+            sx={{
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.10)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              padding: '6px 10px',
+              fontSize: '14px',
+              fontWeight: '700',
+              gap: '10px',
+              '& > span': {
+                margin: '0px',
+              },
+              [breakpoints.down('md')]: {
+                width: '100%',
+                justifyContent: 'flex-start',
+              },
+            }}
+            startIcon={<ArrowTopRightSquareIcon />}
+          >
+            {'About ZuVillage'}
+          </ZuButton>
+          {showManage && (
+            <ZuButton
+              onClick={manageEventNavigation}
+              sx={{
+                borderRadius: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.10)',
+                backgroundColor: 'rgba(255, 199, 125, 0.10)',
+                padding: '6px 10px',
+                fontSize: '14px',
+                fontWeight: '700',
+                gap: '10px',
+                '& > span': {
+                  margin: '0px',
+                },
+                color: '#FFC77D',
+                [breakpoints.down('md')]: {
+                  width: '100%',
+                  justifyContent: 'flex-start',
+                },
+              }}
+              startIcon={<SettingIcon color="#FFC77D" />}
+            >
+              {'Manage The Event'}
+            </ZuButton>
+          )}
+        </Stack>
+      )}
     </Stack>
   );
 }

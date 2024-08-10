@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Stack, Typography, Box, Divider } from '@mui/material';
 import { ZuButton } from 'components/core';
 import {
+  ArrowDownIcon,
   CheckCircleIcon,
   ChevronDownIcon,
   RightArrowCircleIcon,
@@ -17,6 +18,15 @@ import { FirstStep } from './steps/FirstStep';
 import { updateZupassMember } from '@/services/event/addZupassMember';
 import { useCeramicContext } from '@/context/CeramicContext';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Image from 'next/image';
+import { ZuPassIcon } from '../icons/ZuPassIcon';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useDisconnect } from 'wagmi';
+import NewUserPromptModal from '../modals/newUserPrompt';
+import { useConnect, useAccount } from 'wagmi';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
@@ -37,9 +47,15 @@ const EventRegister: React.FC<EventRegisterProps> = ({
 }) => {
   const [isOne, setIsOne] = useState<boolean>(false);
   const [isTwo, setIsTwo] = useState<boolean>(false);
+  const [stage, setStage] = useState<string>('Initial');
   const [showModal, setShowModal] = useState(false);
+  const [showZupassModal, setShowZupassModal] = useState(false);
   const [modalTitle, setModalTitle] = useState<string>('');
+  const { connect, connectors, error } = useConnect();
+  const { isConnected } = useAccount();
   const [modalText, setModalText] = useState<string>('');
+  const authenticateCalled = useRef(false);
+
   const {
     pcdStr,
     authState,
@@ -52,20 +68,30 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   } = useZupassContext();
   const hasProcessedNullifier = useRef(false);
 
-  const handleClick = () => {
-    window.open(external_url, '_blank');
-  };
-  const { ceramic } = useCeramicContext();
+  const { disconnect } = useDisconnect();
+  const {
+    ceramic,
+    isAuthenticated,
+    showAuthPrompt,
+    profile,
+    authenticate,
+    logout: CeramicLogout,
+  } = useCeramicContext();
   const handleZupass = () => {
-    if (!ceramic?.did?.parent) {
+    /*if (!ceramic?.did?.parent) {
       setModalTitle('Please login');
       setModalText('Please login to perform this action');
-      setShowModal(true);
+      setShowZupassModal(true);
     } else {
       auth();
+    }*/
+    if (!nullifierHash) {
+      auth();
+    } else {
+      setStage('Wallet Link');
     }
   };
-  useEffect(() => {
+  /*useEffect(() => {
     if (
       nullifierHash &&
       ceramic?.did?.parent &&
@@ -87,6 +113,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             );
             setShowModal(true);
             setVerify(true);
+            setStage('Wallet Link');
           }
         })
         .catch((error) => {
@@ -101,18 +128,55 @@ const EventRegister: React.FC<EventRegisterProps> = ({
           setShowModal(true);
         });
     }
+  }, [nullifierHash]);*/
+  useEffect(() => {
+    if (nullifierHash) {
+      setStage('Wallet Link');
+    }
   }, [nullifierHash]);
+  useEffect(() => {
+    const authenticateUser = async (needSetState = true) => {
+      try {
+        authenticateCalled.current = true;
+        await authenticate();
+        setStage('Signed-in');
+      } catch (error) {
+        console.error('Authentication failed:', error);
+      }
+    };
+    if (localStorage.getItem('username') && !authenticateCalled.current) {
+      if (stage === 'Wallet Link') {
+        setStage('Signed-in');
+      } else {
+        authenticateUser(false);
+      }
+    }
+  }, [localStorage.getItem('username')]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (stage !== 'Wallet Link') {
+        setVerify(true);
+      }
+    }
+  }, [isAuthenticated]);
+
   const [currentStep, setCurrentStep] = useState<number>(0);
   const handleRegisterAsSponsor = () => {
     setSponsor(true);
     setWhitelist(false);
     onToggle('right', true);
   };
-
+  const handleClick = () => {
+    window.open(external_url, '_blank');
+  };
   const handleStep = (val: number) => {
     setCurrentStep(val);
   };
-
+  const handleLogout = () => {
+    disconnect();
+    CeramicLogout();
+    window.location.reload();
+  };
   return (
     <Stack
       borderRadius="10px"
@@ -123,25 +187,44 @@ const EventRegister: React.FC<EventRegisterProps> = ({
       <Dialog
         title={modalTitle}
         message={modalText}
+        showModal={showZupassModal}
+        onClose={() => setShowZupassModal(false)}
+        onConfirm={() => setShowZupassModal(false)}
+      />
+      <NewUserPromptModal
         showModal={showModal}
         onClose={() => setShowModal(false)}
-        onConfirm={() => setShowModal(false)}
+        setVerify={setVerify}
+        eventId={eventId}
       />
       <Stack
         padding="10px 14px"
         borderBottom="1px solid #383838"
         bgcolor="#2d2d2d"
         borderRadius="10px 10px 0 0"
+        gap={'10px'}
       >
         <Typography color="white" variant="subtitleS">
           Event Registration
         </Typography>
-        <Typography color="white" variant="subtitleS" sx={{ fontSize: '10px' }}>
+        <Typography
+          color="white"
+          variant="subtitleS"
+          sx={{ fontSize: '10px' }}
+          textTransform={'uppercase'}
+        >
           External Registration
         </Typography>
       </Stack>
-      <Stack spacing="20px" padding="10px 20px">
-        {/* <Stack spacing="4px">
+      {stage === 'Initial' && (
+        <>
+          <Stack
+            padding={'24px 20px'}
+            border={'1px solid rgba(255, 255, 255, 0.10)'}
+            borderRadius={'0px 0px 10px 10px'}
+            margin={'0px !important'}
+          >
+            {/* <Stack spacing="4px">
           <Typography color="white" variant="bodyMB">
             Get Ticket: (single)
           </Typography>
@@ -149,7 +232,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             All tickets require an invite code to mint
           </Typography>
         </Stack>*/}
-        {/*<Stack spacing="10px">
+            {/*<Stack spacing="10px">
           <Stack
             onClick={() => setIsOne((prev) => !prev)}
             sx={{ cursor: 'pointer' }}
@@ -177,7 +260,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               </Typography>
             </Stack>
           </Stack>*/}
-        {/*{isOne && (
+            {/*{isOne && (
             <Stack>
               <Typography variant="bodyS" textAlign="center">
                 Select Accommodation Type:
@@ -254,7 +337,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               </Typography>
             </Stack>
           </Stack>*/}
-        {/*{isTwo && (
+            {/*{isTwo && (
             <Stack>
               <Typography variant="bodyS" textAlign="center">
                 Select Accommodation Type:
@@ -305,7 +388,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             </Stack>
           )}
         </Stack>*/}
-        <Stack spacing="20px">
+            {/* <Stack spacing="20px">
           <Typography
             color="white"
             variant="subtitleS"
@@ -376,26 +459,442 @@ const EventRegister: React.FC<EventRegisterProps> = ({
               </Typography>
             </Box>
           </Box>
-        </Stack>
-        {currentStep === 0 && (
-          <InitialStep
-            handleStep={handleStep}
-            isOne={isOne}
-            isTwo={isTwo}
-            setIsOne={setIsOne}
-            setIsTwo={setIsTwo}
-            onToggle={onToggle}
-            setSponsor={setSponsor}
-            setWhitelist={setWhitelist}
-          />
-        )}
-        {/*currentStep === 1 && (
+        </Stack> */}
+
+            {/*currentStep === 1 && (
           <FirstStep
             handleStep={handleStep}
             handleRegisterAsSponsor={handleRegisterAsSponsor}
           />
         )*/}
-      </Stack>
+            <ZuButton
+              sx={{
+                width: '100%',
+                opacity: '0.7',
+                border: '1px solid rgba(255, 255, 255, 0.10)',
+              }}
+              onClick={handleClick}
+              startIcon={<ArrowCircleRightIcon />}
+            >
+              Apply to join
+            </ZuButton>
+          </Stack>
+          <Stack
+            margin={'0px !important'}
+            padding={'34px 20px'}
+            gap={'14px'}
+            alignItems={'center'}
+          >
+            <Typography
+              textTransform={'uppercase'}
+              fontSize={'10px'}
+              sx={{ opacity: 0.6 }}
+            >
+              First Time?
+            </Typography>
+            <ZuButton
+              startIcon={
+                <Image
+                  src="/user/wallet.png"
+                  alt="wallet"
+                  height={24}
+                  width={24}
+                />
+              }
+              sx={{
+                width: '100%',
+                border: '1px solid rgba(255, 255, 255, 0.10)',
+              }}
+              onClick={() => setStage('ZuPass')}
+            >
+              Check-in
+            </ZuButton>
+            <Typography fontSize={'10px'} sx={{ opacity: 0.6 }}>
+              Already Checked-in?
+            </Typography>
+            <ZuButton
+              sx={{
+                width: '100%',
+                opacity: '0.7',
+                border: '1px solid rgba(215, 255, 196, 0.20)',
+                backgroundColor: 'rgba(215, 255, 196, 0.15)',
+              }}
+              startIcon={<ArrowCircleRightIcon />}
+              onClick={() => {
+                showAuthPrompt();
+              }}
+            >
+              Sign In
+            </ZuButton>
+
+            {currentStep === 0 && (
+              <InitialStep
+                handleStep={handleStep}
+                isOne={isOne}
+                isTwo={isTwo}
+                setIsOne={setIsOne}
+                setIsTwo={setIsTwo}
+                onToggle={onToggle}
+                setSponsor={setSponsor}
+                setWhitelist={setWhitelist}
+              />
+            )}
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+              <ScrollIcon />
+            </Stack>
+          </Stack>
+        </>
+      )}
+      {stage === 'ZuPass' && (
+        <Stack
+          padding="14px 20px 20px 20px"
+          width="100%"
+          gap="20px"
+          height={'350px'}
+          alignItems={'center'}
+          justifyContent={'center'}
+        >
+          <ZuButton
+            startIcon={<ArrowCircleLeftIcon />}
+            sx={{
+              padding: '10px 26px',
+              border: '1px solid rgba(255, 255, 255, 0.10)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            }}
+            onClick={() => setStage('Initial')}
+          >
+            Go Back
+          </ZuButton>
+          <Stack gap={'14px'} alignItems={'center'} width={'100%'}>
+            <Typography>Check-in with your pass</Typography>
+            <ZuButton
+              startIcon={<ZuPassIcon />}
+              sx={{
+                width: '100%',
+              }}
+              onClick={() => handleZupass()}
+            >
+              ZuPass
+            </ZuButton>
+          </Stack>
+          {ceramic.did?.parent && (
+            <Stack gap={'14px'} alignItems={'center'} width={'100%'}>
+              <Typography>
+                You are signed in, please make sure if you need to check in
+                again.
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
+      )}
+      {stage === 'Wallet Link' && (
+        <Stack
+          padding="14px 20px 20px 20px"
+          width="100%"
+          gap="18px"
+          height={'350px'}
+          alignItems={'center'}
+          justifyContent={'center'}
+        >
+          <ConnectButton.Custom>
+            {({
+              account,
+              chain,
+              openAccountModal,
+              openChainModal,
+              openConnectModal,
+              authenticationStatus,
+              mounted,
+            }) => {
+              const ready = mounted && authenticationStatus !== 'loading';
+              const connected =
+                ready &&
+                account &&
+                chain &&
+                (!authenticationStatus ||
+                  authenticationStatus === 'authenticated');
+
+              return (
+                <div
+                  style={{
+                    width: '100%',
+                  }}
+                  {...(!ready && {
+                    'aria-hidden': true,
+                    style: {
+                      opacity: 0,
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    },
+                  })}
+                >
+                  {(() => {
+                    if (!connected) {
+                      return (
+                        <Stack
+                          width="100%"
+                          gap="18px"
+                          height={'100%'}
+                          alignItems={'center'}
+                          justifyContent={'center'}
+                        >
+                          <Typography
+                            fontSize={'14px'}
+                            textAlign={'center'}
+                            sx={{ opacity: '0.7' }}
+                          >
+                            Choose the wallet to be used to sign in to this
+                            specific event, if you need to change it contact the
+                            event organizer
+                          </Typography>
+                          <ZuButton
+                            startIcon={<ArrowCircleRightIcon />}
+                            sx={{
+                              width: '100%',
+                              border: '1px solid rgba(215, 255, 196, 0.20)',
+                              backgroundColor: 'rgba(215, 255, 196, 0.10)',
+                              color: '#D7FFC4',
+                            }}
+                            onClick={() => {
+                              openConnectModal();
+                            }}
+                          >
+                            Link Your Wallet
+                          </ZuButton>
+                          <Image
+                            src="/ceramic.png"
+                            alt="wallet"
+                            width={78}
+                            height={15.5}
+                          />
+                        </Stack>
+                      );
+                    }
+
+                    if (connected) {
+                      return (
+                        <Stack
+                          width="100%"
+                          gap="14px"
+                          height={'100%'}
+                          alignItems={'center'}
+                          justifyContent={'center'}
+                        >
+                          <ZuButton
+                            startIcon={
+                              <Image
+                                src="/user/wallet.png"
+                                alt="wallet"
+                                height={24}
+                                width={24}
+                              />
+                            }
+                            endIcon={<KeyboardArrowDownIcon />}
+                            sx={{
+                              width: '100%',
+                              border: '1px solid rgba(255, 255, 255, 0.10)',
+                              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                            }}
+                            onClick={() => {
+                              openAccountModal();
+                            }}
+                          >
+                            {account.address.slice(0, 10) + '...'}
+                          </ZuButton>
+                          <Typography
+                            textAlign={'center'}
+                            fontSize={'14px'}
+                            sx={{ opacity: '0.7' }}
+                          >
+                            This wallet is going to be used to sign in to this
+                            event with a{' '}
+                            <a
+                              href="https://ceramic.network/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: 'inherit',
+                                textDecoration: 'none',
+                                borderBottom: '1px solid',
+                              }}
+                            >
+                              <u>Ceramic DID</u>
+                            </a>
+                            . <br></br>If you need to change it in the future
+                            contact the event organizer
+                          </Typography>
+                          <ZuButton
+                            startIcon={<ArrowCircleRightIcon />}
+                            sx={{
+                              width: '100%',
+                              color: '#D7FFC4',
+                              border: '1px solid rgba(215, 255, 196, 0.20)',
+                              backgroundColor: 'rgba(215, 255, 196, 0.10)',
+                            }}
+                            onClick={() => {
+                              setShowModal(true);
+                            }}
+                          >
+                            Confirm This Wallet
+                          </ZuButton>
+                          <Image
+                            src="/ceramic.png"
+                            alt="wallet"
+                            width={78}
+                            height={15.5}
+                          />
+                        </Stack>
+                      );
+                    }
+
+                    if (chain.unsupported) {
+                      return (
+                        <button onClick={openChainModal} type="button">
+                          Wrong network
+                        </button>
+                      );
+                    }
+                  })()}
+                </div>
+              );
+            }}
+          </ConnectButton.Custom>
+        </Stack>
+      )}
+      {stage === 'Checked-in' && (
+        <Stack
+          width="100%"
+          height={'300px'}
+          alignItems={'center'}
+          margin={'0px !important'}
+        >
+          <Stack
+            padding="10px 20px"
+            gap={'4px'}
+            alignItems={'center'}
+            width={'100%'}
+            bgcolor={'rgba(215, 255, 196, 0.10)'}
+          >
+            <Typography
+              color={'#D7FFC4'}
+              fontSize={'14px'}
+              fontWeight={600}
+              textAlign={'center'}
+            >
+              You have Checked-in
+            </Typography>
+            <Typography
+              textAlign={'center'}
+              fontSize={'13px'}
+              color={'#D7FFC4'}
+              sx={{ opacity: '0.8' }}
+            >
+              You are now signed-in to the event
+            </Typography>
+          </Stack>
+          <Stack
+            padding="14px 20px 20px 20px"
+            gap={'20px'}
+            alignItems={'center'}
+            height={'230px'}
+            justifyContent={'center'}
+          >
+            <ZuButton
+              startIcon={<ArrowCircleLeftIcon />}
+              sx={{
+                width: '100%',
+                border: '1px solid rgba(235, 87, 87, 0.30)',
+                backgroundColor: '#2F2121',
+                color: '#FF5E5E',
+              }}
+              onClick={() => {
+                handleLogout();
+              }}
+            >
+              Sign out
+            </ZuButton>
+            <Typography
+              fontSize={'14px'}
+              textAlign={'center'}
+              sx={{
+                opacity: '0.7',
+              }}
+            >
+              you can be signed in multiple events with different wallets in
+              order to preserve your privacy
+            </Typography>
+            {currentStep === 0 && (
+              <InitialStep
+                handleStep={handleStep}
+                isOne={isOne}
+                isTwo={isTwo}
+                setIsOne={setIsOne}
+                setIsTwo={setIsTwo}
+                onToggle={onToggle}
+                setSponsor={setSponsor}
+                setWhitelist={setWhitelist}
+              />
+            )}
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+              <ScrollIcon />
+            </Stack>
+          </Stack>
+        </Stack>
+      )}
+      {stage === 'Signed-in' && (
+        <Stack
+          padding="14px 20px 20px 20px"
+          width="100%"
+          height={'300px'}
+          alignItems={'center'}
+          justifyContent={'center'}
+          gap={'20px'}
+          margin={'0px !important'}
+        >
+          <ZuButton
+            startIcon={<ArrowCircleLeftIcon />}
+            sx={{
+              width: '100%',
+              border: '1px solid rgba(235, 87, 87, 0.30)',
+              backgroundColor: '#2F2121',
+              color: '#FF5E5E',
+            }}
+            onClick={() => {
+              handleLogout();
+            }}
+          >
+            Sign out
+          </ZuButton>
+          <Typography
+            fontSize={'14px'}
+            textAlign={'center'}
+            sx={{
+              opacity: '0.7',
+            }}
+          >
+            you can be signed in multiple events with different wallets in order
+            to preserve your privacy
+          </Typography>
+          {currentStep === 0 && (
+            <InitialStep
+              handleStep={handleStep}
+              isOne={isOne}
+              isTwo={isTwo}
+              setIsOne={setIsOne}
+              setIsTwo={setIsTwo}
+              onToggle={onToggle}
+              setSponsor={setSponsor}
+              setWhitelist={setWhitelist}
+            />
+          )}
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Image src="/ceramic.png" alt="wallet" width={78} height={15.5} />
+            <ScrollIcon />
+          </Stack>
+        </Stack>
+      )}
     </Stack>
   );
 };

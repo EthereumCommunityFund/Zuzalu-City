@@ -22,7 +22,11 @@ export async function POST(req: NextRequest) {
 
   try {
     const session = await getIronSession<SessionData>(cookieStore, ironOptions);
-    const pcd = await authenticate(body.pcd, session.watermark ?? '', Zuconfig);
+    const pcd = await authenticate(
+      body.pcd,
+      session.watermark ?? '12345',
+      Zuconfig,
+    );
     session.user = pcd.claim.partialTicket;
     await session.save();
     return Response.json({
