@@ -7,6 +7,7 @@ import {
   Typography,
   SwipeableDrawer,
   useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   EventName,
@@ -77,6 +78,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
   const eventId = params.eventid.toString();
 
   const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const { composeClient } = useCeramicContext();
 
@@ -340,6 +342,16 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               image_url={eventData.image_url}
               status={eventData.status}
             />
+            {isMobile ? (
+              <EventRegister
+                onToggle={toggleDrawer}
+                setWhitelist={setWhitelist}
+                setSponsor={setSponsor}
+                external_url={eventData.external_url}
+                eventId={eventData.id}
+                setVerify={setVerify}
+              />
+            ) : null}
             <EventAbout description={eventData.description} />
             <Stack
               bgcolor="#292929"
@@ -455,14 +467,16 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               },
             }}
           >
-            <EventRegister
-              onToggle={toggleDrawer}
-              setWhitelist={setWhitelist}
-              setSponsor={setSponsor}
-              external_url={eventData.external_url}
-              eventId={eventData.id}
-              setVerify={setVerify}
-            />
+            {!isMobile ? (
+              <EventRegister
+                onToggle={toggleDrawer}
+                setWhitelist={setWhitelist}
+                setSponsor={setSponsor}
+                external_url={eventData.external_url}
+                eventId={eventData.id}
+                setVerify={setVerify}
+              />
+            ) : null}
             {/* <Stack spacing="4px">
                       <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
                       <Typography variant="caption" textAlign="right">
