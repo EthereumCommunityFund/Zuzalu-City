@@ -355,7 +355,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
           .tz(session.timezone)
           .isSameOrAfter(start);
         const isBefore = end
-          ? dayjs(session.startTime).tz(session.timezone).isSameOrBefore(end)
+          ? dayjs(session.endTime).tz(session.timezone).isSameOrBefore(end)
           : true;
         return isAfter && isBefore;
       });
@@ -408,6 +408,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     setLoading(true);
     try {
       let filteredSessions = await getSession();
+      console.log(selectDateRange);
       if (filteredSessions) {
         if (dateForCalendar) {
           filteredSessions = await getSessionsByMonth(dateForCalendar);
