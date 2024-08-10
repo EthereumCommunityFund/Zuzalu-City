@@ -23,7 +23,7 @@ const connectors = connectorsForWallets(
   ],
   {
     appName: 'Zuzalu City',
-    projectId: '6c190133ca2cec0744761447d868de85',
+    projectId: '2ae588c8e2c83e087672119a2b42f330',
   },
 );
 
