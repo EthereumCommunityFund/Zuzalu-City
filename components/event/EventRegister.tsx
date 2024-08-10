@@ -515,9 +515,9 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             <ZuButton
               sx={{
                 width: '100%',
-                opacity: '0.7',
                 border: '1px solid rgba(215, 255, 196, 0.20)',
-                backgroundColor: 'rgba(215, 255, 196, 0.15)',
+                backgroundColor: 'rgba(215, 255, 196, 0.1)',
+                color: '#D7FFC4',
               }}
               startIcon={<ArrowCircleRightIcon />}
               onClick={() => {
