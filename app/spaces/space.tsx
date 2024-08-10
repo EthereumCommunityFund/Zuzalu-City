@@ -19,6 +19,7 @@ import { ZuSelect } from '@/components/core';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { Space, SpaceData } from '@/types';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
+import { isDev } from '@/constant';
 
 const Home = () => {
   const theme = useTheme();
@@ -33,7 +34,7 @@ const Home = () => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          spaceIndex(first: 20) {
+          spaceIndex(first: ${!isDev ? 20 : 2}) {
             edges {
               node {
                 id
