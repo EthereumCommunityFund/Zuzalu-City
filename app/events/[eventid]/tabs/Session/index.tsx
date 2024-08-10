@@ -353,9 +353,11 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         const [start, end] = targetDate;
         const isAfter = dayjs(session.startTime)
           .tz(session.timezone)
-          .isSameOrAfter(start);
+          .isSameOrAfter(start, 'day');
         const isBefore = end
-          ? dayjs(session.endTime).tz(session.timezone).isSameOrBefore(end)
+          ? dayjs(session.endTime)
+              .tz(session.timezone)
+              .isSameOrBefore(end, 'day')
           : true;
         return isAfter && isBefore;
       });
