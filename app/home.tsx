@@ -1,5 +1,4 @@
 'use client';
-import HomeSigninBanner from '@/components/banner/HomeSigninBanner';
 import SlotDates from '@/components/calendar/SlotDate';
 import {
   EventCard,
@@ -73,6 +72,8 @@ const Home: React.FC = () => {
     username,
     createProfile,
   } = useCeramicContext();
+
+  console.log(ceramic);
 
   const getSpaces = async () => {
     try {
@@ -409,7 +410,6 @@ const Home: React.FC = () => {
                 loggedIn={ceramic && targetEventView}
               />
             )}
-            <HomeSigninBanner />
             <Box
               display="flex"
               flexDirection="column"
