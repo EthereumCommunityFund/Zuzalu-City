@@ -1,4 +1,5 @@
 'use client';
+import HomeSigninBanner from '@/components/banner/HomeSigninBanner';
 import SlotDates from '@/components/calendar/SlotDate';
 import {
   EventCard,
@@ -10,6 +11,7 @@ import LotteryCard from '@/components/cards/LotteryCard';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import { ZuCalendar } from '@/components/core';
 import { dashboardEvent, isDev } from '@/constant';
+import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import { Dayjs, dayjs } from '@/utils/dayjs';
 import {
@@ -34,7 +36,6 @@ import { Sidebar } from 'components/layout';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { Fragment, useEffect, useState } from 'react';
-import { useCeramicContext } from '../context/CeramicContext';
 import MiniDashboard from './components/MiniDashboard';
 const queryClient = new QueryClient();
 
@@ -408,7 +409,7 @@ const Home: React.FC = () => {
                 loggedIn={ceramic && targetEventView}
               />
             )}
-
+            <HomeSigninBanner />
             <Box
               display="flex"
               flexDirection="column"
