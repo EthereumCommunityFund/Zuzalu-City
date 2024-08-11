@@ -685,9 +685,9 @@ const Home = () => {
       const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
       if (
         (newSessionStart.isBefore(sessionEnd) &&
-          newSessionStart.isSameOrAfter(sessionStart)) ||
+          newSessionStart.isAfter(sessionStart)) ||
         (newSessionEnd.isAfter(sessionStart) &&
-          newSessionEnd.isSameOrBefore(sessionEnd)) ||
+          newSessionEnd.isBefore(sessionEnd)) ||
         (newSessionStart.isBefore(sessionStart) &&
           newSessionEnd.isAfter(sessionEnd))
       ) {

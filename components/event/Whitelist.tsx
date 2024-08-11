@@ -527,8 +527,9 @@ export const Mint: React.FC<IProps> = ({
           address: ticketAddress,
           functionName: 'purchaseTicket',
           abi: ABI,
-          args: [`https://devnet.irys.xyz/${uploadedID}`],
+          args: [`https://gateway.irys.xyz/${uploadedID}`],
         });
+        console.log(`https://gateway.irys.xyz/${uploadedID}`);
         setBlockMintClickModal(true);
         const { status: MintStatus, logs: MintLogs } =
           await waitForTransactionReceipt(config, {
