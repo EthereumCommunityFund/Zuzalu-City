@@ -73,8 +73,6 @@ const Home: React.FC = () => {
     createProfile,
   } = useCeramicContext();
 
-  console.log(ceramic);
-
   const getSpaces = async () => {
     try {
       const response: any = await composeClient.executeQuery(`
