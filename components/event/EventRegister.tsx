@@ -1,32 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Stack, Typography, Box, Divider } from '@mui/material';
-import { ZuButton } from 'components/core';
-import {
-  ArrowDownIcon,
-  CheckCircleIcon,
-  ChevronDownIcon,
-  RightArrowCircleIcon,
-  ScrollIcon,
-} from 'components/icons';
-import Ticket from './Ticket';
-import { ChevronUpIcon } from '../icons/ChevronUp';
-import BpCheckbox from './Checkbox';
-import { Anchor, AddZupassMemberRequest } from '@/types';
-import { useZupassContext } from '@/context/ZupassContext';
-import { InitialStep } from './steps/InitialStep';
-import { FirstStep } from './steps/FirstStep';
-import { updateZupassMember } from '@/services/event/addZupassMember';
-import { useCeramicContext } from '@/context/CeramicContext';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { useZupassContext } from '@/context/ZupassContext';
+import { Anchor } from '@/types';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import Image from 'next/image';
-import { ZuPassIcon } from '../icons/ZuPassIcon';
+import { Stack, Typography } from '@mui/material';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useDisconnect } from 'wagmi';
+import { ZuButton } from 'components/core';
+import { ScrollIcon } from 'components/icons';
+import Image from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { ZuPassIcon } from '../icons/ZuPassIcon';
 import NewUserPromptModal from '../modals/newUserPrompt';
-import { useConnect, useAccount } from 'wagmi';
+import { InitialStep } from './steps/InitialStep';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
@@ -672,6 +660,21 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                       );
                     }
 
+                    if (chain.unsupported) {
+                      return (
+                        <ZuButton
+                          sx={{
+                            width: '100%',
+                            border: '1px solid rgba(255, 255, 255, 0.10)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          }}
+                          onClick={openChainModal}
+                        >
+                          Wrong network
+                        </ZuButton>
+                      );
+                    }
+
                     if (connected) {
                       return (
                         <Stack
@@ -745,14 +748,6 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                             height={15.5}
                           />
                         </Stack>
-                      );
-                    }
-
-                    if (chain.unsupported) {
-                      return (
-                        <button onClick={openChainModal} type="button">
-                          Wrong network
-                        </button>
                       );
                     }
                   })()}
