@@ -122,10 +122,14 @@ export const SuperEditor: React.FC<{
   useEffect(() => {
     if (shallowDiff(editorValue, value)) {
       setEditorValue(value);
-      if (typeof value === 'undefined') {
-        editorRef.current?.clear?.();
-      } else {
-        editorRef.current?.render?.(value!);
+      if (editorRef.current) {
+        if (typeof value === 'undefined') {
+          editorRef.current.clear();
+        } else {
+          editorRef.current.render(value).catch((err) => {
+            console.error(err);
+          });
+        }
       }
     }
   }, [value]);
@@ -158,5 +162,6 @@ const Wrapper = styled('div')<{ minHeight?: number }>`
   background-color: #ffffff0d;
   border-radius: 10px;
   color: white;
-  min-height: ${({ minHeight }) => minHeight}px;}
+  min-height: ${({ minHeight }) => minHeight}px;
+}
 `;
