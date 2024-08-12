@@ -1,10 +1,17 @@
 'use client';
 import styled from '@emotion/styled';
-import React, { createRef, useCallback, useEffect, useRef } from 'react';
+import React, {
+  createRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import EditorJS, { BlockMutationEvent, OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { getOutputDataLength } from './useEditorStore';
 import { Global, css } from '@emotion/react';
+import { shallowDiff } from './shallowDiff';
 
 export const SuperEditor: React.FC<{
   minHeight?: number;
@@ -21,6 +28,7 @@ export const SuperEditor: React.FC<{
     placeholder,
   } = props;
 
+  const [editorValue, setEditorValue] = useState<OutputData | undefined>(value);
   const wrapperRef = createRef<HTMLDivElement>();
   const editorRef = useRef<EditorJS>();
 
@@ -29,11 +37,12 @@ export const SuperEditor: React.FC<{
       holder: container,
       placeholder,
       tools,
-      data: value,
+      data: editorValue,
       minHeight: minHeight - (24 + 38),
       onChange: async (api, event: BlockMutationEvent) => {
         if (event.type !== 'block-changed') {
           const content = await api.saver.save();
+          setEditorValue(content);
           onChange?.(content);
           return;
         }
@@ -43,6 +52,7 @@ export const SuperEditor: React.FC<{
         if (contentLen <= maxLength) {
           // if content length is less than maxLength
           // then save the content
+          setEditorValue(content);
           onChange?.(content);
           return;
         }
@@ -109,8 +119,16 @@ export const SuperEditor: React.FC<{
     };
   }, []);
 
-  // TODO: re-render editor when data changed
-  // there is no use case now
+  useEffect(() => {
+    if (shallowDiff(editorValue, value)) {
+      setEditorValue(value);
+      if (typeof value === 'undefined') {
+        editorRef.current?.clear?.();
+      } else {
+        editorRef.current?.render?.(value!);
+      }
+    }
+  }, [value]);
 
   return (
     <Wrapper ref={wrapperRef} minHeight={minHeight}>

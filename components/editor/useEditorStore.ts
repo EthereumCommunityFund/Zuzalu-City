@@ -1,5 +1,6 @@
 import { OutputData } from '@editorjs/editorjs';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { once } from 'lodash';
 
 export const decodeOutputData = (string: string): OutputData => {
   try {
@@ -25,16 +26,36 @@ export const getOutputDataLength = (blocks: OutputData['blocks'] = []) => {
 export const useEditorStore = () => {
   const [value, setValue] = useState<OutputData>();
   const [length, setLength] = useState<number>(0);
+  const initValue = useRef<OutputData>();
+
+  /**
+   * first call setValue will set the initial value
+   */
+  const onceSetFirstValue = once((value: OutputData) => {
+    initValue.current = value;
+  });
 
   return {
     value,
     getValueString: () => encodeOutputData(value!),
     setValue: (value: OutputData | string) => {
       const data = typeof value === 'string' ? decodeOutputData(value) : value;
+      onceSetFirstValue(data);
       setValue(data);
       setLength(getOutputDataLength(data.blocks));
     },
     length,
     setLength,
+    reset: () => {
+      /**
+       * reset the value to the initial value
+       */
+      setValue(initValue.current);
+      setLength(0);
+    },
+    clear: () => {
+      setValue(undefined);
+      setLength(0);
+    },
   };
 };
