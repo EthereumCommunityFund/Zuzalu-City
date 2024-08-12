@@ -728,6 +728,51 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       console.log(error);
     }
   };
+  const resetDateAndTime = async (sessionLocation: string) => {
+    setSessionStartTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setSessionEndTime(
+      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+    );
+    setCustomLocation('');
+    setDirections('');
+    setIsDirections(false);
+    if (
+      person &&
+      sessionLocation &&
+      sessionLocation !== 'Custom' &&
+      sessionDate
+    ) {
+      setSelectedRoom(
+        venues.filter((item) => item.name === sessionLocation)[0],
+      );
+      const dayName = sessionDate.format('dddd');
+      const selectedDay = sessionDate.format('YYYY-MM-DD');
+      if (sessionLocation == '') {
+        return;
+      }
+      const available = JSON.parse(
+        venues.filter((item) => item.name === sessionLocation)[0].bookings,
+      );
+      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+      const { data: bookedSessions } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('location', sessionLocation);
+      if (bookedSessions) {
+        const bookedSessionsDay = bookedSessions.filter((session) => {
+          const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
+
+          return sessionStartDay === selectedDay;
+        });
+        setBookedSessionsForDay(bookedSessionsDay);
+      } else {
+        setBookedSessionsForDay([]);
+      }
+    }
+  };
+
   const isSessionOverlap = (
     bookedSessions: Session[],
     startTime: Dayjs,
@@ -1223,7 +1268,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         )[0];
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
-                        setSessionDate(null);
+                        resetDateAndTime(e.target.value);
                       }}
                       MenuProps={{
                         PaperProps: {
