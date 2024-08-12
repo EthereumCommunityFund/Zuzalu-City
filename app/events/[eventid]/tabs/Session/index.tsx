@@ -2384,6 +2384,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     }}
                     sx={{
                       border: 'none',
+                      height: '300px'
                     }}
                   />
                 </Stack>
