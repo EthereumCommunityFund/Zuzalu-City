@@ -516,7 +516,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       const available = JSON.parse(
         venues.filter((item) => item.name === sessionLocation)[0].bookings,
       );
-      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
+      const availableTimeSlots = available[dayName.toLowerCase()] || [];
+      setAvailableTimeSlots(
+        availableTimeSlots.filter(
+          (item: any) => item.startTime && item.endTime,
+        ),
+      );
       const bookedSessions = await getBookedSession();
       if (bookedSessions) {
         const bookedSessionsDay = bookedSessions.filter((session) => {
@@ -528,7 +533,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       }
     }
     setSessionDate(date);
-    console.log(date);
     setSessionStartTime(
       dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
@@ -1219,6 +1223,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         )[0];
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
+                        setSessionDate(null);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1360,6 +1365,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           {eventData?.timezone}
                         </Typography>
                         <DesktopDatePicker
+                          value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
                               handleDateChange(newValue);
