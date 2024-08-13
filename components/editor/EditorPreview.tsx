@@ -106,7 +106,7 @@ export const EditorPreview: React.FC<{
         if (!data) {
           editorRef.current.clear();
         } else {
-          editorRef.current.render(data).catch((err) => {
+          editorRef.current.render?.(data).catch((err) => {
             console.error(err);
           });
         }
@@ -145,6 +145,9 @@ const Wrapper = styled('div')<{
   scrollHeight?: number;
 }>`
   color: white;
+  font-size: 16px;
+  line-height: 1.6;
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
   ${(props) =>
     props.scrollHeight
