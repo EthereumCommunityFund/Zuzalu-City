@@ -1,4 +1,6 @@
 import { ZuButton } from '@/components/core';
+import MiniDashboardSigninButton from '@/components/home/MiniDashboardSigninButton';
+import SigninDialog from '@/components/home/SigninDialog';
 import {
   ArrowTopRightSquareIcon,
   ChatsIcon,
@@ -6,10 +8,13 @@ import {
   TicketIcon,
 } from '@/components/icons';
 import ClockIcon from '@/components/icons/Clock';
-import { Box, Stack, Typography, useTheme, Button } from '@mui/material';
-import Link from 'next/link';
-import dayjs from 'dayjs';
-import { useParams, useRouter } from 'next/navigation';
+import NewUserPromptModal from '@/components/modals/newUserPrompt';
+import { dashboardEvent } from '@/constant';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { useZupassContext } from '@/context/ZupassContext';
+import { Box, Stack, Typography, useTheme } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 interface PropTypes {
   spaceName: string;
@@ -21,6 +26,48 @@ interface PropTypes {
   spaceId: string;
   loggedIn: boolean;
 }
+
+interface IDiscoverButtonProps {
+  eventId: string;
+}
+
+const DiscoverButton = ({ eventId }: IDiscoverButtonProps) => {
+  const { breakpoints } = useTheme();
+  const router = useRouter();
+
+  const handleNavigation = (tab: string, option?: string) => {
+    router.push(`/events/${eventId}`);
+    sessionStorage.setItem('tab', tab);
+    if (option) {
+      sessionStorage.setItem('option', option);
+    }
+  };
+
+  return (
+    <ZuButton
+      onClick={() => handleNavigation('About')}
+      sx={{
+        borderRadius: '10px',
+        border: '1px solid rgba(255, 255, 255, 0.10)',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        padding: '6px 10px',
+        fontSize: '14px',
+        fontWeight: '700',
+        gap: '10px',
+        '& > span': {
+          margin: '0px',
+        },
+        [breakpoints.down('md')]: {
+          width: '100%',
+          justifyContent: 'flex-start',
+        },
+      }}
+      startIcon={<ArrowTopRightSquareIcon />}
+    >
+      Discover
+    </ZuButton>
+  );
+};
 
 export default function MiniDashboard({
   spaceName,
@@ -34,6 +81,13 @@ export default function MiniDashboard({
 }: PropTypes) {
   const { breakpoints } = useTheme();
   const router = useRouter();
+  const { profile } = useCeramicContext();
+  const { nullifierHash } = useZupassContext();
+
+  const [openModal, setOpenModal] = useState(false);
+  const [openNewUserModal, setOpenNewUserModal] = useState(false);
+  const [stage, setStage] = useState('Initial');
+
   const handleNavigation = (tab: string, option?: string) => {
     router.push(`/events/${eventId}`);
     sessionStorage.setItem('tab', tab);
@@ -47,6 +101,27 @@ export default function MiniDashboard({
   const manageEventNavigation = () => {
     router.push(`/spaces/${spaceId}/adminevents/${eventId}`);
   };
+
+  const handleShowModal = useCallback(() => {
+    setOpenModal((v) => !v);
+  }, []);
+
+  const handleShowNewUserModal = useCallback(() => {
+    setOpenNewUserModal((v) => !v);
+  }, []);
+
+  useEffect(() => {
+    if (nullifierHash) {
+      setStage('Wallet Link');
+    }
+  }, [nullifierHash]);
+
+  useEffect(() => {
+    if (profile?.id && openModal) {
+      setOpenModal(false);
+    }
+  }, [openModal, profile?.id]);
+
   return (
     <Stack
       width={'100%'}
@@ -59,6 +134,19 @@ export default function MiniDashboard({
       }}
       borderRadius={'10px'}
     >
+      <SigninDialog
+        open={openModal}
+        handleShowNewUserModal={handleShowNewUserModal}
+        handleClose={handleShowModal}
+        setStage={setStage}
+        stage={stage}
+      />
+      <NewUserPromptModal
+        showModal={openNewUserModal}
+        onClose={handleShowNewUserModal}
+        setVerify={() => {}}
+        eventId={dashboardEvent!}
+      />
       <Stack
         gap={'10px'}
         direction={'row'}
@@ -118,29 +206,14 @@ export default function MiniDashboard({
             )}
           </Stack>
         </Stack>
-        {!loggedIn && (
-          <ZuButton
-            onClick={() => handleNavigation('About')}
-            sx={{
-              borderRadius: '10px',
-              border: '1px solid rgba(255, 255, 255, 0.10)',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              padding: '6px 10px',
-              fontSize: '14px',
-              fontWeight: '700',
-              gap: '10px',
-              '& > span': {
-                margin: '0px',
-              },
-              [breakpoints.down('md')]: {
-                width: '100%',
-                justifyContent: 'flex-start',
-              },
-            }}
-            startIcon={<ArrowTopRightSquareIcon />}
-          >
-            {'Discover'}
-          </ZuButton>
+        {!loggedIn ? (
+          profile?.id ? (
+            <DiscoverButton eventId={eventId} />
+          ) : (
+            <MiniDashboardSigninButton handleShowModal={handleShowModal} />
+          )
+        ) : (
+          <DiscoverButton eventId={eventId} />
         )}
       </Stack>
       {loggedIn && (
