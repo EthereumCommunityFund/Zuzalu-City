@@ -2095,7 +2095,7 @@ const Home = () => {
                 </Snackbar>
                 <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                   <Stack spacing="10px">
-                    <Stack direction="row" spacing="10px" alignItems="center">
+                    <Box flex={1}>
                       <Typography
                         bgcolor="#7DFFD11A"
                         padding="4px 8px"
@@ -2115,7 +2115,7 @@ const Home = () => {
                       >
                         {session.track}
                       </Typography>
-                    </Stack>
+                    </Box>
                     <Stack direction="row" alignItems="center" spacing="14px">
                       <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
                         {dayjs(session.startTime)
@@ -2133,10 +2133,20 @@ const Home = () => {
                       </Typography>
                     </Stack>
                   </Stack>
-                  <Typography variant="subtitleLB">{session.title}</Typography>
                   <Stack spacing="10px">
-                    <Stack direction={'row'} alignItems={'center'} spacing={1}>
-                      <MapIcon size={4} />
+                    <Typography
+                      variant="subtitleLB"
+                      lineHeight={1.2}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      {session.title}
+                    </Typography>
+                    <Stack
+                      direction={'row'}
+                      alignItems={'center'}
+                      spacing={'6px'}
+                    >
+                      <MapIcon size={4} fill="rgba(255, 255, 255, 0.5)" />
                       {session.format === 'online' ? (
                         <Link
                           href={session.video_url || ''}
@@ -2157,6 +2167,8 @@ const Home = () => {
                         </Typography>
                       )}
                     </Stack>
+                  </Stack>
+                  <Stack spacing="10px">
                     <Stack direction={'row'} spacing={1} alignItems="center">
                       <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
                         Speakers:
