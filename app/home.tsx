@@ -9,7 +9,6 @@ import {
 import LotteryCard from '@/components/cards/LotteryCard';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import { ZuCalendar } from '@/components/core';
-import { dashboardEvent, isDev } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import { Dayjs, dayjs } from '@/utils/dayjs';

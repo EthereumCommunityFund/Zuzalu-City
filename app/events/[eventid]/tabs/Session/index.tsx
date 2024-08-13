@@ -7,36 +7,9 @@ import { EditorPreview } from '@/components/editor/EditorPreview';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import BpCheckbox from '@/components/event/Checkbox';
-import {
-  Stack,
-  Grid,
-  Typography,
-  SwipeableDrawer,
-  Divider,
-  Box,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  Chip,
-  InputAdornment,
-  useTheme,
-  useMediaQuery,
-  Menu,
-  Popover,
-} from '@mui/material';
 import Snackbar from '@mui/joy/Snackbar';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DesktopDatePicker } from '@mui/x-date-pickers';
-import { DesktopTimePicker } from '@mui/x-date-pickers';
-import { TimeView } from '@mui/x-date-pickers/models';
-import { TimeStepOptions } from '@mui/x-date-pickers/models';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from '@/utils/dayjs';
-import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
 import {
-  PlusCircleIcon,
   LockIcon,
-  XMarkIcon,
   ArchiveBoxIcon,
   ArrowDownIcon,
   CalendarIcon,
@@ -99,7 +72,6 @@ import { DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimeStepOptions, TimeView } from '@mui/x-date-pickers/models';
-import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
