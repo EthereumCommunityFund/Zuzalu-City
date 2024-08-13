@@ -1985,7 +1985,7 @@ const Home = () => {
                       icon={<ShareIcon />}
                     />
                   </CopyToClipboard>
-                </Box> 
+                </Box>
               </Stack>*/}
               <Snackbar
                 anchorOrigin={{
@@ -2008,14 +2008,21 @@ const Home = () => {
                     <Box flex={1}>
                       <Typography
                         bgcolor="#7DFFD11A"
-                        padding="2px 4px"
+                        padding="4px 8px"
                         color="#7DFFD1"
                         variant="bodyX"
                         borderRadius="2px"
+                        marginRight="10px"
                       >
                         · LIVE
                       </Typography>
-                      <Typography variant="caption" textTransform="uppercase">
+                      <Typography
+                        bgcolor="rgba(255, 255, 255, 0.06)"
+                        padding="4px 8px"
+                        variant="caption"
+                        textTransform="uppercase"
+                        borderRadius="2px"
+                      >
                         {session.track}
                       </Typography>
                     </Box>
@@ -2062,10 +2069,16 @@ const Home = () => {
                     </Typography>
                   </Stack>
                 </Stack>
-                <Typography variant="subtitleLB">{session.title}</Typography>
                 <Stack spacing="10px">
-                  <Stack direction={'row'} alignItems={'center'} spacing={1}>
-                    <MapIcon size={4} />
+                  <Typography
+                    variant="subtitleLB"
+                    lineHeight={1.2}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    {session.title}
+                  </Typography>
+                  <Stack direction={'row'} alignItems={'center'} spacing="6px">
+                    <MapIcon size={4} fill="rgba(255, 255, 255, 0.5)" />
                     {session.format === 'online' ? (
                       <Link
                         href={session.video_url || ''}
@@ -2086,6 +2099,8 @@ const Home = () => {
                       </Typography>
                     )}
                   </Stack>
+                </Stack>
+                <Stack spacing="10px">
                   <Stack direction={'row'} spacing={1} alignItems="center">
                     <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
                       Speakers:
@@ -2131,17 +2146,14 @@ const Home = () => {
                     borderRadius="10px"
                     bgcolor="#383838"
                     justifyContent="center"
+                    sx={{ cursor: !isRsvped ? 'pointer' : 'default' }}
+                    onClick={() => !isRsvped && handleRSVPClick(session.id)}
                   >
                     <SessionIcon />
                     {isRsvped ? (
                       <Typography variant="bodyBB">RSVP Confirmed</Typography>
                     ) : (
-                      <Typography
-                        variant="bodyBB"
-                        onClick={() => handleRSVPClick(session.id)}
-                      >
-                        RSVP Session
-                      </Typography>
+                      <Typography variant="bodyBB">RSVP Session</Typography>
                     )}
                   </Stack>
                   {/*<Typography variant="bodyS">Attending: 000</Typography>*/}
