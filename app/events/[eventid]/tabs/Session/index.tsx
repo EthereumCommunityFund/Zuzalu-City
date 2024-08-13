@@ -1,103 +1,81 @@
 'use client';
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import {
-  Stack,
-  Grid,
-  Typography,
-  SwipeableDrawer,
-  Divider,
-  Box,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  Chip,
-  InputAdornment,
-  useTheme,
-  useMediaQuery,
-  Menu,
-  Popover,
-} from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DesktopDatePicker } from '@mui/x-date-pickers';
-import { DesktopTimePicker } from '@mui/x-date-pickers';
-import { TimeView } from '@mui/x-date-pickers/models';
-import { TimeStepOptions } from '@mui/x-date-pickers/models';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from '@/utils/dayjs';
-import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
-import {
-  PlusCircleIcon,
-  LockIcon,
-  XMarkIcon,
-  ArchiveBoxIcon,
-  ArrowDownIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  SearchIcon,
-  FingerPrintIcon,
-  UserPlusIcon,
-  EditIcon,
-  QueueListIcon,
-  ChevronDoubleRightIcon,
-  LeftArrowIcon,
-  MapIcon,
-  SessionIcon,
-  Cog6Icon,
-  MicrophoneIcon,
-  TagIcon,
-  PlusIcon,
-  MinusIcon,
-  RightArrowIcon,
-  CalendarIcon,
-} from '@/components/icons';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
 import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
-import BpCheckbox from '@/components/event/Checkbox';
-import {
-  Anchor,
-  Session,
-  SessionData,
-  ProfileEdge,
-  Profile,
-  CeramicResponseType,
-  EventEdge,
-  Venue,
-  Event,
-} from '@/types';
-import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
-import { useCeramicContext } from '@/context/CeramicContext';
-import { supabase } from '@/utils/supabase/client';
-import { SessionSupabaseData } from '@/types';
-import { supaCreateSession } from '@/services/session';
-import Link from 'next/link';
-import formatDateAgo from '@/utils/formatDateAgo';
-import SlotDate from '@/components/calendar/SlotDate';
-import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
-import SelectCategories from '@/components/select/selectCategories';
-import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import SlotDates from '@/components/calendar/SlotDate';
+import { ZuButton, ZuCalendar, ZuInput, ZuSwitch } from '@/components/core';
+import { EditorPreview } from '@/components/editor/EditorPreview';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
+import BpCheckbox from '@/components/event/Checkbox';
+import {
+  ArrowDownIcon,
+  CalendarIcon,
+  ChevronDoubleRightIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  EditIcon,
+  LeftArrowIcon,
+  MapIcon,
+  MicrophoneIcon,
+  MinusIcon,
+  PlusCircleIcon,
+  PlusIcon,
+  SearchIcon,
+  SessionIcon,
+  TagIcon,
+  UserPlusIcon,
+  XMarkIcon,
+} from '@/components/icons';
+import SelectCategories from '@/components/select/selectCategories';
+import SelectSearchUser from '@/components/select/selectSearchUser';
 import {
   FormLabel,
   FormLabelDesc,
-  FormTitle,
 } from '@/components/typography/formTypography';
-import { EditorPreview } from '@/components/editor/EditorPreview';
-import SlotDates from '@/components/calendar/SlotDate';
+import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { supaCreateSession } from '@/services/session';
+import {
+  Anchor,
+  Event,
+  Profile,
+  ProfileEdge,
+  Session,
+  SessionSupabaseData,
+  Venue,
+} from '@/types';
+import dayjs, { Dayjs } from '@/utils/dayjs';
+import formatDateAgo from '@/utils/formatDateAgo';
+import { supabase } from '@/utils/supabase/client';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
+import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
+import {
+  Box,
+  Divider,
+  InputAdornment,
+  MenuItem,
+  OutlinedInput,
+  Popover,
+  Select,
+  Stack,
+  SwipeableDrawer,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import { DesktopDatePicker, DesktopTimePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimeStepOptions, TimeView } from '@mui/x-date-pickers/models';
+import { useQuery } from '@tanstack/react-query';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
-import { useQuery } from '@tanstack/react-query';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -2124,7 +2102,12 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                               .format('MMMM D, YYYY'),
                           )}
                         >
-                          export
+                          <Image
+                            src="/session/download.png"
+                            alt="download"
+                            width={16}
+                            height={16}
+                          />
                         </ZuButton>
                       </Typography>
                       {dateSessions && dateSessions.length > 0 ? (
@@ -2384,6 +2367,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     }}
                     sx={{
                       border: 'none',
+                      height: '300px',
                     }}
                   />
                 </Stack>

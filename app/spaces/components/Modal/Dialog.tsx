@@ -1,15 +1,14 @@
-import { Button, IconButton } from '@mui/material';
-import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
+import { Button, IconButton, useMediaQuery, useTheme } from '@mui/material';
+import MDialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import MDialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import React from 'react';
-import { useTheme, useMediaQuery } from '@mui/material';
 interface Proptypes {
   title: string;
-  message: string;
+  message: React.ReactNode;
   showModal: boolean;
   showActions?: boolean;
   actions?: React.ReactNode;

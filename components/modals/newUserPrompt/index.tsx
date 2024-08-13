@@ -1,20 +1,18 @@
 import { ZuButton, ZuInput } from '@/components/core';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { useZupassContext } from '@/context/ZupassContext';
+import { updateZupassMember } from '@/services/event/addZupassMember';
 import {
   Box,
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Stack,
   Typography,
-  useTheme,
 } from '@mui/material';
-import { useEffect, useState, useRef } from 'react';
-import { useZupassContext } from '@/context/ZupassContext';
-import { updateZupassMember } from '@/services/event/addZupassMember';
+import { useEffect, useRef, useState } from 'react';
 import { useDisconnect } from 'wagmi';
 
 interface NewUserPromprtModalProps {
