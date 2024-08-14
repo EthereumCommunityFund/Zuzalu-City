@@ -59,6 +59,7 @@ import {
   OutlinedInput,
   Popover,
   Select,
+  Skeleton,
   Stack,
   SwipeableDrawer,
   Typography,
@@ -389,7 +390,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     try {
       let filteredSessions = await getSession();
       if (filteredSessions) {
-        if (dateForCalendar) {
+        if (dateForCalendar && sessionsByDate) {
           filteredSessions = await getSessionsByMonth(dateForCalendar);
         }
         if (selectedDate) {
@@ -2046,13 +2047,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               }}
             >
               {loading ? (
-                <Stack
-                  borderRadius="10px"
-                  border="1px solid #383838"
-                  bgcolor="#262626"
-                  flex={8}
-                >
-                  <Typography variant="bodyS">Loading...</Typography>
+                <Stack spacing="10px" padding="10px">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton
+                      variant="rounded"
+                      width="100%"
+                      height={153}
+                      key={index}
+                    />
+                  ))}
                 </Stack>
               ) : sessionsByDate && Object.keys(sessionsByDate).length !== 0 ? (
                 Object.entries(sessionsByDate)
