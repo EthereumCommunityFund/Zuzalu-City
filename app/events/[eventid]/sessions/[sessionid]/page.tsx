@@ -297,13 +297,13 @@ const Home = () => {
         setSessionName(sessionData.title);
         setSessionTrack(sessionData.track);
         setSessionTags(sessionData.tags);
-        setIntialSessionTags(
-          sessionData.tags.split(',').map((item: string) => ({
-            value: item.trim(),
-            label: `Add "${item.trim()}"`,
-            isAdd: true,
-          })),
-        );
+        sessionData.tags &&
+          setIntialSessionTags(
+            sessionData.tags.split(',').map((item: string) => ({
+              value: item.trim(),
+              label: item.trim(),
+            })),
+          );
         setSessionType(sessionData.type);
         setSessionExperienceLevel(sessionData.experience_level);
         setSessionLiveStreamLink(sessionData.liveStreamLink);
@@ -2024,6 +2024,7 @@ const Home = () => {
                       fontSize: '14px',
                       fontWeight: 600,
                     }}
+                    onClick={() => toggleDrawer('right', true)}
                   >
                     Edit
                   </ZuButton>
@@ -2038,20 +2039,10 @@ const Home = () => {
               >
                 <Stack
                   direction="row"
-                  justifyContent="flex-end"
                   alignItems="center"
                   width={'100%'}
                   padding={!isMobile ? '10px' : '10px 10px 10px 0'}
                 >
-                  {/* <ZuButton
-                    startIcon={<LeftArrowIcon />}
-                    onClick={() => {
-                      sessionStorage.setItem('tab', 'Sessions');
-                      router.push(`/events/${eventId}`);
-                    }}
-                  >
-                    Back to List
-                  </ZuButton> */}
                   <Box
                     sx={{
                       display: 'flex',
@@ -2065,16 +2056,16 @@ const Home = () => {
                         setShowCopyToast(true);
                       }}
                     >
-                      <SidebarButton
+                      <ZuButton
                         sx={{
-                          padding: '10px',
-                          borderRadius: '10px',
+                          padding: '8px 10px 8px 14px',
                           backgroundColor: '#ffffff0a',
                           '&:hover': { backgroundColor: '#ffffff1a' },
-                          cursor: 'pointer',
                         }}
-                        icon={<ShareIcon />}
-                      />
+                        startIcon={<ShareIcon size={4} />}
+                      >
+                        Share
+                      </ZuButton>
                     </CopyToClipboard>
                   </Box>
                 </Stack>
@@ -2521,10 +2512,9 @@ const Home = () => {
           hideBackdrop={true}
           sx={{
             position: 'relative',
-            zIndex: 3,
+            zIndex: 1001,
             '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
+              height: '100vh',
               boxShadow: 'none',
               backgroundColor: 'transparent',
               paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
