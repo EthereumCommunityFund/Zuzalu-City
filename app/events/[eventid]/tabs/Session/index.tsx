@@ -2046,7 +2046,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                 },
               }}
             >
-              {loading ? (
+              {loading && !sessionsByDate ? (
                 <Stack spacing="10px" padding="10px">
                   {Array.from({ length: 3 }).map((_, index) => (
                     <Skeleton
