@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import { CeramicClient } from '@ceramicnetwork/http-client';
 import { ComposeClient } from '@composedb/client';
 import { RuntimeCompositeDefinition } from '@composedb/types';
@@ -55,7 +61,9 @@ export const CeramicProvider = ({ children }: any) => {
       setIsAuthenticated(true);
     }
   };
-  const hideAuthPrompt = () => setAuthPromptVisible(false);
+  const hideAuthPrompt = useCallback(() => {
+    setAuthPromptVisible(false);
+  }, []);
 
   const logout = () => {
     localStorage.removeItem('username');

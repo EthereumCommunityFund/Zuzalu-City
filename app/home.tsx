@@ -1,46 +1,41 @@
 'use client';
-import React, { useState, useEffect, Fragment } from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  Box,
-  Typography,
-  Button,
-  useTheme,
-  useMediaQuery,
-  Skeleton,
-} from '@mui/material';
-import { ZuCalendar } from '@/components/core';
-import Carousel from 'components/Carousel';
-import { Header, Sidebar } from 'components/layout';
-import {
-  RightArrowCircleIcon,
-  SpaceIcon,
-  RightArrowIcon,
-  EventIcon,
-} from 'components/icons';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { MOCK_DATA } from 'mock';
-import { WalletProvider } from '../context/WalletContext';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { CeramicProvider } from '../context/CeramicContext';
-import { useCeramicContext } from '../context/CeramicContext';
-import AuthPrompt from '@/components/AuthPrompt';
-import { Event, EventData, Space, SpaceData } from '@/types';
-import LotteryCard from '@/components/cards/LotteryCard';
-import Link from 'next/link';
+import SlotDates from '@/components/calendar/SlotDate';
 import {
   EventCard,
   EventCardMonthGroup,
   EventCardSkeleton,
-  formatDateToMonth,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
-import SlotDates from '@/components/calendar/SlotDate';
-import { dayjs, Dayjs } from '@/utils/dayjs';
+import LotteryCard from '@/components/cards/LotteryCard';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
-import MiniDashboard from './components/MiniDashboard';
+import { ZuCalendar } from '@/components/core';
 import { dashboardEvent, isDev } from '@/constant';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { Event, EventData, Space, SpaceData } from '@/types';
+import { Dayjs, dayjs } from '@/utils/dayjs';
+import {
+  Box,
+  Button,
+  Skeleton,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { QueryClient } from '@tanstack/react-query';
+import Carousel from 'components/Carousel';
+import {
+  EventIcon,
+  RightArrowCircleIcon,
+  RightArrowIcon,
+  SpaceIcon,
+} from 'components/icons';
+import { Sidebar } from 'components/layout';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { Fragment, useEffect, useState } from 'react';
+import MiniDashboard from './components/MiniDashboard';
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -413,7 +408,6 @@ const Home: React.FC = () => {
                 loggedIn={ceramic && targetEventView}
               />
             )}
-
             <Box
               display="flex"
               flexDirection="column"
