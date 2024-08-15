@@ -772,8 +772,8 @@ const Home = () => {
     } else if (
       isSessionOverlap(
         bookedSessionsForDay,
-        dayjs(sessionStartTime).tz('UTC').tz(timezone).set('minute', 0),
-        dayjs(sessionEndTime).tz('UTC').tz(timezone).set('minute', 0),
+        dayjs(sessionStartTime).tz('UTC').tz(timezone).set('second', 0),
+        dayjs(sessionEndTime).tz('UTC').tz(timezone).set('second', 0),
       )
     ) {
       typeof window !== 'undefined' &&
