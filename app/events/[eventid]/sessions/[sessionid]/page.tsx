@@ -310,13 +310,13 @@ const Home = () => {
         setSessionVideoURL(sessionData.video_url);
         const sessionDate = dayjs(sessionData.startTime).startOf('day');
         setSessionDate(sessionDate);
-        const sessionStartTime = dayjs()
+        const sessionStartTime = dayjs(sessionDate)
           .hour(dayjs(sessionData.startTime).tz(eventData?.timezone).hour())
           .minute(
             dayjs(sessionData.startTime).tz(eventData?.timezone).minute(),
           );
         setSessionStartTime(sessionStartTime);
-        const sessionEndTime = dayjs()
+        const sessionEndTime = dayjs(sessionDate)
           .hour(dayjs(sessionData.endTime).tz(eventData?.timezone).hour())
           .minute(dayjs(sessionData.endTime).tz(eventData?.timezone).minute());
         setSessionEndTime(sessionEndTime);
@@ -490,10 +490,10 @@ const Home = () => {
     }
     setSessionDate(date);
     setSessionStartTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(date).tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
     setSessionEndTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(date).tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
   };
 
@@ -651,10 +651,16 @@ const Home = () => {
   };
   const resetDateAndTime = async (sessionLocation: string) => {
     setSessionStartTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(sessionDate)
+        .tz(eventData?.timezone)
+        .set('hour', 0)
+        .set('minute', 0),
     );
     setSessionEndTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(sessionDate)
+        .tz(eventData?.timezone)
+        .set('hour', 0)
+        .set('minute', 0),
     );
     setCustomLocation('');
     setDirections('');
@@ -766,8 +772,8 @@ const Home = () => {
     } else if (
       isSessionOverlap(
         bookedSessionsForDay,
-        dayjs(sessionStartTime).tz('UTC').tz(timezone),
-        dayjs(sessionEndTime).tz('UTC').tz(timezone),
+        dayjs(sessionStartTime).tz('UTC').tz(timezone).set('minute', 0),
+        dayjs(sessionEndTime).tz('UTC').tz(timezone).set('minute', 0),
       )
     ) {
       typeof window !== 'undefined' &&
@@ -1648,7 +1654,8 @@ const Home = () => {
                           ampm={false}
                           onChange={(newValue) => {
                             if (newValue !== null) {
-                              const combined = dayjs(sessionDate)
+                              const combined = dayjs
+                                .tz(sessionDate, eventData?.timezone)
                                 .set('hour', newValue.hour())
                                 .set('minute', newValue.minute());
                               setSessionStartTime(combined);
@@ -1696,7 +1703,8 @@ const Home = () => {
                           ampm={false}
                           onChange={(newValue) => {
                             if (newValue !== null) {
-                              const combined = dayjs(sessionDate)
+                              const combined = dayjs
+                                .tz(sessionDate, eventData?.timezone)
                                 .set('hour', newValue.hour())
                                 .set('minute', newValue.minute());
                               setSessionEndTime(combined);
