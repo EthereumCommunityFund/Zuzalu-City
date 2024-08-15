@@ -106,7 +106,7 @@ export const EditorPreview: React.FC<{
         if (!data) {
           editorRef.current.clear();
         } else {
-          editorRef.current.render(data).catch((err) => {
+          editorRef.current.render?.(data).catch((err) => {
             console.error(err);
           });
         }
