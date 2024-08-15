@@ -297,13 +297,13 @@ const Home = () => {
         setSessionName(sessionData.title);
         setSessionTrack(sessionData.track);
         setSessionTags(sessionData.tags);
-        setIntialSessionTags(
-          sessionData.tags.split(',').map((item: string) => ({
-            value: item.trim(),
-            label: `Add "${item.trim()}"`,
-            isAdd: true,
-          })),
-        );
+        sessionData.tags &&
+          setIntialSessionTags(
+            sessionData.tags.split(',').map((item: string) => ({
+              value: item.trim(),
+              label: item.trim(),
+            })),
+          );
         setSessionType(sessionData.type);
         setSessionExperienceLevel(sessionData.experience_level);
         setSessionLiveStreamLink(sessionData.liveStreamLink);
@@ -2024,6 +2024,7 @@ const Home = () => {
                       fontSize: '14px',
                       fontWeight: 600,
                     }}
+                    onClick={() => toggleDrawer('right', true)}
                   >
                     Edit
                   </ZuButton>
@@ -2038,20 +2039,10 @@ const Home = () => {
               >
                 <Stack
                   direction="row"
-                  justifyContent="flex-end"
                   alignItems="center"
                   width={'100%'}
                   padding={!isMobile ? '10px' : '10px 10px 10px 0'}
                 >
-                  {/* <ZuButton
-                    startIcon={<LeftArrowIcon />}
-                    onClick={() => {
-                      sessionStorage.setItem('tab', 'Sessions');
-                      router.push(`/events/${eventId}`);
-                    }}
-                  >
-                    Back to List
-                  </ZuButton> */}
                   <Box
                     sx={{
                       display: 'flex',
@@ -2065,16 +2056,16 @@ const Home = () => {
                         setShowCopyToast(true);
                       }}
                     >
-                      <SidebarButton
+                      <ZuButton
                         sx={{
-                          padding: '10px',
-                          borderRadius: '10px',
+                          padding: '8px 10px 8px 14px',
                           backgroundColor: '#ffffff0a',
                           '&:hover': { backgroundColor: '#ffffff1a' },
-                          cursor: 'pointer',
                         }}
-                        icon={<ShareIcon />}
-                      />
+                        startIcon={<ShareIcon size={4} />}
+                      >
+                        Share
+                      </ZuButton>
                     </CopyToClipboard>
                   </Box>
                 </Stack>
@@ -2095,20 +2086,27 @@ const Home = () => {
                 </Snackbar>
                 <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                   <Stack spacing="10px">
-                    <Stack direction="row" spacing="10px" alignItems="center">
+                    <Box flex={1}>
                       <Typography
                         bgcolor="#7DFFD11A"
-                        padding="2px 4px"
+                        padding="4px 8px"
                         color="#7DFFD1"
                         variant="bodyX"
                         borderRadius="2px"
+                        marginRight="10px"
                       >
                         · LIVE
                       </Typography>
-                      <Typography variant="caption" textTransform="uppercase">
+                      <Typography
+                        bgcolor="rgba(255, 255, 255, 0.06)"
+                        padding="4px 8px"
+                        variant="caption"
+                        textTransform="uppercase"
+                        borderRadius="2px"
+                      >
                         {session.track}
                       </Typography>
-                    </Stack>
+                    </Box>
                     <Stack direction="row" alignItems="center" spacing="14px">
                       <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
                         {dayjs(session.startTime)
@@ -2126,10 +2124,20 @@ const Home = () => {
                       </Typography>
                     </Stack>
                   </Stack>
-                  <Typography variant="subtitleLB">{session.title}</Typography>
                   <Stack spacing="10px">
-                    <Stack direction={'row'} alignItems={'center'} spacing={1}>
-                      <MapIcon size={4} />
+                    <Typography
+                      variant="subtitleLB"
+                      lineHeight={1.2}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      {session.title}
+                    </Typography>
+                    <Stack
+                      direction={'row'}
+                      alignItems={'center'}
+                      spacing={'6px'}
+                    >
+                      <MapIcon size={4} fill="rgba(255, 255, 255, 0.5)" />
                       {session.format === 'online' ? (
                         <Link
                           href={session.video_url || ''}
@@ -2150,6 +2158,8 @@ const Home = () => {
                         </Typography>
                       )}
                     </Stack>
+                  </Stack>
+                  <Stack spacing="10px">
                     <Stack direction={'row'} spacing={1} alignItems="center">
                       <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
                         Speakers:
@@ -2502,10 +2512,9 @@ const Home = () => {
           hideBackdrop={true}
           sx={{
             position: 'relative',
-            zIndex: 3,
+            zIndex: 1001,
             '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
+              height: '100vh',
               boxShadow: 'none',
               backgroundColor: 'transparent',
               paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
