@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Stack, Typography, Box, Divider } from '@mui/material';
+import {
+  Stack,
+  Typography,
+  Box,
+  Divider,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from '@mui/material';
 import {
   ArrowUpLeftIcon,
   RightArrowIcon,
@@ -12,7 +20,7 @@ import {
 } from '@/components/icons';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 import { client, config } from '@/context/WalletContext';
-import { useAccount } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 import {
   TICKET_FACTORY_ADDRESS,
   mUSDC_TOKEN,
@@ -37,6 +45,7 @@ import { createFileFromJSON } from '@/utils/generateNFTMetadata';
 import { fetchEmailJsConfig } from '@/utils/emailService';
 import { Event, Contract } from '@/types';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import DownloadingRoundedIcon from '@mui/icons-material/DownloadingRounded';
 
 interface IProps {
   setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -236,7 +245,9 @@ export const Verify: React.FC<IProps> = ({
                 Verify your address
               </Typography>
               <ZuButton
-                startIcon={<RightArrowIcon color="#67DBFF" />}
+                startIcon={
+                  verifying ? null : <RightArrowIcon color="#67DBFF" />
+                }
                 onClick={handleConnect}
                 sx={{
                   width: '100%',
@@ -244,8 +255,9 @@ export const Verify: React.FC<IProps> = ({
                   backgroundColor: '#67DBFF33',
                   border: 'border: 1px solid rgba(103, 219, 255, 0.20)',
                 }}
+                disabled={verifying}
               >
-                Verify
+                {verifying ? <CircularProgress size={24.5} /> : 'Verify'}
               </ZuButton>
             </Stack>
           ) : verifying ? (
@@ -318,7 +330,7 @@ export const Verify: React.FC<IProps> = ({
 
 export const Agree: React.FC<IProps> = ({ setIsVerify, setIsAgree }) => {
   return (
-    <Stack>
+    <Stack height="calc(100vh - 50px)">
       <Stack
         padding="20px"
         spacing="10px"
@@ -340,16 +352,17 @@ export const Agree: React.FC<IProps> = ({ setIsVerify, setIsAgree }) => {
           moving forward
         </Typography>
       </Stack>
-      <Stack padding="20px" height="100vh">
+      <Stack padding="20px" overflow="hidden">
         <Stack
           padding="20px"
           border="1px solid #383838"
           bgcolor="#262626"
           spacing="20px"
           borderRadius="10px"
+          height="100%"
         >
           <Typography variant="subtitleLB">Attendees Must Know,</Typography>
-          <Stack spacing="10px" paddingX="10px">
+          <Stack spacing="10px" paddingX="10px" sx={{ overflowY: 'scroll' }}>
             <Typography variant="subtitleMB" sx={{ opacity: 0.8 }}>
               Ticketing Disclaimer
             </Typography>
@@ -447,6 +460,9 @@ export const Mint: React.FC<IProps> = ({
   const [blockMintClickModal, setBlockMintClickModal] = useState(false);
   const [blockTokenClickModal, setBlockTokenClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isMinting, setIsMinting] = useState(false);
+  const { switchChainAsync } = useSwitchChain();
+
   const filteredTickets = filteredResults
     .map((ticket) => {
       const contractAddress = ticket[0].trim().toLowerCase();
@@ -482,8 +498,13 @@ export const Mint: React.FC<IProps> = ({
     eventContract: Contract,
   ) => {
     try {
+      setIsMinting(true);
+      const chainId = isDev ? scrollSepolia.id : scroll.id;
+      await switchChainAsync({
+        chainId,
+      });
       const approveHash = await writeContract(config, {
-        chainId: isDev ? scrollSepolia.id : scroll.id,
+        chainId,
         address: tokenAddress,
         functionName: 'approve',
         abi: ERC20_ABI,
@@ -549,6 +570,8 @@ export const Mint: React.FC<IProps> = ({
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsMinting(false);
     }
   };
 
@@ -660,7 +683,9 @@ export const Mint: React.FC<IProps> = ({
                     </Stack>
                   )}
                   <ZuButton
-                    startIcon={<RightArrowIcon color="#67DBFF" />}
+                    startIcon={
+                      isMinting ? null : <RightArrowIcon color="#67DBFF" />
+                    }
                     onClick={() => {
                       handleMintTicket(
                         ticket[0],
@@ -677,6 +702,7 @@ export const Mint: React.FC<IProps> = ({
                       backgroundColor: '#67DBFF33',
                       border: 'border: 1px solid rgba(103, 219, 255, 0.20)',
                     }}
+                    disabled={isMinting}
                   >
                     Mint Ticket
                   </ZuButton>
@@ -803,6 +829,8 @@ export const Complete: React.FC<IProps> = ({
   transactionLog,
 }) => {
   const [view, setView] = useState<boolean>(true);
+  const [showCopyToast, setShowCopyToast] = useState<boolean>(false);
+
   const truncateHash = (hash: any, startLength = 6, endLength = 6) => {
     if (!hash) return '';
     return `${hash.slice(0, startLength)}...${hash.slice(-endLength)}`;
@@ -814,6 +842,18 @@ export const Complete: React.FC<IProps> = ({
   };
   return (
     <Stack spacing="20px" padding="20px">
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={showCopyToast}
+        autoHideDuration={800}
+        onClose={() => {
+          setShowCopyToast(false);
+        }}
+      >
+        <Alert severity="success" variant="filled">
+          Copy success
+        </Alert>
+      </Snackbar>
       <Stack
         padding="20px"
         bgcolor="#262626"
@@ -938,9 +978,12 @@ export const Complete: React.FC<IProps> = ({
                     <Box
                       marginLeft={'4px'}
                       sx={{ cursor: 'pointer' }}
-                      onClick={() =>
-                        navigator.clipboard.writeText(transactionLog.toString())
-                      }
+                      onClick={() => {
+                        setShowCopyToast(true);
+                        navigator.clipboard.writeText(
+                          transactionLog.toString(),
+                        );
+                      }}
                     >
                       <CopyIcon cursor="pointer" />
                     </Box>
@@ -973,11 +1016,12 @@ export const Complete: React.FC<IProps> = ({
                       <Box
                         marginLeft={'4px'}
                         sx={{ cursor: 'pointer' }}
-                        onClick={() =>
+                        onClick={() => {
+                          setShowCopyToast(true);
                           navigator.clipboard.writeText(
-                            ticketMinted[0].toString(),
-                          )
-                        }
+                            transactionLog.toString(),
+                          );
+                        }}
                       >
                         <CopyIcon cursor="pointer" />
                       </Box>
