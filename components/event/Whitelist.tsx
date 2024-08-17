@@ -1019,7 +1019,7 @@ export const Complete: React.FC<IProps> = ({
                         onClick={() => {
                           setShowCopyToast(true);
                           navigator.clipboard.writeText(
-                            transactionLog.toString(),
+                            ticketMinted[0].toString(),
                           );
                         }}
                       >
