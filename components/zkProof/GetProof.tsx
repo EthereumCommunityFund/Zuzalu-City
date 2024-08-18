@@ -1,50 +1,23 @@
 'use client';
 import * as React from 'react';
-import { SigningKey, ethers, parseEther } from 'ethers';
+import { SigningKey, ethers } from 'ethers';
 import { useAccount,  useSignMessage } from 'wagmi';
-import { createWalletClient, custom, encodeFunctionData, getContract } from 'viem';
-import { scrollSepolia } from 'viem/chains';
-import { TICKET_ABI } from '@/utils/ticket_abi'
 import sindri from 'sindri';
+import { PATH_LENGTH, getMerklePath, verify } from './merklePath';
 
 type GetProofProps = {
   nftAddress: `0x${string}`
+  message: string
 };
 
 const GetProof: React.FC<GetProofProps> = (props) => {
-  const { nftAddress } = props;
+  const { nftAddress, message } = props;
   const { data: signature, signMessage, status} = useSignMessage();
   const { address } = useAccount();
-  const message = "I own this NFT!";
 
   React.useEffect(() => {
     ;(async () => {
       if (signature && status ==='success') {
-        // const client = createWalletClient({
-        //   chain: scrollSepolia,
-        //   transport: custom(window.ethereum!)
-        // })
-
-        // const contract = getContract({
-        //   address: nftAddress,
-        //   abi: TICKET_ABI,
-        //   client
-        // })
-
-        // const hash = await client.writeContract({
-        //   address:'0xe312A706DC0AF7CBA0F5FD4B74C4b33321b3d422',
-        //   abi: TICKET_ABI,
-        //   functionName: 'purchaseTicket',
-        //   args: ['0x0211408B26fBa3740eAD9Debc210F9619f22a97e', "blah"],
-        //   account:  "0x2353E1Ab920EC5d5c6af47B5CDaF615215d8bfD1",
-        // })
-
-        // console.log(hash)
-
-        const data = await fetch(`/api/merklePath?nftAddress=${nftAddress}&address=${address}`)
-        const merkleData = await data.json()
-        console.log(merkleData)
-
         var hashedMessage = ethers.hashMessage(message)
         var publicKey = SigningKey.recoverPublicKey(hashedMessage, signature)
         publicKey = publicKey.substring(4)
@@ -53,6 +26,8 @@ const GetProof: React.FC<GetProofProps> = (props) => {
     
         var sSignature = Array.from(ethers.getBytes(signature))
         sSignature.pop()
+
+        const merkleData = await getMerklePath(nftAddress, address)
 
         const input = JSON.stringify({
             pub_key_x: Array.from(ethers.getBytes("0x"+pub_key_x)),
@@ -63,13 +38,13 @@ const GetProof: React.FC<GetProofProps> = (props) => {
             hash_path: merkleData.path,
             index: merkleData.index
         });
-        console.log(input)
 
-        const circuitIdentifier = 'zupass-scroll';
+        const circuitIdentifier = `zupass-scroll:${PATH_LENGTH}`;
         sindri.authorize({ apiKey: process.env.NEXT_PUBLIC_SINDRI_API_KEY })
-        const circuit = await sindri.getCircuit("zupass-scroll");
-        console.log('Circuit details:', circuit);
-        const proof = await sindri.proveCircuit(circuitIdentifier, input, true);
+        const result = await sindri.proveCircuit(circuitIdentifier, input, true);
+
+
+        const proof = result.proof.proof
         console.log(proof)
       }
     })()
