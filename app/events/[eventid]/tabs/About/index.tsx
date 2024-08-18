@@ -1,5 +1,11 @@
 'use client';
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, {
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  useRef,
+} from 'react';
 import { useParams } from 'next/navigation';
 import {
   Stack,
@@ -93,6 +99,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
     lat: 0,
     lng: 0,
   });
+  const ref = useRef<HTMLDivElement | null>(null);
 
   const getLocation = async () => {
     try {
@@ -135,7 +142,14 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
   const List = (anchor: Anchor) => {
     const handleClose = () => {
       toggleDrawer('right', false);
-      setIsEmail(false);
+      setIsVerify(false);
+      setIsAgree(false);
+      setIsMint(false);
+      setIsTransaction(false);
+      setIsComplete(false);
+      const root = ref.current?.getElementsByClassName('MuiPaper-root');
+      if (root) root?.[0].scrollTo(0, 0);
+      // setIsEmail(false);
     };
 
     return (
@@ -505,6 +519,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
             open={state['right']}
             onClose={() => toggleDrawer('right', false)}
             onOpen={() => toggleDrawer('right', true)}
+            ref={ref}
           >
             {List('right')}
           </SwipeableDrawer>
