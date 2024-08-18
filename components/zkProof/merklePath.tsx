@@ -134,13 +134,12 @@ export async function getMerkleRoot(nftAddress: string) {
     return root
 };
 
-export async function verify(message: string, nftAddress: string, proof: string,){
+export async function verify(message: string, nftAddress: string, proof: string){
     const hashedMessage = ethers.hashMessage(message)
     const root = await getMerkleRoot(nftAddress)
 
-    const tproof = "0x" + proof
-    var tpublic = Array.from(ethers.getBytes(hashedMessage)).map(x => "0x" + x.toString(16).padStart(64,"0"))
-    tpublic.push(root)
+    var publicInputs = Array.from(ethers.getBytes(hashedMessage)).map(x => "0x" + x.toString(16).padStart(64,"0"))
+    publicInputs.push(root)
 
     const client = createPublicClient({
         chain: scrollSepolia,
@@ -152,7 +151,7 @@ export async function verify(message: string, nftAddress: string, proof: string,
         address: VERIFIER_CONTRACT_10,
         abi: verifierABI,
         functionName: 'verify',
-        args: [tproof, tpublic],
+        args: ["0x" + proof, publicInputs],
     })
     return result
 }
