@@ -24,6 +24,7 @@ import {
   Snackbar,
   Alert,
   TextField,
+  CircularProgress,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
@@ -100,6 +101,7 @@ import { Thumbnail } from '../../components';
 import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
 
@@ -127,6 +129,7 @@ const Home = () => {
   const [showCopyToast, setShowCopyToast] = useState(false);
   const [currentHref, setCurrentHref] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogMessage, setDialogMessage] = useState('');
   const [state, setState] = useState({
@@ -195,6 +198,9 @@ const Home = () => {
   const [descriptiontext, setDescriptionText] = useState('');
   const [sessionUpdated, setSessionUpdated] = useState<boolean>(false);
   const [tagsChanged, setTagsChanged] = useState<boolean>(false);
+  const [passingTitle, setPassingTitle] = useState<boolean>(false);
+  const [hover, setHover] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const toggleDrawer = (anchor: Anchor, open: boolean) => {
     setState({ ...state, [anchor]: open });
@@ -287,31 +293,31 @@ const Home = () => {
         .select('*')
         .eq('uuid', params.sessionid.toString())
         .single();
-      if (sessionData && profile) {
+      if (sessionData) {
         setSession(sessionData);
         setSessionName(sessionData.title);
         setSessionTrack(sessionData.track);
         setSessionTags(sessionData.tags);
-        setIntialSessionTags(
-          sessionData.tags.split(',').map((item: string) => ({
-            value: item.trim(),
-            label: `Add "${item.trim()}"`,
-            isAdd: true,
-          })),
-        );
+        sessionData.tags &&
+          setIntialSessionTags(
+            sessionData.tags.split(',').map((item: string) => ({
+              value: item.trim(),
+              label: item.trim(),
+            })),
+          );
         setSessionType(sessionData.type);
         setSessionExperienceLevel(sessionData.experience_level);
         setSessionLiveStreamLink(sessionData.liveStreamLink);
         setSessionVideoURL(sessionData.video_url);
         const sessionDate = dayjs(sessionData.startTime).startOf('day');
         setSessionDate(sessionDate);
-        const sessionStartTime = dayjs()
+        const sessionStartTime = dayjs(sessionDate)
           .hour(dayjs(sessionData.startTime).tz(eventData?.timezone).hour())
           .minute(
             dayjs(sessionData.startTime).tz(eventData?.timezone).minute(),
           );
         setSessionStartTime(sessionStartTime);
-        const sessionEndTime = dayjs()
+        const sessionEndTime = dayjs(sessionDate)
           .hour(dayjs(sessionData.endTime).tz(eventData?.timezone).hour())
           .minute(dayjs(sessionData.endTime).tz(eventData?.timezone).minute());
         setSessionEndTime(sessionEndTime);
@@ -405,6 +411,7 @@ const Home = () => {
     }
   };
   const handleRSVPClick = async (sessionID: string) => {
+    setIsLoading(true);
     try {
       const { data: rsvpData, error: rsvpError } = await supabase
         .from('rsvp')
@@ -438,10 +445,28 @@ const Home = () => {
       }
 
       setIsRsvped(true);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
+
+  const handleCancelRSVP = async (sessionID: string) => {
+    setIsLoading(true);
+    const { error } = await supabase
+      .from('rsvp')
+      .delete()
+      .eq('sessionID', sessionID);
+    if (error) {
+      console.log('Failed to cancel RSVP: ', error);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(false);
+    setIsRsvped(false);
+  };
+
   const handleDateChange = async (date: Dayjs) => {
     if (date && person && sessionLocation !== 'Custom') {
       const dayName = date.format('dddd'); // Get the day name (e.g., 'Monday')
@@ -466,10 +491,10 @@ const Home = () => {
     }
     setSessionDate(date);
     setSessionStartTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(date).tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
     setSessionEndTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(date).tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
   };
 
@@ -627,10 +652,16 @@ const Home = () => {
   };
   const resetDateAndTime = async (sessionLocation: string) => {
     setSessionStartTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(sessionDate)
+        .tz(eventData?.timezone)
+        .set('hour', 0)
+        .set('minute', 0),
     );
     setSessionEndTime(
-      dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
+      dayjs(sessionDate)
+        .tz(eventData?.timezone)
+        .set('hour', 0)
+        .set('minute', 0),
     );
     setCustomLocation('');
     setDirections('');
@@ -685,9 +716,9 @@ const Home = () => {
       const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
       if (
         (newSessionStart.isBefore(sessionEnd) &&
-          newSessionStart.isSameOrAfter(sessionStart)) ||
+          newSessionStart.isAfter(sessionStart)) ||
         (newSessionEnd.isAfter(sessionStart) &&
-          newSessionEnd.isSameOrBefore(sessionEnd)) ||
+          newSessionEnd.isBefore(sessionEnd)) ||
         (newSessionStart.isBefore(sessionStart) &&
           newSessionEnd.isAfter(sessionEnd))
       ) {
@@ -742,8 +773,8 @@ const Home = () => {
     } else if (
       isSessionOverlap(
         bookedSessionsForDay,
-        dayjs(sessionStartTime).tz('UTC').tz(timezone),
-        dayjs(sessionEndTime).tz('UTC').tz(timezone),
+        dayjs(sessionStartTime).tz('UTC').tz(timezone).set('second', 0),
+        dayjs(sessionEndTime).tz('UTC').tz(timezone).set('second', 0),
       )
     ) {
       typeof window !== 'undefined' &&
@@ -822,7 +853,7 @@ const Home = () => {
 
   useQuery({
     queryKey: ['eventSessionDetail', ceramic?.did?.parent, sessionUpdated],
-    enabled: !!profileId,
+    //enabled: !!profileId,
     queryFn: async () => {
       setCurrentHref(window.location.href);
 
@@ -843,7 +874,7 @@ const Home = () => {
         if (!adminId) {
           setDialogTitle('You are not logged in');
           setDialogMessage('Please login and refresh the page');
-          setShowModal(true);
+          setShowLoginModal(true);
         } else {
           if (
             superadmins.includes(adminId) ||
@@ -859,7 +890,7 @@ const Home = () => {
             setDialogMessage(
               'Please contact the event organizers to get more information',
             );
-            setShowModal(true);
+            setShowLoginModal(true);
           }
         }
         return {};
@@ -1624,7 +1655,8 @@ const Home = () => {
                           ampm={false}
                           onChange={(newValue) => {
                             if (newValue !== null) {
-                              const combined = dayjs(sessionDate)
+                              const combined = dayjs
+                                .tz(sessionDate, eventData?.timezone)
                                 .set('hour', newValue.hour())
                                 .set('minute', newValue.minute());
                               setSessionStartTime(combined);
@@ -1672,7 +1704,8 @@ const Home = () => {
                           ampm={false}
                           onChange={(newValue) => {
                             if (newValue !== null) {
-                              const combined = dayjs(sessionDate)
+                              const combined = dayjs
+                                .tz(sessionDate, eventData?.timezone)
                                 .set('hour', newValue.hour())
                                 .set('minute', newValue.minute());
                               setSessionEndTime(combined);
@@ -1847,40 +1880,64 @@ const Home = () => {
       </LocalizationProvider>
     );
   };
+
+  useEffect(() => {
+    const detectScrollPosition = () => {
+      const position = window.pageYOffset;
+      if (position > 50) {
+        setPassingTitle(true);
+      } else {
+        setPassingTitle(false);
+      }
+    };
+
+    window.addEventListener('scroll', detectScrollPosition);
+
+    return () => {
+      window.removeEventListener('scroll', detectScrollPosition);
+    };
+  }, []);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Dialog
         title={dialogTitle}
         message={dialogMessage}
-        showModal={showModal}
-        onClose={() => {
-          setShowModal(false);
+        showModal={showLoginModal}
+        onConfirm={() => {
+          setShowLoginModal(false);
           sessionStorage.setItem('tab', 'About');
           router.push(`/events/${eventId}`);
         }}
-        onConfirm={() => {
-          setShowModal(false);
-        }}
       />
-      <Stack color="white">
+      <Stack
+        color="white"
+        position={'sticky'}
+        top={'50px'}
+        zIndex={10}
+        sx={{
+          backdropFilter: 'blur(20px)',
+        }}
+      >
         <Thumbnail
-          name={eventData?.title}
+          name={passingTitle ? eventData?.title : 'View Session'}
+          imageUrl={eventData?.image_url}
           backFun={() => {
             sessionStorage.setItem('tab', 'Sessions');
             router.push(`/events/${eventId}`);
           }}
         />
-        <Stack
+        {/* <Stack
           direction="row"
           paddingX={2}
           spacing={3}
-          bgcolor="#222"
+          bgcolor="rgba(34, 34, 34, 0.8)"
           height="45px"
           alignItems="center"
           borderBottom="1px solid rgba(255, 255, 255, 0.1)"
-          position={'sticky'}
-          top={'50px'}
-          zIndex={2}
+          sx={{
+            backdropFilter: 'blur(20px)'
+          }}
         >
           <Stack direction="row" spacing={2} height="100%">
             <Stack
@@ -1926,7 +1983,7 @@ const Home = () => {
               </Typography>
             </Stack>
           </Stack>
-        </Stack>
+        </Stack> */}
       </Stack>
       {session && (
         <Stack
@@ -1940,284 +1997,348 @@ const Home = () => {
             gap="20px"
             justifyContent="center"
           >
-            <Stack
-              borderRadius="10px"
-              border={!isMobile ? '1px solid #383838' : 'none'}
-              bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
-              width={isMobile ? '100%' : '600px'}
-            >
-              {/*<Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                padding={!isMobile ? '10px' : '10px 10px 10px 0'}
+            <Stack gap="20px">
+              {session.creatorDID === adminId && (
+                <Stack
+                  padding="10px"
+                  bgcolor="#ffc77d1a"
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  width="100%"
+                  border="1px solid rgba(255, 199, 125, .1)"
+                  borderRadius={'8px'}
+                >
+                  <Typography
+                    fontSize={'14px'}
+                    lineHeight={'160%'}
+                    color={'rgba(255, 199, 125, 1)'}
+                    fontWeight={600}
+                  >
+                    You created this session
+                  </Typography>
+                  <ZuButton
+                    startIcon={<EditIcon size={5} />}
+                    sx={{
+                      padding: '6px 10px',
+                      backgroundColor: 'rgba(255, 199, 125, 0.05)',
+                      gap: '10px',
+                      '& > span': {
+                        margin: '0px',
+                      },
+                      color: 'rgba(255, 199, 125, 1)',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                    }}
+                    onClick={() => toggleDrawer('right', true)}
+                  >
+                    Edit
+                  </ZuButton>
+                </Stack>
+              )}
+
+              <Stack
+                borderRadius="10px"
+                border={!isMobile ? '1px solid #383838' : 'none'}
+                bgcolor={!isMobile ? '#2d2d2d' : 'transparent'}
+                width={isTablet ? '100%' : '600px'}
               >
-                 <ZuButton
-                  startIcon={<LeftArrowIcon />}
-                  onClick={() => {
-                    sessionStorage.setItem('tab', 'Sessions');
-                    router.push(`/events/${eventId}`);
-                  }}
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  width={'100%'}
+                  padding={!isMobile ? '10px' : '10px 10px 10px 0'}
                 >
-                  Back to List
-                </ZuButton>
-                 <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                  }}
-                >
-                  <CopyToClipboard
-                    text={currentHref}
-                    onCopy={() => {
-                      setShowCopyToast(true);
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      gap: '10px',
                     }}
                   >
-                    <SidebarButton
-                      sx={{
-                        padding: '10px',
-                        borderRadius: '10px',
-                        backgroundColor: '#ffffff0a',
-                        '&:hover': { backgroundColor: '#ffffff1a' },
-                        cursor: 'pointer',
+                    <CopyToClipboard
+                      text={currentHref}
+                      onCopy={() => {
+                        setShowCopyToast(true);
                       }}
-                      icon={<ShareIcon />}
-                    />
-                  </CopyToClipboard>
-                </Box> 
-              </Stack>*/}
-              <Snackbar
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                open={showCopyToast}
-                autoHideDuration={800}
-                onClose={() => {
-                  setShowCopyToast(false);
-                }}
-              >
-                <Alert severity="success" variant="filled">
-                  Copy share link to clipboard
-                </Alert>
-              </Snackbar>
-              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
-                <Stack spacing="10px">
-                  <Stack direction="row" spacing="10px" alignItems="center">
+                    >
+                      <ZuButton
+                        sx={{
+                          padding: '8px 10px 8px 14px',
+                          backgroundColor: '#ffffff0a',
+                          '&:hover': { backgroundColor: '#ffffff1a' },
+                        }}
+                        startIcon={<ShareIcon size={4} />}
+                      >
+                        Share
+                      </ZuButton>
+                    </CopyToClipboard>
+                  </Box>
+                </Stack>
+                <Snackbar
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  open={showCopyToast}
+                  autoHideDuration={800}
+                  onClose={() => {
+                    setShowCopyToast(false);
+                  }}
+                >
+                  <Alert severity="success" variant="filled">
+                    Copy share link to clipboard
+                  </Alert>
+                </Snackbar>
+                <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
+                  <Stack spacing="10px">
                     <Box flex={1}>
                       <Typography
                         bgcolor="#7DFFD11A"
-                        padding="2px 4px"
+                        padding="4px 8px"
                         color="#7DFFD1"
                         variant="bodyX"
                         borderRadius="2px"
+                        marginRight="10px"
                       >
                         · LIVE
                       </Typography>
-                      <Typography variant="caption" textTransform="uppercase">
+                      <Typography
+                        bgcolor="rgba(255, 255, 255, 0.06)"
+                        padding="4px 8px"
+                        variant="caption"
+                        textTransform="uppercase"
+                        borderRadius="2px"
+                      >
                         {session.track}
                       </Typography>
                     </Box>
-                    <Box
+                    <Stack direction="row" alignItems="center" spacing="14px">
+                      <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
+                        {dayjs(session.startTime)
+                          .tz(eventData?.timezone)
+                          .format('dddd, MMMM D')}
+                      </Typography>
+                      <Typography variant="bodyS">
+                        {dayjs(session.startTime)
+                          .tz(eventData?.timezone)
+                          .format('h:mm A')}{' '}
+                        -{' '}
+                        {dayjs(session.endTime)
+                          .tz(eventData?.timezone)
+                          .format('h:mm A')}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Stack spacing="10px">
+                    <Typography
+                      variant="subtitleLB"
+                      lineHeight={1.2}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      {session.title}
+                    </Typography>
+                    <Stack
+                      direction={'row'}
+                      alignItems={'center'}
+                      spacing={'6px'}
+                    >
+                      <MapIcon size={4} fill="rgba(255, 255, 255, 0.5)" />
+                      {session.format === 'online' ? (
+                        <Link
+                          href={session.video_url || ''}
+                          target="_blank"
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <Typography
+                            variant="bodyM"
+                            color="white"
+                            sx={{ opacity: 0.5 }}
+                          >
+                            {session.video_url}
+                          </Typography>
+                        </Link>
+                      ) : (
+                        <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
+                          {session.location}
+                        </Typography>
+                      )}
+                    </Stack>
+                  </Stack>
+                  <Stack spacing="10px">
+                    <Stack direction={'row'} spacing={1} alignItems="center">
+                      <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+                        Speakers:
+                      </Typography>
+                      {JSON.parse(session.speakers).map(
+                        (speaker: any, index: number) => (
+                          <Stack
+                            key={`Speaker-${index}`}
+                            direction={'row'}
+                            spacing="4px"
+                            alignItems={'center'}
+                          >
+                            <Box
+                              component={'img'}
+                              height={24}
+                              width={24}
+                              borderRadius={12}
+                              src={speaker.avatar || '/user/avatar_p.png'}
+                            />
+                            <Typography variant="bodyB">
+                              {speaker.username}
+                            </Typography>
+                          </Stack>
+                        ),
+                      )}
+                    </Stack>
+                  </Stack>
+                  <Stack direction="row" justifyContent="end" spacing="5px">
+                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
+                      By:
+                    </Typography>
+                    <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
+                      {JSON.parse(session.organizers)[0].username}
+                    </Typography>
+                  </Stack>
+                  <Stack spacing="10px">
+                    <Stack
+                      direction="row"
+                      padding="10px 14px"
+                      alignItems="center"
+                      spacing="10px"
+                      border={
+                        isRsvped
+                          ? '1px solid rgba(125, 255, 209, 0.1)'
+                          : '1px solid rgba(255, 255, 255, 0.10)'
+                      }
+                      borderRadius="10px"
+                      bgcolor={
+                        isRsvped ? 'rgba(125, 255, 209, 0.1)' : '#383838'
+                      }
+                      justifyContent="center"
+                      color={isRsvped ? 'rgb(125, 255, 209)' : ''}
                       sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        gap: '10px',
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={() => setHover(true)}
+                      onMouseLeave={() => setHover(false)}
+                      onClick={() => {
+                        if (isRsvped) {
+                          handleCancelRSVP(session.id);
+                        } else {
+                          handleRSVPClick(session.id);
+                        }
                       }}
                     >
-                      <CopyToClipboard
-                        text={currentHref}
-                        onCopy={() => {
-                          setShowCopyToast(true);
-                        }}
-                      >
-                        <SidebarButton
-                          sx={{
-                            padding: '10px',
-                            borderRadius: '10px',
-                            backgroundColor: '#ffffff0a',
-                            '&:hover': { backgroundColor: '#ffffff1a' },
-                            cursor: 'pointer',
-                          }}
-                          icon={<ShareIcon />}
-                        />
-                      </CopyToClipboard>
-                    </Box>
-                  </Stack>
-                  <Stack direction="row" alignItems="center" spacing="14px">
-                    <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                      {dayjs(session.startTime)
-                        .tz(eventData?.timezone)
-                        .format('dddd, MMMM D')}
-                    </Typography>
-                    <Typography variant="bodyS">
-                      {dayjs(session.startTime)
-                        .tz(eventData?.timezone)
-                        .format('h:mm A')}{' '}
-                      -{' '}
-                      {dayjs(session.endTime)
-                        .tz(eventData?.timezone)
-                        .format('h:mm A')}
-                    </Typography>
-                  </Stack>
-                </Stack>
-                <Typography variant="subtitleLB">{session.title}</Typography>
-                <Stack spacing="10px">
-                  <Stack direction={'row'} alignItems={'center'} spacing={1}>
-                    <MapIcon size={4} />
-                    {session.format === 'online' ? (
-                      <Link
-                        href={session.video_url || ''}
-                        target="_blank"
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <Typography
-                          variant="bodyM"
-                          color="white"
-                          sx={{ opacity: 0.5 }}
-                        >
-                          {session.video_url}
-                        </Typography>
-                      </Link>
-                    ) : (
-                      <Typography variant="bodyM" sx={{ opacity: 0.5 }}>
-                        {session.location}
-                      </Typography>
-                    )}
-                  </Stack>
-                  <Stack direction={'row'} spacing={1} alignItems="center">
-                    <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
-                      Speakers:
-                    </Typography>
-                    {JSON.parse(session.speakers).map(
-                      (speaker: any, index: number) => (
-                        <Stack
-                          key={`Speaker-${index}`}
-                          direction={'row'}
-                          spacing="4px"
-                          alignItems={'center'}
-                        >
-                          <Box
-                            component={'img'}
-                            height={24}
-                            width={24}
-                            borderRadius={12}
-                            src={speaker.avatar || '/user/avatar_p.png'}
-                          />
-                          <Typography variant="bodyB">
-                            {speaker.username}
-                          </Typography>
-                        </Stack>
-                      ),
-                    )}
-                  </Stack>
-                </Stack>
-                <Stack direction="row" justifyContent="end" spacing="5px">
-                  <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                    By:
-                  </Typography>
-                  <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                    {JSON.parse(session.organizers)[0].username}
-                  </Typography>
-                </Stack>
-                <Stack spacing="10px">
-                  <Stack
-                    direction="row"
-                    padding="10px 14px"
-                    alignItems="center"
-                    spacing="10px"
-                    border="1px solid rgba(255, 255, 255, 0.10)"
-                    borderRadius="10px"
-                    bgcolor="#383838"
-                    justifyContent="center"
-                  >
-                    <SessionIcon />
-                    {isRsvped ? (
-                      <Typography variant="bodyBB">RSVP Confirmed</Typography>
-                    ) : (
-                      <Typography
-                        variant="bodyBB"
-                        onClick={() => handleRSVPClick(session.id)}
-                      >
-                        RSVP Session
-                      </Typography>
-                    )}
-                  </Stack>
-                  {/*<Typography variant="bodyS">Attending: 000</Typography>*/}
-                </Stack>
-              </Stack>
-              {session.video_url && (
-                <Stack spacing="14px" padding="20px">
-                  <Typography variant="subtitleSB" sx={{ opacity: 0.6 }}>
-                    Video Stream
-                  </Typography>
-                  <Stack
-                    height="421px"
-                    borderRadius="10px"
-                    bgcolor="black"
-                  ></Stack>
-                </Stack>
-              )}
-              <Stack spacing="20px" padding={!isMobile ? '20px' : '0 0 20px'}>
-                <Typography variant="subtitleSB">Description</Typography>
-                <EditorPreview
-                  value={session.description}
-                  collapsed={isCollapsed}
-                  onCollapse={(collapsed) => {
-                    setIsCanCollapse((v) => {
-                      return v || collapsed;
-                    });
-                    setIsCollapsed(collapsed);
-                  }}
-                />
-                {isCanCollapse && (
-                  <ZuButton
-                    startIcon={
-                      isCollapsed ? (
-                        <ChevronDownIcon size={4} />
+                      {!isLoading ? (
+                        isRsvped ? (
+                          hover ? (
+                            <CancelIcon />
+                          ) : (
+                            <SessionIcon fill={'rgb(125, 255, 209)'} />
+                          )
+                        ) : (
+                          <SessionIcon />
+                        )
                       ) : (
-                        <ChevronUpIcon size={4} />
-                      )
-                    }
-                    sx={{ backgroundColor: '#313131', width: '100%' }}
-                    onClick={() => setIsCollapsed((prev) => !prev)}
-                  >
-                    {isCollapsed ? 'Show More' : 'Show Less'}
-                  </ZuButton>
-                )}
-              </Stack>
-              <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
-                <Stack spacing="10px">
-                  <Stack direction="row" spacing="10px">
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      Last Edited By:
-                    </Typography>
-                    <Typography variant="bodyS">
-                      {JSON.parse(session.organizers)[0].username}
-                    </Typography>
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      {formatDateAgo(session.createdAt)}
-                    </Typography>
-                  </Stack>
-                  <Stack direction="row" spacing="10px">
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      Edited By:
-                    </Typography>
-                    <Typography variant="bodyS">
-                      {JSON.parse(session.organizers)[0].username}
-                    </Typography>
-                    <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
-                      {formatDateAgo(session.createdAt)}
-                    </Typography>
+                        <></>
+                      )}
+                      {!isLoading ? (
+                        isRsvped ? (
+                          <Typography variant="bodyBB">
+                            {hover ? 'Cancel RSVP?' : "RSVP'd"}
+                          </Typography>
+                        ) : (
+                          <Typography variant="bodyBB">RSVP Session</Typography>
+                        )
+                      ) : (
+                        <></>
+                      )}
+                      {isLoading && (
+                        <CircularProgress
+                          size={'20px'}
+                          sx={{
+                            color: isRsvped ? 'rgb(125, 255, 209)' : 'white',
+                          }}
+                        />
+                      )}
+                    </Stack>
+                    {/*<Typography variant="bodyS">Attending: 000</Typography>*/}
                   </Stack>
                 </Stack>
-                <Typography variant="bodySB" sx={{ opacity: 0.5 }}>
-                  View All Edit Logs
-                </Typography>
+                {session.video_url && (
+                  <Stack spacing="14px" padding="20px">
+                    <Typography variant="subtitleSB" sx={{ opacity: 0.6 }}>
+                      Video Stream
+                    </Typography>
+                    <Stack
+                      height="421px"
+                      borderRadius="10px"
+                      bgcolor="black"
+                    ></Stack>
+                  </Stack>
+                )}
+                <Stack spacing="20px" padding={!isMobile ? '20px' : '0 0 20px'}>
+                  <Typography variant="subtitleSB">Description</Typography>
+                  <EditorPreview
+                    value={session.description}
+                    collapsed={isCollapsed}
+                    onCollapse={(collapsed) => {
+                      setIsCanCollapse((v) => {
+                        return v || collapsed;
+                      });
+                      setIsCollapsed(collapsed);
+                    }}
+                  />
+                  {isCanCollapse && (
+                    <ZuButton
+                      startIcon={
+                        isCollapsed ? (
+                          <ChevronDownIcon size={4} />
+                        ) : (
+                          <ChevronUpIcon size={4} />
+                        )
+                      }
+                      sx={{ backgroundColor: '#313131', width: '100%' }}
+                      onClick={() => setIsCollapsed((prev) => !prev)}
+                    >
+                      {isCollapsed ? 'Show More' : 'Show Less'}
+                    </ZuButton>
+                  )}
+                </Stack>
+                <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
+                  <Stack spacing="10px">
+                    <Stack direction="row" spacing="10px">
+                      <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
+                        Last Edited By:
+                      </Typography>
+                      <Typography variant="bodyS">
+                        {JSON.parse(session.organizers)[0].username}
+                      </Typography>
+                      <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
+                        {formatDateAgo(session.createdAt)}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing="10px">
+                      <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
+                        Edited By:
+                      </Typography>
+                      <Typography variant="bodyS">
+                        {JSON.parse(session.organizers)[0].username}
+                      </Typography>
+                      <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
+                        {formatDateAgo(session.createdAt)}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Typography variant="bodySB" sx={{ opacity: 0.5 }}>
+                    View All Edit Logs
+                  </Typography>
+                </Stack>
               </Stack>
             </Stack>
-            <Stack spacing="20px" width={isMobile ? '100%' : '320px'}>
+            <Stack spacing="20px" width={isTablet ? '100%' : '320px'}>
               <Stack
                 padding="14px 14px 14px 0"
                 borderBottom="1px solid #383838"
@@ -2397,10 +2518,9 @@ const Home = () => {
           hideBackdrop={true}
           sx={{
             position: 'relative',
-            zIndex: 3,
+            zIndex: 1001,
             '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
+              height: '100vh',
               boxShadow: 'none',
               backgroundColor: 'transparent',
               paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE

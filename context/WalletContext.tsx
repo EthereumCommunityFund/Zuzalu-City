@@ -24,6 +24,13 @@ const connectors = connectorsForWallets(
   {
     appName: 'Zuzalu City',
     projectId: '2ae588c8e2c83e087672119a2b42f330',
+    walletConnectParameters: {
+      qrModalOptions: {
+        themeVariables: {
+          '--wcm-z-index': '9999999',
+        },
+      },
+    },
   },
 );
 

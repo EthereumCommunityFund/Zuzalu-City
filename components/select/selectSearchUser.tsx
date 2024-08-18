@@ -46,14 +46,16 @@ export default function SelectSearchUser({
   useEffect(() => {
     if (removedInitialUsers && ref.current) {
       setValue((v) => {
-        return v.filter((u) => ref.current.findIndex((r) => r.id === u.id));
+        return v.filter((u) =>
+          ref.current.findIndex((r) => r && r.id === u.id),
+        );
       });
     }
     if (!removedInitialUsers && ref.current) {
       setValue((v) => {
         return [
           ...ref.current,
-          ...v.filter((u) => ref.current?.findIndex((r) => r.id === u.id)),
+          ...v.filter((u) => ref.current?.findIndex((r) => r && r.id === u.id)),
         ];
       });
     }

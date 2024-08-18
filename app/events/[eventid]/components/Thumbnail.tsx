@@ -6,13 +6,15 @@ import { ZuButton } from 'components/core';
 import { ShareIcon, HomeIcon } from 'components/icons';
 import { MoreIcon } from '@/components/icons/More';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Image from 'next/image';
 
 interface IThumbnail {
   name?: string;
   backFun?: Function;
+  imageUrl?: string;
 }
 
-const Thumbnail: React.FC<IThumbnail> = ({ name, backFun }) => {
+const Thumbnail: React.FC<IThumbnail> = ({ name, imageUrl, backFun }) => {
   const router = useRouter();
   const { breakpoints } = useTheme();
 
@@ -22,7 +24,10 @@ const Thumbnail: React.FC<IThumbnail> = ({ name, backFun }) => {
       justifyContent="space-between"
       padding="5px 14px"
       borderBottom="1px solid #383838"
-      bgcolor="#2d2d2d"
+      bgcolor="rgba(43, 43, 43, 0.8)"
+      sx={{
+        backdropFilter: 'blur(20px)',
+      }}
     >
       <Stack direction="row" spacing={2} alignItems="center">
         <ZuButton
@@ -30,7 +35,7 @@ const Thumbnail: React.FC<IThumbnail> = ({ name, backFun }) => {
             backgroundColor: '#333333',
             minWidth: 'unset',
           }}
-          onClick={() => (backFun ? backFun() : router.push('/'))}
+          onClick={() => (backFun ? backFun() : router.back())}
         >
           <ArrowBackIcon />
           <Typography
@@ -43,6 +48,16 @@ const Thumbnail: React.FC<IThumbnail> = ({ name, backFun }) => {
             Back
           </Typography>
         </ZuButton>
+        {imageUrl && (
+          <Image
+            src={imageUrl}
+            width={24}
+            height={24}
+            style={{ borderRadius: '8px' }}
+            alt="event_image"
+          />
+        )}
+
         <Typography variant="h6" color="white" lineHeight="40px">
           {name}
         </Typography>

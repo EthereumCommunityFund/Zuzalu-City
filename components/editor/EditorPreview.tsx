@@ -10,10 +10,11 @@ import React, {
 import EditorJS, { OutputData } from '@editorjs/editorjs';
 import { tools } from './tools';
 import { Global, css } from '@emotion/react';
-import { decodeOutputData } from '@/components/editor/useEditorStore';
+import { decodeOutputData } from './useEditorStore';
+import { shallowDiff } from './shallowDiff';
 
 export const EditorPreview: React.FC<{
-  value?: OutputData | string;
+  value: OutputData | string;
   collapsed?: boolean;
   /**
    * if true, the editor will be collapsed when height > collapseHeight * 1.5
@@ -33,8 +34,9 @@ export const EditorPreview: React.FC<{
     scrollHeight,
   } = props;
 
-  const data =
-    typeof value === 'string' ? decodeOutputData(value as string) : value;
+  const [previewData, setPreviewData] = useState<OutputData | undefined>(
+    decodeOutputData(value),
+  );
 
   const [collapsed, setCollapsed] = useState(props.collapsed);
 
@@ -49,7 +51,7 @@ export const EditorPreview: React.FC<{
     editorRef.current = new EditorJS({
       holder: container,
       tools,
-      data: data,
+      data: previewData,
       readOnly: true,
       minHeight: 0,
       onReady() {
@@ -73,6 +75,7 @@ export const EditorPreview: React.FC<{
               });
             }
           }
+
           calculateHeight();
         }
       },
@@ -95,8 +98,21 @@ export const EditorPreview: React.FC<{
     };
   }, []);
 
-  // TODO: re-render editor when data changed
-  // there is no use case now
+  useEffect(() => {
+    if (shallowDiff(value, previewData)) {
+      const data = decodeOutputData(value);
+      setPreviewData(data);
+      if (editorRef.current) {
+        if (!data) {
+          editorRef.current.clear();
+        } else {
+          editorRef.current.render?.(data).catch((err) => {
+            console.error(err);
+          });
+        }
+      }
+    }
+  }, [value]);
 
   return (
     <Wrapper
@@ -129,6 +145,9 @@ const Wrapper = styled('div')<{
   scrollHeight?: number;
 }>`
   color: white;
+  font-size: 16px;
+  line-height: 1.6;
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
   ${(props) =>
     props.scrollHeight
