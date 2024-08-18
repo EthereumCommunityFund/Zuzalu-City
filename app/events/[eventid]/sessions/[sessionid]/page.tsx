@@ -129,6 +129,7 @@ const Home = () => {
   const [showCopyToast, setShowCopyToast] = useState(false);
   const [currentHref, setCurrentHref] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogMessage, setDialogMessage] = useState('');
   const [state, setState] = useState({
@@ -852,7 +853,7 @@ const Home = () => {
 
   useQuery({
     queryKey: ['eventSessionDetail', ceramic?.did?.parent, sessionUpdated],
-    enabled: !!profileId,
+    //enabled: !!profileId,
     queryFn: async () => {
       setCurrentHref(window.location.href);
 
@@ -873,7 +874,7 @@ const Home = () => {
         if (!adminId) {
           setDialogTitle('You are not logged in');
           setDialogMessage('Please login and refresh the page');
-          setShowModal(true);
+          setShowLoginModal(true);
         } else {
           if (
             superadmins.includes(adminId) ||
@@ -889,7 +890,7 @@ const Home = () => {
             setDialogMessage(
               'Please contact the event organizers to get more information',
             );
-            setShowModal(true);
+            setShowLoginModal(true);
           }
         }
         return {};
@@ -1902,14 +1903,11 @@ const Home = () => {
       <Dialog
         title={dialogTitle}
         message={dialogMessage}
-        showModal={showModal}
-        onClose={() => {
-          setShowModal(false);
+        showModal={showLoginModal}
+        onConfirm={() => {
+          setShowLoginModal(false);
           sessionStorage.setItem('tab', 'About');
           router.push(`/events/${eventId}`);
-        }}
-        onConfirm={() => {
-          setShowModal(false);
         }}
       />
       <Stack
