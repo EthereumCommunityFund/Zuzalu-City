@@ -9,7 +9,6 @@ import {
 import LotteryCard from '@/components/cards/LotteryCard';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import { ZuCalendar } from '@/components/core';
-import { dashboardEvent, isDev } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import { Dayjs, dayjs } from '@/utils/dayjs';
@@ -36,6 +35,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { Fragment, useEffect, useState } from 'react';
 import MiniDashboard from './components/MiniDashboard';
+import { dashboardEvent, isDev } from '@/constant';
+import { EventStaticCard } from '@/components/staticCards/EventStaticCard';
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
@@ -563,6 +564,7 @@ const Home: React.FC = () => {
                       },
                     )
                   )}
+                  <EventStaticCard />
                 </Box>
                 <Box>
                   {!isTablet && (
