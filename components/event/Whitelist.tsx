@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Stack,
   Typography,
@@ -23,31 +23,28 @@ import { client, config } from '@/context/WalletContext';
 import { useAccount, useSwitchChain } from 'wagmi';
 import {
   TICKET_FACTORY_ADDRESS,
-  mUSDC_TOKEN,
   mUSDT_TOKEN,
-  ticketFactoryGetContract,
   isDev,
   SCROLL_EXPLORER,
 } from '@/constant';
 import { Address } from 'viem';
-import dayjs, { Dayjs } from 'dayjs';
-import { convertDateToEpoch } from '@/utils/format';
 import { TICKET_ABI } from '@/utils/ticket_abi';
 import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import { Abi, AbiItem } from 'viem';
 import { ERC20_ABI } from '@/utils/erc20_abi';
 import { scroll, scrollSepolia } from 'viem/chains';
 import { writeContract, waitForTransactionReceipt } from 'wagmi/actions';
-import { ZuButton, ZuInput } from '@/components/core';
+import { ZuButton } from '@/components/core';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 import { generateNFTMetadata } from '@/utils/generateNFTMetadata';
 import { createFileFromJSON } from '@/utils/generateNFTMetadata';
-import { fetchEmailJsConfig } from '@/utils/emailService';
 import { Event, Contract } from '@/types';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import DownloadingRoundedIcon from '@mui/icons-material/DownloadingRounded';
 
 interface IProps {
+  handleNext?: (
+    type: 'verify' | 'agree' | 'mint' | 'transaction' | 'complete',
+  ) => void;
   setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setIsAgree?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setIsMint?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -69,7 +66,7 @@ interface IProps {
 }
 
 export const Verify: React.FC<IProps> = ({
-  setIsVerify,
+  handleNext,
   eventContractID,
   setFilteredResults,
 }) => {
@@ -280,7 +277,7 @@ export const Verify: React.FC<IProps> = ({
               </Stack>
               <ZuButton
                 startIcon={<RightArrowIcon color="#67DBFF" />}
-                onClick={() => setIsVerify(true)}
+                onClick={() => handleNext?.('verify')}
                 sx={{
                   width: '100%',
                   color: '#67DBFF',
@@ -328,7 +325,7 @@ export const Verify: React.FC<IProps> = ({
   );
 };
 
-export const Agree: React.FC<IProps> = ({ setIsVerify, setIsAgree }) => {
+export const Agree: React.FC<IProps> = ({ handleNext }) => {
   return (
     <Stack height="calc(100vh - 50px)">
       <Stack
@@ -425,10 +422,7 @@ export const Agree: React.FC<IProps> = ({ setIsVerify, setIsAgree }) => {
           </Stack>
           <ZuButton
             startIcon={<RightArrowIcon color="#67DBFF" />}
-            onClick={() => {
-              setIsVerify(false);
-              setIsAgree(true);
-            }}
+            onClick={() => handleNext?.('agree')}
             sx={{
               width: '100%',
               color: '#67DBFF',
@@ -445,13 +439,11 @@ export const Agree: React.FC<IProps> = ({ setIsVerify, setIsAgree }) => {
 };
 
 export const Mint: React.FC<IProps> = ({
-  setIsAgree,
-  setIsMint,
+  handleNext,
   filteredResults = [],
   event,
   setTokenId,
   setTicketMinted,
-  setIsTransaction,
   setMintedContract,
   setTransactionLog,
 }) => {
@@ -564,8 +556,7 @@ export const Mint: React.FC<IProps> = ({
           if (MintLogs.length > 0) {
             setTokenId(BigInt(MintLogs[3].data).toString());
             setTransactionLog(MintHash);
-            setIsAgree(false);
-            setIsTransaction(true);
+            handleNext?.('mint');
           }
         }
       }
@@ -732,11 +723,7 @@ export const Mint: React.FC<IProps> = ({
   );
 };
 
-export const Transaction: React.FC<IProps> = ({
-  setIsMint,
-  setIsTransaction,
-  handleClose,
-}) => {
+export const Transaction: React.FC<IProps> = ({ handleNext }) => {
   const [isWait, setIsWait] = useState<boolean>(false);
 
   return (
@@ -798,8 +785,7 @@ export const Transaction: React.FC<IProps> = ({
               bgcolor="#FFFFFF0D"
               borderRadius="10px"
               onClick={() => {
-                setIsMint(false);
-                setIsTransaction(true);
+                handleNext?.('transaction');
               }}
               sx={{ cursor: 'pointer' }}
             >
@@ -1058,8 +1044,6 @@ export const Complete: React.FC<IProps> = ({
         <ZuButton
           startIcon={<ArrowUpLeftIcon size={5} color="#67DBFF" />}
           onClick={() => {
-            setIsTransaction(false);
-            setIsComplete(true);
             onClose();
           }}
           sx={{ width: '100%', backgroundColor: '#2c383b', color: '#67DBFF' }}
