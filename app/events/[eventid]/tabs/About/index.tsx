@@ -5,6 +5,7 @@ import React, {
   Dispatch,
   SetStateAction,
   useRef,
+  useCallback,
 } from 'react';
 import { useParams } from 'next/navigation';
 import {
@@ -48,6 +49,7 @@ import { Anchor, Contract } from '@/types';
 import { LatLngLiteral } from 'leaflet';
 import getLatLngFromAddress from '@/utils/osm';
 import LotteryCard from '@/components/cards/LotteryCard';
+import { useQuery } from '@tanstack/react-query';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -55,8 +57,6 @@ interface IAbout {
 }
 
 const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
-  const [location, setLocation] = useState<string>('');
-
   const [whitelist, setWhitelist] = useState<boolean>(false);
   const [sponsor, setSponsor] = useState<boolean>(false);
 
@@ -95,49 +95,30 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
     right: false,
   });
 
-  const [osm, setOsm] = useState<LatLngLiteral | undefined>({
-    lat: 0,
-    lng: 0,
-  });
   const ref = useRef<HTMLDivElement | null>(null);
 
-  const getLocation = async () => {
-    try {
-      const { data } = await supabase
-        .from('locations')
-        .select('*')
-        .eq('eventId', eventId);
-      if (data !== null) {
-        setLocation(data[0].name);
+  const { data: locationName } = useQuery({
+    queryKey: ['getLocation', eventId],
+    queryFn: () => {
+      return supabase.from('locations').select('*').eq('eventId', eventId);
+    },
+    select: (data: any) => {
+      if (data.data !== null) {
+        return data.data[0].name;
       }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+      return null;
+    },
+  });
 
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
+  const { data: osmData } = useQuery({
+    queryKey: ['getLatLngFromAddress', locationName],
+    queryFn: () => getLatLngFromAddress(locationName),
+    enabled: !!locationName,
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getLocation();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
+  const toggleDrawer = useCallback((anchor: Anchor, open: boolean) => {
+    setState((v) => ({ ...v, [anchor]: open }));
   }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await getLatLngFromAddress(location);
-      setOsm(res);
-    };
-    fetchData();
-  }, [location]);
 
   const List = (anchor: Anchor) => {
     const handleClose = () => {
@@ -351,7 +332,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               eventDescription={eventData.description}
               spaceName={eventData.space?.name}
               eventName={eventData.title}
-              location={location}
+              location={locationName}
               organizer={eventData.profile?.username as string}
               image_url={eventData.image_url}
               status={eventData.status}
@@ -501,8 +482,8 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
             <EventDetail
               status={eventData.status}
               links={eventData.customLinks}
-              address={location}
-              location={osm}
+              address={locationName}
+              location={osmData}
             />
             {/* <Stack>
                       <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
