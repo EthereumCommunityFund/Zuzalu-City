@@ -77,6 +77,8 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
+import { download } from 'utils/download';
+import { decodeOutputData } from '@/components/editor/useEditorStore';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -277,6 +279,88 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     document.body.appendChild(eleLink);
     eleLink.click();
     document.body.removeChild(eleLink);
+  };
+
+  const handleClickExportAllSessions = () => {
+    if (!sessionsByDate) return;
+    let csv = '';
+    const sessions: Session[] = [];
+    Object.keys(sessionsByDate).forEach((key) =>
+      sessions.push(...sessionsByDate[key]),
+    );
+
+    let headers = [
+      'Title',
+      'Description',
+      'Start time',
+      'End time',
+      'Track',
+      'Speakers',
+      'Format',
+      'Type',
+      'Experience Level',
+      'Organizers',
+      'Location',
+      'LiveStream Link',
+    ];
+    csv += headers.join(',') + '\n';
+
+    const formatDes = (str: string) => {
+      let obj;
+      try {
+        obj = decodeOutputData(str);
+      } catch (error) {
+        return str;
+      }
+      if (!obj?.blocks?.length) {
+        return str;
+      }
+      return `"${obj?.blocks.map((item: { data: { text: string } }) => item?.data?.text).join(',')}"`;
+    };
+
+    const formatSpeakers = (str: string) => {
+      let obj;
+      try {
+        obj = JSON.parse(str);
+      } catch (error) {
+        return '';
+      }
+      return `"${obj.map((item: { username: string }) => item.username).join(' ')}"`;
+    };
+
+    const formatOrganizers = (str: string) => {
+      let obj;
+      try {
+        obj = JSON.parse(str);
+      } catch (error) {
+        return '';
+      }
+      return `"${obj.map((item: { username: string }) => item.username).join(' ')}"`;
+    };
+
+    sessions.forEach((session: Session) => {
+      csv += session.title + ',';
+      csv += formatDes(session.description) + ',';
+      csv +=
+        dayjs(session.startTime)
+          .tz(eventData?.timezone)
+          .format('YYYY-MM-DD HH:MM') + ',';
+      csv +=
+        dayjs(session.endTime)
+          .tz(eventData?.timezone)
+          .format('YYYY-MM-DD HH:MM') + ',';
+      csv += session.track + ',';
+      csv += formatSpeakers(session.speakers) + ',';
+      csv += session.format + ',';
+      csv += session.type + ',';
+      csv += session.experience_level + ',';
+      csv += formatOrganizers(session.organizers) + ',';
+      csv += session.location + ',';
+      csv += session.liveStreamLink ? session.liveStreamLink : '';
+      csv += '\n';
+    });
+
+    download('sessionsTest.csv', csv);
   };
 
   const groupSessionByDate = (
@@ -2515,6 +2599,31 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       </Typography>
                       <ChevronRightIcon />
                     </Stack>
+                  </Stack>
+                  <Stack
+                    direction={'row'}
+                    alignItems={'center'}
+                    justifyContent="center"
+                    padding={'10px'}
+                    borderRadius={'10px'}
+                    border={'solid 1px rgba(255, 255, 255, 0.10)'}
+                    onClick={handleClickExportAllSessions}
+                    sx={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                      cursor: 'pointer',
+                    }}
+                    spacing={'10px'}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      lineHeight={'160%'}
+                      sx={{
+                        opacity: '0.6',
+                      }}
+                    >
+                      Export all Sessions
+                    </Typography>
+                    <ArrowDownIcon size={4} />
                   </Stack>
                   <Popover
                     id={locationAnchorId}
