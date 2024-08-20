@@ -1,11 +1,5 @@
 'use client';
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Stack,
@@ -13,17 +7,12 @@ import {
   Typography,
   SwipeableDrawer,
   useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import {
   EventName,
   EventDetail,
   EventRegister,
   EventAbout,
-  Initial,
-  Disclaimer,
-  Email,
-  Payment,
 } from 'components/event';
 import {
   Verify,
@@ -40,14 +29,13 @@ import {
 } from '@/components/event/Sponsor';
 import { ZuButton } from '@/components/core';
 import { XMarkIcon } from '@/components/icons';
-import { useCeramicContext } from '@/context/CeramicContext';
-import { CeramicResponseType, EventEdge, Event } from '@/types';
+import { Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
-import { SpaceCard } from '@/components/cards';
 import { Anchor, Contract } from '@/types';
-import { LatLngLiteral } from 'leaflet';
 import getLatLngFromAddress from '@/utils/osm';
 import LotteryCard from '@/components/cards/LotteryCard';
+import { useQuery } from '@tanstack/react-query';
+import { useDrawerState, useMediaQuery } from '@/hooks';
 
 interface IAbout {
   eventData: Event | undefined;
@@ -55,21 +43,13 @@ interface IAbout {
 }
 
 const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
-  const [location, setLocation] = useState<string>('');
-
   const [whitelist, setWhitelist] = useState<boolean>(false);
   const [sponsor, setSponsor] = useState<boolean>(false);
 
-  const [isInitial, setIsInitial] = useState<boolean>(false);
-  const [isDisclaimer, setIsDisclaimer] = useState<boolean>(false);
-  const [isEmail, setIsEmail] = useState<boolean>(false);
-  const [isPayment, setIsPayment] = useState<boolean>(false);
+  const [mintStep, setMintStep] = useState<
+    'verify' | 'agree' | 'mint' | 'transaction' | 'complete'
+  >('verify');
 
-  const [isVerify, setIsVerify] = useState<boolean>(false);
-  const [isAgree, setIsAgree] = useState<boolean>(false);
-  const [isMint, setIsMint] = useState<boolean>(false);
-  const [isTransaction, setIsTransaction] = useState<boolean>(false);
-  const [isComplete, setIsComplete] = useState<boolean>(false);
   const [tokenId, setTokenId] = useState<string>('');
   const [isSponsorAgree, setIsSponsorAgree] = useState<boolean>(false);
   const [isSponsorMint, setIsSponsorMint] = useState<boolean>(false);
@@ -84,72 +64,56 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
   const eventId = params.eventid.toString();
 
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const { isMobile } = useMediaQuery();
 
-  const { composeClient } = useCeramicContext();
+  const { state, setState } = useDrawerState();
 
-  const [state, setState] = useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
-
-  const [osm, setOsm] = useState<LatLngLiteral | undefined>({
-    lat: 0,
-    lng: 0,
-  });
   const ref = useRef<HTMLDivElement | null>(null);
 
-  const getLocation = async () => {
-    try {
-      const { data } = await supabase
-        .from('locations')
-        .select('*')
-        .eq('eventId', eventId);
-      if (data !== null) {
-        setLocation(data[0].name);
+  const { data: locationName } = useQuery({
+    queryKey: ['getLocation', eventId],
+    queryFn: () => {
+      return supabase.from('locations').select('*').eq('eventId', eventId);
+    },
+    select: (data: any) => {
+      if (data.data !== null) {
+        return data.data[0].name;
       }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+      return null;
+    },
+  });
 
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
+  const { data: osmData } = useQuery({
+    queryKey: ['getLatLngFromAddress', locationName],
+    queryFn: () => getLatLngFromAddress(locationName),
+    enabled: !!locationName,
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getLocation();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await getLatLngFromAddress(location);
-      setOsm(res);
-    };
-    fetchData();
-  }, [location]);
+  const toggleDrawer = useCallback(
+    (anchor: Anchor, open: boolean) => {
+      setState((v) => ({ ...v, [anchor]: open }));
+    },
+    [setState],
+  );
 
   const List = (anchor: Anchor) => {
     const handleClose = () => {
       toggleDrawer('right', false);
-      setIsVerify(false);
-      setIsAgree(false);
-      setIsMint(false);
-      setIsTransaction(false);
-      setIsComplete(false);
+      setMintStep('verify');
       const root = ref.current?.getElementsByClassName('MuiPaper-root');
       if (root) root?.[0].scrollTo(0, 0);
-      // setIsEmail(false);
+    };
+
+    const handleNext = (type: string) => {
+      const steps: any[] = [
+        'verify',
+        'agree',
+        'mint',
+        'transaction',
+        'complete',
+      ];
+      const index = steps.findIndex((step) => step === type);
+      setMintStep(steps[index + 1]);
     };
 
     return (
@@ -175,73 +139,39 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
           </ZuButton>
           <Typography variant="subtitleSB">Register for Event</Typography>
         </Stack>
-        {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
-        {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
-        {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
-        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
         {whitelist && (
           <>
-            {!isVerify &&
-              !isAgree &&
-              !isMint &&
-              !isTransaction &&
-              !isComplete && (
-                <Verify
-                  setIsVerify={setIsVerify}
-                  eventContractID={eventData?.contractID}
-                  setFilteredResults={setFilteredResults}
-                />
-              )}
-            {isVerify &&
-              !isAgree &&
-              !isMint &&
-              !isTransaction &&
-              !isComplete && (
-                <Agree setIsVerify={setIsVerify} setIsAgree={setIsAgree} />
-              )}
-            {!isVerify &&
-              isAgree &&
-              !isMint &&
-              !isTransaction &&
-              !isComplete && (
-                <Mint
-                  setIsAgree={setIsAgree}
-                  setIsMint={setIsMint}
-                  filteredResults={filteredResults}
-                  event={eventData}
-                  setTokenId={setTokenId}
-                  setTicketMinted={setTicketMinted}
-                  setIsTransaction={setIsTransaction}
-                  setMintedContract={setMintedContract}
-                  setTransactionLog={setTransactionLog}
-                />
-              )}
-            {!isVerify &&
-              !isAgree &&
-              isMint &&
-              !isTransaction &&
-              !isComplete && (
-                <Transaction
-                  setIsMint={setIsMint}
-                  setIsTransaction={setIsTransaction}
-                  handleClose={handleClose}
-                />
-              )}
-            {!isVerify &&
-              !isAgree &&
-              !isMint &&
-              isTransaction &&
-              !isComplete && (
-                <Complete
-                  setIsTransaction={setIsTransaction}
-                  setIsComplete={setIsComplete}
-                  handleClose={handleClose}
-                  tokenId={tokenId}
-                  ticketMinted={ticketMinted}
-                  mintedContract={mintedContract}
-                  transactionLog={transactionLog}
-                />
-              )}
+            {mintStep === 'verify' && (
+              <Verify
+                handleNext={handleNext}
+                eventContractID={eventData?.contractID}
+                setFilteredResults={setFilteredResults}
+              />
+            )}
+            {mintStep === 'agree' && <Agree handleNext={handleNext} />}
+            {mintStep === 'mint' && (
+              <Mint
+                handleNext={handleNext}
+                filteredResults={filteredResults}
+                event={eventData}
+                setTokenId={setTokenId}
+                setTicketMinted={setTicketMinted}
+                setMintedContract={setMintedContract}
+                setTransactionLog={setTransactionLog}
+              />
+            )}
+            {mintStep === 'transaction' && (
+              <Transaction handleNext={handleNext} />
+            )}
+            {mintStep === 'complete' && (
+              <Complete
+                handleClose={handleClose}
+                tokenId={tokenId}
+                ticketMinted={ticketMinted}
+                mintedContract={mintedContract}
+                transactionLog={transactionLog}
+              />
+            )}
           </>
         )}
         {sponsor && (
@@ -336,13 +266,6 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               },
             }}
           >
-            {/* <Stack spacing="4px">
-                      <Box component="img" src="/sponsor_banner.png" height="100px" borderRadius="10px" />
-                      <Typography variant="caption" textAlign="right">
-                        Sponsored Banner
-                      </Typography>
-                    </Stack> */}
-
             <EventName
               avatar={eventData.space?.avatar}
               tagline={eventData.tagline}
@@ -351,7 +274,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               eventDescription={eventData.description}
               spaceName={eventData.space?.name}
               eventName={eventData.title}
-              location={location}
+              location={locationName}
               organizer={eventData.profile?.username as string}
               image_url={eventData.image_url}
               status={eventData.status}
@@ -437,35 +360,6 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                 </Stack>
               </Box>
             </Stack>
-            {/*<Stack
-              bgcolor="#292929"
-              padding="20px"
-              spacing="20px"
-              borderRadius="10px"
-              height="300px"
-            >
-              <Typography variant="subtitleSB" sx={{opacity: '0.6', textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)'}} fontSize={'18px'} fontWeight={700}>ORGANIZER UPDATES</Typography>
-              <Stack spacing="10px">
-                <Stack direction="row" alignItems="center" spacing="10px">
-                  <Box
-                    component="img"
-                    src="/5.webp"
-                    width="30px"
-                    height="30px"
-                    borderRadius="20px"
-                  />
-                  <Typography variant="bodyMB">drivenfast</Typography>
-                  <Typography variant="caption">3 DAYS AGO</Typography>
-                </Stack>
-                <Typography variant="bodyM">
-                  ZuConnect is an experience crafted with love by Zuzalu, whose
-                  mission is to foster a global network of communities to
-                  advance humanity by creating playgrounds at the intersection
-                  of free and open technology, science, health, and social
-                  innovation.
-                </Typography>
-              </Stack>
-            </Stack>*/}
           </Stack>
           <Stack
             spacing="20px"
@@ -491,22 +385,13 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                 setVerify={setVerify}
               />
             ) : null}
-            {/* <Stack spacing="4px">
-                      <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
-                      <Typography variant="caption" textAlign="right">
-                        Sponsored Banner
-                      </Typography>
-                    </Stack> */}
             <LotteryCard inEvent />
             <EventDetail
               status={eventData.status}
               links={eventData.customLinks}
-              address={location}
-              location={osm}
+              address={locationName}
+              location={osmData}
             />
-            {/* <Stack>
-                      <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
-                    </Stack> */}
           </Stack>
           <SwipeableDrawer
             hideBackdrop={true}
