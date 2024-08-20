@@ -142,8 +142,6 @@ const SessionLocationDisplay: React.FC<BookingLocationProps> = ({
     name: 'directions',
   });
 
-  console.log(sessionLocation, customLocation, directions);
-
   if (!sessionLocation) return null;
 
   return (
