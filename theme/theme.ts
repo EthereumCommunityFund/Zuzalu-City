@@ -82,6 +82,17 @@ let theme = createTheme({
           backgroundColor: '#373737',
         },
       },
+      defaultProps: {
+        MenuProps: {
+          PaperProps: {
+            style: {
+              backgroundColor: '#222222',
+              maxHeight: 200,
+              overflow: 'auto',
+            },
+          },
+        },
+      },
     },
     MuiAutocomplete: {
       styleOverrides: {
