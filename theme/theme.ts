@@ -1,5 +1,6 @@
 'use client';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import type {} from '@mui/x-date-pickers/themeAugmentation';
 // Base styles
 import { Colors } from './base/colors';
 import { Typography } from './base/typography';
@@ -104,6 +105,38 @@ let theme = createTheme({
         },
         clearIndicator: {
           color: 'rgba(255, 255, 255, 0.6)',
+        },
+      },
+    },
+    MuiDesktopDatePicker: {
+      defaultProps: {
+        sx: {
+          '& .MuiSvgIcon-root': {
+            color: 'white',
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: 'none',
+          },
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: '#313131',
+            borderRadius: '10px',
+          },
+        },
+        slotProps: {
+          popper: {
+            sx: {
+              '& .MuiPickersDay-root': { color: 'black' },
+              '& .MuiPickersDay-root.Mui-selected': {
+                backgroundColor: '#D7FFC4',
+              },
+              '& .MuiPickersCalendarHeader-root': {
+                color: 'black',
+              },
+              '& .MuiMultiSectionDigitalClock-root': {
+                color: 'black',
+              },
+            },
+          },
         },
       },
     },
