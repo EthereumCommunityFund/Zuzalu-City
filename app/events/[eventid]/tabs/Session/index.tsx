@@ -77,10 +77,8 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
-import { download } from 'utils/download'
-import {
-  decodeOutputData
-} from '@/components/editor/useEditorStore';
+import { download } from 'utils/download';
+import { decodeOutputData } from '@/components/editor/useEditorStore';
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -286,10 +284,25 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const handleClickExportAllSessions = () => {
     if (!sessionsByDate) return;
     let csv = '';
-    const sessions: Session[] = []
-    Object.keys(sessionsByDate).forEach((key) => sessions.push(...sessionsByDate[key]));
+    const sessions: Session[] = [];
+    Object.keys(sessionsByDate).forEach((key) =>
+      sessions.push(...sessionsByDate[key]),
+    );
 
-    let headers = ['Title', 'Description', 'Start time', 'End time', 'Track', 'Speakers', 'Format', 'Type', 'Experience Level', 'Organizers', 'Location', 'LiveStream Link'];
+    let headers = [
+      'Title',
+      'Description',
+      'Start time',
+      'End time',
+      'Track',
+      'Speakers',
+      'Format',
+      'Type',
+      'Experience Level',
+      'Organizers',
+      'Location',
+      'LiveStream Link',
+    ];
     csv += headers.join(',') + '\n';
 
     const formatDes = (str: string) => {
@@ -302,17 +315,17 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       if (!obj?.blocks?.length) {
         return str;
       }
-      return `"${obj?.blocks.map((item: { data: { text: string; }; }) => item?.data?.text).join(',')}"`;
+      return `"${obj?.blocks.map((item: { data: { text: string } }) => item?.data?.text).join(',')}"`;
     };
 
-    const formatSpeakers = (str: string) => { 
+    const formatSpeakers = (str: string) => {
       let obj;
       try {
         obj = JSON.parse(str);
       } catch (error) {
         return '';
       }
-      return `"${obj.map((item: { username: string; }) => item.username).join(' ')}"`;
+      return `"${obj.map((item: { username: string }) => item.username).join(' ')}"`;
     };
 
     const formatOrganizers = (str: string) => {
@@ -322,14 +335,20 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       } catch (error) {
         return '';
       }
-      return `"${obj.map((item: { username: string; }) => item.username).join(' ')}"`;
+      return `"${obj.map((item: { username: string }) => item.username).join(' ')}"`;
     };
 
     sessions.forEach((session: Session) => {
       csv += session.title + ',';
       csv += formatDes(session.description) + ',';
-      csv += dayjs(session.startTime).tz(eventData?.timezone).format('YYYY-MM-DD HH:MM') + ',';
-      csv += dayjs(session.endTime).tz(eventData?.timezone).format('YYYY-MM-DD HH:MM') + ',';
+      csv +=
+        dayjs(session.startTime)
+          .tz(eventData?.timezone)
+          .format('YYYY-MM-DD HH:MM') + ',';
+      csv +=
+        dayjs(session.endTime)
+          .tz(eventData?.timezone)
+          .format('YYYY-MM-DD HH:MM') + ',';
       csv += session.track + ',';
       csv += formatSpeakers(session.speakers) + ',';
       csv += session.format + ',';
@@ -337,10 +356,10 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       csv += session.experience_level + ',';
       csv += formatOrganizers(session.organizers) + ',';
       csv += session.location + ',';
-      csv += (session.liveStreamLink ? session.liveStreamLink: '');
+      csv += session.liveStreamLink ? session.liveStreamLink : '';
       csv += '\n';
     });
-    
+
     download('sessionsTest.csv', csv);
   };
 
@@ -2584,7 +2603,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   <Stack
                     direction={'row'}
                     alignItems={'center'}
-                    justifyContent='center'
+                    justifyContent="center"
                     padding={'10px'}
                     borderRadius={'10px'}
                     border={'solid 1px rgba(255, 255, 255, 0.10)'}
@@ -2595,16 +2614,16 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     }}
                     spacing={'10px'}
                   >
-                      <Typography
-                        fontSize={'14px'}
-                        lineHeight={'160%'}
-                        sx={{
-                          opacity: '0.6',
-                        }}
-                      >
-                         Export all Sessions
-                      </Typography>
-                        <ArrowDownIcon size={4} />
+                    <Typography
+                      fontSize={'14px'}
+                      lineHeight={'160%'}
+                      sx={{
+                        opacity: '0.6',
+                      }}
+                    >
+                      Export all Sessions
+                    </Typography>
+                    <ArrowDownIcon size={4} />
                   </Stack>
                   <Popover
                     id={locationAnchorId}
