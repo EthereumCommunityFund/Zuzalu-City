@@ -28,10 +28,12 @@ export default function SelectSearchUser({
 
   const handleChange = useCallback(
     (newValue: Profile[]) => {
-      setValue(newValue);
-      onChange(newValue);
+      const fixedValue = !removedInitialUsers ? ref.current : [];
+      const updatedValue = Array.from(new Set([...fixedValue, ...newValue]));
+      setValue(updatedValue);
+      onChange(updatedValue);
     },
-    [onChange],
+    [onChange, removedInitialUsers],
   );
 
   const options = useMemo(() => {
