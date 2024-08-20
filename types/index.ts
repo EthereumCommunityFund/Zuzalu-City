@@ -164,6 +164,7 @@ export interface Session {
   organizers: string;
   rsvpNb?: number;
   creatorDID?: string;
+  liveStreamLink?: string;
   uuid: string;
 }
 export type SessionSupabaseData = {
