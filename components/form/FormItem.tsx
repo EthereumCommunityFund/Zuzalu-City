@@ -11,7 +11,7 @@ export default function FormItem({
   title,
   desc,
   children,
-  required = true,
+  required = false,
 }: IProps) {
   return (
     <Stack spacing="10px">
