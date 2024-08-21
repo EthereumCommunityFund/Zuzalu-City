@@ -297,12 +297,16 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       try {
         obj = decodeOutputData(str);
       } catch (error) {
-        return str;
+        return str || '';
       }
       if (!obj?.blocks?.length) {
-        return str;
+        return str || '';
       }
-      return `"${obj?.blocks.map((item: { data: { text: string; }; }) => item?.data?.text).join(',')}"`;
+      if (obj.blocks.length > 1) {
+        return obj?.blocks.map((item: { data: { text: string; }; }) => item?.data?.text).join(',') || '';
+      } else {
+        return obj?.blocks[0]?.data?.text || '';
+      }
     };
 
     const formatSpeakers = (str: string) => { 
@@ -312,7 +316,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       } catch (error) {
         return '';
       }
-      return `"${obj.map((item: { username: string; }) => item.username).join(' ')}"`;
+      return obj.map((item: { username: string; }) => item.username).join(',');
     };
 
     const formatOrganizers = (str: string) => {
@@ -322,26 +326,42 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       } catch (error) {
         return '';
       }
-      return `"${obj.map((item: { username: string; }) => item.username).join(' ')}"`;
+      return obj.map((item: { username: string; }) => item.username).join(',');
+    };
+    const formatCsv = (res: string) => {
+      if (!res) {
+        return "";
+      }
+      res = res.trim();
+      if (res.includes(',') || res.includes('"')) {
+        if(res.includes('"')) {
+          return `"${res.replaceAll('"', "'")}"`;
+        } else {
+          return `"${res}"`;
+        }
+      } else {
+        return res;
+      }
     };
 
     sessions.forEach((session: Session) => {
-      csv += session.title + ',';
-      csv += formatDes(session.description) + ',';
-      csv += dayjs(session.startTime).tz(eventData?.timezone).format('YYYY-MM-DD HH:MM') + ',';
-      csv += dayjs(session.endTime).tz(eventData?.timezone).format('YYYY-MM-DD HH:MM') + ',';
-      csv += session.track + ',';
-      csv += formatSpeakers(session.speakers) + ',';
-      csv += session.format + ',';
-      csv += session.type + ',';
-      csv += session.experience_level + ',';
-      csv += formatOrganizers(session.organizers) + ',';
-      csv += session.location + ',';
-      csv += (session.liveStreamLink ? session.liveStreamLink: '');
+      const row = [];
+      row.push(session.title || '');
+      row.push(formatDes(session.description));
+      row.push(dayjs(session.startTime).tz(eventData?.timezone).format('YYYY-MM-DD HH:MM'));
+      row.push(dayjs(session.endTime).tz(eventData?.timezone).format('YYYY-MM-DD HH:MM'));
+      row.push(session.track || '');
+      row.push(formatSpeakers(session.speakers));
+      row.push(session.format || '');
+      row.push(session.type || '');
+      row.push(session.experience_level || '');
+      row.push(formatOrganizers(session.organizers));
+      row.push(session.location || '');
+      row.push((session.liveStreamLink ? session.liveStreamLink: ''));
+      csv += row.map((item) => formatCsv(item)).join(',');
       csv += '\n';
     });
-    
-    download('sessionsTest.csv', csv);
+    download('sessions.csv', csv);
   };
 
   const groupSessionByDate = (
