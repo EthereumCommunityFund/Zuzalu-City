@@ -155,7 +155,31 @@ const useSessionTime = ({
     ],
   );
 
-  return { handleDateChange, isDateInRange, isTimeAvailable };
+  const isSessionOverlap = useCallback(
+    (bookedSessions: Session[], startTime: Dayjs, endTime: Dayjs) => {
+      const newSessionStart = startTime;
+      const newSessionEnd = endTime;
+      let timezone = eventData?.timezone;
+      for (let session of bookedSessions) {
+        const sessionStart = dayjs(session.startTime).tz('UTC').tz(timezone);
+        const sessionEnd = dayjs(session.endTime).tz('UTC').tz(timezone);
+        if (
+          (newSessionStart.isBefore(sessionEnd) &&
+            newSessionStart.isAfter(sessionStart)) ||
+          (newSessionEnd.isAfter(sessionStart) &&
+            newSessionEnd.isBefore(sessionEnd)) ||
+          (newSessionStart.isBefore(sessionStart) &&
+            newSessionEnd.isAfter(sessionEnd))
+        ) {
+          return true;
+        }
+      }
+      return false;
+    },
+    [],
+  );
+
+  return { handleDateChange, isDateInRange, isTimeAvailable, isSessionOverlap };
 };
 
 export default useSessionTime;
