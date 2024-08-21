@@ -30,6 +30,10 @@ const SessionDateDisplay: React.FC<SessionDateDisplayProps> = ({
     control,
     name: 'location',
   });
+  const sessionDate = useWatch({ control, name: 'date' });
+  const sessionStartTime = useWatch({ control, name: 'startTime' });
+  const sessionEndTime = useWatch({ control, name: 'endTime' });
+  const isPerson = useWatch({ control, name: 'isPerson' });
 
   const shouldDisableTime = useCallback(
     (date: Dayjs, view: TimeView): boolean => {
@@ -68,11 +72,9 @@ const SessionDateDisplay: React.FC<SessionDateDisplayProps> = ({
     [eventData?.timezone],
   );
 
-  const sessionDate = useWatch({ control, name: 'date' });
-  const sessionStartTime = useWatch({ control, name: 'startTime' });
-  const sessionEndTime = useWatch({ control, name: 'endTime' });
+  const hasLocation = isPerson ? sessionLocation : true;
 
-  if (!sessionLocation) return null;
+  if (!hasLocation) return null;
 
   return (
     <>
@@ -155,7 +157,7 @@ const SessionDateDisplay: React.FC<SessionDateDisplayProps> = ({
         )}
       </Stack>
 
-      {sessionLocation &&
+      {hasLocation &&
         sessionDate &&
         !dayjs(sessionStartTime).startOf('day').isSame(sessionStartTime) &&
         !dayjs(sessionEndTime).startOf('day').isSame(sessionEndTime) && (
