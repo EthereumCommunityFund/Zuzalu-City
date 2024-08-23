@@ -367,7 +367,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               />
             ) : null}
             <EventAbout description={eventData.description} />
-            <Stack
+            {/* <Stack
               bgcolor="#292929"
               padding="20px"
               spacing="20px"
@@ -436,7 +436,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                   <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
               </Box>
-            </Stack>
+            </Stack> */}
             {/*<Stack
               bgcolor="#292929"
               padding="20px"

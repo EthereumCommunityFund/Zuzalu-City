@@ -430,7 +430,7 @@ const Home: React.FC = () => {
               <Typography color="white" variant="bodyB" marginBottom="20px">
                 Welcome to the new Zuzalu City
               </Typography>
-              <Link href={doclink}>
+              {/* <Link href={doclink}>
                 <Button
                   variant="contained"
                   sx={{
@@ -443,7 +443,7 @@ const Home: React.FC = () => {
                 >
                   Learn About v2
                 </Button>
-              </Link>
+              </Link> */}
             </Box>
             <Box marginTop="30px">
               <Box
