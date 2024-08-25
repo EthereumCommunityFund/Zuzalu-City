@@ -1,33 +1,12 @@
-import { OutputData } from '@editorjs/editorjs';
+import { useParams } from 'next/navigation';
 
-interface IProps {
-  title?: string;
-  desc?: OutputData;
-  image?: string;
-}
-
-function DynamicOG({ title, desc, image }: IProps) {
-  if (!title || !desc) return null;
-
-  function extractTextFromEditorJsData(data: OutputData) {
-    let text = '';
-    data.blocks.forEach((block) => {
-      if (block.type === 'paragraph') {
-        text += block.data.text;
-      }
-    });
-    return text.trim();
-  }
-
+function DynamicOG() {
+  const params = useParams();
   return (
-    <>
-      <meta property="og:title" content={title} />
-      <meta
-        property="og:description"
-        content={extractTextFromEditorJsData(desc)}
-      />
-      <meta property="og:image" content={image} />
-    </>
+    <meta
+      property="og:image"
+      content={`/api/og?id=${params.sessionid.toString()}`}
+    />
   );
 }
 

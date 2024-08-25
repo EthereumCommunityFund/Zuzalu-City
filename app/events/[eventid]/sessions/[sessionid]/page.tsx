@@ -1901,11 +1901,7 @@ const Home = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DynamicOG
-        title={session?.title}
-        desc={decodeOutputData(session?.description || '')}
-        image={eventData?.image_url}
-      />
+      <DynamicOG />
       <Dialog
         title={dialogTitle}
         message={dialogMessage}

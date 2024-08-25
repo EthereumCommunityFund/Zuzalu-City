@@ -54,6 +54,7 @@
     "@supabase/supabase-js": "^2.43.1",
     "@tanstack/react-query": "^5.32.0",
     "@types/node-geocoder": "^4.2.6",
+    "@vercel/og": "^0.6.2",
     "@walletconnect/core": "^2.12.2",
     "@walletconnect/sign-client": "^2.12.2",
     "@walletconnect/universal-provider": "^2.12.2",
