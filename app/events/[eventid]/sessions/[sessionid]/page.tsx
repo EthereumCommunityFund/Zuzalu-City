@@ -104,7 +104,6 @@ import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
-import DynamicOG from '@/app/events/[eventid]/sessions/[sessionid]/components/DynamicOG';
 
 const Home = () => {
   const theme = useTheme();
@@ -1901,7 +1900,6 @@ const Home = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DynamicOG />
       <Dialog
         title={dialogTitle}
         message={dialogMessage}
