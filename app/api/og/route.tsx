@@ -4,7 +4,7 @@ import { supabase } from '@/utils/supabase/client';
 
 export const runtime = 'edge';
 
-export default async function handler(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
 
