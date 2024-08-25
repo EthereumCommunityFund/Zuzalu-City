@@ -1,62 +1,115 @@
 import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
+import dayjs from 'dayjs';
 import { supabase } from '@/utils/supabase/client';
+import { CeramicResponseType, EventEdge } from '@/types';
+import { composeClient } from '@/constant';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
+const getEventDetailInfo = async (eventId: string) => {
+  try {
+    const response: CeramicResponseType<EventEdge> =
+      (await composeClient.executeQuery(
+        `
+        query MyQuery($id: ID!) {
+          node (id: $id) {
+            ...on Event {
+              endTime
+              image_url
+              startTime
+              title
+            }
+          }
+        }
+      `,
+        {
+          id: eventId,
+        },
+      )) as CeramicResponseType<EventEdge>;
+    if (response.data) {
+      if (response.data.node) {
+        return response.data.node;
+      }
+    }
+  } catch (err) {
+    console.log('Failed to fetch event: ', err);
+  }
+};
 
-  const image =
-    'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link';
-
-  const { data: sessionData } = await supabase
-    .from('sessions')
-    .select('*')
-    .eq('uuid', id!.toString())
-    .single();
-
+const getEventImage = async (eventId: string, origin: string) => {
+  const eventData = await getEventDetailInfo(eventId!);
   return new ImageResponse(
     (
       <div
         style={{
           height: '100%',
           width: '100%',
+          padding: '20px',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          fontWeight: 600,
-          color: 'white',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          gap: '40px',
+          borderRadius: '10px',
+          backgroundColor:
+            'linear-gradient(119deg, #2C2C2C 13.98%, #222 86.02%)',
         }}
       >
-        <img
-          src={image}
-          alt=""
-          width={1050}
-          height={549}
+        <div
           style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-          }}
-        />
-        <h1
-          style={{
-            position: 'absolute',
-            bottom: 60,
-            left: 80,
-            margin: 0,
-            fontSize: 50,
-            maxWidth: 900,
-            whiteSpace: 'pre-wrap',
-            letterSpacing: -1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
         >
-          {sessionData.title}
-        </h1>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <p
+              style={{
+                fontSize: '14px',
+                fontWeight: 600,
+                lineHeight: '1.6',
+                color: '#fff',
+                opacity: 0.8,
+                marginBottom: '10px',
+              }}
+            >
+              Event:
+            </p>
+            <p
+              style={{
+                fontSize: '24px',
+                fontWeight: 700,
+                lineHeight: '1.2',
+                color: '#fff',
+                marginBottom: '18px',
+              }}
+            >
+              {eventData?.title}
+            </p>
+            <p
+              style={{
+                fontSize: '16px',
+                fontWeight: 700,
+                lineHeight: '1.2',
+                color: '#fff',
+                opacity: 0.6,
+              }}
+            >
+              {dayjs(eventData?.startTime).format('MMMM, D')} -{' '}
+              {dayjs(eventData?.endTime).format('MMMM, D')}
+            </p>
+          </div>
+          <img src={`${origin}/ZuCityLogoSocial.png`} height={18} width={80} />
+        </div>
+        <img
+          src={eventData?.image_url}
+          style={{
+            height: '100%',
+            boxShadow: '0px 14px 44px 0px #26292E',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.10)',
+          }}
+        />
       </div>
     ),
     {
@@ -64,4 +117,20 @@ export async function GET(req: NextRequest) {
       height: 630,
     },
   );
+};
+
+export async function GET(req: NextRequest) {
+  const { searchParams, origin } = new URL(req.url);
+  const type = searchParams.get('type');
+  const id = searchParams.get('id');
+
+  // const { data: sessionData } = await supabase
+  //   .from('sessions')
+  //   .select('*')
+  //   .eq('uuid', id!.toString())
+  //   .single();
+
+  if (type === 'event') {
+    return getEventImage(id!, origin);
+  }
 }
