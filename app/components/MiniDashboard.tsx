@@ -202,8 +202,8 @@ export default function MiniDashboard({
                 color={'white'}
                 sx={{
                   [breakpoints.down('sm')]: {
-                    fontSize: '12px'
-                  }
+                    fontSize: '12px',
+                  },
                 }}
               >
                 Are You Attending ZuVillage?
