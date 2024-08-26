@@ -7,7 +7,7 @@ import type { Font } from 'satori';
 
 export const runtime = 'nodejs';
 
-export default async function getFonts(): Promise<Font[]> {
+async function getFonts(): Promise<Font[]> {
   const [interSemiBold, interBold] = await Promise.all([
     fetch(
       `https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuGKYMZg.ttf`,
