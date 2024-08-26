@@ -10,9 +10,9 @@ type Props = {
   params: { spaceid: string };
 };
 
-export const revalidate = 0;
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export const generateMetadata = async ({
+  params,
+}: Props): Promise<Metadata> => {
   const id = params.spaceid;
 
   return {
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
     },
   };
-}
+};
 
 export default function SpacePageLayout({
   children,
