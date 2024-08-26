@@ -17,7 +17,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: 'Zuzalu City',
     description: 'Zuzalu City Powered By Ethereum Community Fund',
     openGraph: {
-      images: [`/api/og?id=${id}&type=space`],
+      // images: [`/api/og?id=${id}&type=space`],
+      images: [
+        'https://gateway.lighthouse.storage/ipfs/bafkreiclvx4gayew4st4sliql4grxmph4vcpcwams5ty3khmdmqtjb7mwi',
+      ],
     },
   };
 }
