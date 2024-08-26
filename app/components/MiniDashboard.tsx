@@ -200,6 +200,11 @@ export default function MiniDashboard({
                 fontWeight={700}
                 lineHeight={'120%'}
                 color={'white'}
+                sx={{
+                  [breakpoints.down('sm')]: {
+                    fontSize: '12px'
+                  }
+                }}
               >
                 Are You Attending ZuVillage?
               </Typography>
