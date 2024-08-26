@@ -1,16 +1,11 @@
 import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 import dayjs from 'dayjs';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { supabase } from '@/utils/supabase/client';
-import { CeramicResponseType, EventEdge } from '@/types';
+import { CeramicResponseType, EventEdge, Space } from '@/types';
 import { composeClient } from '@/constant';
+import type { Font } from 'satori';
 
 export const runtime = 'nodejs';
-
-import type { Font } from 'satori';
 
 export default async function getFonts(): Promise<Font[]> {
   const [interSemiBold, interBold] = await Promise.all([
@@ -66,6 +61,24 @@ const getEventDetailInfo = async (eventId: string) => {
   } catch (err) {
     console.log('Failed to fetch event: ', err);
   }
+};
+
+const getSpaceByID = async (spaceId: string) => {
+  const GET_SPACE_QUERY = `
+      query GetSpace($id: ID!) {
+        node(id: $id) {
+          ...on Space {
+            avatar
+            name
+          }
+        }
+      }
+      `;
+
+  const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+    id: spaceId,
+  });
+  return response.data.node as Space;
 };
 
 const getEventImage = async (eventId: string, origin: string) => {
@@ -138,17 +151,81 @@ const getEventImage = async (eventId: string, origin: string) => {
           src={eventData?.image_url}
           style={{
             height: '100%',
-            width: '200px',
             borderRadius: '10px',
             border: '1px solid rgba(255, 255, 255, 0.10)',
-            aspectRatio: '1/1',
           }}
         />
       </div>
     ),
     {
-      width: 437,
-      height: 246,
+      fonts: await getFonts(),
+    },
+  );
+};
+
+const getSpaceImage = async (spaceId: string, origin: string) => {
+  const spaceData = await getSpaceByID(spaceId!);
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          height: '100%',
+          width: '100%',
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          gap: '20px',
+          borderRadius: '10px',
+          backgroundColor:
+            'linear-gradient(119deg, #2C2C2C 13.98%, #222 86.02%)',
+          fontFamily: '"Inter"',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span
+              style={{
+                fontSize: '14px',
+                fontWeight: 600,
+                lineHeight: '160%',
+                color: '#fff',
+                opacity: 0.8,
+                marginBottom: '10px',
+              }}
+            >
+              Community Space:
+            </span>
+            <span
+              style={{
+                fontSize: '28px',
+                fontWeight: 700,
+                lineHeight: '120%',
+                color: '#fff',
+              }}
+            >
+              {spaceData?.name}
+            </span>
+          </div>
+          <img src={`${origin}/ZuCityLogoSocial.png`} height={18} width={80} />
+        </div>
+        <img
+          src={spaceData?.avatar}
+          style={{
+            height: '100%',
+            borderRadius: '100%',
+            border: '1px solid rgba(255, 255, 255, 0.10)',
+          }}
+        />
+      </div>
+    ),
+    {
       fonts: await getFonts(),
     },
   );
@@ -167,5 +244,7 @@ export async function GET(req: NextRequest) {
 
   if (type === 'event') {
     return getEventImage(id!, origin);
+  } else if (type === 'space') {
+    return getSpaceImage(id!, origin);
   }
 }
