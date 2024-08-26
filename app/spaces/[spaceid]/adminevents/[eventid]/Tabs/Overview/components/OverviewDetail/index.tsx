@@ -15,7 +15,7 @@ import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
 import Link from 'next/link';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import EditorPreview from '@/components/editor/EditorPreview';
 
 interface PropTypes {
   eventData?: Event;

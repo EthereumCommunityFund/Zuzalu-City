@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { ChevronDownIcon, ChevronUpIcon } from 'components/icons';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import EditorPreview from '@/components/editor/EditorPreview';
 
 interface EventAboutTypes {
   description: string;

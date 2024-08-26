@@ -95,7 +95,7 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import EditorPreview from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { Thumbnail } from '../../components';
 import { authenticate } from '@pcd/zuauth/server';

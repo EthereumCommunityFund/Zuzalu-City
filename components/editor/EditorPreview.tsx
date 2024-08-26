@@ -13,7 +13,7 @@ import { Global, css } from '@emotion/react';
 import { decodeOutputData } from './useEditorStore';
 import { shallowDiff } from './shallowDiff';
 
-export const EditorPreview: React.FC<{
+const EditorPreview: React.FC<{
   value: OutputData | string;
   collapsed?: boolean;
   /**
@@ -124,6 +124,8 @@ export const EditorPreview: React.FC<{
     </Wrapper>
   );
 };
+
+export default EditorPreview;
 
 const globalStyles = css`
   .codex-editor * {
