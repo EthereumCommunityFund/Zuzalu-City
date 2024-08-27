@@ -104,6 +104,7 @@ import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
+import DynamicOG from '@/app/events/[eventid]/sessions/[sessionid]/components/DynamicOG';
 
 const Home = () => {
   const theme = useTheme();
@@ -1900,6 +1901,11 @@ const Home = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DynamicOG
+        title={session?.title}
+        desc={decodeOutputData(session?.description || '')}
+        image={eventData?.image_url}
+      />
       <Dialog
         title={dialogTitle}
         message={dialogMessage}
@@ -2193,6 +2199,25 @@ const Home = () => {
                       )}
                     </Stack>
                   </Stack>
+                  {session.liveStreamLink && (
+                    <Stack spacing="10px">
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+                          LiveStream Link:
+                        </Typography>
+                        <Typography
+                          variant="bodyB"
+                          component="a"
+                          href={session.liveStreamLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{ textDecoration: 'underline' }}
+                        >
+                          {session.liveStreamLink}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  )}
                   <Stack direction="row" justifyContent="end" spacing="5px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       By:
