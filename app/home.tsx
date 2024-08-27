@@ -9,7 +9,7 @@ import {
 import LotteryCard from '@/components/cards/LotteryCard';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import { ZuCalendar } from '@/components/core';
-import { dashboardEvent, isDev } from '@/constant';
+import { dashboardEvent, isDev, prodShowSpaceId } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
 import { Dayjs, dayjs } from '@/utils/dayjs';
@@ -77,7 +77,7 @@ const Home: React.FC = () => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          spaceIndex(first: ${isDev ? 20 : 2}) {
+          spaceIndex(first: 20) {
             edges {
               node {
                 id
@@ -120,9 +120,14 @@ const Home: React.FC = () => {
       `);
       if ('spaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
-        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+        let fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
           (edge) => edge.node,
         );
+        if (!isDev) {
+          fetchedSpaces = fetchedSpaces.filter((space) =>
+            prodShowSpaceId.includes(space.id),
+          );
+        }
         setSpaces(fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);
