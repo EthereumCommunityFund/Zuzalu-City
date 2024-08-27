@@ -14,6 +14,7 @@ import { ZuPassIcon } from '../icons/ZuPassIcon';
 import NewUserPromptModal from '../modals/newUserPrompt';
 import { InitialStep } from './steps/InitialStep';
 import CheckinConnectButton from '@/components/checkin/CheckinConnectButton';
+import { dashboardEvent } from '@/constant';
 
 interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
@@ -472,30 +473,34 @@ const EventRegister: React.FC<EventRegisterProps> = ({
             gap={'14px'}
             alignItems={'center'}
           >
-            <Typography
-              textTransform={'uppercase'}
-              fontSize={'10px'}
-              sx={{ opacity: 0.6 }}
-            >
-              First Time?
-            </Typography>
-            <ZuButton
-              startIcon={
-                <Image
-                  src="/user/wallet.png"
-                  alt="wallet"
-                  height={24}
-                  width={24}
-                />
-              }
-              sx={{
-                width: '100%',
-                border: '1px solid rgba(255, 255, 255, 0.10)',
-              }}
-              onClick={() => setStage('ZuPass')}
-            >
-              Check-in
-            </ZuButton>
+            {eventId === dashboardEvent ? (
+              <>
+                <Typography
+                  textTransform={'uppercase'}
+                  fontSize={'10px'}
+                  sx={{ opacity: 0.6 }}
+                >
+                  First Time?
+                </Typography>
+                <ZuButton
+                  startIcon={
+                    <Image
+                      src="/user/wallet.png"
+                      alt="wallet"
+                      height={24}
+                      width={24}
+                    />
+                  }
+                  sx={{
+                    width: '100%',
+                    border: '1px solid rgba(255, 255, 255, 0.10)',
+                  }}
+                  onClick={() => setStage('ZuPass')}
+                >
+                  Check-in
+                </ZuButton>
+              </>
+            ) : null}
             <Typography fontSize={'10px'} sx={{ opacity: 0.6 }}>
               Already Checked-in?
             </Typography>
