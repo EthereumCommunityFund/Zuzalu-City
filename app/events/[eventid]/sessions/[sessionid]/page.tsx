@@ -803,6 +803,7 @@ const Home = () => {
         return;
       }
     }
+    console.log(sessionLiveStreamLink, 'sessionLiveStreamLink');
     const formattedData: SessionSupabaseData = {
       title: sessionName,
       description,
@@ -2199,6 +2200,25 @@ const Home = () => {
                       )}
                     </Stack>
                   </Stack>
+                  {session.liveStreamLink && (
+                    <Stack spacing="10px">
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+                          LiveStream Link:
+                        </Typography>
+                        <Typography
+                          variant="bodyB"
+                          component="a"
+                          href={session.liveStreamLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{ textDecoration: 'underline' }}
+                        >
+                          {session.liveStreamLink}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  )}
                   <Stack direction="row" justifyContent="end" spacing="5px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       By:
