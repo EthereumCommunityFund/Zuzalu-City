@@ -34,11 +34,11 @@ import {
 import { Sidebar } from 'components/layout';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import MiniDashboard from './components/MiniDashboard';
 const queryClient = new QueryClient();
 
-const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
+const doclink = process.env.NEXT_PUBLIC_LEARN_DOC_V2_URL || '';
 
 const Home: React.FC = () => {
   const theme = useTheme();
@@ -369,6 +369,26 @@ const Home: React.FC = () => {
     });
   }, [dateForCalendar]);
 
+  const eventsData = useMemo(() => {
+    const data = groupEventsByMonth(events);
+    const keys = Object.keys(data).sort((a, b) => {
+      const dateA = dayjs(a, 'MMMM YYYY');
+      const dateB = dayjs(b, 'MMMM YYYY');
+      return dateA.isBefore(dateB) ? 1 : -1;
+    });
+    const groupedEvents: { [key: string]: Event[] } = {};
+    keys.forEach((key) => {
+      const value = data[key];
+      value.sort((a, b) => {
+        const dateA = dayjs(a.startTime);
+        const dateB = dayjs(b.startTime);
+        return dateA.isAfter(dateB) ? 1 : -1;
+      });
+      groupedEvents[key] = value;
+    });
+    return groupedEvents;
+  }, [events]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box width={'100vw'} minHeight={'calc(100vh - 50px)'}>
@@ -441,7 +461,7 @@ const Home: React.FC = () => {
                   }}
                   startIcon={<RightArrowIcon />}
                 >
-                  Learn About v2
+                  Join Alpha Testing
                 </Button>
               </Link>
             </Box>
@@ -547,21 +567,19 @@ const Home: React.FC = () => {
                       </Typography>
                     </Box>
                   ) : (
-                    Object.entries(groupEventsByMonth(events)).map(
-                      ([month, eventsList]) => {
-                        return (
-                          <Fragment key={month}>
-                            <EventCardMonthGroup>{month}</EventCardMonthGroup>
-                            {eventsList.map((event, index) => (
-                              <EventCard
-                                key={`EventCard-${index}`}
-                                event={event}
-                              />
-                            ))}
-                          </Fragment>
-                        );
-                      },
-                    )
+                    Object.entries(eventsData).map(([month, eventsList]) => {
+                      return (
+                        <Fragment key={month}>
+                          <EventCardMonthGroup>{month}</EventCardMonthGroup>
+                          {eventsList.map((event, index) => (
+                            <EventCard
+                              key={`EventCard-${index}`}
+                              event={event}
+                            />
+                          ))}
+                        </Fragment>
+                      );
+                    })
                   )}
                 </Box>
                 <Box>

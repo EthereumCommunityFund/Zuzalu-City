@@ -1009,7 +1009,8 @@ const Home = () => {
                   <Stack spacing="10px">
                     <FormLabel>Event Tracks</FormLabel>
                     <FormLabelDesc>
-                      Create tracks related to your event
+                      Create tracks related to your event, press ENTER to add
+                      tags
                     </FormLabelDesc>
                   </Stack>
                   <ZuInput

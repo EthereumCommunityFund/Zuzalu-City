@@ -252,7 +252,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const nearToday = getDay();
     if (sessionsByDate && nearToday) {
       const dom = document.getElementById(nearToday);
-      console.log(dom, 'dom', nearToday, 'nearToday');
 
       if (dom) {
         window.scrollTo({
@@ -444,7 +443,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       .from('rsvp')
       .select('sessionID')
       .eq('userDID', adminId);
-    console.log(data);
     if (error) {
       console.error('Failed to fetch RSVP sessions:', error);
       return [];
@@ -591,7 +589,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       }
     }
     setSessionDate(date);
-    console.log(date);
     setSessionStartTime(
       dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );

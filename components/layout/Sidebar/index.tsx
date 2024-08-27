@@ -112,7 +112,9 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           ceramic.did?.parent.toString().trim().toLowerCase() ===
             `did:pkh:eip155:${chainID.toString()}:0x9bc15fcfd4691fde75bb900d2bc62462c868f125` ||
           ceramic.did?.parent.toString().trim().toLowerCase() ===
-            `did:pkh:eip155:${chainID.toString()}:0x379e27606208521286e35c1122e3823d0112701f`) && (
+            `did:pkh:eip155:${chainID.toString()}:0x379e27606208521286e35c1122e3823d0112701f` ||
+          ceramic.did?.parent.toString().trim().toLowerCase() ===
+            `did:pkh:eip155:${chainID.toString()}:0x5b8b62111f403e876c35dc3adc336df4f830b412`) && (
           <Box
             display="flex"
             flexDirection="column"
