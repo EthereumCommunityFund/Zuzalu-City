@@ -77,7 +77,7 @@ const Home: React.FC = () => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          spaceIndex(first: ${isDev ? 20 : 2}) {
+          spaceIndex(first: ${isDev ? 20 : 10}) {
             edges {
               node {
                 id
