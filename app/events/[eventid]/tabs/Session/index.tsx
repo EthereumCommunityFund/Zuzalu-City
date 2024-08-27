@@ -867,7 +867,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
         return;
       }
     }
-    console.log(sessionLiveStreamLink, 'sessionLiveStreamLink');
     const formattedData: SessionSupabaseData = {
       title: sessionName,
       description,
