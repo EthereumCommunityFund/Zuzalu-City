@@ -127,7 +127,6 @@ export default function NewUserPromptModal({
               'You have already use this zupass to whitelist an account, please login with that address'
             ) {
               setStage('Double Check-in');
-              console.log('Double Check-in');
             }
           });
       }

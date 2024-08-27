@@ -69,7 +69,6 @@ export const EditorPreview: React.FC<{
                 props.onCollapse?.(true);
               }
             } else {
-              console.log(333333, editorEl);
               window.requestAnimationFrame(() => {
                 calculateHeight();
               });

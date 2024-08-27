@@ -38,7 +38,7 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import MiniDashboard from './components/MiniDashboard';
 const queryClient = new QueryClient();
 
-const doclink = process.env.NEXT_LEARN_DOC_V2_URL || '';
+const doclink = process.env.NEXT_PUBLIC_LEARN_DOC_V2_URL || '';
 
 const Home: React.FC = () => {
   const theme = useTheme();
@@ -450,7 +450,7 @@ const Home: React.FC = () => {
               <Typography color="white" variant="bodyB" marginBottom="20px">
                 Welcome to the new Zuzalu City
               </Typography>
-              {/* <Link href={doclink}>
+              <Link href={doclink}>
                 <Button
                   variant="contained"
                   sx={{
@@ -461,9 +461,9 @@ const Home: React.FC = () => {
                   }}
                   startIcon={<RightArrowIcon />}
                 >
-                  Learn About v2
+                  Join Alpha Testing
                 </Button>
-              </Link> */}
+              </Link>
             </Box>
             <Box marginTop="30px">
               <Box
