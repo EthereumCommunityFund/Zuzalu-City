@@ -81,10 +81,15 @@ const Home: React.FC = () => {
   };
 
   const isMobile = useMediaQuery('(max-width:768px)');
+
+  const refetchData = () => {
+    pathname.eventid && fetchEventById(pathname.eventid as string);
+  };
+
   const renderPage = () => {
     switch (tabName) {
       case 'Overview':
-        return <Overview event={event} />;
+        return <Overview event={event} refetch={refetchData} />;
       case 'Tickets':
         return <Ticket event={event} />;
       /*case 'Event Sessions':

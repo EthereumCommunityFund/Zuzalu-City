@@ -13,8 +13,15 @@ import {
   Typography,
 } from '@mui/material';
 import { OverviewHeader, OverviewDetail, OverviewInvite } from './components';
-import { CreateEventRequest, Event } from '@/types';
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { CreateEventRequest, Event, UpdateEventRequest } from '@/types';
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
@@ -50,6 +57,7 @@ import timezone from 'dayjs/plugin/timezone';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/utils/supabase/client';
+import { updateEventKeySupa } from '@/services/event/updateEvent';
 
 dayjs.extend(timezone);
 
@@ -67,6 +75,7 @@ interface Inputs {
 
 interface PropTypes {
   event?: Event;
+  refetch?: () => void;
 }
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
@@ -83,8 +92,8 @@ const schema = Yup.object().shape({
   ),
 });
 
-const Overview = ({ event }: PropTypes) => {
-  const { ceramic, profile } = useCeramicContext();
+const Overview = ({ event, refetch }: PropTypes) => {
+  const { ceramic, profile, composeClient } = useCeramicContext();
   const params = useParams();
   const spaceId = params.spaceid.toString();
 
@@ -236,7 +245,8 @@ const Overview = ({ event }: PropTypes) => {
       }
     };
 
-    const createEvent = async (formData: FormData) => {
+    const updateEvent = async (formData: FormData) => {
+      if (!event) return;
       const { socialLinks } = formData;
       const isNeeded =
         inputs.name.length === 0 ||
@@ -248,54 +258,52 @@ const Overview = ({ event }: PropTypes) => {
         typeof window !== 'undefined' &&
           window.alert('Please input all necessary fields.');
         return;
-      } else {
-        if (
-          !descriptionEditorStore.value ||
-          !descriptionEditorStore.value.blocks ||
-          descriptionEditorStore.value.blocks.length == 0
-        ) {
-          setError(true);
-          return;
-        }
+      }
+      if (
+        !descriptionEditorStore.value ||
+        !descriptionEditorStore.value.blocks ||
+        descriptionEditorStore.value.blocks.length == 0
+      ) {
+        setError(true);
+        return;
+      }
 
-        try {
-          setLoading(true);
-          setBlockClickModal(true);
-          const eventCreationInput: CreateEventRequest = {
-            name: inputs.name,
-            strDesc: descriptionEditorStore.getValueString(),
-            tagline: inputs.tagline,
-            spaceId: spaceId,
-            profileId: profileId,
-            avatarURL:
-              avatarUploader.getUrl() ||
-              'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
-            startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-            endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-            socialLinks: socialLinks ?? [],
-            participant: inputs.participant,
-            max_participant: inputs.max_participant,
-            min_participant: inputs.min_participant,
-            tracks: tracks,
-            adminId: adminId,
-            external_url: inputs.external_url,
-            person: person,
-            locations: locations,
-            timezone: selectedTimezone
-              ? selectedTimezone.value
-              : dayjs.tz.guess(),
-          };
-
-          const response = await createEventKeySupa(eventCreationInput);
-          if (response.status === 200) {
-            setShowModal(true);
-          }
-        } catch (err) {
-          console.log(err);
-        } finally {
-          setLoading(false);
-          setBlockClickModal(false);
-        }
+      try {
+        setLoading(true);
+        setBlockClickModal(true);
+        const eventUpdateInput: UpdateEventRequest = {
+          id: event.id,
+          name: inputs.name,
+          strDesc: descriptionEditorStore.getValueString(),
+          tagline: inputs.tagline,
+          spaceId: spaceId,
+          profileId: profileId,
+          avatarURL:
+            avatarUploader.getUrl() ||
+            'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
+          startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+          endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+          socialLinks: socialLinks ?? [],
+          participant: inputs.participant,
+          max_participant: inputs.max_participant,
+          min_participant: inputs.min_participant,
+          tracks: tracks,
+          adminId: adminId,
+          external_url: inputs.external_url,
+          person: person,
+          locations: locations,
+          timezone: selectedTimezone
+            ? selectedTimezone.value
+            : dayjs.tz.guess(),
+        };
+        await updateEventKeySupa(eventUpdateInput);
+        refetch?.();
+        handleClose();
+      } catch (error) {
+        console.error('Failed to update event:', error);
+      } finally {
+        setLoading(false);
+        setBlockClickModal(false);
       }
     };
 
@@ -304,7 +312,7 @@ const Overview = ({ event }: PropTypes) => {
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Dialog
-          title="Event Created"
+          title="Event Updated"
           message="Please view it."
           showModal={showModal}
           onClose={() => {
@@ -319,7 +327,7 @@ const Overview = ({ event }: PropTypes) => {
         <Dialog
           showModal={blockClickModal}
           showActions={false}
-          title="Creating Event"
+          title="Updating Event"
           message="Please wait while the event is being created..."
         />
         <Box
@@ -355,7 +363,7 @@ const Overview = ({ event }: PropTypes) => {
             >
               Close
             </ZuButton>
-            <Typography variant="subtitleSB">Create Event</Typography>
+            <Typography variant="subtitleSB">Update Event</Typography>
           </Box>
           <Box display="flex" flexDirection="column" gap="20px" padding={3}>
             <Box bgcolor="#262626" borderRadius="10px">
@@ -638,7 +646,7 @@ const Overview = ({ event }: PropTypes) => {
                       onChange={(e) => {
                         let newLocations = locations;
                         newLocations[index] = e.target.value;
-                        setLocations(newLocations);
+                        setLocations([...newLocations]);
                       }}
                     />
                   ))}
@@ -883,9 +891,9 @@ const Overview = ({ event }: PropTypes) => {
                 }}
                 startIcon={<PlusCircleIcon color="#67DBFF" size={5} />}
                 disabled={isLoading}
-                // onClick={handleSubmit(createEvent)}
+                onClick={handleSubmit(updateEvent)}
               >
-                Create Event
+                Update Event
               </ZuButton>
             </Box>
           </Box>

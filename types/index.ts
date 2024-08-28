@@ -291,6 +291,10 @@ export interface CreateEventRequest {
   timezone: string;
 }
 
+export interface UpdateEventRequest extends CreateEventRequest {
+  id: string;
+}
+
 export interface ZuAutoCompleteProps {
   optionVals: Array<{
     value: string;
