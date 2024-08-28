@@ -8,9 +8,8 @@ import {
   useTheme,
 } from '@mui/material';
 import { ZuButton } from 'components/core';
-import { EventIcon, LockIcon, MapIcon } from 'components/icons';
-import { useCeramicContext } from '@/context/CeramicContext';
-import { CeramicResponseType, Event, EventEdge } from '@/types';
+import { LockIcon, MapIcon } from 'components/icons';
+import { Event } from '@/types';
 import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
 import Link from 'next/link';
@@ -19,67 +18,14 @@ import { EditorPreview } from '@/components/editor/EditorPreview';
 
 interface PropTypes {
   eventData?: Event;
+  handleEditEvent: () => void;
 }
 
-const OverviewDetail = ({ eventData }: PropTypes) => {
+const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
   const params = useParams();
   const eventId = params.eventid.toString();
   const { breakpoints } = useTheme();
 
-  // const [eventData, setEventData] = React.useState<Event>();
-  // const { composeClient } = useCeramicContext();
-
-  // const getEventDetailInfo = async () => {
-  //   try {
-  //     const response: CeramicResponseType<EventEdge> =
-  //       (await composeClient.executeQuery(
-  //         `
-  //       query MyQuery ($id: ID!) {
-  //         node (id: $id) {
-  //           ...on Event {
-  //             id
-  //             title
-  //             description
-  //             status
-  //             endTime
-  //             spaceId
-  //             tagline
-  //             timezone
-  //             createdAt
-  //             image_url
-  //             profileId
-  //             startTime
-  //             description
-  //             meeting_url
-  //             external_url
-  //             max_participant
-  //             space {
-  //               name
-  //               gated
-  //               avatar
-  //             }
-  //           }
-  //         }
-  //       }
-  //     `,
-  //         {
-  //           id: eventId,
-  //         },
-  //       )) as CeramicResponseType<EventEdge>;
-
-  //     if (response.data) {
-  //       if (response.data.node) {
-  //         setEventData(response.data.node);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.log('Failed to fetch event: ', err);
-  //   }
-  // };
-
-  // React.useEffect(() => {
-  //   getEventDetailInfo();
-  // }, []);
   const [showCopyToast, setShowCopyToast] = React.useState(false);
 
   return eventData ? (
@@ -135,7 +81,10 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
         }}
       >
         <Stack direction="row" spacing={2}>
-          <ZuButton sx={{ backgroundColor: '#2F4541', flex: 1 }}>
+          <ZuButton
+            sx={{ backgroundColor: '#2F4541', flex: 1 }}
+            onClick={handleEditEvent}
+          >
             Edit Event Details
           </ZuButton>
           <Link href={'/events/' + eventId}>
@@ -221,7 +170,10 @@ const OverviewDetail = ({ eventData }: PropTypes) => {
           </ZuButton>
         )}
         <Stack width="100%" spacing={'6px'}>
-          <ZuButton sx={{ backgroundColor: '#2F4541', width: '100%' }}>
+          <ZuButton
+            sx={{ backgroundColor: '#2F4541', width: '100%' }}
+            onClick={handleEditEvent}
+          >
             Edit Event Details
           </ZuButton>
           <Stack direction="row" spacing={2}>

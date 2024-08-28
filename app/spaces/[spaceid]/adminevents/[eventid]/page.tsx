@@ -38,7 +38,14 @@ const Home: React.FC = () => {
             description
             meeting_url
             external_url
+            min_participant
             max_participant
+            participant_count
+            tracks
+            customLinks {
+              title
+              links
+            }
             space {
               name
               gated
