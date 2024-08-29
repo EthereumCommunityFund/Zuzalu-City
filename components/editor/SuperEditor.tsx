@@ -13,7 +13,7 @@ import { getOutputDataLength } from './useEditorStore';
 import { Global, css } from '@emotion/react';
 import { shallowDiff } from './shallowDiff';
 
-export const SuperEditor: React.FC<{
+const SuperEditor: React.FC<{
   minHeight?: number;
   maxLength?: number;
   value?: OutputData;
@@ -156,6 +156,8 @@ const globalStyles = css`
     }
   }
 `;
+
+export default SuperEditor;
 
 const Wrapper = styled('div')<{ minHeight?: number }>`
   padding: 12px;

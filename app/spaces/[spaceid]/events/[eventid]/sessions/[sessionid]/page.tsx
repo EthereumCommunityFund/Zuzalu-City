@@ -83,13 +83,12 @@ import SlotDate from '@/components/calendar/SlotDate';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { FormTitle } from '@/components/typography/formTypography';
-import EditorPreview from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import SelectCategories from '@/components/select/selectCategories';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import {
   useEditorStore,
   decodeOutputData,
@@ -103,6 +102,14 @@ import {
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import { OutputData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 const Home = () => {
   const theme = useTheme();

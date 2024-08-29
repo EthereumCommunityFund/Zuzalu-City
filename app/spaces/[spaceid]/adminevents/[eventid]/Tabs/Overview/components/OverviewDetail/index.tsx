@@ -15,7 +15,14 @@ import { useParams } from 'next/navigation';
 import { convertDateStringFormat } from '@/utils';
 import Link from 'next/link';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import EditorPreview from '@/components/editor/EditorPreview';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 interface PropTypes {
   eventData?: Event;
