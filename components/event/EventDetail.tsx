@@ -1,13 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Stack, Typography, Box, useTheme } from '@mui/material';
 import { RightArrowIcon } from 'components/icons';
 import { SOCIAL_TYPES } from '@/constant';
-import { TileLayer, MapContainer, useMap, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { LatLngLiteral } from 'leaflet';
 import LocationFinder from '../map';
+import dynamic from 'next/dynamic';
 
 type UserLink = {
   title: string;
@@ -19,6 +18,20 @@ interface IEventDetail {
   location?: LatLngLiteral | undefined;
   address: string;
 }
+
+const MapContainer = dynamic(
+  () => import('react-leaflet').then((module) => module.MapContainer),
+  {
+    ssr: false,
+  },
+);
+
+const TileLayer = dynamic(
+  () => import('react-leaflet').then((module) => module.TileLayer),
+  {
+    ssr: false,
+  },
+);
 
 const EventDetail: React.FC<IEventDetail> = ({
   status = 'In-Person',
