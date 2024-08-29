@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Stack,
   Typography,
@@ -23,29 +23,24 @@ import { client, config } from '@/context/WalletContext';
 import { useAccount, useSwitchChain } from 'wagmi';
 import {
   TICKET_FACTORY_ADDRESS,
-  mUSDC_TOKEN,
   mUSDT_TOKEN,
-  ticketFactoryGetContract,
   isDev,
   SCROLL_EXPLORER,
 } from '@/constant';
 import { Address } from 'viem';
-import dayjs, { Dayjs } from 'dayjs';
-import { convertDateToEpoch } from '@/utils/format';
 import { TICKET_ABI } from '@/utils/ticket_abi';
 import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import { Abi, AbiItem } from 'viem';
 import { ERC20_ABI } from '@/utils/erc20_abi';
 import { scroll, scrollSepolia } from 'viem/chains';
 import { writeContract, waitForTransactionReceipt } from 'wagmi/actions';
-import { ZuButton, ZuInput } from '@/components/core';
+import { ZuButton } from '@/components/core';
 import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 import { generateNFTMetadata } from '@/utils/generateNFTMetadata';
 import { createFileFromJSON } from '@/utils/generateNFTMetadata';
-import { fetchEmailJsConfig } from '@/utils/emailService';
 import { Event, Contract } from '@/types';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import DownloadingRoundedIcon from '@mui/icons-material/DownloadingRounded';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 interface IProps {
   setIsVerify?: React.Dispatch<React.SetStateAction<boolean>> | any;
@@ -79,11 +74,17 @@ export const Verify: React.FC<IProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [ticketAddresses, setTicketAddresses] = useState<Array<string>>([]);
   const [tickets, setTickets] = useState<Array<any>>([]);
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const { switchChainAsync } = useSwitchChain();
 
   const readFromContract = async () => {
     try {
       setVerifying(true);
+      const chainId = isDev ? scrollSepolia.id : scroll.id;
+      await switchChainAsync({
+        chainId,
+      });
       const getTicketAddresses = (await client.readContract({
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI as Abi,
@@ -204,6 +205,10 @@ export const Verify: React.FC<IProps> = ({
     }
   };
   const handleConnect = async () => {
+    if (!isConnected) {
+      openConnectModal?.();
+      return;
+    }
     await readFromContract();
     setIsConnect(false);
   };

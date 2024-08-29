@@ -255,7 +255,7 @@ export const InitialStep = ({
         <Typography textAlign="center" variant="caption">
           OR
         </Typography>*/}
-        {/* <ZuButton
+        <ZuButton
           onClick={() => {
             setSponsor(false);
             setWhitelist(true);
@@ -265,8 +265,8 @@ export const InitialStep = ({
             width: '100%',
           }}
         >
-          Mint your NFT (Coming soon)
-        </ZuButton> */}
+          Mint your NFT
+        </ZuButton>
         {/*<ZuButton
           sx={{
             width: '100%',
