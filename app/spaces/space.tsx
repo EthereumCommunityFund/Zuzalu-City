@@ -19,7 +19,7 @@ import { ZuSelect } from '@/components/core';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { Space, SpaceData } from '@/types';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
-import { isDev } from '@/constant';
+import { isDev, prodShowSpaceId } from '@/constant';
 
 const Home = () => {
   const theme = useTheme();
@@ -34,7 +34,7 @@ const Home = () => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          spaceIndex(first: ${isDev ? 20 : 2}) {
+          spaceIndex(first: 20) {
             edges {
               node {
                 id
@@ -64,9 +64,14 @@ const Home = () => {
 
       if ('spaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
-        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+        let fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
           (edge) => edge.node,
         );
+        if (!isDev) {
+          fetchedSpaces = fetchedSpaces.filter((space) =>
+            prodShowSpaceId.includes(space.id),
+          );
+        }
         setSpaces(fetchedSpaces);
       } else {
         console.error('Invalid data structure:', response.data);

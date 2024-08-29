@@ -499,25 +499,25 @@ const EventRegister: React.FC<EventRegisterProps> = ({
                 >
                   Check-in
                 </ZuButton>
-                <Typography fontSize={'10px'} sx={{ opacity: 0.6 }}>
-                  Already Checked-in?
-                </Typography>
-                <ZuButton
-                  sx={{
-                    width: '100%',
-                    border: '1px solid rgba(215, 255, 196, 0.20)',
-                    backgroundColor: 'rgba(215, 255, 196, 0.1)',
-                    color: '#D7FFC4',
-                  }}
-                  startIcon={<ArrowCircleRightIcon />}
-                  onClick={() => {
-                    showAuthPrompt();
-                  }}
-                >
-                  Sign In
-                </ZuButton>
               </>
             ) : null}
+            <Typography fontSize={'10px'} sx={{ opacity: 0.6 }}>
+              Already Checked-in?
+            </Typography>
+            <ZuButton
+              sx={{
+                width: '100%',
+                border: '1px solid rgba(215, 255, 196, 0.20)',
+                backgroundColor: 'rgba(215, 255, 196, 0.1)',
+                color: '#D7FFC4',
+              }}
+              startIcon={<ArrowCircleRightIcon />}
+              onClick={() => {
+                showAuthPrompt();
+              }}
+            >
+              Sign In
+            </ZuButton>
 
             {currentStep === 0 && (
               <InitialStep

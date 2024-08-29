@@ -38,7 +38,14 @@ const Home: React.FC = () => {
             description
             meeting_url
             external_url
+            min_participant
             max_participant
+            participant_count
+            tracks
+            customLinks {
+              title
+              links
+            }
             space {
               name
               gated
@@ -74,10 +81,15 @@ const Home: React.FC = () => {
   };
 
   const isMobile = useMediaQuery('(max-width:768px)');
+
+  const refetchData = () => {
+    pathname.eventid && fetchEventById(pathname.eventid as string);
+  };
+
   const renderPage = () => {
     switch (tabName) {
       case 'Overview':
-        return <Overview event={event} />;
+        return <Overview event={event} refetch={refetchData} />;
       case 'Tickets':
         return <Ticket event={event} />;
       /*case 'Event Sessions':
