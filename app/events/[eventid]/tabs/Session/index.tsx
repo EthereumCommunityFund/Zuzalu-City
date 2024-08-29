@@ -3,7 +3,7 @@ import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessi
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SlotDates from '@/components/calendar/SlotDate';
 import { ZuButton, ZuCalendar, ZuInput, ZuSwitch } from '@/components/core';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import EditorPreview from '@/components/editor/EditorPreview';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import BpCheckbox from '@/components/event/Checkbox';

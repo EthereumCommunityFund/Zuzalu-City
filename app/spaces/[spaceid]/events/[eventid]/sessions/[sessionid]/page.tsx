@@ -83,7 +83,7 @@ import SlotDate from '@/components/calendar/SlotDate';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { FormTitle } from '@/components/typography/formTypography';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import EditorPreview from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';

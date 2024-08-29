@@ -95,7 +95,7 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import EditorPreview from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { Thumbnail } from '../../components';
 import { authenticate } from '@pcd/zuauth/server';
@@ -104,7 +104,6 @@ import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
-import DynamicOG from '@/app/events/[eventid]/sessions/[sessionid]/components/DynamicOG';
 
 const Home = () => {
   const theme = useTheme();
@@ -1901,11 +1900,6 @@ const Home = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DynamicOG
-        title={session?.title}
-        desc={decodeOutputData(session?.description || '')}
-        image={eventData?.image_url}
-      />
       <Dialog
         title={dialogTitle}
         message={dialogMessage}

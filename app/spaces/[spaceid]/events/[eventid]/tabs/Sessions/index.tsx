@@ -93,7 +93,7 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import { EditorPreview } from '@/components/editor/EditorPreview';
+import EditorPreview from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';

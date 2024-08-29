@@ -37,8 +37,14 @@ import {
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
-import { EditorPreview } from '@/components/editor/EditorPreview';
-// import { SubSidebar } from '@/components/layout';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 export default function SpaceDetailPage() {
   const params = useParams();
