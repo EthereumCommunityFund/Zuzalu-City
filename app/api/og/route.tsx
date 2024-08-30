@@ -90,12 +90,11 @@ const getEventImage = async (eventId: string, origin: string) => {
         style={{
           height: '100%',
           width: '100%',
-          padding: '20px',
+          padding: '50px',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          gap: '20px',
-          borderRadius: '10px',
+          gap: '50px',
           backgroundColor:
             'linear-gradient(119deg, #2C2C2C 13.98%, #222 86.02%)',
           fontFamily: '"Inter"',
@@ -106,35 +105,36 @@ const getEventImage = async (eventId: string, origin: string) => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
+            flex: 1,
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span
               style={{
-                fontSize: '14px',
+                fontSize: '36px',
                 fontWeight: 600,
                 lineHeight: '160%',
                 color: '#fff',
                 opacity: 0.8,
-                marginBottom: '10px',
+                marginBottom: '25px',
               }}
             >
               Event:
             </span>
             <span
               style={{
-                fontSize: '24px',
+                fontSize: '61px',
                 fontWeight: 700,
                 lineHeight: '120%',
                 color: '#fff',
-                marginBottom: '18px',
+                marginBottom: '45px',
               }}
             >
               {eventData?.title}
             </span>
             <span
               style={{
-                fontSize: '16px',
+                fontSize: '41px',
                 fontWeight: 700,
                 lineHeight: '120%',
                 color: '#fff',
@@ -145,7 +145,7 @@ const getEventImage = async (eventId: string, origin: string) => {
               {dayjs(eventData?.endTime).format('MMMM, D')}
             </span>
           </div>
-          <img src={`${origin}/ZuCityLogoSocial.png`} height={18} width={80} />
+          <img src={`${origin}/ZuCityLogoSocial.png`} height={46} width={205} />
         </div>
         <img
           src={eventData?.image_url}
@@ -171,12 +171,11 @@ const getSpaceImage = async (spaceId: string, origin: string) => {
         style={{
           height: '100%',
           width: '100%',
-          padding: '20px',
+          padding: '50px',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          gap: '20px',
-          borderRadius: '10px',
+          gap: '50px',
           backgroundColor:
             'linear-gradient(119deg, #2C2C2C 13.98%, #222 86.02%)',
           fontFamily: '"Inter"',
@@ -187,24 +186,25 @@ const getSpaceImage = async (spaceId: string, origin: string) => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
+            flex: 1,
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span
               style={{
-                fontSize: '14px',
+                fontSize: '36px',
                 fontWeight: 600,
                 lineHeight: '160%',
                 color: '#fff',
                 opacity: 0.8,
-                marginBottom: '10px',
+                marginBottom: '25px',
               }}
             >
               Community Space:
             </span>
             <span
               style={{
-                fontSize: '28px',
+                fontSize: '71px',
                 fontWeight: 700,
                 lineHeight: '120%',
                 color: '#fff',
@@ -213,7 +213,7 @@ const getSpaceImage = async (spaceId: string, origin: string) => {
               {spaceData?.name}
             </span>
           </div>
-          <img src={`${origin}/ZuCityLogoSocial.png`} height={18} width={80} />
+          <img src={`${origin}/ZuCityLogoSocial.png`} height={46} width={205} />
         </div>
         <img
           src={spaceData?.avatar}
@@ -221,6 +221,7 @@ const getSpaceImage = async (spaceId: string, origin: string) => {
             height: '100%',
             borderRadius: '100%',
             border: '1px solid rgba(255, 255, 255, 0.10)',
+            flexShrink: 0,
           }}
         />
       </div>

@@ -23,7 +23,7 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SelectCategories from '@/components/select/selectCategories';
 import { Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 
 const validationSchema = yup.object({

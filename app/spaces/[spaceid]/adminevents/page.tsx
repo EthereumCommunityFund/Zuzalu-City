@@ -57,7 +57,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useAccount } from 'wagmi';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import timezone from 'dayjs/plugin/timezone';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
