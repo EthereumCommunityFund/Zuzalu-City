@@ -13,7 +13,7 @@ import { getOutputDataLength } from './useEditorStore';
 import { Global, css } from '@emotion/react';
 import { shallowDiff } from './shallowDiff';
 
-export const SuperEditor: React.FC<{
+const SuperEditor: React.FC<{
   minHeight?: number;
   maxLength?: number;
   value?: OutputData;
@@ -121,18 +121,19 @@ export const SuperEditor: React.FC<{
 
   useEffect(() => {
     if (shallowDiff(editorValue, value)) {
-      setEditorValue(value);
       if (editorRef.current) {
         if (typeof value === 'undefined') {
           editorRef.current.clear();
-        } else {
+          setEditorValue(value);
+        } else if (value && editorRef.current.render) {
           editorRef.current.render(value).catch((err) => {
             console.error(err);
           });
+          setEditorValue(value);
         }
       }
     }
-  }, [value]);
+  }, [value, editorRef.current?.render]);
 
   return (
     <Wrapper ref={wrapperRef} minHeight={minHeight}>
@@ -156,6 +157,8 @@ const globalStyles = css`
     }
   }
 `;
+
+export default SuperEditor;
 
 const Wrapper = styled('div')<{ minHeight?: number }>`
   padding: 12px;

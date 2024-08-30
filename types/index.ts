@@ -291,6 +291,10 @@ export interface CreateEventRequest {
   timezone: string;
 }
 
+export interface UpdateEventRequest extends CreateEventRequest {
+  id: string;
+}
+
 export interface ZuAutoCompleteProps {
   optionVals: Array<{
     value: string;
@@ -340,6 +344,7 @@ export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
 }
 
 export interface TimezoneSelectorProps {
+  value?: ITimezoneOption;
   sx: CSSProperties;
   setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>;
 }

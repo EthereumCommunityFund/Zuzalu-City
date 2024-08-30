@@ -3,8 +3,6 @@ import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessi
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SlotDates from '@/components/calendar/SlotDate';
 import { ZuButton, ZuCalendar, ZuInput, ZuSwitch } from '@/components/core';
-import { EditorPreview } from '@/components/editor/EditorPreview';
-import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import BpCheckbox from '@/components/event/Checkbox';
 import {
@@ -79,6 +77,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
 import { download } from 'utils/download';
 import { decodeOutputData } from '@/components/editor/useEditorStore';
+import dynamic from 'next/dynamic';
+
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
