@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useRef,
   KeyboardEvent,
+  useCallback,
 } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -41,7 +42,6 @@ import {
 import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { supabase } from '@/utils/supabase/client';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 import {
   FormLabel,
@@ -51,17 +51,18 @@ import {
 
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import { createEventKeySupa } from '@/services/event/createEvent';
-import VisuallyHiddenInput from '@/components/input/VisuallyHiddenInput';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useAccount } from 'wagmi';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import timezone from 'dayjs/plugin/timezone';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
 import { ITimezoneOption } from 'react-timezone-select';
+import Drawer from '@/components/drawer';
+import { useCall } from 'wagmi';
+
 dayjs.extend(timezone);
 interface Inputs {
   name: string;
@@ -101,12 +102,7 @@ const Home = () => {
   const params = useParams();
   const spaceId = params.spaceid.toString();
 
-  const [state, setState] = useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
+  const [open, setOpen] = useState(false);
 
   const [space, setSpace] = useState<Space>();
   const [reload, setReload] = useState(false);
@@ -269,11 +265,11 @@ const Home = () => {
     fetchData();
   }, [reload]);
 
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
+  const toggleDrawer = useCallback(() => {
+    setOpen(v => !v)
+  }, []);
 
-  const List = (anchor: Anchor) => {
+  const List = () => {
     const [person, setPerson] = useState(true);
     const [online, setOnline] = useState(false);
     const [inputs, setInputs] = useState<Inputs>({
@@ -331,7 +327,7 @@ const Home = () => {
     };
 
     const handleClose = () => {
-      toggleDrawer('right', false);
+      toggleDrawer();
     };
 
     const handleAddSocialLink = () => {
@@ -398,79 +394,7 @@ const Home = () => {
               ? selectedTimezone.value
               : dayjs.tz.guess(),
           };
-          /*const update: any = await composeClient.executeQuery(
-          const update: any = await composeClient.executeQuery(
-            `
-         mutation CreateEventMutation($input: CreateEventInput!) {
-           createEvent(
-             input: $input
-           ) {
-             document {
-               id
-               spaceId
-               title
-               description
-               tagline
-               image_url
-               createdAt
-               startTime
-               endTime
-               profileId,
-               participant_count
-               max_participant
-               min_participant
-               status
-               customLinks {
-                 title
-                 links
-               }
-               tracks
-               superAdmin{
-               id
-               }
-               external_url
-             }
-           }
-         }
-         `,
-            {
-              input: {
-                content: {
-                  title: inputs.name,
-                  description: strDesc,
-                  tagline: inputs.tagline,
-                  spaceId: spaceId,
-                  profileId: profileId,
-                  image_url:
-                    avatarUploader.getUrl() ||
-                    'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
-                  createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                  startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                  endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-                  customLinks: socialLinks,
-                  participant_count: inputs.participant,
-                  max_participant: inputs.max_participant,
-                  min_participant: inputs.min_participant,
-                  status: person ? 'In-Person' : 'Online',
-                  tracks: tracks.join(','),
-                  superAdmin: adminId,
-                  external_url: inputs.external_url,
-                },
-              },
-            },
-          );
-          const { data } = await supabase.from('locations').insert({
-            name: locations.join(','),
-            eventId: update.data.createEvent.document.id,
-          });
-          toggleDrawer('right', false);
-          setReload((prev) => !prev);
-
-          typeof window !== 'undefined' &&
-            window.alert(
-              'Submitted! Create process probably complete after few minute. Please check it in Space List page.',
-            );*/
-
+          
           const response = await createEventKeySupa(eventCreationInput);
           if (response.status === 200) {
             setShowModal(true);
@@ -509,7 +433,7 @@ const Home = () => {
         />
         <Box
           sx={{
-            width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '762px',
+            width: '762px',
             backgroundColor: '#222222',
           }}
           role="presentation"
@@ -1085,26 +1009,13 @@ const Home = () => {
         <CurrentEvents events={events} onToggle={toggleDrawer} />
         {/* <PastEvents /> */}
         <Invite />
-        <SwipeableDrawer
-          hideBackdrop={true}
-          anchor="right"
-          open={state['right']}
-          onClose={() => toggleDrawer('right', false)}
-          onOpen={() => toggleDrawer('right', true)}
-          sx={{
-            position: 'relative',
-            zIndex: 3,
-            '& .MuiDrawer-paper': {
-              marginTop: '50px',
-              height: 'calc(100% - 50px)',
-              boxShadow: 'none',
-              backgroundColor: 'transparent',
-              paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
-            },
-          }}
+        <Drawer
+          open={open}
+          onClose={toggleDrawer}
+          onOpen={toggleDrawer}
         >
-          {List('right')}
-        </SwipeableDrawer>
+          {List()}
+        </Drawer>
       </Box>
     </Stack>
   );
