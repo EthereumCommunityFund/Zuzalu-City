@@ -1,4 +1,4 @@
-export const getSpaceQuery = `
+export const getSpaceQuery = (eventCount: number = 10) => `
       query GetSpace($id: ID!) {
         node(id: $id) {
           ...on Space {
@@ -22,7 +22,7 @@ export const getSpaceQuery = `
             superAdmin{
               id 
             }
-            events(first: 10) {
+            events(first: ${eventCount}) {
               edges {
                 node {
                   createdAt

@@ -32,13 +32,7 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { PreviewFile } from '@/components';
 import { SelectedFile, Uploader3 } from '@lxdao/uploader3';
 import BpCheckbox from '@/components/event/Checkbox';
-import {
-  CreateEventRequest,
-  Event,
-  EventData,
-  Space,
-  SpaceEventData,
-} from '@/types';
+import { CreateEventRequest, Event, Space } from '@/types';
 import { SOCIAL_TYPES } from '@/constant';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -63,7 +57,6 @@ import { ITimezoneOption } from 'react-timezone-select';
 import Drawer from '@/components/drawer';
 import { getSpaceQuery } from '@/services/space';
 import { useQuery } from '@tanstack/react-query';
-import { getEventsQuery } from '@/services/event/getEvents';
 
 dayjs.extend(timezone);
 interface Inputs {
@@ -124,9 +117,6 @@ const Home = () => {
 
   const [open, setOpen] = useState(false);
 
-  const [space, setSpace] = useState<Space>();
-  const [reload, setReload] = useState(false);
-  const [events, setEvents] = useState<Event[]>([]);
   const { ceramic, composeClient, profile } = useCeramicContext();
   const [showModal, setShowModal] = useState(false);
   const {
@@ -145,27 +135,10 @@ const Home = () => {
     name: 'socialLinks',
   });
 
-  const getSpaceByID = async () => {
-    try {
-      const response: any = await composeClient.executeQuery(getSpaceQuery, {
-        id: spaceId,
-      });
-      const spaceData: Space = response.data.node as Space;
-      setSpace(spaceData);
-      const eventData: SpaceEventData = response.data.node
-        .events as SpaceEventData;
-      const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
-      setEvents(fetchedEvents);
-      return spaceData;
-    } catch (error) {
-      console.error('Failed to fetch space:', error);
-    }
-  };
-
-  const { data: spaceData } = useQuery({
+  const { data: spaceData, refetch } = useQuery({
     queryKey: ['getSpaceByID', spaceId],
     queryFn: () => {
-      return composeClient.executeQuery(getSpaceQuery, {
+      return composeClient.executeQuery(getSpaceQuery(), {
         id: spaceId,
       });
     },
@@ -192,63 +165,6 @@ const Home = () => {
       }
     }
   }, [ceramic?.did?.parent, router, spaceData]);
-
-  const getEvents = async () => {
-    try {
-      const response: any = await composeClient.executeQuery(getEventsQuery);
-
-      if ('eventIndex' in response.data) {
-        const eventData: EventData = response.data as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setEvents(fetchedEvents.filter((event) => event.spaceId === spaceId));
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
-    }
-  };
-
-  const { data: eventsData } = useQuery({
-    queryKey: ['getEvents', spaceId],
-    queryFn: () => {
-      return composeClient.executeQuery(getEventsQuery);
-    },
-    select: (data) => {
-      if (data?.data && 'eventIndex' in data.data) {
-        const eventData = data.data as unknown as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
-          (edge) => edge.node,
-        );
-        return fetchedEvents.filter((event) => event.spaceId === spaceId);
-      } else {
-        console.error('Invalid data structure:', data.data);
-      }
-    },
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getEvents();
-        const space = await getSpaceByID();
-        const superAdmins =
-          space?.superAdmin?.map((superAdmin) => superAdmin.id.toLowerCase()) ||
-          [];
-        const admins =
-          space?.admins?.map((admin) => admin.id.toLowerCase()) || [];
-        const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        if (!admins.includes(userDID) && !superAdmins.includes(userDID)) {
-          router.push('/');
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
-  }, [reload]);
 
   const toggleDrawer = useCallback(() => {
     setOpen((v) => !v);
@@ -401,12 +317,10 @@ const Home = () => {
           showModal={showModal}
           onClose={() => {
             setShowModal(false);
-            getSpaceByID();
             handleClose();
           }}
           onConfirm={() => {
             setShowModal(false);
-            getSpaceByID();
             handleClose();
           }}
         />
@@ -980,18 +894,19 @@ const Home = () => {
       </LocalizationProvider>
     );
   };
+
   return (
     <Stack direction="row" width={'100%'}>
       <SubSidebar
-        title={space?.name}
+        title={spaceData?.name}
         spaceId={params.spaceid.toString()}
-        avatar={space?.avatar}
-        banner={space?.banner}
+        avatar={spaceData?.avatar}
+        banner={spaceData?.banner}
         isAdmin={true}
       />
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
-        <CurrentEvents events={events} onToggle={toggleDrawer} />
+        <CurrentEvents events={eventsData ?? []} onToggle={toggleDrawer} />
         <Invite />
         <Drawer open={open} onClose={toggleDrawer} onOpen={toggleDrawer}>
           {List()}
