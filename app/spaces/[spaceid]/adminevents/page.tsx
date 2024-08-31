@@ -6,13 +6,13 @@ import React, {
   useRef,
   KeyboardEvent,
   useCallback,
+  useMemo,
 } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
   Button,
-  SwipeableDrawer,
   Stack,
   Select,
   MenuItem,
@@ -61,7 +61,9 @@ import timezone from 'dayjs/plugin/timezone';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
 import { ITimezoneOption } from 'react-timezone-select';
 import Drawer from '@/components/drawer';
-import { useCall } from 'wagmi';
+import { getSpaceQuery } from '@/services/space';
+import { useQuery } from '@tanstack/react-query';
+import { getEventsQuery } from '@/services/event/getEvents';
 
 dayjs.extend(timezone);
 interface Inputs {
@@ -81,18 +83,36 @@ export interface IEventArg {
   };
 }
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
 const schema = Yup.object().shape({
+  name: Yup.string().required('Event name is required'),
+  tagline: Yup.string().required('Event tagline is required'),
+  description: Yup.string().required('Event description is required'),
+  startTime: Yup.date().required('Start date is required'),
+  endTime: Yup.date().required('End date is required'),
+  timezone: Yup.string().required('Timezone is required'),
+  external_url: Yup.string().url('Must be a valid URL'),
+  participant: Yup.number()
+    .positive()
+    .integer()
+    .required('Participant number is required'),
+  max_participant: Yup.number()
+    .positive()
+    .integer()
+    .required('Max participant number is required'),
+  min_participant: Yup.number()
+    .positive()
+    .integer()
+    .required('Min participant number is required'),
+  locations: Yup.array().of(Yup.string()),
   socialLinks: Yup.array().of(
     Yup.object().shape({
-      title: Yup.string().required('Social is required').trim(),
+      title: Yup.string().required('Social media type is required'),
       links: Yup.string()
-        .required('URL is required')
-        .trim()
-        .matches(/^https:\/\//, 'URL must start with https://'),
+        .url('Must be a valid URL')
+        .required('URL is required'),
     }),
   ),
+  tracks: Yup.array().of(Yup.string()),
 });
 
 type FormData = Yup.InferType<typeof schema>;
@@ -127,61 +147,7 @@ const Home = () => {
 
   const getSpaceByID = async () => {
     try {
-      const GET_SPACE_QUERY = `
-      query GetSpace($id: ID!) {
-        node(id: $id) {
-          ...on Space {
-            avatar
-            banner
-            description
-            name
-            profileId
-            tagline
-            website
-            twitter
-            telegram
-            nostr
-            lens
-            github
-            discord
-            ens
-            admins {
-              id
-            }
-            superAdmin{
-              id 
-            }
-            events(first: 10) {
-              edges {
-                node {
-                  createdAt
-                  description
-                  endTime
-                  external_url
-                  gated
-                  id
-                  image_url
-                  max_participant
-                  meeting_url
-                  min_participant
-                  participant_count
-                  profileId
-                  spaceId
-                  startTime
-                  status
-                  tagline
-                  timezone
-                  title
-                }
-              }
-            }
-          }
-        }
-      }
-      `;
-      const spaceId = params.spaceid.toString();
-
-      const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+      const response: any = await composeClient.executeQuery(getSpaceQuery, {
         id: spaceId,
       });
       const spaceData: Space = response.data.node as Space;
@@ -196,39 +162,40 @@ const Home = () => {
     }
   };
 
+  const { data: spaceData } = useQuery({
+    queryKey: ['getSpaceByID', spaceId],
+    queryFn: () => {
+      return composeClient.executeQuery(getSpaceQuery, {
+        id: spaceId,
+      });
+    },
+    select: (data) => {
+      return data?.data?.node as Space;
+    },
+  });
+
+  const eventsData = useMemo(() => {
+    return spaceData?.events?.edges.map((edge) => edge.node) as Event[];
+  }, [spaceData]);
+
+  useEffect(() => {
+    if (spaceData) {
+      const superAdmins =
+        spaceData?.superAdmin?.map((superAdmin) =>
+          superAdmin.id.toLowerCase(),
+        ) || [];
+      const admins =
+        spaceData?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+      const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+      if (!admins.includes(userDID) && !superAdmins.includes(userDID)) {
+        router.push('/');
+      }
+    }
+  }, [ceramic?.did?.parent, router, spaceData]);
+
   const getEvents = async () => {
     try {
-      const response: any = await composeClient.executeQuery(`
-      query {
-        eventIndex(first: 10) {
-          edges {
-            node {
-              id
-              title
-              description
-              startTime
-              endTime
-              timezone
-              status
-              tagline
-              image_url
-              external_url
-              meeting_url
-              profileId
-              spaceId
-              participant_count
-              min_participant
-              max_participant
-              createdAt
-              space {
-                avatar
-              }
-              tracks
-            }
-          }
-        }
-      }
-    `);
+      const response: any = await composeClient.executeQuery(getEventsQuery);
 
       if ('eventIndex' in response.data) {
         const eventData: EventData = response.data as EventData;
@@ -243,6 +210,24 @@ const Home = () => {
       console.error('Failed to fetch events:', error);
     }
   };
+
+  const { data: eventsData } = useQuery({
+    queryKey: ['getEvents', spaceId],
+    queryFn: () => {
+      return composeClient.executeQuery(getEventsQuery);
+    },
+    select: (data) => {
+      if (data?.data && 'eventIndex' in data.data) {
+        const eventData = data.data as unknown as EventData;
+        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+          (edge) => edge.node,
+        );
+        return fetchedEvents.filter((event) => event.spaceId === spaceId);
+      } else {
+        console.error('Invalid data structure:', data.data);
+      }
+    },
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -266,7 +251,7 @@ const Home = () => {
   }, [reload]);
 
   const toggleDrawer = useCallback(() => {
-    setOpen(v => !v)
+    setOpen((v) => !v);
   }, []);
 
   const List = () => {
@@ -394,7 +379,7 @@ const Home = () => {
               ? selectedTimezone.value
               : dayjs.tz.guess(),
           };
-          
+
           const response = await createEventKeySupa(eventCreationInput);
           if (response.status === 200) {
             setShowModal(true);
@@ -1007,13 +992,8 @@ const Home = () => {
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
         <CurrentEvents events={events} onToggle={toggleDrawer} />
-        {/* <PastEvents /> */}
         <Invite />
-        <Drawer
-          open={open}
-          onClose={toggleDrawer}
-          onOpen={toggleDrawer}
-        >
+        <Drawer open={open} onClose={toggleDrawer} onOpen={toggleDrawer}>
           {List()}
         </Drawer>
       </Box>
