@@ -23,14 +23,12 @@ import { useEditorStore } from '@/components/editor/useEditorStore';
 import { ZuButton, ZuInput } from 'components/core';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { PlusCircleIcon, PlusIcon, XMarkIcon } from 'components/icons';
 import {
   FormLabel,
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
 import { SOCIAL_TYPES } from '@/constant';
-import BpCheckbox from '@/components/event/Checkbox';
 import { PreviewFile } from '@/components';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
@@ -40,6 +38,9 @@ import dayjs from 'dayjs';
 import { CreateEventRequest } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { createEventKeySupa } from '@/services/event/createEvent';
+import FormFooter from './FormFooter';
+import FormHeader from './FormHeader';
+import FormatCheckboxGroup from './FormatCheckbox';
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Event name is required'),
@@ -282,32 +283,7 @@ export const EventForm: React.FC<EventFormProps> = ({
         zIndex="10"
         borderLeft="1px solid #383838"
       >
-        <Box
-          display="flex"
-          alignItems="center"
-          height="50px"
-          borderBottom="1px solid #383838"
-          paddingX={3}
-          gap={2}
-          sx={{
-            position: 'sticky',
-            top: 0,
-            backgroundColor: '#222222',
-            zIndex: 10,
-          }}
-        >
-          <ZuButton
-            startIcon={<XMarkIcon size={5} />}
-            onClick={handleClose}
-            sx={{
-              backgroundColor: 'transparent',
-              fontWeight: 'bold',
-            }}
-          >
-            Close
-          </ZuButton>
-          <Typography variant="subtitleSB">Create Event</Typography>
-        </Box>
+        <FormHeader title="Create Event" handleClose={handleClose} />
         <Box display="flex" flexDirection="column" gap="20px" padding={3}>
           <Box bgcolor="#262626" borderRadius="10px">
             <Box padding="20px" display="flex" justifyContent="space-between">
@@ -568,46 +544,12 @@ export const EventForm: React.FC<EventFormProps> = ({
               padding="20px"
             >
               <Box display="flex" justifyContent="space-between" gap="20px">
-                <Box
-                  bgcolor={isPerson ? '#484E45' : '#373737'}
-                  borderRadius="10px"
-                  padding="10px"
-                  display="flex"
-                  alignItems="center"
-                  gap="10px"
-                  flex={1}
-                  onClick={() => {
+                <FormatCheckboxGroup
+                  checked={!!isPerson}
+                  handleChange={() => {
                     setValue('isPerson', !isPerson);
                   }}
-                >
-                  <BpCheckbox checked={isPerson} />
-                  <Stack>
-                    <Typography variant="bodyBB">In-Person</Typography>
-                    <Typography variant="caption">
-                      This is a physical event
-                    </Typography>
-                  </Stack>
-                </Box>
-                <Box
-                  bgcolor={!isPerson ? '#484E45' : '#373737'}
-                  borderRadius="10px"
-                  padding="10px"
-                  display="flex"
-                  alignItems="center"
-                  gap="10px"
-                  flex={1}
-                  onClick={() => {
-                    setValue('isPerson', !isPerson);
-                  }}
-                >
-                  <BpCheckbox checked={!isPerson} />
-                  <Stack>
-                    <Typography variant="bodyBB">Online</Typography>
-                    <Typography variant="caption">
-                      Specially Online Event
-                    </Typography>
-                  </Stack>
-                </Box>
+                />
               </Box>
               <Stack spacing="10px">
                 <FormLabel>Location*</FormLabel>
@@ -848,29 +790,12 @@ export const EventForm: React.FC<EventFormProps> = ({
           </Box>
         </Box>
         <Box display="flex" flexDirection="column" gap="20px" padding={3}>
-          <Box display="flex" gap="20px">
-            <ZuButton
-              sx={{
-                flex: 1,
-              }}
-              startIcon={<XMarkIcon size={5} />}
-              onClick={handleClose}
-            >
-              Discard
-            </ZuButton>
-            <ZuButton
-              sx={{
-                color: '#67DBFF',
-                backgroundColor: 'rgba(103, 219, 255, 0.10)',
-                flex: 1,
-              }}
-              startIcon={<PlusCircleIcon color="#67DBFF" size={5} />}
-              disabled={isLoading}
-              onClick={handleSubmit(onFormSubmit, onFormError)}
-            >
-              Create Event
-            </ZuButton>
-          </Box>
+          <FormFooter
+            confirmText="Create Event"
+            disabled={isLoading}
+            handleClose={handleClose}
+            handleConfirm={handleSubmit(onFormSubmit, onFormError)}
+          />
         </Box>
       </Box>
     </LocalizationProvider>
