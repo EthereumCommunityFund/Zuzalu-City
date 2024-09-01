@@ -18,7 +18,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
 import { Uploader3, UploadFile, UploadResult } from '@lxdao/uploader3';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import { ZuButton, ZuInput } from 'components/core';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -865,7 +865,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                 flex: 1,
               }}
               startIcon={<PlusCircleIcon color="#67DBFF" size={5} />}
-              //   disabled={isLoading}
+              disabled={isLoading}
               onClick={handleSubmit(onFormSubmit, onFormError)}
             >
               Create Event
