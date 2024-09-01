@@ -865,7 +865,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                 flex: 1,
               }}
               startIcon={<PlusCircleIcon color="#67DBFF" size={5} />}
-              //   disabled={isLoading}
+              disabled={isLoading}
               onClick={handleSubmit(onFormSubmit, onFormError)}
             >
               Create Event
