@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Stack, Typography } from '@mui/material';
 import { ZuButton } from 'components/core';
 import { ChevronDownIcon, ChevronUpIcon } from 'components/icons';
-import EditorPreview from '@/components/editor/EditorPreview';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 interface EventAboutTypes {
   description: string;
