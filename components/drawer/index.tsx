@@ -8,7 +8,12 @@ interface EventDrawerProps {
   children: React.ReactNode;
 }
 
-const EventDrawer: React.FC<EventDrawerProps> = ({ open, onClose, onOpen, children }) => {
+const EventDrawer: React.FC<EventDrawerProps> = ({
+  open,
+  onClose,
+  onOpen,
+  children,
+}) => {
   return (
     <SwipeableDrawer
       hideBackdrop={true}
@@ -22,6 +27,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({ open, onClose, onOpen, childr
         '& .MuiDrawer-paper': {
           marginTop: '50px',
           height: 'calc(100% - 50px)',
+          width: '768px',
           boxShadow: 'none',
           backgroundColor: 'transparent',
           paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
