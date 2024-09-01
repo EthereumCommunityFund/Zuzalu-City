@@ -85,7 +85,7 @@ import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import {
   useEditorStore,
   decodeOutputData,
@@ -95,7 +95,6 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import EditorPreview from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { Thumbnail } from '../../components';
 import { authenticate } from '@pcd/zuauth/server';
@@ -104,6 +103,14 @@ import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 const Home = () => {
   const theme = useTheme();

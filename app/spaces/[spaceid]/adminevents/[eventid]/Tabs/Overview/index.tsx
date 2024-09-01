@@ -42,7 +42,7 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import { PreviewFile } from '@/components';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
