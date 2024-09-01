@@ -12,6 +12,7 @@ import AuthPrompt from '@/components/AuthPrompt';
 import AppContextProvider from '@/context/AppContext';
 import React, { useEffect, useState } from 'react';
 import { ZupassProvider } from '@/context/ZupassContext';
+import '@/utils/yupExtensions';
 
 const queryClient = new QueryClient();
 
