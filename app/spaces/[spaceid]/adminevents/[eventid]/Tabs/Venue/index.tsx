@@ -40,6 +40,7 @@ import SelectCheckItem from '@/components/select/selectCheckItem';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import { useQuery } from '@tanstack/react-query';
 import { getVenues } from '@/services/venues';
+import FormUploader from '@/components/form/FormUploader';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface IVenue {
@@ -331,51 +332,11 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 <FormLabelDesc>
                   Recommend min of 200x200px (1:1 Ratio)
                 </FormLabelDesc>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
+                <FormUploader
+                  onChange={(url) => {
+                    avatarUploader.setUrl(url);
                   }}
-                >
-                  <Uploader3
-                    accept={['.gif', '.jpeg', '.gif', '.png']}
-                    api={'/api/file/upload'}
-                    multiple={false}
-                    crop={{
-                      size: { width: 400, height: 400 },
-                      aspectRatio: 1,
-                    }} // must be false when accept is svg
-                    onUpload={(file) => {
-                      avatarUploader.setFile(file);
-                    }}
-                    onComplete={(file) => {
-                      avatarUploader.setFile(file);
-                    }}
-                  >
-                    <Button
-                      component="span"
-                      sx={{
-                        color: 'white',
-                        borderRadius: '10px',
-                        backgroundColor: '#373737',
-                        border: '1px solid #383838',
-                      }}
-                    >
-                      Upload Image
-                    </Button>
-                  </Uploader3>
-                  <PreviewFile
-                    sx={{
-                      width: '200px',
-                      height: '200px',
-                      borderRadius: '10px',
-                    }}
-                    src={avatarUploader.getUrl()}
-                    isLoading={avatarUploader.isLoading()}
-                    errorMessage={avatarUploader.errorMessage()}
-                  />
-                </Box>
+                />
               </Stack>
               <Stack spacing="10px">
                 <FormLabel>Space Capacity*</FormLabel>

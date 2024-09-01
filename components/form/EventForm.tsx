@@ -41,6 +41,7 @@ import { createEventKeySupa } from '@/services/event/createEvent';
 import FormFooter from './FormFooter';
 import FormHeader from './FormHeader';
 import FormatCheckboxGroup from './FormatCheckbox';
+import FormUploader from './FormUploader';
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Event name is required'),
@@ -361,47 +362,11 @@ export const EventForm: React.FC<EventFormProps> = ({
               <FormLabelDesc>
                 Recommend min of 200x200px (1:1 Ratio)
               </FormLabelDesc>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
+              <FormUploader
+                onChange={(url) => {
+                  avatarUploader.setUrl(url);
                 }}
-              >
-                <Uploader3
-                  accept={['.gif', '.jpeg', '.gif', '.png']}
-                  api={'/api/file/upload'}
-                  multiple={false}
-                  crop={{
-                    size: { width: 400, height: 400 },
-                    aspectRatio: 1,
-                  }}
-                  onUpload={handleAvatarUpload}
-                  onComplete={handleAvatarUpload}
-                >
-                  <Button
-                    component="span"
-                    sx={{
-                      color: 'white',
-                      borderRadius: '10px',
-                      backgroundColor: '#373737',
-                      border: '1px solid #383838',
-                    }}
-                  >
-                    Upload Image
-                  </Button>
-                </Uploader3>
-                <PreviewFile
-                  sx={{
-                    width: '200px',
-                    height: '200px',
-                    borderRadius: '10px',
-                  }}
-                  src={avatarUploader.getUrl()}
-                  errorMessage={avatarUploader.errorMessage()}
-                  isLoading={avatarUploader.isLoading()}
-                />
-              </Box>
+              />
             </Stack>
             <Stack spacing="10px" padding="20px">
               <Box display="flex" justifyContent="space-between" gap="20px">
