@@ -125,8 +125,6 @@ export const EventForm: React.FC<EventFormProps> = ({
   const locations = watch('locations');
   const tracks = watch('tracks');
   const isPerson = watch('isPerson');
-  const avatarURL = watch('avatarURL');
-  console.log('avatarURL', avatarURL);
 
   const [isLoading, setLoading] = useState(false);
   const [blockClickModal, setBlockClickModal] = useState(false);

@@ -93,7 +93,9 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, event, refetch }) => {
         }}
       >
         <Drawer open={drawOpen} onClose={toggleDrawer} onOpen={toggleDrawer}>
-          <VenueForm event={event} venue={venue} handleClose={toggleDrawer} />
+          {drawOpen ? (
+            <VenueForm event={event} venue={venue} handleClose={toggleDrawer} refetch={refetch} />
+          ) : null}
         </Drawer>
         <Dialog
           showModal={openDialog}

@@ -8,7 +8,7 @@ import {
   Chip,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Event, AvailableType, Venue } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import {
@@ -31,19 +31,25 @@ import SelectCheckItem from '@/components/select/selectCheckItem';
 import dayjs from 'dayjs';
 import FormUploader from './FormUploader';
 import { useUploaderPreview } from '../PreviewFile/useUploaderPreview';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
 
 interface IVenue {
   venue: Venue;
   event: Event | undefined;
   handleClose: () => void;
+  refetch: () => void;
 }
 
 const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
-const VenueForm = ({ event, venue, handleClose }: IVenue) => {
+const VenueForm = ({ event, venue, refetch, handleClose }: IVenue) => {
   const [name, setName] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [capacity, setCapacity] = useState<number>(0);
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+
   const avatarUploader = useUploaderPreview();
 
   const [data, setData] = useState<AvailableType[][]>(
@@ -55,19 +61,33 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
     ]),
   );
 
-  const createVenue = async () => {
+  const updateVenue = async () => {
     try {
-      //   await supabase.from('venues').insert({
-      //     name,
-      //     tags: tags.join(','),
-      //     eventId,
-      //     avatar: avatarUploader.getUrl(),
-      //     bookings: JSON.stringify(bookings),
-      //     capacity,
-      //     timezone: event?.timezone,
-      //   });
+      setLoading(true);
+      setBlockClickModal(true);
+      const bookings = {} as Record<string, AvailableType[]>;
+      data.forEach((day, index) => {
+        const label = days[index].toLowerCase();
+        bookings[label] = day;
+      });
+      await supabase
+        .from('venues')
+        .update({
+          name,
+          tags: tags.join(','),
+          avatar: avatarUploader.getUrl(),
+          bookings: JSON.stringify(bookings),
+          capacity,
+          timezone: event?.timezone,
+        })
+        .eq('id', venue.id);
+      setShowModal(true);
+      refetch();
     } catch (err) {
       console.log(err);
+    } finally {
+      setBlockClickModal(false);
+      setLoading(false);
     }
   };
 
@@ -78,6 +98,12 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
         : e.target.value,
     );
   };
+
+  const handleDialogClose = useCallback(() => {
+    setShowModal(false);
+    setBlockClickModal(false);
+    handleClose();
+  }, [handleClose]);
 
   const renderDay = (day: AvailableType[], index: number) => {
     const label = days[index];
@@ -135,6 +161,8 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
     );
   };
 
+  console.log(venue);
+
   useEffect(() => {
     setName(venue?.name);
     setTags(venue?.tags.split(','));
@@ -153,7 +181,7 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
     } catch (err) {
       console.log(err);
     }
-  }, [venue]);
+  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -166,6 +194,19 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
         zIndex="100"
         borderLeft="1px solid #383838"
       >
+        <Dialog
+          title="Space Updated"
+          message="Please view it."
+          showModal={showModal}
+          onClose={handleDialogClose}
+          onConfirm={handleDialogClose}
+        />
+        <Dialog
+          showModal={blockClickModal}
+          showActions={false}
+          title="Updating Space"
+          message="Please wait while the event is being created..."
+        />
         <Box
           display="flex"
           alignItems="center"
@@ -328,7 +369,7 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
                 flex: 1,
               }}
               startIcon={<XMarkIcon />}
-              onClick={() => {}}
+              onClick={handleClose}
             >
               Discard
             </ZuButton>
@@ -339,9 +380,10 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
                 flex: 1,
               }}
               startIcon={<PlusCircleIcon color="#67DBFF" />}
-              onClick={createVenue}
+              onClick={updateVenue}
+              disabled={isLoading}
             >
-              Add Space
+              Edit Space
             </ZuButton>
           </Box>
         </Box>
