@@ -17,7 +17,6 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
-import { Uploader3, UploadFile, UploadResult } from '@lxdao/uploader3';
 import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import { ZuButton, ZuInput } from 'components/core';
@@ -29,8 +28,6 @@ import {
   FormTitle,
 } from '@/components/typography/formTypography';
 import { SOCIAL_TYPES } from '@/constant';
-import { PreviewFile } from '@/components';
-import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 import { ITimezoneOption } from 'react-timezone-select';
@@ -42,6 +39,7 @@ import FormFooter from './FormFooter';
 import FormHeader from './FormHeader';
 import FormatCheckboxGroup from './FormatCheckbox';
 import FormUploader from './FormUploader';
+import { PlusIcon } from '../icons';
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Event name is required'),
@@ -54,6 +52,7 @@ const schema = Yup.object().shape({
   external_url: Yup.string()
     .url('Must be a valid URL')
     .required('External URL is required'),
+  avatarURL: Yup.string(),
   participant: Yup.number()
     .positive()
     .integer()
@@ -96,7 +95,6 @@ export const EventForm: React.FC<EventFormProps> = ({
   handleClose,
 }) => {
   const [track, setTrack] = useState('');
-  const avatarUploader = useUploaderPreview();
   const descriptionEditorStore = useEditorStore();
 
   const {
@@ -127,6 +125,8 @@ export const EventForm: React.FC<EventFormProps> = ({
   const locations = watch('locations');
   const tracks = watch('tracks');
   const isPerson = watch('isPerson');
+  const avatarURL = watch('avatarURL');
+  console.log('avatarURL', avatarURL);
 
   const [isLoading, setLoading] = useState(false);
   const [blockClickModal, setBlockClickModal] = useState(false);
@@ -166,13 +166,6 @@ export const EventForm: React.FC<EventFormProps> = ({
     [setValue, tracks],
   );
 
-  const handleAvatarUpload = useCallback(
-    (file: UploadResult | UploadFile) => {
-      avatarUploader.setFile(file);
-    },
-    [avatarUploader],
-  );
-
   const handleDescriptionChange = useCallback(
     (val: any) => {
       descriptionEditorStore.setValue(val);
@@ -207,6 +200,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           external_url,
           tracks,
           locations,
+          avatarURL,
         } = data;
         setBlockClickModal(true);
         setLoading(true);
@@ -217,7 +211,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           profileId,
           external_url: external_url || '',
           avatarURL:
-            avatarUploader.getUrl() ||
+            avatarURL ||
             'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
           startTime: startTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
           endTime: endTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
@@ -240,14 +234,7 @@ export const EventForm: React.FC<EventFormProps> = ({
         setBlockClickModal(false);
       }
     },
-    [
-      adminId,
-      avatarUploader,
-      descriptionEditorStore,
-      profileId,
-      setError,
-      spaceId,
-    ],
+    [adminId, descriptionEditorStore, profileId, setError, spaceId],
   );
 
   const onFormError = useCallback(() => {
@@ -362,10 +349,10 @@ export const EventForm: React.FC<EventFormProps> = ({
               <FormLabelDesc>
                 Recommend min of 200x200px (1:1 Ratio)
               </FormLabelDesc>
-              <FormUploader
-                onChange={(url) => {
-                  avatarUploader.setUrl(url);
-                }}
+              <Controller
+                name="avatarURL"
+                control={control}
+                render={({ field }) => <FormUploader {...field} />}
               />
             </Stack>
             <Stack spacing="10px" padding="20px">

@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
+import { ITimezoneOption } from 'react-timezone-select';
 
 Yup.addMethod(Yup.mixed, 'dayjs', function dayjsSchema() {
   return this.test(
@@ -13,6 +14,18 @@ Yup.addMethod(Yup.mixed, 'dayjs', function dayjsSchema() {
     },
   ).transform((value) => {
     return dayjs.isDayjs(value) ? value : dayjs(value);
+  });
+});
+
+Yup.addMethod(Yup.mixed, 'timezone', function timezoneSchema() {
+  return this.test(
+    'is-timezone',
+    '${path} must be a valid timezone',
+    function (value) {
+      return value === null || value === undefined || typeof value === 'string';
+    },
+  ).transform((value) => {
+    return value as ITimezoneOption;
   });
 });
 

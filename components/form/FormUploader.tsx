@@ -1,8 +1,13 @@
-import { Uploader3, UploadFile, UploadResult } from '@lxdao/uploader3';
+import {
+  Uploader3,
+  Uploader3FileStatus,
+  UploadFile,
+  UploadResult,
+} from '@lxdao/uploader3';
 import { Box, Button } from '@mui/material';
 import { PreviewFile } from '@/components';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface IProps {
   accept?: Array<'.png' | '.jpeg' | '.jpg' | '.gif' | '.svg'>;
@@ -20,15 +25,15 @@ export default function FormUploader({
   onChange,
 }: IProps) {
   const avatarUploader = useUploaderPreview();
+  const url = avatarUploader.getUrl();
+  const [uploaded, setUploaded] = useState(false);
 
   const handleAvatarUpload = useCallback(
     (file: UploadResult | UploadFile) => {
       avatarUploader.setFile(file);
-      setTimeout(() => {
-        onChange(avatarUploader.getUrl());
-      });
+      setUploaded(true);
     },
-    [avatarUploader, onChange],
+    [avatarUploader],
   );
 
   useEffect(() => {
@@ -36,6 +41,13 @@ export default function FormUploader({
       avatarUploader.setUrl(value);
     }
   }, [avatarUploader, value]);
+
+  useEffect(() => {
+    if (avatarUploader.file?.status === Uploader3FileStatus.done && uploaded) {
+      url && onChange(url);
+      setUploaded(false);
+    }
+  }, [url, avatarUploader.file?.status, uploaded, onChange]);
 
   return (
     <Box
