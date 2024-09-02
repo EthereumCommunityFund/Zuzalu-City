@@ -13,13 +13,14 @@ import {
   InformationIcon,
   SearchIcon,
 } from 'components/icons';
-import { Venue } from '@/types';
+import { Venue, Event } from '@/types';
 import VenueCard from './VenueCard';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 interface VenueListProps {
   venues?: Venue[];
+  event?: Event;
   onToggle: (anchor: Anchor, open: boolean) => void;
   refetch: () => void;
   setSearchValue: React.Dispatch<React.SetStateAction<string>> | any;
@@ -27,6 +28,7 @@ interface VenueListProps {
 
 const VenueList: React.FC<VenueListProps> = ({
   venues,
+  event,
   onToggle,
   setSearchValue,
   refetch,
@@ -107,6 +109,7 @@ const VenueList: React.FC<VenueListProps> = ({
             <VenueCard
               key={`VenueCard-${index}`}
               venue={venue}
+              event={event}
               refetch={refetch}
             />
           ))

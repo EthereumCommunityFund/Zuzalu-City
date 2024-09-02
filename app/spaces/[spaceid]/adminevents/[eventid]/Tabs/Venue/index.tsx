@@ -44,6 +44,8 @@ interface IVenue {
   event: Event | undefined;
 }
 
+const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
 const Home: React.FC<IVenue> = ({ event }) => {
   const params = useParams();
   const eventId = params.eventid.toString();
@@ -85,47 +87,37 @@ const Home: React.FC<IVenue> = ({ event }) => {
 
   const List = (anchor: Anchor) => {
     const { breakpoints } = useTheme();
+    const [data, setData] = useState<AvailableType[][]>(
+      Array.from({ length: 7 }, () => [
+        {
+          startTime: '',
+          endTime: '',
+        },
+      ]),
+    );
 
-    const daysOfWeek = [
-      {
-        label: 'MON',
-        state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-      },
-      {
-        label: 'TUE',
-        state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-      },
-      {
-        label: 'WED',
-        state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-      },
-      {
-        label: 'THU',
-        state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-      },
-      {
-        label: 'FRI',
-        state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-      },
-      {
-        label: 'SAT',
-        state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-      },
-      {
-        label: 'SUN',
-        state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-      },
-    ];
+    const resetForm = () => {
+      setData(
+        Array.from({ length: 7 }, () => [
+          {
+            startTime: '',
+            endTime: '',
+          },
+        ]),
+      );
+      setName('');
+      setTags([]);
+      setCapacity(0);
+      avatarUploader.setUrl('');
+    };
 
     const createVenue = async () => {
       try {
-        const bookings = daysOfWeek.reduce(
-          (acc, { label, state }) => {
-            acc[label.toLowerCase()] = state[0];
-            return acc;
-          },
-          {} as Record<string, AvailableType[]>,
-        );
+        const bookings = {} as Record<string, AvailableType[]>;
+        data.forEach((day, index) => {
+          const label = days[index].toLowerCase();
+          bookings[label] = day;
+        });
 
         await supabase.from('venues').insert({
           name,
@@ -138,19 +130,14 @@ const Home: React.FC<IVenue> = ({ event }) => {
         });
         toggleDrawer('right', false);
         refetch();
+        resetForm();
       } catch (err) {
         console.log(err);
       }
     };
 
-    const renderDay = (
-      label: string,
-      state: [
-        AvailableType[],
-        React.Dispatch<React.SetStateAction<AvailableType[]>>,
-      ],
-    ) => {
-      const [values, setValues] = state;
+    const renderDay = (day: AvailableType[], index: number) => {
+      const label = days[index];
       return (
         <Stack direction="row" spacing="20px" key={label}>
           <Stack direction="row" spacing="20px" alignItems="center" flex="1">
@@ -158,12 +145,16 @@ const Home: React.FC<IVenue> = ({ event }) => {
             <Typography variant="bodyBB">{label}</Typography>
           </Stack>
           <Stack spacing="10px" flex="4">
-            {values.map((item, index) => (
+            {day.map((item, i) => (
               <TimeRange
-                key={`${label}-Item-${index}`}
-                values={values}
-                setValues={setValues}
-                id={index}
+                key={`${label}-Item-${i}`}
+                values={day}
+                setValues={(v: any) => {
+                  const prev = [...data];
+                  prev[index] = v;
+                  setData(prev);
+                }}
+                id={i}
                 timezone={event?.timezone as string}
               />
             ))}
@@ -173,11 +164,13 @@ const Home: React.FC<IVenue> = ({ event }) => {
               padding="10px"
               sx={{ cursor: 'pointer' }}
               onClick={() => {
-                if (values.filter((item) => item.error).length === 0) {
-                  setValues((prev) => [
-                    ...prev,
-                    { startTime: '', endTime: '' },
-                  ]);
+                const prev = [...data];
+                if (prev[index].filter((item) => item.error).length === 0) {
+                  setData((v) => {
+                    const i = [...v];
+                    i[index] = [...i[index], { startTime: '', endTime: '' }];
+                    return i;
+                  });
                 }
               }}
             >
@@ -187,9 +180,9 @@ const Home: React.FC<IVenue> = ({ event }) => {
               padding="10px"
               sx={{ cursor: 'pointer' }}
               onClick={() => {
-                const prev = [...values];
-                prev.pop();
-                setValues(prev);
+                const prev = [...data];
+                prev[index].pop();
+                setData(prev);
               }}
             >
               <MinusIcon size={5} />
@@ -258,6 +251,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
               <Stack spacing="10px">
                 <FormLabel>Space Name*</FormLabel>
                 <ZuInput
+                  value={name}
                   placeholder="Standard Pass"
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -338,6 +332,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
               <Stack spacing="10px">
                 <FormLabel>Space Capacity*</FormLabel>
                 <ZuInput
+                  value={capacity}
                   type="number"
                   onChange={(e) => setCapacity(Number(e.target.value))}
                 />
@@ -364,7 +359,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 </Typography>
               </Stack>
               <Stack spacing="20px">
-                {daysOfWeek.map(({ label, state }) => renderDay(label, state))}
+                {data.map((day, index) => renderDay(day, index))}
               </Stack>
             </Stack>
             <Box display="flex" gap="20px">
@@ -399,6 +394,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
     <Stack spacing="30px" padding="30px">
       <VenueHeader onToggle={toggleDrawer} count={venuesData.length} />
       <VenueList
+        event={event}
         venues={venuesData}
         refetch={refetch}
         onToggle={toggleDrawer}

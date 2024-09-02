@@ -1,21 +1,25 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { ThreeVerticalIcon } from '@/components/icons';
-import { Venue } from '@/types';
+import { Venue, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import VenueForm from '@/components/form/VenueForm';
+import Drawer from '@/components/drawer';
 
 type VenueCardProps = {
   venue: Venue;
+  event?: Event;
   refetch: () => void;
 };
 
 const options = ['Edit', 'Delete'];
 
-const VenueCard: React.FC<VenueCardProps> = ({ venue, refetch }) => {
+const VenueCard: React.FC<VenueCardProps> = ({ venue, event, refetch }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [drawOpen, setDrawOpen] = useState(false);
   const open = Boolean(anchorEl);
 
   const { data: sessions } = useQuery({
@@ -48,13 +52,17 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, refetch }) => {
   const handleClose = useCallback(() => {
     setAnchorEl(null);
   }, []);
-  const handleMenuItemClick = useCallback((type: string) => {
-    if (type === 'Edit') {
-      console.log('Edit');
-    } else if (type === 'Delete') {
-      setOpenDialog(true);
-    }
-  }, []);
+  const handleMenuItemClick = useCallback(
+    (type: string) => {
+      if (type === 'Edit') {
+        setDrawOpen(true);
+      } else if (type === 'Delete') {
+        setOpenDialog(true);
+      }
+      handleClose();
+    },
+    [handleClose],
+  );
 
   const handleDialogClose = useCallback(() => {
     setOpenDialog(false);
@@ -64,6 +72,10 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, refetch }) => {
     deleteVenue.mutate();
     setOpenDialog(false);
   }, [deleteVenue]);
+
+  const toggleDrawer = useCallback(() => {
+    setDrawOpen((v) => !v);
+  }, []);
 
   return (
     <>
@@ -80,6 +92,9 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, refetch }) => {
           },
         }}
       >
+        <Drawer open={drawOpen} onClose={toggleDrawer} onOpen={toggleDrawer}>
+          <VenueForm event={event} venue={venue} handleClose={toggleDrawer} />
+        </Drawer>
         <Dialog
           showModal={openDialog}
           title="Deleting Venue"
