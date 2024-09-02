@@ -38,53 +38,25 @@ interface IVenue {
   handleClose: () => void;
 }
 
+const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
 const VenueForm = ({ event, venue, handleClose }: IVenue) => {
   const [name, setName] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [capacity, setCapacity] = useState<number>(0);
   const avatarUploader = useUploaderPreview();
 
-  const daysOfWeek = [
-    {
-      label: 'MON',
-      state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-    },
-    {
-      label: 'TUE',
-      state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-    },
-    {
-      label: 'WED',
-      state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-    },
-    {
-      label: 'THU',
-      state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-    },
-    {
-      label: 'FRI',
-      state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-    },
-    {
-      label: 'SAT',
-      state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-    },
-    {
-      label: 'SUN',
-      state: useState<AvailableType[]>([{ startTime: '', endTime: '' }]),
-    },
-  ];
+  const [data, setData] = useState<AvailableType[][]>(
+    Array.from({ length: 7 }, () => [
+      {
+        startTime: '',
+        endTime: '',
+      },
+    ]),
+  );
 
   const createVenue = async () => {
     try {
-      const bookings = daysOfWeek.reduce(
-        (acc, { label, state }) => {
-          acc[label.toLowerCase()] = state[0];
-          return acc;
-        },
-        {} as Record<string, AvailableType[]>,
-      );
-
       //   await supabase.from('venues').insert({
       //     name,
       //     tags: tags.join(','),
@@ -107,14 +79,8 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
     );
   };
 
-  const renderDay = (
-    label: string,
-    state: [
-      AvailableType[],
-      React.Dispatch<React.SetStateAction<AvailableType[]>>,
-    ],
-  ) => {
-    const [values, setValues] = state;
+  const renderDay = (day: AvailableType[], index: number) => {
+    const label = days[index];
     return (
       <Stack direction="row" spacing="20px" key={label}>
         <Stack direction="row" spacing="20px" alignItems="center" flex="1">
@@ -122,12 +88,16 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
           <Typography variant="bodyBB">{label}</Typography>
         </Stack>
         <Stack spacing="10px" flex="4">
-          {values.map((item, index) => (
+          {day.map((item, i) => (
             <TimeRange
-              key={`${label}-Item-${index}`}
-              values={values}
-              setValues={setValues}
-              id={index}
+              key={`${label}-Item-${i}`}
+              values={day}
+              setValues={(v: any) => {
+                const prev = [...data];
+                prev[index] = v;
+                setData(prev);
+              }}
+              id={i}
               timezone={event?.timezone as string}
             />
           ))}
@@ -137,8 +107,13 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
             padding="10px"
             sx={{ cursor: 'pointer' }}
             onClick={() => {
-              if (values.filter((item) => item.error).length === 0) {
-                setValues((prev) => [...prev, { startTime: '', endTime: '' }]);
+              const prev = [...data];
+              if (prev[index].filter((item) => item.error).length === 0) {
+                setData((v) => {
+                  const i = [...v];
+                  i[index] = [...i[index], { startTime: '', endTime: '' }];
+                  return i;
+                });
               }
             }}
           >
@@ -148,9 +123,9 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
             padding="10px"
             sx={{ cursor: 'pointer' }}
             onClick={() => {
-              const prev = [...values];
-              prev.pop();
-              setValues(prev);
+              const prev = [...data];
+              prev[index].pop();
+              setData(prev);
             }}
           >
             <MinusIcon size={5} />
@@ -161,14 +136,24 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
   };
 
   useEffect(() => {
-    console.log(venue);
     setName(venue?.name);
     setTags(venue?.tags.split(','));
     setCapacity(venue?.capacity);
     avatarUploader.setUrl(venue?.avatar);
+    try {
+      const bookings = JSON.parse(venue?.bookings as string);
+      const data = [] as AvailableType[][];
+      Object.keys(bookings).forEach((item) => {
+        const label = item.toUpperCase();
+        const day = bookings[item];
+        const index = days.indexOf(label);
+        data[index] = day;
+      });
+      setData(data);
+    } catch (err) {
+      console.log(err);
+    }
   }, [venue]);
-
-  // "{"monday":[{"startTime":"","endTime":""}],"tuesday":[{"startTime":"04:00","endTime":"15:55","error":""}],"wednesday":[{"startTime":"","endTime":""}],"thursday":[{"startTime":"","endTime":""}],"friday":[{"startTime":"","endTime":""}],"saturday":[{"startTime":"","endTime":""}],"sunday":[{"startTime":"","endTime":""}]}"
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -334,7 +319,7 @@ const VenueForm = ({ event, venue, handleClose }: IVenue) => {
               </Typography>
             </Stack>
             <Stack spacing="20px">
-              {daysOfWeek.map(({ label, state }) => renderDay(label, state))}
+              {data.map((day, index) => renderDay(day, index))}
             </Stack>
           </Stack>
           <Box display="flex" gap="20px">

@@ -152,6 +152,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 setValues={(v: any) => {
                   const prev = [...data];
                   prev[index] = v;
+                  console.log(prev);
                   setData(prev);
                 }}
                 id={i}
