@@ -7,7 +7,6 @@ import {
   Box,
   Typography,
   OutlinedInput,
-  Button,
   Select,
   MenuItem,
   Chip,
@@ -15,8 +14,6 @@ import {
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { PreviewFile } from '@/components';
-import { Uploader3 } from '@lxdao/uploader3';
 import { VenueHeader, VenueList } from './components';
 import {
   XMarkIcon,
