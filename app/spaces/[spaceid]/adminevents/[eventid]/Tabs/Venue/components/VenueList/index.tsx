@@ -21,6 +21,7 @@ type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface VenueListProps {
   venues?: Venue[];
   onToggle: (anchor: Anchor, open: boolean) => void;
+  refetch: () => void;
   setSearchValue: React.Dispatch<React.SetStateAction<string>> | any;
 }
 
@@ -28,6 +29,7 @@ const VenueList: React.FC<VenueListProps> = ({
   venues,
   onToggle,
   setSearchValue,
+  refetch,
 }) => {
   const theme = useTheme();
 
@@ -102,7 +104,11 @@ const VenueList: React.FC<VenueListProps> = ({
           </Stack>
         ) : (
           venues?.map((venue, index) => (
-            <VenueCard key={`VenueCard-${index}`} venue={venue} />
+            <VenueCard
+              key={`VenueCard-${index}`}
+              venue={venue}
+              refetch={refetch}
+            />
           ))
         )}
       </Stack>

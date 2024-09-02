@@ -129,6 +129,13 @@ let theme = createTheme({
         },
       },
     },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#222222',
+        },
+      },
+    },
   },
 });
 

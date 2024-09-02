@@ -1,37 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Stack, Typography } from '@mui/material';
+import React, { useCallback } from 'react';
+import { Box, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { ThreeVerticalIcon } from '@/components/icons';
 import { Venue } from '@/types';
 import { supabase } from '@/utils/supabase/client';
-import { Session } from '@/types';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 type VenueCardProps = {
   venue: Venue;
+  refetch: () => void;
 };
 
-const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const getSession = async () => {
-    try {
+const options = ['Edit', 'Delete'];
+
+const VenueCard: React.FC<VenueCardProps> = ({ venue, refetch }) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const { data: sessions } = useQuery({
+    queryKey: ['getSession', venue.name],
+    queryFn: async () => {
       const { data } = await supabase
         .from('sessions')
         .select('*')
         .eq('location', venue.name);
-      if (data) {
-        setSessions(data);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+      return data;
+    },
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await getSession();
-    };
+  const deleteVenue = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('venues')
+        .delete()
+        .eq('id', venue.id);
+      return error;
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
-    fetchData();
+  const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   }, []);
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+  const handleMenuItemClick = useCallback(
+    (type: string) => {
+      if (type === 'Edit') {
+        console.log('Edit');
+      } else if (type === 'Delete') {
+        deleteVenue.mutate();
+      }
+    },
+    [deleteVenue],
+  );
 
   return (
     <Stack
@@ -69,7 +93,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
           ))}
         </Stack>
         <Typography variant="bodyS">
-          Sessions Booked: {sessions.length} Capacity: {venue.capacity}
+          Sessions Booked: {sessions?.length} Capacity: {venue.capacity}
         </Typography>
       </Stack>
       <Stack
@@ -79,9 +103,31 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
         bgcolor="#383838"
         borderRadius="6px"
         height="fit-content"
+        sx={{ cursor: 'pointer' }}
+        aria-controls={open ? 'long-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup="true"
+        aria-label="more"
+        id="long-button"
+        onClick={handleClick}
       >
         <ThreeVerticalIcon size={5} />
       </Stack>
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          'aria-labelledby': 'long-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        {options.map((option) => (
+          <MenuItem key={option} onClick={() => handleMenuItemClick(option)}>
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
     </Stack>
   );
 };

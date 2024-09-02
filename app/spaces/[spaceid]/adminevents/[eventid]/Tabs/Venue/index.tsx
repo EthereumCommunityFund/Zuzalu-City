@@ -400,6 +400,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
       <VenueHeader onToggle={toggleDrawer} count={venuesData.length} />
       <VenueList
         venues={venuesData}
+        refetch={refetch}
         onToggle={toggleDrawer}
         setSearchValue={setSearchValue}
       />
