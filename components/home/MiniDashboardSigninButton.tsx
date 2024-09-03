@@ -69,7 +69,7 @@ export default function MiniDashboardSigninButton({ handleShowModal }: IProps) {
               Sign In
             </Typography>
           </PopperHead>
-          <Typography variant="body2" color="#fff" sx={{ opacity: 0.7 }}>
+          {/*<Typography variant="body2" color="#fff" sx={{ opacity: 0.7 }}>
             First Time?
           </Typography>
           <CheckinButton
@@ -88,7 +88,7 @@ export default function MiniDashboardSigninButton({ handleShowModal }: IProps) {
           </CheckinButton>
           <Typography variant="body2" color="#fff" sx={{ opacity: 0.7 }}>
             or
-          </Typography>
+          </Typography>*/}
           <PopperSigninButton
             startIcon={<ArrowCircleRightIcon />}
             onClick={handleSignin}

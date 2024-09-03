@@ -2502,7 +2502,7 @@ const Home = () => {
                       borderRadius="10px"
                       width="80px"
                       height="80px"
-                      src={locationAvatar || '/26.png'}
+                      src={locationAvatar || eventData?.image_url}
                     />
                     <Stack alignItems="center">
                       <Typography variant="bodyM">

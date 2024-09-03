@@ -201,7 +201,7 @@ export default function MiniDashboard({
                 lineHeight={'120%'}
                 color={'white'}
               >
-                Are You Attending ZuVillage?
+                Are You Attending Zuitzerland?
               </Typography>
             )}
           </Stack>
@@ -272,7 +272,7 @@ export default function MiniDashboard({
           >
             {'My RSVPs'}
           </ZuButton>
-          <ZuButton
+          {/*<ZuButton
             onClick={() =>
               externalNavigation('https://matrix.to/#/#welcome-zg:matrix.org')
             }
@@ -295,10 +295,10 @@ export default function MiniDashboard({
             startIcon={<ChatsIcon />}
           >
             {'Join Conversation'}
-          </ZuButton>
+          </ZuButton>*/}
           <ZuButton
             onClick={() =>
-              externalNavigation('https://zuvillage-georgia.framer.website/')
+              externalNavigation('https://zuitzerland.ch/')
             }
             sx={{
               borderRadius: '10px',
@@ -318,7 +318,7 @@ export default function MiniDashboard({
             }}
             startIcon={<ArrowTopRightSquareIcon />}
           >
-            {'About ZuVillage'}
+            {'About Zuitzerland'}
           </ZuButton>
           {showManage && (
             <ZuButton
