@@ -40,7 +40,15 @@ interface IVenue {
   refetch: () => void;
 }
 
-const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+const days = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+];
 
 const VenueForm = ({ event, venue, refetch, handleClose }: IVenue) => {
   const [name, setName] = useState<string>('');
@@ -106,7 +114,7 @@ const VenueForm = ({ event, venue, refetch, handleClose }: IVenue) => {
   }, [handleClose]);
 
   const renderDay = (day: AvailableType[], index: number) => {
-    const label = days[index];
+    const label = days[index].toUpperCase().slice(0, 3);
     return (
       <Stack direction="row" spacing="20px" key={label}>
         <Stack direction="row" spacing="20px" alignItems="center" flex="1">
@@ -161,8 +169,6 @@ const VenueForm = ({ event, venue, refetch, handleClose }: IVenue) => {
     );
   };
 
-  console.log(venue);
-
   useEffect(() => {
     setName(venue?.name);
     setTags(venue?.tags.split(','));
@@ -172,9 +178,8 @@ const VenueForm = ({ event, venue, refetch, handleClose }: IVenue) => {
       const bookings = JSON.parse(venue?.bookings as string);
       const data = [] as AvailableType[][];
       Object.keys(bookings).forEach((item) => {
-        const label = item.toUpperCase();
         const day = bookings[item];
-        const index = days.indexOf(label);
+        const index = days.indexOf(item);
         data[index] = day;
       });
       setData(data);

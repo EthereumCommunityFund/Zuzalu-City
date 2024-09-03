@@ -44,7 +44,15 @@ interface IVenue {
   event: Event | undefined;
 }
 
-const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+const days = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+];
 
 const Home: React.FC<IVenue> = ({ event }) => {
   const params = useParams();
@@ -137,7 +145,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
     };
 
     const renderDay = (day: AvailableType[], index: number) => {
-      const label = days[index];
+      const label = days[index].toUpperCase().slice(0, 3);
       return (
         <Stack direction="row" spacing="20px" key={label}>
           <Stack direction="row" spacing="20px" alignItems="center" flex="1">
