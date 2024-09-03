@@ -48,7 +48,9 @@ const schema = Yup.object().shape({
 
   startTime: Yup.mixed().dayjs().required('Start date is required'),
   endTime: Yup.mixed().dayjs().required('End date is required'),
-  timezone: Yup.mixed().timezone(),
+  timezone: Yup.object().shape({
+    value: Yup.string(),
+  }),
   external_url: Yup.string()
     .url('Must be a valid URL')
     .required('External URL is required'),
@@ -216,7 +218,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           socialLinks: socialLinks ?? [],
           adminId,
           person: isPerson!,
-          timezone: timezone ? timezone.value : dayjs.tz.guess(),
+          timezone: timezone ? timezone.value! : dayjs.tz.guess(),
           tracks: tracks || [],
           locations: locations || [],
         };
