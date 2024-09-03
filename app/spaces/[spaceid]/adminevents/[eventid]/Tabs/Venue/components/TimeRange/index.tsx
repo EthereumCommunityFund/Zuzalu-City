@@ -22,15 +22,15 @@ const validateTimeRanges = (
   };
 
   // First, check each time range for validity (start time should be before end time)
-  for (let i = 0; i < timeRanges.length; i++) {
-    const { startTime, endTime } = timeRanges[i];
-    if (startTime >= endTime) {
-      timeRanges[i].error =
-        `Time range ${i + 1} is invalid as start time ${startTime} is not before end time ${endTime}`;
-    } else {
-      timeRanges[i].error = '';
-    }
-  }
+  // for (let i = 0; i < timeRanges.length; i++) {
+  //   const { startTime, endTime } = timeRanges[i];
+  //   if (startTime >= endTime) {
+  //     timeRanges[i].error =
+  //       `Time range ${i + 1} is invalid as start time ${startTime} is not before end time ${endTime}`;
+  //   } else {
+  //     timeRanges[i].error = '';
+  //   }
+  // }
 
   // Second, check for overlaps
   for (let i = 0; i < timeRanges.length; i++) {
