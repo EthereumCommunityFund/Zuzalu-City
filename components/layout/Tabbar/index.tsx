@@ -10,7 +10,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
   const isSmallScreen = useMediaQuery('(max-width: 550px)');
   return (
     <Box
-      bgcolor="#2b2b2bcc"
+      bgcolor="#2b2b2b"
       height="45px"
       display="flex"
       gap="10px"
