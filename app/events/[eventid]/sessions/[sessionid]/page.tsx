@@ -669,7 +669,6 @@ const Home = () => {
       console.log(err);
     }
   };
-  console.log(sessionDate);
   const resetDateAndTime = async (sessionLocation: string) => {
     setSessionStartTime(
       dayjs(sessionDate)
@@ -2224,7 +2223,7 @@ const Home = () => {
                           href={session.liveStreamLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          sx={{ textDecoration: 'underline' }}
+                          sx={{ textDecoration: 'underline', color: '#fff' }}
                         >
                           {session.liveStreamLink}
                         </Typography>
