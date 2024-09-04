@@ -408,10 +408,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const getSessionsByDate = async (targetDate: string) => {
     if (sessions) {
       return sessions.filter((session) => {
-        console.log(
-          dayjs(session.startTime).tz(session.timezone).format('MMMM D, YYYY'),
-          targetDate,
-        );
         return (
           dayjs(session.startTime)
             .tz(session.timezone)
@@ -526,19 +522,15 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               .some((ele) => new Set(selectedLocations).has(ele)),
           );
         }
-        console.log(selectedLocations, filteredSessions);
         if (filteredSessions && filteredSessions.length > 0) {
-          console.log(111111);
           setSessionsByDate(groupSessionByDate(filteredSessions));
         } else if (selectedDate) {
-          console.log(22);
           setSessionsByDate({
             [dayjs(selectedDate)
               .tz(eventData?.timezone)
               .format('MMMM D, YYYY')]: [],
           });
         } else {
-          console.log(3333);
           setSessionsByDate(undefined);
         }
       }
@@ -616,7 +608,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     startDate?: string,
     endDate?: string,
   ): boolean => {
-    console.log(date, startDate, endDate);
     return (
       date.isAfter(dayjs(startDate).subtract(1, 'day')) &&
       date.isBefore(dayjs(endDate).add(1, 'day'))
