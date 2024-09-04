@@ -297,9 +297,7 @@ export default function MiniDashboard({
             {'Join Conversation'}
           </ZuButton>*/}
           <ZuButton
-            onClick={() =>
-              externalNavigation('https://zuitzerland.ch/')
-            }
+            onClick={() => externalNavigation('https://zuitzerland.ch/')}
             sx={{
               borderRadius: '10px',
               border: '1px solid rgba(255, 255, 255, 0.10)',
