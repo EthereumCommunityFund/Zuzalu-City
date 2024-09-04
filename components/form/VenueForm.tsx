@@ -330,6 +330,7 @@ const VenueForm = ({ event, venue, refetch, handleClose }: IVenue) => {
                 Recommend min of 200x200px (1:1 Ratio)
               </FormLabelDesc>
               <FormUploader
+                value={avatarUploader.getUrl()}
                 onChange={(url) => {
                   avatarUploader.setUrl(url);
                 }}
