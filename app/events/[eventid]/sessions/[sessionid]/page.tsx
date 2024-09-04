@@ -516,6 +516,18 @@ const Home = () => {
     );
   };
 
+  const isDateAvailable = (date: Dayjs): boolean => {
+    if (!selectedRoom?.bookings) return true;
+    const available = JSON.parse(selectedRoom?.bookings!);
+    const dayName = date.format('dddd');
+    const availableTime = available[dayName.toLowerCase()];
+    return (
+      availableTime.filter((item: any) => {
+        return item.startTime && item.endTime;
+      }).length === 0
+    );
+  };
+
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     let timezone = eventData?.timezone;
 
@@ -657,6 +669,7 @@ const Home = () => {
       console.log(err);
     }
   };
+  console.log(sessionDate);
   const resetDateAndTime = async (sessionLocation: string) => {
     setSessionStartTime(
       dayjs(sessionDate)
@@ -1198,7 +1211,7 @@ const Home = () => {
                         );
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
-                        await resetDateAndTime(e.target.value);
+                        setSessionDate(null);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1341,7 +1354,6 @@ const Home = () => {
                           {eventData?.timezone}
                         </Typography>
                         <DesktopDatePicker
-                          defaultValue={sessionDate}
                           value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
@@ -1353,7 +1365,7 @@ const Home = () => {
                               date,
                               eventData?.startTime,
                               eventData?.endTime,
-                            )
+                            ) || isDateAvailable(date)
                           }
                           sx={{
                             '& .MuiSvgIcon-root': {

@@ -612,9 +612,22 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     startDate?: string,
     endDate?: string,
   ): boolean => {
+    console.log(date, startDate, endDate);
     return (
       date.isAfter(dayjs(startDate).subtract(1, 'day')) &&
       date.isBefore(dayjs(endDate).add(1, 'day'))
+    );
+  };
+
+  const isDateAvailable = (date: Dayjs): boolean => {
+    if (!selectedRoom?.bookings) return true;
+    const available = JSON.parse(selectedRoom?.bookings!);
+    const dayName = date.format('dddd');
+    const availableTime = available[dayName.toLowerCase()];
+    return (
+      availableTime.filter((item: any) => {
+        return item.startTime && item.endTime;
+      }).length === 0
     );
   };
 
@@ -1289,6 +1302,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         )[0];
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
+                        setSessionDate(null);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1430,6 +1444,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           {eventData?.timezone}
                         </Typography>
                         <DesktopDatePicker
+                          value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
                               handleDateChange(newValue);
@@ -1440,7 +1455,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                               date,
                               eventData?.startTime,
                               eventData?.endTime,
-                            )
+                            ) || isDateAvailable(date)
                           }
                           sx={{
                             '& .MuiSvgIcon-root': {
