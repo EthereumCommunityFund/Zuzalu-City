@@ -171,6 +171,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
+  const [sessionRecordingLink, setSessionRecordingLink] = useState<string>('');
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
@@ -525,16 +526,19 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               .some((ele) => new Set(selectedLocations).has(ele)),
           );
         }
-
+        console.log(selectedLocations, filteredSessions);
         if (filteredSessions && filteredSessions.length > 0) {
+          console.log(111111);
           setSessionsByDate(groupSessionByDate(filteredSessions));
         } else if (selectedDate) {
+          console.log(22);
           setSessionsByDate({
             [dayjs(selectedDate)
               .tz(eventData?.timezone)
               .format('MMMM D, YYYY')]: [],
           });
         } else {
+          console.log(3333);
           setSessionsByDate(undefined);
         }
       }
@@ -924,6 +928,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       creatorDID: adminId,
       uuid: uuidv4(),
       liveStreamLink: sessionLiveStreamLink,
+      recording_link: sessionRecordingLink,
     };
     try {
       setBlockClickModal(true);
@@ -1201,6 +1206,16 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                 </Typography>
                 <ZuInput
                   onChange={(e) => setSessionLiveStreamLink(e.target.value)}
+                  placeholder="https://"
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Recording Link</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Enter a link for where this session will be recorded
+                </Typography>
+                <ZuInput
+                  onChange={(e) => setSessionRecordingLink(e.target.value)}
                   placeholder="https://"
                 />
               </Stack>
@@ -1985,6 +2000,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   };
 
   const columnRef = useRef<HTMLDivElement>(null);
+
+  console.log(sessionsByDate);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
