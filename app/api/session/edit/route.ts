@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     creatorDID,
     liveStreamLink,
     uuid,
+    recording_link,
   }: SessionSupabaseData = await req.json();
 
   try {
@@ -112,6 +113,7 @@ export async function POST(req: NextRequest) {
         speakers,
         creatorDID,
         liveStreamLink,
+        recording_link,
       })
       .eq('uuid', uuid);
 
