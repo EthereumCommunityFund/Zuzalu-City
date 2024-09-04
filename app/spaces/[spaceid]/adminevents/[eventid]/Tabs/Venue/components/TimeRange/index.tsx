@@ -22,15 +22,15 @@ const validateTimeRanges = (
   };
 
   // First, check each time range for validity (start time should be before end time)
-  for (let i = 0; i < timeRanges.length; i++) {
-    const { startTime, endTime } = timeRanges[i];
-    if (startTime >= endTime) {
-      timeRanges[i].error =
-        `Time range ${i + 1} is invalid as start time ${startTime} is not before end time ${endTime}`;
-    } else {
-      timeRanges[i].error = '';
-    }
-  }
+  // for (let i = 0; i < timeRanges.length; i++) {
+  //   const { startTime, endTime } = timeRanges[i];
+  //   if (startTime >= endTime) {
+  //     timeRanges[i].error =
+  //       `Time range ${i + 1} is invalid as start time ${startTime} is not before end time ${endTime}`;
+  //   } else {
+  //     timeRanges[i].error = '';
+  //   }
+  // }
 
   // Second, check for overlaps
   for (let i = 0; i < timeRanges.length; i++) {
@@ -57,6 +57,12 @@ const TimeRange: React.FC<ITimeRange> = ({
   timezone,
 }) => {
   const currentRange = values[id];
+  const startTime = currentRange.startTime
+    ? dayjs.utc(currentRange.startTime, 'HH:mm').tz(timezone)
+    : null;
+  const endTime = currentRange.endTime
+    ? dayjs.utc(currentRange.endTime, 'HH:mm').tz(timezone)
+    : null;
   return (
     <Stack direction="column" spacing="10px" flex="4">
       <Stack direction="row" spacing="10px">
@@ -81,7 +87,7 @@ const TimeRange: React.FC<ITimeRange> = ({
               }
             }
           }}
-          value={currentRange.startTime ? dayjs(currentRange.startTime) : null}
+          value={startTime}
           sx={{
             '& .MuiSvgIcon-root': {
               color: 'white',
@@ -127,7 +133,7 @@ const TimeRange: React.FC<ITimeRange> = ({
               validateTimeRanges(newValue, setValues);
             }
           }}
-          value={currentRange.endTime ? dayjs(currentRange.endTime) : null}
+          value={endTime}
           sx={{
             '& .MuiSvgIcon-root': {
               color: 'white',

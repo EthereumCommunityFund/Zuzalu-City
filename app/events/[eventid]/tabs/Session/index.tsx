@@ -612,9 +612,22 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     startDate?: string,
     endDate?: string,
   ): boolean => {
+    console.log(date, startDate, endDate);
     return (
       date.isAfter(dayjs(startDate).subtract(1, 'day')) &&
       date.isBefore(dayjs(endDate).add(1, 'day'))
+    );
+  };
+
+  const isDateAvailable = (date: Dayjs): boolean => {
+    if (!selectedRoom?.bookings) return true;
+    const available = JSON.parse(selectedRoom?.bookings!);
+    const dayName = date.format('dddd');
+    const availableTime = available[dayName.toLowerCase()];
+    return (
+      availableTime.filter((item: any) => {
+        return item.startTime && item.endTime;
+      }).length === 0
     );
   };
 
@@ -1289,6 +1302,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         )[0];
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
+                        setSessionDate(null);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1430,6 +1444,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           {eventData?.timezone}
                         </Typography>
                         <DesktopDatePicker
+                          value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
                               handleDateChange(newValue);
@@ -1440,7 +1455,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                               date,
                               eventData?.startTime,
                               eventData?.endTime,
-                            )
+                            ) || isDateAvailable(date)
                           }
                           sx={{
                             '& .MuiSvgIcon-root': {
@@ -2236,14 +2251,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             padding="20px"
                             borderRadius="10px"
                             sx={{ cursor: 'pointer' }}
+                            onClick={() => toggleDrawer('right', true)}
                           >
                             <PlusCircleIcon color="#6c6c6c" size={15} />
                             <Typography variant="subtitle2">
                               No Sessions
                             </Typography>
-                            <ZuButton
-                              onClick={() => toggleDrawer('right', true)}
-                            >
+                            <ZuButton>
                               <Typography variant="subtitle2">
                                 Create a Session
                               </Typography>
@@ -2262,10 +2276,11 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     padding="20px"
                     borderRadius="10px"
                     sx={{ cursor: 'pointer' }}
+                    onClick={() => toggleDrawer('right', true)}
                   >
                     <PlusCircleIcon color="#6c6c6c" size={15} />
                     <Typography variant="subtitle2">No Sessions</Typography>
-                    <ZuButton onClick={() => toggleDrawer('right', true)}>
+                    <ZuButton>
                       <Typography variant="subtitle2">
                         Create a Session
                       </Typography>

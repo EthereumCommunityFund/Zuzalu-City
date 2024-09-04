@@ -2162,14 +2162,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             padding="20px"
                             borderRadius="10px"
                             sx={{ cursor: 'pointer' }}
+                            onClick={() => toggleDrawer('right', true)}
                           >
                             <PlusCircleIcon color="#6c6c6c" size={15} />
                             <Typography variant="subtitle2">
                               No Sessions
                             </Typography>
-                            <ZuButton
-                              onClick={() => toggleDrawer('right', true)}
-                            >
+                            <ZuButton>
                               <Typography variant="subtitle2">
                                 Create a Session
                               </Typography>

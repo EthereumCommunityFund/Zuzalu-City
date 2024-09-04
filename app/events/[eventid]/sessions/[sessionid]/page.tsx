@@ -516,6 +516,18 @@ const Home = () => {
     );
   };
 
+  const isDateAvailable = (date: Dayjs): boolean => {
+    if (!selectedRoom?.bookings) return true;
+    const available = JSON.parse(selectedRoom?.bookings!);
+    const dayName = date.format('dddd');
+    const availableTime = available[dayName.toLowerCase()];
+    return (
+      availableTime.filter((item: any) => {
+        return item.startTime && item.endTime;
+      }).length === 0
+    );
+  };
+
   const isTimeAvailable = (date: Dayjs, isStart: boolean): boolean => {
     let timezone = eventData?.timezone;
 
@@ -1198,7 +1210,7 @@ const Home = () => {
                         );
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
-                        await resetDateAndTime(e.target.value);
+                        setSessionDate(null);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1341,7 +1353,6 @@ const Home = () => {
                           {eventData?.timezone}
                         </Typography>
                         <DesktopDatePicker
-                          defaultValue={sessionDate}
                           value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
@@ -1353,7 +1364,7 @@ const Home = () => {
                               date,
                               eventData?.startTime,
                               eventData?.endTime,
-                            )
+                            ) || isDateAvailable(date)
                           }
                           sx={{
                             '& .MuiSvgIcon-root': {
@@ -2212,7 +2223,7 @@ const Home = () => {
                           href={session.liveStreamLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          sx={{ textDecoration: 'underline' }}
+                          sx={{ textDecoration: 'underline', color: '#fff' }}
                         >
                           {session.liveStreamLink}
                         </Typography>
@@ -2502,7 +2513,7 @@ const Home = () => {
                       borderRadius="10px"
                       width="80px"
                       height="80px"
-                      src={locationAvatar || '/26.png'}
+                      src={locationAvatar || eventData?.image_url}
                     />
                     <Stack alignItems="center">
                       <Typography variant="bodyM">
