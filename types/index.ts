@@ -165,6 +165,7 @@ export interface Session {
   rsvpNb?: number;
   creatorDID?: string;
   liveStreamLink?: string;
+  recording_link?: string;
   uuid: string;
 }
 export type SessionSupabaseData = {
@@ -188,6 +189,7 @@ export type SessionSupabaseData = {
   creatorDID: string;
   uuid: string;
   liveStreamLink?: string;
+  recording_link?: string;
 };
 export interface SessionEdge {
   node: Session;

@@ -198,6 +198,7 @@ const Home = () => {
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
+  const [sessionRecordingLink, setSessionRecordingLink] = useState<string>('');
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(0);
@@ -316,6 +317,7 @@ const Home = () => {
         setSessionExperienceLevel(sessionData.experience_level);
         setSessionLiveStreamLink(sessionData.liveStreamLink);
         setSessionVideoURL(sessionData.video_url);
+        setSessionRecordingLink(sessionData.recording_link);
         const sessionDate = dayjs(sessionData.startTime).startOf('day');
         setSessionDate(sessionDate);
         const sessionStartTime = dayjs(sessionDate)
@@ -517,6 +519,7 @@ const Home = () => {
   };
 
   const isDateAvailable = (date: Dayjs): boolean => {
+    if (sessionLocation === 'Custom') return false;
     if (!selectedRoom?.bookings) return true;
     const available = JSON.parse(selectedRoom?.bookings!);
     const dayName = date.format('dddd');
@@ -855,6 +858,7 @@ const Home = () => {
       creatorDID: adminId,
       uuid: params.sessionid.toString(),
       liveStreamLink: sessionLiveStreamLink,
+      recording_link: sessionRecordingLink,
     };
     try {
       setBlockClickModal(true);
@@ -1109,6 +1113,17 @@ const Home = () => {
                 <ZuInput
                   value={sessionLiveStreamLink}
                   onChange={(e) => setSessionLiveStreamLink(e.target.value)}
+                  placeholder="https://"
+                />
+              </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Recording Link</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Enter a link for where this session will be recorded
+                </Typography>
+                <ZuInput
+                  value={sessionRecordingLink}
+                  onChange={(e) => setSessionRecordingLink(e.target.value)}
                   placeholder="https://"
                 />
               </Stack>
@@ -2226,6 +2241,25 @@ const Home = () => {
                           sx={{ textDecoration: 'underline', color: '#fff' }}
                         >
                           {session.liveStreamLink}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  )}
+                  {session.recording_link && (
+                    <Stack spacing="10px">
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+                          Recording Link:
+                        </Typography>
+                        <Typography
+                          variant="bodyB"
+                          component="a"
+                          href={session.recording_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{ textDecoration: 'underline', color: '#fff' }}
+                        >
+                          {session.recording_link}
                         </Typography>
                       </Stack>
                     </Stack>
