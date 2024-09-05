@@ -519,6 +519,7 @@ const Home = () => {
   };
 
   const isDateAvailable = (date: Dayjs): boolean => {
+    if (sessionLocation === 'Custom') return false;
     if (!selectedRoom?.bookings) return true;
     const available = JSON.parse(selectedRoom?.bookings!);
     const dayName = date.format('dddd');
