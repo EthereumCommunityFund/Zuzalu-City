@@ -1,15 +1,7 @@
 'use client';
-import { useState, useEffect, useCallback, Fragment } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Box, Stack, Typography, Button, Skeleton } from '@mui/material';
-import { Header, Sidebar, IconSidebar } from './components';
-import { ZuButton } from 'components/core';
-import {
-  Cog6Icon,
-  EventIcon,
-  ListIcon,
-  PlusCircleIcon,
-} from 'components/icons';
+import { useState, useEffect, Fragment } from 'react';
+import { useParams } from 'next/navigation';
+import { Box, Stack, Typography, Skeleton } from '@mui/material';
 import { EventCard } from '@/components/cards';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, EventData, Space, SpaceData } from '@/types';
@@ -23,27 +15,13 @@ import {
 } from '@/components/cards/EventCard';
 
 const Home = () => {
-  const router = useRouter();
   const params = useParams();
   const spaceId = params.spaceid.toString();
 
   const [space, setSpace] = useState<Space>();
   const [events, setEvents] = useState<Event[]>([]);
   const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
-  const {
-    ceramic,
-    composeClient,
-    isAuthenticated,
-    authenticate,
-    logout,
-    showAuthPrompt,
-    hideAuthPrompt,
-    isAuthPromptVisible,
-    newUser,
-    profile,
-    username,
-    createProfile,
-  } = useCeramicContext();
+  const { composeClient } = useCeramicContext();
 
   const getSpace = async () => {
     try {
@@ -147,7 +125,6 @@ const Home = () => {
 
   return (
     <Stack direction="row" height="calc(100vh - 50px)" width="100%">
-      <IconSidebar />
       <SubSidebar
         title={space?.name}
         spaceId={params.spaceid.toString()}
@@ -160,38 +137,6 @@ const Home = () => {
           overflowY: 'auto',
         }}
       >
-        <Header />
-        <Stack
-          direction="row"
-          spacing={2}
-          padding={1}
-          borderBottom="1px solid #383838"
-          alignItems="center"
-          sx={{
-            position: 'sticky',
-            top: 61,
-            backgroundColor: 'rgba(0,0,0,0.65)',
-            zIndex: 1,
-          }}
-        >
-          <Typography variant="bodyMB">Admin:</Typography>
-          <ZuButton
-            startIcon={<PlusCircleIcon size={5} />}
-            sx={{
-              fontSize: '14px',
-            }}
-          >
-            Create Event
-          </ZuButton>
-          <ZuButton
-            startIcon={<Cog6Icon size={5} />}
-            sx={{ fontSize: '14px' }}
-            onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
-          >
-            Manage Event
-          </ZuButton>
-        </Stack>
-
         {isEventsLoading ? (
           <Box
             sx={{
