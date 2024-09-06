@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect, Fragment } from 'react';
 import { useParams } from 'next/navigation';
-import { Box, Stack, Typography, Skeleton } from '@mui/material';
+import { Box, Skeleton, Stack, Typography } from '@mui/material';
 import { EventCard } from '@/components/cards';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Event, EventData, Space, SpaceData } from '@/types';
+import { Event, Space, SpaceEventData } from '@/types';
 import SubSidebar from '@/components/layout/Sidebar/SubSidebar';
 import {
   EventCardMonthGroup,
@@ -21,106 +21,112 @@ const Home = () => {
   const [space, setSpace] = useState<Space>();
   const [events, setEvents] = useState<Event[]>([]);
   const [isEventsLoading, setIsEventsLoading] = useState<boolean>(true);
-  const { composeClient } = useCeramicContext();
+  const { composeClient, ceramic } = useCeramicContext();
 
-  const getSpace = async () => {
-    try {
-      const response: any = await composeClient.executeQuery(`
-        query MyQuery {
-          spaceIndex(first: 20) {
-            edges {
-              node {
-                id
-                avatar
-                banner
-                description
-                name
-                profileId
-                tagline
-                website
-                twitter
-                telegram
-                nostr
-                lens
-                github
-                discord
-                ens
-              }
-            }
-          }
-        }
-      `);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-      if ('spaceIndex' in response.data) {
-        const spaceData: SpaceData = response.data as SpaceData;
-        const fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
-          (edge) => edge.node,
-        );
-        setSpace(
-          fetchedSpaces.filter(
-            (space) => space.id === params.spaceid.toString(),
-          )[0],
-        );
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch spaces:', error);
-    }
-  };
-
-  const getEvents = async () => {
+  const getSpaceByID = async () => {
     setIsEventsLoading(true);
-    try {
-      const response: any = await composeClient.executeQuery(`
-      query {
-        eventIndex(first: 10) {
-          edges {
-            node {
+    const GET_SPACE_QUERY = `
+      query GetSpace($id: ID!) {
+        node(id: $id) {
+          ...on Space {
+            avatar
+            banner
+            description
+            name
+            profileId
+            tagline
+            website
+            twitter
+            telegram
+            nostr
+            lens
+            github
+            discord
+            ens
+            admins {
               id
-              title
-              description
-              startTime
+            }
+            superAdmin {
+              id
+            }
+            events(first: 10) {
+              edges {
+                node {
+                  createdAt
+                  description
+              endTime
               endTime
               timezone
               status
               tagline
               image_url
-              external_url
-              meeting_url
-              profileId
-              spaceId
-              participant_count
-              min_participant
-              max_participant
-              createdAt
-              tracks
+                  endTime
+              timezone
+              status
+              tagline
+              image_url
+                  external_url
+                  gated
+                  id
+                  image_url
+                  max_participant
+                  meeting_url
+                  min_participant
+                  participant_count
+                  profileId
+                  spaceId
+                  startTime
+                  status
+                  tagline
+                  timezone
+                  title
+                  space {
+                    avatar
+                    name
+                  }
+                }
+              }
             }
           }
         }
       }
-    `);
+      `;
 
-      if ('eventIndex' in response.data) {
-        const eventData: EventData = response.data as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
-          (edge) => edge.node,
-        );
-
-        setEvents(fetchedEvents.filter((event) => event.spaceId === spaceId));
-      } else {
-        console.error('Invalid data structure:', response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
-    }
-    setIsEventsLoading(false);
-  };
-
-  useEffect(() => {
-    Promise.all([getSpace(), getEvents()]).catch((e) => {
-      console.error('An error occurred:', e);
+    const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
+      id: spaceId,
     });
+    const spaceData: Space = response.data.node as Space;
+    setSpace(spaceData);
+    const eventData: SpaceEventData = response.data.node
+      .events as SpaceEventData;
+    const fetchedEvents: Event[] = eventData.edges.map((edge) => edge.node);
+    setEvents(fetchedEvents);
+    return spaceData;
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const space = await getSpaceByID();
+      document.title = space?.name + ' - ' + 'Zuzalu City';
+      const admins =
+        space?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+      const superAdmins =
+        space?.superAdmin?.map((superAdmin) => superAdmin.id.toLowerCase()) ||
+        [];
+      const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+      if (admins.includes(userDID) || superAdmins.includes(userDID)) {
+        setIsAdmin(true);
+      }
+    };
+
+    fetchData()
+      .catch((error) => {
+        console.error('An error occurred:', error);
+      })
+      .finally(() => {
+        setIsEventsLoading(false);
+      });
   }, []);
 
   return (
@@ -128,7 +134,7 @@ const Home = () => {
       <SubSidebar
         title={space?.name}
         spaceId={params.spaceid.toString()}
-        isAdmin={false}
+        isAdmin={isAdmin}
       />
       <Stack
         flex={1}

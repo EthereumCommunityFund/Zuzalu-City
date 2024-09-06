@@ -249,7 +249,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
             <SidebarButton
               icon={<TableIcon />}
               content="Manage Events"
-              isActive={false}
+              isActive={pathname === `/spaces/${spaceId}/adminevents`}
               onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
             />
           )}
