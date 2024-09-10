@@ -514,7 +514,6 @@ const Home: React.FC = () => {
                 </Box>
               )}
 
-              <LotteryCard />
               <Box display="flex" gap="20px" marginTop="20px">
                 <Box
                   position="relative"
