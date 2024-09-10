@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: 'Zuzalu City',
     description: 'Zuzalu City Powered By Ethereum Community Fund',
     openGraph: {
-      images: [`/api/og?id=${id}&eventId=${eventId}`],
+      images: [`/api/og?id=${id}&eventId=${eventId}&type=session`],
     },
   };
 }

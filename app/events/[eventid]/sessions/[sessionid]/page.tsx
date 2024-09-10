@@ -1,15 +1,8 @@
 'use client';
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
   Stack,
-  Grid,
   Typography,
   SwipeableDrawer,
   Divider,
@@ -17,54 +10,38 @@ import {
   Select,
   OutlinedInput,
   MenuItem,
-  Chip,
-  InputAdornment,
   useTheme,
   useMediaQuery,
   Snackbar,
   Alert,
-  TextField,
   CircularProgress,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 import { DesktopTimePicker } from '@mui/x-date-pickers';
 import { TimeView } from '@mui/x-date-pickers/models';
-import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from '@/utils/dayjs';
-import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
+import { ZuInput, ZuButton, ZuSwitch } from '@/components/core';
 import {
   PlusCircleIcon,
-  LockIcon,
   XMarkIcon,
-  ArchiveBoxIcon,
   ArrowDownIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  SearchIcon,
-  FingerPrintIcon,
-  UserPlusIcon,
   EditIcon,
-  QueueListIcon,
-  ChevronDoubleRightIcon,
-  LeftArrowIcon,
   MapIcon,
   SessionIcon,
-  Cog6Icon,
   MicrophoneIcon,
   TagIcon,
   PlusIcon,
   MinusIcon,
-  CalendarIcon,
   ShareIcon,
 } from '@/components/icons';
-import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
 import BpCheckbox from '@/components/event/Checkbox';
 import {
   Anchor,
   Session,
-  SessionData,
   ProfileEdge,
   Profile,
   CeramicResponseType,
@@ -73,35 +50,24 @@ import {
   Event,
   FilmOptionType,
 } from '@/types';
-import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
 import { SessionSupabaseData } from '@/types';
 import { supaEditSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
-import SlotDate from '@/components/calendar/SlotDate';
-import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import SuperEditor from '@/components/editor/SuperEditor';
-import {
-  useEditorStore,
-  decodeOutputData,
-} from '@/components/editor/useEditorStore';
+import { useEditorStore } from '@/components/editor/useEditorStore';
 import {
   FormLabel,
   FormLabelDesc,
-  FormTitle,
 } from '@/components/typography/formTypography';
-import SlotDates from '@/components/calendar/SlotDate';
 import { Thumbnail } from '../../components';
-import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 
@@ -111,6 +77,10 @@ const EditorPreview = dynamic(
     ssr: false,
   },
 );
+
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 const Home = () => {
   const theme = useTheme();
@@ -153,7 +123,6 @@ const Home = () => {
   const [isManagedFiltered, setIsManagedFiltered] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Venue>();
   const [selectedSession, setSelectedSession] = useState<Session>();
-  const contentRef = useRef<HTMLDivElement>(null);
   const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
     dayjs(new Date()),
   );
@@ -296,7 +265,7 @@ const Home = () => {
         .from('venues')
         .select('*')
         .eq('eventId', eventId);
-      const { data: sessionData, error: sessionError } = await supabase
+      const { data: sessionData } = await supabase
         .from('sessions')
         .select('*')
         .eq('uuid', params.sessionid.toString())
@@ -385,7 +354,7 @@ const Home = () => {
           }
         }
       }
-      const { data: rsvpData, error: rsvpError } = await supabase
+      const { data: rsvpData } = await supabase
         .from('rsvp')
         .select('*')
         .eq('sessionID', sessionData.id)
@@ -422,12 +391,10 @@ const Home = () => {
   const handleRSVPClick = async (sessionID: string) => {
     setIsLoading(true);
     try {
-      const { data: rsvpData, error: rsvpError } = await supabase
-        .from('rsvp')
-        .insert({
-          userDID: ceramic?.did?.parent.toString().toLowerCase(),
-          sessionID: sessionID,
-        });
+      const { error: rsvpError } = await supabase.from('rsvp').insert({
+        userDID: ceramic?.did?.parent.toString().toLowerCase(),
+        sessionID: sessionID,
+      });
 
       if (rsvpError) {
         throw rsvpError;
@@ -630,7 +597,7 @@ const Home = () => {
   };
   const handleDelete = async (sessionID: string) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('sessions')
         .delete()
         .eq('id', sessionID);
@@ -670,59 +637,6 @@ const Home = () => {
       }
     } catch (err) {
       console.log(err);
-    }
-  };
-  const resetDateAndTime = async (sessionLocation: string) => {
-    setSessionStartTime(
-      dayjs(sessionDate)
-        .tz(eventData?.timezone)
-        .set('hour', 0)
-        .set('minute', 0),
-    );
-    setSessionEndTime(
-      dayjs(sessionDate)
-        .tz(eventData?.timezone)
-        .set('hour', 0)
-        .set('minute', 0),
-    );
-    setCustomLocation('');
-    setDirections('');
-    setIsDirections(false);
-    if (
-      person &&
-      sessionLocation &&
-      sessionLocation !== 'Custom' &&
-      sessionDate
-    ) {
-      setSelectedRoom(
-        venues.filter((item) => item.name === sessionLocation)[0],
-      );
-      const dayName = sessionDate.format('dddd');
-      const selectedDay = sessionDate.format('YYYY-MM-DD');
-      if (sessionLocation == '') {
-        return;
-      }
-      const available = JSON.parse(
-        venues.filter((item) => item.name === sessionLocation)[0].bookings,
-      );
-      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
-      const { data: bookedSessions } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('location', sessionLocation);
-      if (bookedSessions) {
-        const bookedSessionsDay = bookedSessions.filter((session) => {
-          const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
-
-          return (
-            sessionStartDay === selectedDay &&
-            session.uuid !== params.sessionid.toString()
-          );
-        });
-        setBookedSessionsForDay(bookedSessionsDay);
-      } else {
-        setBookedSessionsForDay([]);
-      }
     }
   };
   const isSessionOverlap = (
