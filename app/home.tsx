@@ -36,6 +36,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import MiniDashboard from './components/MiniDashboard';
+import { EventComingSoonCard } from '@/components/cards/ComingSoonCard';
 const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_PUBLIC_LEARN_DOC_V2_URL || '';
@@ -571,19 +572,22 @@ const Home: React.FC = () => {
                       </Typography>
                     </Box>
                   ) : (
-                    Object.entries(eventsData).map(([month, eventsList]) => {
-                      return (
-                        <Fragment key={month}>
-                          <EventCardMonthGroup>{month}</EventCardMonthGroup>
-                          {eventsList.map((event, index) => (
-                            <EventCard
-                              key={`EventCard-${index}`}
-                              event={event}
-                            />
-                          ))}
-                        </Fragment>
-                      );
-                    })
+                    <>
+                      {Object.entries(eventsData).map(([month, eventsList]) => {
+                        return (
+                          <Fragment key={month}>
+                            <EventCardMonthGroup>{month}</EventCardMonthGroup>
+                            {eventsList.map((event, index) => (
+                              <EventCard
+                                key={`EventCard-${index}`}
+                                event={event}
+                              />
+                            ))}
+                          </Fragment>
+                        );
+                      })}
+                      <EventComingSoonCard />
+                    </>
                   )}
                 </Box>
                 <Box>

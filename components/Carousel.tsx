@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import SpaceCard from './cards/SpaceCard';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { Space } from '@/types';
+import { SpaceComingSoonCard } from './cards/ComingSoonCard';
 
 export interface CarouselProps {
   items: Space[];
@@ -78,6 +79,7 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
           tagline={item.tagline}
         />
       ))}
+      <SpaceComingSoonCard />
     </Box>
   );
 };
