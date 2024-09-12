@@ -1,13 +1,14 @@
 'use client';
 import React, { useState } from 'react';
 import {
+  CalendarIcon,
   ChevronDownIcon,
-  HomeIcon,
   NotificationIcon,
   SettingIcon,
   ShieldIcon,
   TableIcon,
   UserPlusIcon,
+  EventIcon,
 } from 'components/icons';
 import SidebarButton from './SidebarButton';
 import {
@@ -19,7 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 import styles from './SubSidebar.module.css';
 
@@ -62,6 +63,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
 }) => {
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -227,10 +229,16 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
           }}
         >
           <SidebarButton
-            icon={<HomeIcon />}
+            icon={<EventIcon />}
             onClick={() => router.push(`/spaces/${spaceId}`)}
             content="Home"
-            isActive={false}
+            isActive={pathname === `/spaces/${spaceId}`}
+          />
+          <SidebarButton
+            icon={<CalendarIcon />}
+            onClick={() => router.push(`/spaces/${spaceId}/events`)}
+            content="Events"
+            isActive={pathname === `/spaces/${spaceId}/events`}
           />
           {/*<SidebarButton*/}
           {/*  icon={<AnnouncementsIcon />}*/}
@@ -241,7 +249,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
             <SidebarButton
               icon={<TableIcon />}
               content="Manage Events"
-              isActive={false}
+              isActive={pathname === `/spaces/${spaceId}/adminevents`}
               onClick={() => router.push(`/spaces/${spaceId}/adminevents`)}
             />
           )}
