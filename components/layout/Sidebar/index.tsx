@@ -1,16 +1,10 @@
 'use client';
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Box, Typography } from '@mui/material';
-import {
-  EventIcon,
-  SpaceIcon,
-  BoltIcon,
-  HomeIcon,
-  SpacePlusIcon,
-} from 'components/icons';
+import { Box, styled, Typography } from '@mui/material';
+import { EventIcon, SpaceIcon, HomeIcon } from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { chainID, isDev } from '@/constant';
+import { ZuButton } from '@/components/core';
 interface SidebarProps {
   selected: string;
 }
@@ -24,16 +18,19 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
       content: 'Home',
       icon: <HomeIcon />,
       function: () => router.push('/'),
+      url: '/',
     },
     {
       content: 'Spaces',
       icon: <SpaceIcon />,
       function: () => router.push('/spaces'),
+      url: '/spaces',
     },
     {
       content: 'Events',
       icon: <EventIcon />,
       function: () => router.push('/events'),
+      url: '/events',
     },
     // {
     //   content: 'Zapps',
@@ -42,21 +39,18 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
     // }
   ];
 
-  const spaces = [
+  const footerItems = [
     {
-      src: '/0.webp',
-      content: 'Zuzalu City Contributors',
-      function: () => router.push('/spaces/123'),
+      content: 'Blog',
+      url: 'https://blog.zuzalu.city',
     },
     {
-      src: '/0.webp',
-      content: 'FendiWeb3',
-      function: () => router.push('/spaces/123'),
+      content: 'Privacy',
+      url: 'https://blog.zuzalu.city',
     },
     {
-      src: '/0.webp',
-      content: 'Green Odin',
-      function: () => router.push('/spaces/123'),
+      content: 'Terms',
+      url: 'https://blog.zuzalu.city',
     },
   ];
 
@@ -71,6 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
         transitionDuration: '300',
         transitionTimingFunction: 'ease-in-out',
         backgroundColor: '#2d2d2d',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <Box
@@ -87,11 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
               padding="10px"
               alignItems="center"
               sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#383838' } }}
-              bgcolor={
-                pathname.split('/')[1] === item.content.toLowerCase()
-                  ? '#383838'
-                  : 'transparent'
-              }
+              bgcolor={pathname === item.url ? '#383838' : 'transparent'}
               gap="10px"
               borderRadius="10px"
               onClick={item.function}
@@ -107,76 +99,89 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           );
         })}
       </Box>
-      {isAuthenticated &&
-        (isDev ||
-          ceramic.did?.parent.toString().trim().toLowerCase() ===
-            `did:pkh:eip155:${chainID.toString()}:0x9bc15fcfd4691fde75bb900d2bc62462c868f125` ||
-          ceramic.did?.parent.toString().trim().toLowerCase() ===
-            `did:pkh:eip155:${chainID.toString()}:0x379e27606208521286e35c1122e3823d0112701f` ||
-          ceramic.did?.parent.toString().trim().toLowerCase() ===
-            `did:pkh:eip155:${chainID.toString()}:0x5b8b62111f403e876c35dc3adc336df4f830b412`) && (
+      <Box
+        display="flex"
+        flexDirection="column"
+        gap="15px"
+        sx={{
+          borderTop: '1px solid #383838',
+          borderBottom: '1px solid #383838',
+          marginX: '10px',
+          paddingTop: selected !== 'Space Details' ? '0px' : '20px',
+          flex: 1,
+        }}
+      >
+        <br />
+      </Box>
+      <Box
+        display="flex"
+        flexDirection="column"
+        sx={{
+          marginX: '10px',
+          padding: '20px 0',
+        }}
+      >
+        <Box
+          gap="10px"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            paddingLeft: '10px',
+          }}
+        >
           <Box
-            display="flex"
-            flexDirection="column"
-            gap="15px"
             sx={{
-              borderTop: '1px solid #383838',
-              marginX: '10px',
-              paddingTop: selected !== 'Space Details' ? '0px' : '20px',
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '10px',
             }}
           >
-            {/*{*/}
-            {/*  selected !== "Space Details" && <Typography*/}
-            {/*    color="white"*/}
-            {/*    variant="bodyS"*/}
-            {/*    marginTop="15px"*/}
-            {/*    marginBottom="10px"*/}
-            {/*    marginLeft="10px"*/}
-            {/*  >*/}
-            {/*    YOUR SPACES*/}
-            {/*  </Typography>*/}
-            {/*}*/}
-            {/*{*/}
-            {/*  spaces.map((space, index) => {*/}
-            {/*    return (*/}
-            {/*      <Box*/}
-            {/*        display="flex"*/}
-            {/*        alignItems="center"*/}
-            {/*        gap="10px"*/}
-            {/*        onClick={space.function}*/}
-            {/*        sx={{ cursor: 'pointer' }}*/}
-            {/*        key={index}*/}
-            {/*      >*/}
-            {/*        <Box component="img" src={space.src} height="40px" width="40px" borderRadius="20px" />*/}
-            {/*        {*/}
-            {/*          selected !== "Space Details" && <Typography color="white" variant="bodyMB">*/}
-            {/*            {*/}
-            {/*              space.content*/}
-            {/*            }*/}
-            {/*          </Typography>*/}
-            {/*        }*/}
-            {/*      </Box>*/}
-            {/*    )*/}
-            {/*  })*/}
-            {/*}*/}
-            <br />
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{ cursor: 'pointer' }}
-              gap="10px"
-              paddingLeft="5px"
-              onClick={() => router.push('/spaces/create')}
-            >
-              <SpacePlusIcon />
-              {selected !== 'Space Details' && (
-                <Typography color="white" variant="bodyMB">
-                  Create a Space
+            {footerItems.map((item, index) => {
+              return (
+                <Typography
+                  key={index}
+                  color="rgba(225, 225, 225, 0.7)"
+                  variant="body2"
+                  component="a"
+                  href={item.url}
+                  target="_blank"
+                  sx={{
+                    textDecoration: 'none',
+                  }}
+                >
+                  {item.content}
                 </Typography>
-              )}
-            </Box>
+              );
+            })}
           </Box>
-        )}
+          <Typography
+            color="rgba(225, 225, 225, 0.7)"
+            variant="body2"
+            component="a"
+            href="https://blog.zuzalu.city"
+            target="_blank"
+            sx={{
+              textDecoration: 'none',
+            }}
+          >
+            About Zuzalu City
+          </Typography>
+        </Box>
+        <ZuButton
+          variant="outlined"
+          sx={{
+            width: '100%',
+            height: '32px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            fontSize: '14px',
+            color: '#fff',
+            fontWeight: 700,
+            marginTop: '30px',
+          }}
+        >
+          Legacy Registry App
+        </ZuButton>
+      </Box>
     </Box>
   );
 };

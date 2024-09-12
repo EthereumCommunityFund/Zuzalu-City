@@ -6,7 +6,6 @@ import {
   EventCardSkeleton,
   groupEventsByMonth,
 } from '@/components/cards/EventCard';
-import LotteryCard from '@/components/cards/LotteryCard';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import { ZuCalendar } from '@/components/core';
 import { dashboardEvent, isDev, prodShowSpaceId } from '@/constant';
@@ -23,7 +22,6 @@ import {
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { QueryClient } from '@tanstack/react-query';
 import Carousel from 'components/Carousel';
 import {
   EventIcon,
@@ -37,7 +35,6 @@ import { useRouter } from 'next/navigation';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import MiniDashboard from './components/MiniDashboard';
 import { EventComingSoonCard } from '@/components/cards/ComingSoonCard';
-const queryClient = new QueryClient();
 
 const doclink = process.env.NEXT_PUBLIC_LEARN_DOC_V2_URL || '';
 
