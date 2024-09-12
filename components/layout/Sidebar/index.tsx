@@ -160,7 +160,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
         transitionProperty: 'width',
         transitionDuration: '300',
         transitionTimingFunction: 'ease-in-out',
-        backgroundColor: '#2d2d2d',
+        backgroundColor: 'rgba(34, 34, 34, 0.9)',
         display: 'flex',
         flexDirection: 'column',
       }}

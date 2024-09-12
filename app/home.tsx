@@ -398,7 +398,10 @@ const Home: React.FC = () => {
         <Box
           display="grid"
           gridTemplateColumns={'auto 1fr'}
-          sx={{ backgroundColor: '#222222' }}
+          sx={{
+            backgroundColor: 'rgba(34, 34, 34, 0.9)',
+            backdropFilter: 'blur(10px)',
+          }}
           height={'calc(100vh - 50px)'}
         >
           {!isTablet && <Sidebar selected="Home" />}
@@ -473,6 +476,13 @@ const Home: React.FC = () => {
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
+                sx={{
+                  backgroundColor: 'rgba(34, 34, 34, 0.9)',
+                  backdropFilter: 'blur(10px)',
+                  position: 'sticky',
+                  top: '-30px',
+                  zIndex: 100,
+                }}
               >
                 <Box display="flex" alignItems="center" gap="10px">
                   <SpaceIcon />
@@ -511,103 +521,113 @@ const Home: React.FC = () => {
                   <SpaceCardSkeleton></SpaceCardSkeleton>
                 </Box>
               )}
-
-              <Box display="flex" gap="20px" marginTop="20px">
+            </Box>
+            <Box display="flex" gap="20px" marginTop="20px">
+              <Box
+                position="relative"
+                flexGrow={1}
+                display="flex"
+                flexDirection="column"
+                gap="20px"
+                sx={{ inset: '0' }}
+              >
                 <Box
-                  position="relative"
-                  flexGrow={1}
-                  display="flex"
-                  flexDirection="column"
-                  gap="20px"
-                  sx={{ inset: '0' }}
+                  sx={{
+                    backgroundColor: 'rgba(34, 34, 34, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    position: 'sticky',
+                    top: '-30px',
+                    zIndex: 100,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
                 >
-                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <Box display="flex" justifyContent="space-between">
-                      <Box display="flex" alignItems="center" gap="10px">
-                        <EventIcon />
-                        <Typography color="white" variant="subtitleLB">
-                          Events
-                        </Typography>
-                      </Box>
-                      <Link
-                        href={'/events'}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          textDecoration: 'blink',
-                        }}
-                      >
-                        <Box display="flex" alignItems="center" gap="10px">
-                          <Typography color="white" variant="bodyB">
-                            View All Events
-                          </Typography>
-                          <RightArrowCircleIcon />
-                        </Box>
-                      </Link>
-                    </Box>
-                  </Box>
-                  {isEventsLoading ? (
-                    <>
-                      <EventCardMonthGroup>
-                        <Skeleton width={60}></Skeleton>
-                      </EventCardMonthGroup>
-                      <EventCardSkeleton />
-                      <EventCardSkeleton />
-                      <EventCardSkeleton />
-                      <EventCardSkeleton />
-                      <EventCardSkeleton />
-                    </>
-                  ) : events.length === 0 ? (
-                    <Box
-                      display={'flex'}
-                      height={200}
-                      alignItems={'center'}
-                      justifyContent={'center'}
-                    >
-                      <Typography color={'#ccc'}>
-                        No data at the moment
+                  <Box display="flex" justifyContent="space-between">
+                    <Box display="flex" alignItems="center" gap="10px">
+                      <EventIcon />
+                      <Typography color="white" variant="subtitleLB">
+                        Events
                       </Typography>
                     </Box>
-                  ) : (
-                    <>
-                      {Object.entries(eventsData).map(([month, eventsList]) => {
-                        return (
-                          <Fragment key={month}>
-                            <EventCardMonthGroup>{month}</EventCardMonthGroup>
-                            {eventsList.map((event, index) => (
-                              <EventCard
-                                key={`EventCard-${index}`}
-                                event={event}
-                              />
-                            ))}
-                          </Fragment>
-                        );
-                      })}
-                      <EventComingSoonCard />
-                    </>
-                  )}
-                </Box>
-                <Box>
-                  {!isTablet && (
-                    <Box
-                      width="360px"
-                      display="flex"
-                      flexDirection="column"
-                      gap="20px"
-                      sx={{
-                        position: 'sticky',
-                        top: 60,
+                    <Link
+                      href={'/events'}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        textDecoration: 'blink',
                       }}
                     >
-                      <Typography
-                        color="white"
-                        variant="subtitleS"
-                        padding="20px 10px"
-                        borderBottom="1px solid #383838"
-                      >
-                        Sort & Filter Events
-                      </Typography>
-                      {/*<Box
+                      <Box display="flex" alignItems="center" gap="10px">
+                        <Typography color="white" variant="bodyB">
+                          View All Events
+                        </Typography>
+                        <RightArrowCircleIcon />
+                      </Box>
+                    </Link>
+                  </Box>
+                </Box>
+                {isEventsLoading ? (
+                  <>
+                    <EventCardMonthGroup>
+                      <Skeleton width={60}></Skeleton>
+                    </EventCardMonthGroup>
+                    <EventCardSkeleton />
+                    <EventCardSkeleton />
+                    <EventCardSkeleton />
+                    <EventCardSkeleton />
+                    <EventCardSkeleton />
+                  </>
+                ) : events.length === 0 ? (
+                  <Box
+                    display={'flex'}
+                    height={200}
+                    alignItems={'center'}
+                    justifyContent={'center'}
+                  >
+                    <Typography color={'#ccc'}>
+                      No data at the moment
+                    </Typography>
+                  </Box>
+                ) : (
+                  <>
+                    {Object.entries(eventsData).map(([month, eventsList]) => {
+                      return (
+                        <Fragment key={month}>
+                          <EventCardMonthGroup>{month}</EventCardMonthGroup>
+                          {eventsList.map((event, index) => (
+                            <EventCard
+                              key={`EventCard-${index}`}
+                              event={event}
+                            />
+                          ))}
+                        </Fragment>
+                      );
+                    })}
+                    <EventComingSoonCard />
+                  </>
+                )}
+              </Box>
+              <Box>
+                {!isTablet && (
+                  <Box
+                    width="360px"
+                    display="flex"
+                    flexDirection="column"
+                    gap="20px"
+                    sx={{
+                      position: 'sticky',
+                      top: 60,
+                    }}
+                  >
+                    <Typography
+                      color="white"
+                      variant="subtitleS"
+                      padding="20px 10px"
+                      borderBottom="1px solid #383838"
+                    >
+                      Sort & Filter Events
+                    </Typography>
+                    {/*<Box
                         display="flex"
                         gap="4px"
                         padding="2px"
@@ -640,46 +660,45 @@ const Home: React.FC = () => {
                         </Button>
                       </Box>
                       */}
-                      <Box>
-                        <ZuCalendar
-                          onChange={(val) => {
-                            setSelectedDate(val);
-                          }}
-                          slots={{ day: SlotDates }}
-                          slotProps={{
-                            day: {
-                              highlightedDays: eventsForCalendar
-                                .filter((event) => {
-                                  // filter event.startTime month equal to selected month
+                    <Box>
+                      <ZuCalendar
+                        onChange={(val) => {
+                          setSelectedDate(val);
+                        }}
+                        slots={{ day: SlotDates }}
+                        slotProps={{
+                          day: {
+                            highlightedDays: eventsForCalendar
+                              .filter((event) => {
+                                // filter event.startTime month equal to selected month
+                                return (
+                                  dayjs(event.startTime).month() ===
+                                    dateForCalendar.month() &&
+                                  dayjs(event.startTime).year() ===
+                                    dateForCalendar.year()
+                                );
+                              })
+                              .filter((event) => {
+                                if (selectedDate) {
                                   return (
-                                    dayjs(event.startTime).month() ===
-                                      dateForCalendar.month() &&
-                                    dayjs(event.startTime).year() ===
-                                      dateForCalendar.year()
+                                    dayjs(event.startTime).date() !==
+                                    selectedDate.date()
                                   );
-                                })
-                                .filter((event) => {
-                                  if (selectedDate) {
-                                    return (
-                                      dayjs(event.startTime).date() !==
-                                      selectedDate.date()
-                                    );
-                                  }
-                                  return true;
-                                })
+                                }
+                                return true;
+                              })
 
-                                .map((event) => {
-                                  return dayjs(event.startTime).date();
-                                }),
-                            } as any,
-                          }}
-                          onMonthChange={(val) => setDateForCalendar(val)}
-                          onYearChange={(val) => setDateForCalendar(val)}
-                        />
-                      </Box>
+                              .map((event) => {
+                                return dayjs(event.startTime).date();
+                              }),
+                          } as any,
+                        }}
+                        onMonthChange={(val) => setDateForCalendar(val)}
+                        onYearChange={(val) => setDateForCalendar(val)}
+                      />
                     </Box>
-                  )}
-                </Box>
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>
