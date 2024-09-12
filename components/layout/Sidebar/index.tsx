@@ -1,10 +1,19 @@
 'use client';
 import * as React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Box, styled, Typography } from '@mui/material';
-import { EventIcon, SpaceIcon, HomeIcon } from 'components/icons';
+import { Box, Skeleton, Typography } from '@mui/material';
+import {
+  EventIcon,
+  SpaceIcon,
+  HomeIcon,
+  ArrowUpRightIcon,
+} from 'components/icons';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { ZuButton } from '@/components/core';
+import { EventData, Event } from '@/types';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+
 interface SidebarProps {
   selected: string;
 }
@@ -12,7 +21,94 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { ceramic, isAuthenticated } = useCeramicContext();
+  const { isAuthenticated, composeClient, ceramic } = useCeramicContext();
+
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getEvents = async () => {
+    try {
+      setIsLoading(true);
+      const response: any = await composeClient.executeQuery(`
+      query {
+        eventIndex(first: 100) {
+          edges {
+            node {
+              id
+              image_url
+              title
+              members{
+              id
+              }
+              admins{
+              id
+              }
+              superAdmin{
+              id
+              }
+              profile {
+                username
+                avatar
+              }
+              space {
+                name
+                avatar
+              }
+              tracks
+            }
+          }
+        }
+      }
+    `);
+
+      if (response && response.data && 'eventIndex' in response.data) {
+        const eventData: EventData = response.data as EventData;
+        return eventData.eventIndex.edges.map((edge) => edge.node);
+      } else {
+        console.error('Invalid data structure:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let eventsData = await getEvents();
+        if (eventsData) {
+          eventsData =
+            eventsData.filter((eventDetails) => {
+              const admins =
+                eventDetails?.admins?.map((admin) => admin.id.toLowerCase()) ||
+                [];
+              const superadmins =
+                eventDetails?.superAdmin?.map((superAdmin) =>
+                  superAdmin.id.toLowerCase(),
+                ) || [];
+              const members =
+                eventDetails?.members?.map((member) =>
+                  member.id.toLowerCase(),
+                ) || [];
+              const userDID =
+                ceramic?.did?.parent.toString().toLowerCase() || '';
+              return (
+                superadmins.includes(userDID) ||
+                admins.includes(userDID) ||
+                members.includes(userDID)
+              );
+            }) || [];
+          setEvents(eventsData);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    isAuthenticated && fetchData();
+  }, [ceramic?.did?.parent, isAuthenticated]);
+
   const naviButtons = [
     {
       content: 'Home',
@@ -102,16 +198,104 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
       <Box
         display="flex"
         flexDirection="column"
-        gap="15px"
+        gap="10px"
         sx={{
           borderTop: '1px solid #383838',
           borderBottom: '1px solid #383838',
           marginX: '10px',
-          paddingTop: selected !== 'Space Details' ? '0px' : '20px',
+          padding: '20px 0 10px',
           flex: 1,
+          flexDirection: isAuthenticated ? 'column' : 'column-reverse',
         }}
       >
-        <br />
+        {isAuthenticated ? (
+          <>
+            <Typography fontSize={10} color="rgba(255, 255, 255, 0.7)">
+              YOUR RSVP&apos;D EVENTS
+            </Typography>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap="10px"
+              sx={{
+                overflowY: 'auto',
+                maxHeight: 'calc(100vh - 492px)',
+                flex: 1,
+              }}
+            >
+              {isLoading
+                ? Array.from({ length: 3 }).map((_, index) => (
+                    <Box
+                      key={index}
+                      display="flex"
+                      alignItems="center"
+                      gap="10px"
+                      sx={{
+                        padding: '6px 10px',
+                        opacity: 0.7,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Skeleton variant="rounded" width={20} height={20} />
+                      <Skeleton variant="rounded" width={190} height={17} />
+                    </Box>
+                  ))
+                : events.map((event, index) => {
+                    return (
+                      <Box
+                        key={index}
+                        display="flex"
+                        alignItems="center"
+                        gap="10px"
+                        sx={{
+                          padding: '6px 10px',
+                          opacity: 0.7,
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          router.push(`/events/${event.id}`);
+                        }}
+                      >
+                        <Image
+                          src={event.image_url!}
+                          alt={event.title}
+                          width={20}
+                          height={20}
+                          style={{ objectFit: 'cover', borderRadius: '2px' }}
+                        />
+                        <Typography color="white" variant="bodyM" noWrap>
+                          {event.title}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+            </Box>
+          </>
+        ) : null}
+        <Box
+          display="flex"
+          gap="10px"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ cursor: 'pointer' }}
+          onClick={() =>
+            window.open(
+              'https://github.com/EthereumCommunityFund/Zuzalu-City',
+              '_blank',
+            )
+          }
+        >
+          <Typography fontSize={10} color="rgba(255, 255, 255, 0.7)">
+            ZUZalu city is open source
+          </Typography>
+          <Image
+            src="/sidebar/gitHub.png"
+            alt="github"
+            width={24}
+            height={24}
+            style={{ opacity: 0.7 }}
+          />
+        </Box>
       </Box>
       <Box
         display="flex"
@@ -181,6 +365,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
         </Box>
         <ZuButton
           variant="outlined"
+          endIcon={<ArrowUpRightIcon size={5} />}
           sx={{
             width: '100%',
             height: '32px',
