@@ -42,16 +42,16 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
   const footerItems = [
     {
       content: 'Blog',
-      url: 'https://blog.zuzalu.city',
+      url: 'https://zuzalu.craft.me/ZuBuilderBlog',
     },
-    {
-      content: 'Privacy',
-      url: 'https://blog.zuzalu.city',
-    },
-    {
-      content: 'Terms',
-      url: 'https://blog.zuzalu.city',
-    },
+    // {
+    //   content: 'Privacy',
+    //   url: 'https://blog.zuzalu.city',
+    // },
+    // {
+    //   content: 'Terms',
+    //   url: 'https://blog.zuzalu.city',
+    // },
   ];
 
   return (
@@ -147,6 +147,12 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
                   target="_blank"
                   sx={{
                     textDecoration: 'none',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                      textDecorationColor: '#7dffd1',
+                      color: '#7dffd1',
+                      opacity: 0.7,
+                    },
                   }}
                 >
                   {item.content}
@@ -158,10 +164,16 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
             color="rgba(225, 225, 225, 0.7)"
             variant="body2"
             component="a"
-            href="https://blog.zuzalu.city"
+            href="https://s.craft.me/XUjXr6M4jT8VBZ"
             target="_blank"
             sx={{
               textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+                textDecorationColor: '#7dffd1',
+                color: '#7dffd1',
+                opacity: 0.7,
+              },
             }}
           >
             About Zuzalu City
@@ -178,6 +190,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
             fontWeight: 700,
             marginTop: '30px',
           }}
+          onClick={() => window.open('https://zuzalu.city', '_blank')}
         >
           Legacy Registry App
         </ZuButton>
