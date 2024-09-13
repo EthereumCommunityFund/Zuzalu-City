@@ -4,17 +4,18 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from 'theme/theme';
 
 type Props = {
-  params: { sessionid: string };
+  params: { sessionid: string; eventid: string };
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const id = params.sessionid;
+  const eventId = params.eventid;
 
   return {
     title: 'Zuzalu City',
     description: 'Zuzalu City Powered By Ethereum Community Fund',
     openGraph: {
-      images: [`/api/og?id=${id}`],
+      images: [`/api/og?id=${id}&eventId=${eventId}&type=session`],
     },
   };
 }
