@@ -286,7 +286,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
           }
         >
           <Typography fontSize={10} color="rgba(255, 255, 255, 0.7)">
-            ZUZalu city is open source
+            Zuzalu city is open source
           </Typography>
           <Image
             src="/sidebar/gitHub.png"
@@ -348,7 +348,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
             color="rgba(225, 225, 225, 0.7)"
             variant="body2"
             component="a"
-            href="https://s.craft.me/XUjXr6M4jT8VBZ"
+            href="https://zuzalu.craft.me/YWcT31Zw6UadLo"
             target="_blank"
             sx={{
               textDecoration: 'none',
