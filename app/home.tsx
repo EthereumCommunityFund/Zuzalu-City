@@ -140,7 +140,7 @@ const Home: React.FC = () => {
       setIsEventsLoading(true);
       const response: any = await composeClient.executeQuery(`
       query {
-        eventIndex(first: 20) {
+        eventIndex(first: 20, sorting: { createdAt: DESC }) {
           edges {
             node {
               createdAt
