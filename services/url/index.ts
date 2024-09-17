@@ -1,3 +1,4 @@
+import { covertNameToUrlName } from '@/utils/format';
 import { supabase } from '@/utils/supabase/client';
 
 const getLastUrl = async (name: string) => {
@@ -13,10 +14,11 @@ const getLastUrl = async (name: string) => {
 };
 
 const getUrlFromIdAndName = async (ceramicId: string, name: string) => {
+  const nameFiled = covertNameToUrlName(name);
   const { data, error } = await supabase
     .from('url')
     .select('*')
-    .eq('name', name)
+    .eq('name', nameFiled)
     .eq('ceramicId', ceramicId)
     .single();
   return { data, error };

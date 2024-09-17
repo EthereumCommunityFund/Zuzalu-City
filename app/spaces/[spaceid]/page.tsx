@@ -38,6 +38,8 @@ import {
 } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import dynamic from 'next/dynamic';
+import { useQuery } from '@tanstack/react-query';
+import { getUrlFromIdAndName } from '@/services/url';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -60,6 +62,25 @@ export default function SpaceDetailPage() {
   const [currentHref, setCurrentHref] = useState('');
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  const spaceId = params.spaceid.toString();
+
+  useQuery({
+    queryKey: ['getUrlFromIdAndName', spaceId, space?.name],
+    queryFn: () => {
+      return getUrlFromIdAndName(spaceId, space!.name);
+    },
+    enabled: !!(spaceId && space?.name),
+    select: ({ data }) => {
+      if (data) {
+        const { name, hash } = data;
+        setCurrentHref(
+          `${window.location.origin}/s/${name}${hash !== 0 ? `/${hash}` : ''}`,
+        );
+        console.log(data);
+      }
+    },
+  });
 
   const getSpaceByID = async () => {
     setIsEventsLoading(true);
@@ -119,7 +140,6 @@ export default function SpaceDetailPage() {
         }
       }
       `;
-    const spaceId = params.spaceid.toString();
 
     const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
       id: spaceId,
