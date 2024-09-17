@@ -1,15 +1,8 @@
 'use client';
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
   Stack,
-  Grid,
   Typography,
   SwipeableDrawer,
   Divider,
@@ -17,54 +10,38 @@ import {
   Select,
   OutlinedInput,
   MenuItem,
-  Chip,
-  InputAdornment,
   useTheme,
   useMediaQuery,
   Snackbar,
   Alert,
-  TextField,
   CircularProgress,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 import { DesktopTimePicker } from '@mui/x-date-pickers';
 import { TimeView } from '@mui/x-date-pickers/models';
-import { TimeStepOptions } from '@mui/x-date-pickers/models';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from '@/utils/dayjs';
-import { ZuInput, ZuButton, ZuSwitch, ZuCalendar } from '@/components/core';
+import { ZuInput, ZuButton, ZuSwitch } from '@/components/core';
 import {
   PlusCircleIcon,
-  LockIcon,
   XMarkIcon,
-  ArchiveBoxIcon,
   ArrowDownIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  SearchIcon,
-  FingerPrintIcon,
-  UserPlusIcon,
   EditIcon,
-  QueueListIcon,
-  ChevronDoubleRightIcon,
-  LeftArrowIcon,
   MapIcon,
   SessionIcon,
-  Cog6Icon,
   MicrophoneIcon,
   TagIcon,
   PlusIcon,
   MinusIcon,
-  CalendarIcon,
   ShareIcon,
 } from '@/components/icons';
-import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessions/components/SessionList/SessionCard';
 import BpCheckbox from '@/components/event/Checkbox';
 import {
   Anchor,
   Session,
-  SessionData,
   ProfileEdge,
   Profile,
   CeramicResponseType,
@@ -73,37 +50,37 @@ import {
   Event,
   FilmOptionType,
 } from '@/types';
-import { SPACE_CATEGORIES, EXPREIENCE_LEVEL_TYPES } from '@/constant';
+import { EXPREIENCE_LEVEL_TYPES } from '@/constant';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { supabase } from '@/utils/supabase/client';
 import { SessionSupabaseData } from '@/types';
 import { supaEditSession } from '@/services/session';
 import Link from 'next/link';
 import formatDateAgo from '@/utils/formatDateAgo';
-import SlotDate from '@/components/calendar/SlotDate';
-import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import { SuperEditor } from '@/components/editor/SuperEditor';
-import {
-  useEditorStore,
-  decodeOutputData,
-} from '@/components/editor/useEditorStore';
+import { useEditorStore } from '@/components/editor/useEditorStore';
 import {
   FormLabel,
   FormLabelDesc,
-  FormTitle,
 } from '@/components/typography/formTypography';
-import { EditorPreview } from '@/components/editor/EditorPreview';
-import SlotDates from '@/components/calendar/SlotDate';
 import { Thumbnail } from '../../components';
-import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { OutputData, OutputBlockData } from '@editorjs/editorjs';
 import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
+
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 const Home = () => {
   const theme = useTheme();
@@ -146,7 +123,6 @@ const Home = () => {
   const [isManagedFiltered, setIsManagedFiltered] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Venue>();
   const [selectedSession, setSelectedSession] = useState<Session>();
-  const contentRef = useRef<HTMLDivElement>(null);
   const [dateForCalendar, setDateForCalendar] = useState<Dayjs>(
     dayjs(new Date()),
   );
@@ -191,6 +167,7 @@ const Home = () => {
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
+  const [sessionRecordingLink, setSessionRecordingLink] = useState<string>('');
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(0);
@@ -288,7 +265,7 @@ const Home = () => {
         .from('venues')
         .select('*')
         .eq('eventId', eventId);
-      const { data: sessionData, error: sessionError } = await supabase
+      const { data: sessionData } = await supabase
         .from('sessions')
         .select('*')
         .eq('uuid', params.sessionid.toString())
@@ -309,6 +286,7 @@ const Home = () => {
         setSessionExperienceLevel(sessionData.experience_level);
         setSessionLiveStreamLink(sessionData.liveStreamLink);
         setSessionVideoURL(sessionData.video_url);
+        setSessionRecordingLink(sessionData.recording_link);
         const sessionDate = dayjs(sessionData.startTime).startOf('day');
         setSessionDate(sessionDate);
         const sessionStartTime = dayjs(sessionDate)
@@ -376,7 +354,7 @@ const Home = () => {
           }
         }
       }
-      const { data: rsvpData, error: rsvpError } = await supabase
+      const { data: rsvpData } = await supabase
         .from('rsvp')
         .select('*')
         .eq('sessionID', sessionData.id)
@@ -413,12 +391,10 @@ const Home = () => {
   const handleRSVPClick = async (sessionID: string) => {
     setIsLoading(true);
     try {
-      const { data: rsvpData, error: rsvpError } = await supabase
-        .from('rsvp')
-        .insert({
-          userDID: ceramic?.did?.parent.toString().toLowerCase(),
-          sessionID: sessionID,
-        });
+      const { error: rsvpError } = await supabase.from('rsvp').insert({
+        userDID: ceramic?.did?.parent.toString().toLowerCase(),
+        sessionID: sessionID,
+      });
 
       if (rsvpError) {
         throw rsvpError;
@@ -506,6 +482,19 @@ const Home = () => {
     return (
       date.isAfter(dayjs(startDate).subtract(1, 'day')) &&
       date.isBefore(dayjs(endDate).add(1, 'day'))
+    );
+  };
+
+  const isDateAvailable = (date: Dayjs): boolean => {
+    if (sessionLocation === 'Custom') return false;
+    if (!selectedRoom?.bookings) return true;
+    const available = JSON.parse(selectedRoom?.bookings!);
+    const dayName = date.format('dddd');
+    const availableTime = available[dayName.toLowerCase()];
+    return (
+      availableTime.filter((item: any) => {
+        return item.startTime && item.endTime;
+      }).length === 0
     );
   };
 
@@ -608,7 +597,7 @@ const Home = () => {
   };
   const handleDelete = async (sessionID: string) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('sessions')
         .delete()
         .eq('id', sessionID);
@@ -648,59 +637,6 @@ const Home = () => {
       }
     } catch (err) {
       console.log(err);
-    }
-  };
-  const resetDateAndTime = async (sessionLocation: string) => {
-    setSessionStartTime(
-      dayjs(sessionDate)
-        .tz(eventData?.timezone)
-        .set('hour', 0)
-        .set('minute', 0),
-    );
-    setSessionEndTime(
-      dayjs(sessionDate)
-        .tz(eventData?.timezone)
-        .set('hour', 0)
-        .set('minute', 0),
-    );
-    setCustomLocation('');
-    setDirections('');
-    setIsDirections(false);
-    if (
-      person &&
-      sessionLocation &&
-      sessionLocation !== 'Custom' &&
-      sessionDate
-    ) {
-      setSelectedRoom(
-        venues.filter((item) => item.name === sessionLocation)[0],
-      );
-      const dayName = sessionDate.format('dddd');
-      const selectedDay = sessionDate.format('YYYY-MM-DD');
-      if (sessionLocation == '') {
-        return;
-      }
-      const available = JSON.parse(
-        venues.filter((item) => item.name === sessionLocation)[0].bookings,
-      );
-      setAvailableTimeSlots(available[dayName.toLowerCase()] || []);
-      const { data: bookedSessions } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('location', sessionLocation);
-      if (bookedSessions) {
-        const bookedSessionsDay = bookedSessions.filter((session) => {
-          const sessionStartDay = dayjs(session.startTime).format('YYYY-MM-DD');
-
-          return (
-            sessionStartDay === selectedDay &&
-            session.uuid !== params.sessionid.toString()
-          );
-        });
-        setBookedSessionsForDay(bookedSessionsDay);
-      } else {
-        setBookedSessionsForDay([]);
-      }
     }
   };
   const isSessionOverlap = (
@@ -836,6 +772,7 @@ const Home = () => {
       creatorDID: adminId,
       uuid: params.sessionid.toString(),
       liveStreamLink: sessionLiveStreamLink,
+      recording_link: sessionRecordingLink,
     };
     try {
       setBlockClickModal(true);
@@ -1093,6 +1030,17 @@ const Home = () => {
                   placeholder="https://"
                 />
               </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Recording Link</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Enter a link for where this session will be recorded
+                </Typography>
+                <ZuInput
+                  value={sessionRecordingLink}
+                  onChange={(e) => setSessionRecordingLink(e.target.value)}
+                  placeholder="https://"
+                />
+              </Stack>
             </Stack>
             <Stack
               direction={'column'}
@@ -1191,7 +1139,7 @@ const Home = () => {
                         );
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
-                        await resetDateAndTime(e.target.value);
+                        setSessionDate(null);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1334,7 +1282,6 @@ const Home = () => {
                           {eventData?.timezone}
                         </Typography>
                         <DesktopDatePicker
-                          defaultValue={sessionDate}
                           value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
@@ -1346,7 +1293,7 @@ const Home = () => {
                               date,
                               eventData?.startTime,
                               eventData?.endTime,
-                            )
+                            ) || isDateAvailable(date)
                           }
                           sx={{
                             '& .MuiSvgIcon-root': {
@@ -2193,6 +2140,44 @@ const Home = () => {
                       )}
                     </Stack>
                   </Stack>
+                  {session.liveStreamLink && (
+                    <Stack spacing="10px">
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+                          LiveStream Link:
+                        </Typography>
+                        <Typography
+                          variant="bodyB"
+                          component="a"
+                          href={session.liveStreamLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{ textDecoration: 'underline', color: '#fff' }}
+                        >
+                          {session.liveStreamLink}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  )}
+                  {session.recording_link && (
+                    <Stack spacing="10px">
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="bodyS" sx={{ opacity: 0.7 }}>
+                          Recording Link:
+                        </Typography>
+                        <Typography
+                          variant="bodyB"
+                          component="a"
+                          href={session.recording_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{ textDecoration: 'underline', color: '#fff' }}
+                        >
+                          {session.recording_link}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  )}
                   <Stack direction="row" justifyContent="end" spacing="5px">
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       By:
@@ -2476,7 +2461,7 @@ const Home = () => {
                       borderRadius="10px"
                       width="80px"
                       height="80px"
-                      src={locationAvatar || '/26.png'}
+                      src={locationAvatar || eventData?.image_url}
                     />
                     <Stack alignItems="center">
                       <Typography variant="bodyM">

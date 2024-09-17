@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Stack,
@@ -7,7 +7,6 @@ import {
   Box,
   Typography,
   OutlinedInput,
-  Button,
   Select,
   MenuItem,
   Chip,
@@ -15,28 +14,20 @@ import {
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimeStepOptions } from '@mui/x-date-pickers/models';
-import { PreviewFile } from '@/components';
-import { Uploader3, SelectedFile } from '@lxdao/uploader3';
 import { VenueHeader, VenueList } from './components';
 import {
   XMarkIcon,
-  ArchiveBoxIcon,
-  SearchIcon,
   PlusCircleIcon,
   PlusIcon,
   MinusIcon,
 } from '@/components/icons';
 import BpCheckbox from '@/components/event/Checkbox';
-import { MOCK_DATA } from '@/mock';
 import { ZuButton, ZuInput } from '@/components/core';
 import { TimeRange } from './components';
 import { supabase } from '@/utils/supabase/client';
 import { VENUE_TAGS } from '@/constant';
-import { Venue, Event, AvailableType } from '@/types';
-import { debounce } from 'lodash';
+import { Event, AvailableType } from '@/types';
 import dayjs from 'dayjs';
-import gaslessFundAndUpload from '@/utils/gaslessFundAndUpload';
 import {
   FormLabel,
   FormLabelDesc,
@@ -44,16 +35,24 @@ import {
 } from '@/components/typography/formTypography';
 import SelectCheckItem from '@/components/select/selectCheckItem';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
+import { useQuery } from '@tanstack/react-query';
+import { getVenues } from '@/services/venues';
+import FormUploader from '@/components/form/FormUploader';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
-const Custom_Option: TimeStepOptions = {
-  hours: 1,
-  minutes: 30,
-};
 
 interface IVenue {
   event: Event | undefined;
 }
+
+const days = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+];
 
 const Home: React.FC<IVenue> = ({ event }) => {
   const params = useParams();
@@ -73,37 +72,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const [name, setName] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [capacity, setCapacity] = useState<number>(0);
-  const [venues, setVenues] = useState<Venue[]>([]);
-  const validateTimeRanges = (timeRanges: AvailableType[]) => {
-    const isOverlapping = (range1: AvailableType, range2: AvailableType) => {
-      return (
-        range1.startTime < range2.endTime && range2.startTime < range1.endTime
-      );
-    };
-
-    // First, check each time range for validity (start time should be before end time)
-    for (let i = 0; i < timeRanges.length; i++) {
-      const { startTime, endTime } = timeRanges[i];
-      if (new Date(startTime) >= new Date(endTime)) {
-        timeRanges[i].error =
-          `Time range ${i + 1} is invalid as start time ${startTime} is not before end time ${endTime}`;
-      }
-    }
-
-    // Second, check for overlaps
-    for (let i = 0; i < timeRanges.length; i++) {
-      for (let j = i + 1; j < timeRanges.length; j++) {
-        if (isOverlapping(timeRanges[i], timeRanges[j])) {
-          timeRanges[i].error =
-            `Time range ${i + 1} overlaps with time range ${j + 1}`;
-          timeRanges[j].error =
-            `Time range ${j + 1} overlaps with time range ${i + 1}`;
-        }
-      }
-    }
-
-    return timeRanges;
-  };
 
   const handleChange = (e: any) => {
     setTags(
@@ -116,101 +84,50 @@ const Home: React.FC<IVenue> = ({ event }) => {
   const avatarUploader = useUploaderPreview();
   const [searchValue, setSearchValue] = useState<string>('');
 
-  const getVenues = async () => {
-    try {
-      const { data } = await supabase
-        .from('venues')
-        .select('*')
-        .eq('eventId', eventId);
-      if (data) {
-        const searchedVenues: Venue[] = data.filter((item, i) =>
-          item.name.toLowerCase().includes(searchValue.toLowerCase()),
-        );
-        if (searchedVenues.length > 0) {
-          setVenues(searchedVenues);
-        } else {
-          setVenues(data);
-        }
-      }
-    } catch (err) {
-      console.log('err', err);
-    }
-  };
+  const { data, refetch } = useQuery({
+    queryKey: ['venues', eventId],
+    queryFn: () => getVenues(eventId),
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await getVenues();
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (searchValue) {
-      debounceGetEventsCity();
-    }
-  }, [searchValue]);
-
-  const debounceGetEventsCity = debounce(getVenues, 1000);
+  const venuesData = useMemo(() => {
+    return data?.data?.filter((item) => item.name.includes(searchValue)) || [];
+  }, [data?.data, searchValue]);
 
   const List = (anchor: Anchor) => {
     const { breakpoints } = useTheme();
+    const [data, setData] = useState<AvailableType[][]>(
+      Array.from({ length: 7 }, () => [
+        {
+          startTime: '',
+          endTime: '',
+        },
+      ]),
+    );
 
-    const [monday, setMonday] = useState<AvailableType[]>([
-      {
-        startTime: '',
-        endTime: '',
-      },
-    ]);
-    const [tuesday, setTuesday] = useState<AvailableType[]>([
-      {
-        startTime: '',
-        endTime: '',
-      },
-    ]);
-    const [wednesday, setWednesday] = useState<AvailableType[]>([
-      {
-        startTime: '',
-        endTime: '',
-      },
-    ]);
-    const [thursday, setThursday] = useState<AvailableType[]>([
-      {
-        startTime: '',
-        endTime: '',
-      },
-    ]);
-    const [friday, setFriday] = useState<AvailableType[]>([
-      {
-        startTime: '',
-        endTime: '',
-      },
-    ]);
-    const [saturday, setSaturday] = useState<AvailableType[]>([
-      {
-        startTime: '',
-        endTime: '',
-      },
-    ]);
-    const [sunday, setSunday] = useState<AvailableType[]>([
-      {
-        startTime: '',
-        endTime: '',
-      },
-    ]);
+    const resetForm = () => {
+      setData(
+        Array.from({ length: 7 }, () => [
+          {
+            startTime: '',
+            endTime: '',
+          },
+        ]),
+      );
+      setName('');
+      setTags([]);
+      setCapacity(0);
+      avatarUploader.setUrl('');
+    };
 
     const createVenue = async () => {
       try {
-        const bookings = {
-          monday,
-          tuesday,
-          wednesday,
-          thursday,
-          friday,
-          saturday,
-          sunday,
-        };
-        const { data } = await supabase.from('venues').insert({
+        const bookings = {} as Record<string, AvailableType[]>;
+        data.forEach((day, index) => {
+          const label = days[index].toLowerCase();
+          bookings[label] = day;
+        });
+
+        await supabase.from('venues').insert({
           name,
           tags: tags.join(','),
           eventId,
@@ -220,10 +137,68 @@ const Home: React.FC<IVenue> = ({ event }) => {
           timezone: event?.timezone,
         });
         toggleDrawer('right', false);
-        await getVenues();
+        refetch();
+        resetForm();
       } catch (err) {
         console.log(err);
       }
+    };
+
+    const renderDay = (day: AvailableType[], index: number) => {
+      const label = days[index].toUpperCase().slice(0, 3);
+      return (
+        <Stack direction="row" spacing="20px" key={label}>
+          <Stack direction="row" spacing="20px" alignItems="center" flex="1">
+            <BpCheckbox />
+            <Typography variant="bodyBB">{label}</Typography>
+          </Stack>
+          <Stack spacing="10px" flex="4">
+            {day.map((item, i) => (
+              <TimeRange
+                key={`${label}-Item-${i}`}
+                values={day}
+                setValues={(v: any) => {
+                  const prev = [...data];
+                  prev[index] = v;
+                  console.log(prev);
+                  setData(prev);
+                }}
+                id={i}
+                timezone={event?.timezone as string}
+              />
+            ))}
+          </Stack>
+          <Stack direction="row" spacing="20px" alignItems="center" flex="1">
+            <Stack
+              padding="10px"
+              sx={{ cursor: 'pointer' }}
+              onClick={() => {
+                const prev = [...data];
+                if (prev[index].filter((item) => item.error).length === 0) {
+                  setData((v) => {
+                    const i = [...v];
+                    i[index] = [...i[index], { startTime: '', endTime: '' }];
+                    return i;
+                  });
+                }
+              }}
+            >
+              <PlusIcon size={5} />
+            </Stack>
+            <Stack
+              padding="10px"
+              sx={{ cursor: 'pointer' }}
+              onClick={() => {
+                const prev = [...data];
+                prev[index].pop();
+                setData(prev);
+              }}
+            >
+              <MinusIcon size={5} />
+            </Stack>
+          </Stack>
+        </Stack>
+      );
     };
 
     return (
@@ -285,6 +260,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
               <Stack spacing="10px">
                 <FormLabel>Space Name*</FormLabel>
                 <ZuInput
+                  value={name}
                   placeholder="Standard Pass"
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -356,55 +332,16 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 <FormLabelDesc>
                   Recommend min of 200x200px (1:1 Ratio)
                 </FormLabelDesc>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
+                <FormUploader
+                  onChange={(url) => {
+                    avatarUploader.setUrl(url);
                   }}
-                >
-                  <Uploader3
-                    accept={['.gif', '.jpeg', '.gif', '.png']}
-                    api={'/api/file/upload'}
-                    multiple={false}
-                    crop={{
-                      size: { width: 400, height: 400 },
-                      aspectRatio: 1,
-                    }} // must be false when accept is svg
-                    onUpload={(file) => {
-                      avatarUploader.setFile(file);
-                    }}
-                    onComplete={(file) => {
-                      avatarUploader.setFile(file);
-                    }}
-                  >
-                    <Button
-                      component="span"
-                      sx={{
-                        color: 'white',
-                        borderRadius: '10px',
-                        backgroundColor: '#373737',
-                        border: '1px solid #383838',
-                      }}
-                    >
-                      Upload Image
-                    </Button>
-                  </Uploader3>
-                  <PreviewFile
-                    sx={{
-                      width: '200px',
-                      height: '200px',
-                      borderRadius: '10px',
-                    }}
-                    src={avatarUploader.getUrl()}
-                    isLoading={avatarUploader.isLoading()}
-                    errorMessage={avatarUploader.errorMessage()}
-                  />
-                </Box>
+                />
               </Stack>
               <Stack spacing="10px">
                 <FormLabel>Space Capacity*</FormLabel>
                 <ZuInput
+                  value={capacity}
                   type="number"
                   onChange={(e) => setCapacity(Number(e.target.value))}
                 />
@@ -431,390 +368,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
                 </Typography>
               </Stack>
               <Stack spacing="20px">
-                <Stack direction="row" spacing="20px">
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <BpCheckbox />
-                    <Typography variant="bodyBB">MON</Typography>
-                  </Stack>
-                  <Stack spacing="10px" flex="4">
-                    {monday.map((item, index) => (
-                      <TimeRange
-                        key={`Monday-Item-${index}`}
-                        values={monday}
-                        setValues={setMonday}
-                        id={index}
-                        timezone={event?.timezone as string}
-                      />
-                    ))}
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        if (monday.filter((item) => item.error).length === 0) {
-                          setMonday((prev) => [
-                            ...prev,
-                            { startTime: '', endTime: '' },
-                          ]);
-                        }
-                      }}
-                    >
-                      <PlusIcon size={5} />
-                    </Stack>
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        const prev = [...monday];
-                        prev.pop();
-                        setMonday(prev);
-                      }}
-                    >
-                      <MinusIcon size={5} />
-                    </Stack>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" spacing="20px">
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <BpCheckbox />
-                    <Typography variant="bodyBB">TUE</Typography>
-                  </Stack>
-                  <Stack spacing="10px" flex="4">
-                    {tuesday.map((item, index) => (
-                      <TimeRange
-                        key={`Tuesday-Item-${index}`}
-                        values={tuesday}
-                        setValues={setTuesday}
-                        id={index}
-                        timezone={event?.timezone as string}
-                      />
-                    ))}
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setTuesday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
-                      }}
-                    >
-                      <PlusIcon size={5} />
-                    </Stack>
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        const prev = [...tuesday];
-                        prev.pop();
-                        setTuesday(prev);
-                      }}
-                    >
-                      <MinusIcon size={5} />
-                    </Stack>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" spacing="20px">
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <BpCheckbox />
-                    <Typography variant="bodyBB">WED</Typography>
-                  </Stack>
-                  <Stack spacing="10px" flex="4">
-                    {wednesday.map((item, index) => (
-                      <TimeRange
-                        key={`Wednesday-Item-${index}`}
-                        values={wednesday}
-                        setValues={setWednesday}
-                        id={index}
-                        timezone={event?.timezone as string}
-                      />
-                    ))}
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setWednesday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
-                      }}
-                    >
-                      <PlusIcon size={5} />
-                    </Stack>
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        const prev = [...wednesday];
-                        prev.pop();
-                        setWednesday(prev);
-                      }}
-                    >
-                      <MinusIcon size={5} />
-                    </Stack>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" spacing="20px">
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <BpCheckbox />
-                    <Typography variant="bodyBB">THU</Typography>
-                  </Stack>
-                  <Stack spacing="10px" flex="4">
-                    {thursday.map((item, index) => (
-                      <TimeRange
-                        key={`Thursday-Item-${index}`}
-                        values={thursday}
-                        setValues={setThursday}
-                        id={index}
-                        timezone={event?.timezone as string}
-                      />
-                    ))}
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setThursday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
-                      }}
-                    >
-                      <PlusIcon size={5} />
-                    </Stack>
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        const prev = [...thursday];
-                        prev.pop();
-                        setThursday(prev);
-                      }}
-                    >
-                      <MinusIcon size={5} />
-                    </Stack>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" spacing="20px">
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <BpCheckbox />
-                    <Typography variant="bodyBB">FRI</Typography>
-                  </Stack>
-                  <Stack spacing="10px" flex="4">
-                    {friday.map((item, index) => (
-                      <TimeRange
-                        key={`Friday-Item-${index}`}
-                        values={friday}
-                        setValues={setFriday}
-                        id={index}
-                        timezone={event?.timezone as string}
-                      />
-                    ))}
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setFriday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
-                      }}
-                    >
-                      <PlusIcon size={5} />
-                    </Stack>
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        const prev = [...friday];
-                        prev.pop();
-                        setFriday(prev);
-                      }}
-                    >
-                      <MinusIcon size={5} />
-                    </Stack>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" spacing="20px">
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <BpCheckbox />
-                    <Typography variant="bodyBB">SAT</Typography>
-                  </Stack>
-                  <Stack spacing="10px" flex="4">
-                    {saturday.map((item, index) => (
-                      <TimeRange
-                        key={`Saturday-Item-${index}`}
-                        values={saturday}
-                        setValues={setSaturday}
-                        id={index}
-                        timezone={event?.timezone as string}
-                      />
-                    ))}
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setSaturday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
-                      }}
-                    >
-                      <PlusIcon size={5} />
-                    </Stack>
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        const prev = [...saturday];
-                        prev.pop();
-                        setSaturday(prev);
-                      }}
-                    >
-                      <MinusIcon size={5} />
-                    </Stack>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" spacing="20px">
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <BpCheckbox />
-                    <Typography variant="bodyBB">SUN</Typography>
-                  </Stack>
-                  <Stack spacing="10px" flex="4">
-                    {sunday.map((item, index) => (
-                      <TimeRange
-                        key={`Sunday-Item-${index}`}
-                        values={sunday}
-                        setValues={setSunday}
-                        id={index}
-                        timezone={event?.timezone as string}
-                      />
-                    ))}
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing="20px"
-                    alignItems="center"
-                    flex="1"
-                  >
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setSunday((prev) => [
-                          ...prev,
-                          {
-                            startTime: '',
-                            endTime: '',
-                          },
-                        ]);
-                      }}
-                    >
-                      <PlusIcon size={5} />
-                    </Stack>
-                    <Stack
-                      padding="10px"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        const prev = [...sunday];
-                        prev.pop();
-                        setSunday(prev);
-                      }}
-                    >
-                      <MinusIcon size={5} />
-                    </Stack>
-                  </Stack>
-                </Stack>
+                {data.map((day, index) => renderDay(day, index))}
               </Stack>
             </Stack>
             <Box display="flex" gap="20px">
@@ -847,9 +401,11 @@ const Home: React.FC<IVenue> = ({ event }) => {
 
   return (
     <Stack spacing="30px" padding="30px">
-      <VenueHeader onToggle={toggleDrawer} count={venues.length} />
+      <VenueHeader onToggle={toggleDrawer} count={venuesData.length} />
       <VenueList
-        venues={venues}
+        event={event}
+        venues={venuesData}
+        refetch={refetch}
         onToggle={toggleDrawer}
         setSearchValue={setSearchValue}
       />

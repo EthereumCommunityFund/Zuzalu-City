@@ -3,8 +3,6 @@ import SessionCard from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Sessi
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import SlotDates from '@/components/calendar/SlotDate';
 import { ZuButton, ZuCalendar, ZuInput, ZuSwitch } from '@/components/core';
-import { EditorPreview } from '@/components/editor/EditorPreview';
-import { SuperEditor } from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import BpCheckbox from '@/components/event/Checkbox';
 import {
@@ -77,6 +75,20 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
+import { download } from 'utils/download';
+import { decodeOutputData } from '@/components/editor/useEditorStore';
+import dynamic from 'next/dynamic';
+
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -159,6 +171,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const [sessionLocation, setSessionLocation] = useState<string>('');
   const [sessionLiveStreamLink, setSessionLiveStreamLink] =
     useState<string>('');
+  const [sessionRecordingLink, setSessionRecordingLink] = useState<string>('');
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [hiddenOrganizer, setHiddenOrganizer] = useState(false);
@@ -250,7 +263,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const nearToday = getDay();
     if (sessionsByDate && nearToday) {
       const dom = document.getElementById(nearToday);
-      console.log(dom, 'dom', nearToday, 'nearToday');
 
       if (dom) {
         window.scrollTo({
@@ -277,6 +289,88 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     document.body.appendChild(eleLink);
     eleLink.click();
     document.body.removeChild(eleLink);
+  };
+
+  const handleClickExportAllSessions = () => {
+    if (!sessionsByDate) return;
+    let csv = '';
+    const sessions: Session[] = [];
+    Object.keys(sessionsByDate).forEach((key) =>
+      sessions.push(...sessionsByDate[key]),
+    );
+
+    let headers = [
+      'Title',
+      'Description',
+      'Start time',
+      'End time',
+      'Track',
+      'Speakers',
+      'Format',
+      'Type',
+      'Experience Level',
+      'Organizers',
+      'Location',
+      'LiveStream Link',
+    ];
+    csv += headers.join(',') + '\n';
+
+    const formatDes = (str: string) => {
+      let obj;
+      try {
+        obj = decodeOutputData(str);
+      } catch (error) {
+        return str;
+      }
+      if (!obj?.blocks?.length) {
+        return str;
+      }
+      return `"${obj?.blocks.map((item: { data: { text: string } }) => item?.data?.text).join(',')}"`;
+    };
+
+    const formatSpeakers = (str: string) => {
+      let obj;
+      try {
+        obj = JSON.parse(str);
+      } catch (error) {
+        return '';
+      }
+      return `"${obj.map((item: { username: string }) => item.username).join(' ')}"`;
+    };
+
+    const formatOrganizers = (str: string) => {
+      let obj;
+      try {
+        obj = JSON.parse(str);
+      } catch (error) {
+        return '';
+      }
+      return `"${obj.map((item: { username: string }) => item.username).join(' ')}"`;
+    };
+
+    sessions.forEach((session: Session) => {
+      csv += session.title + ',';
+      csv += formatDes(session.description) + ',';
+      csv +=
+        dayjs(session.startTime)
+          .tz(eventData?.timezone)
+          .format('YYYY-MM-DD HH:MM') + ',';
+      csv +=
+        dayjs(session.endTime)
+          .tz(eventData?.timezone)
+          .format('YYYY-MM-DD HH:MM') + ',';
+      csv += session.track + ',';
+      csv += formatSpeakers(session.speakers) + ',';
+      csv += session.format + ',';
+      csv += session.type + ',';
+      csv += session.experience_level + ',';
+      csv += formatOrganizers(session.organizers) + ',';
+      csv += session.location + ',';
+      csv += session.liveStreamLink ? session.liveStreamLink : '';
+      csv += '\n';
+    });
+
+    download('sessionsTest.csv', csv);
   };
 
   const groupSessionByDate = (
@@ -314,10 +408,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
   const getSessionsByDate = async (targetDate: string) => {
     if (sessions) {
       return sessions.filter((session) => {
-        console.log(
-          dayjs(session.startTime).tz(session.timezone).format('MMMM D, YYYY'),
-          targetDate,
-        );
         return (
           dayjs(session.startTime)
             .tz(session.timezone)
@@ -360,7 +450,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       .from('rsvp')
       .select('sessionID')
       .eq('userDID', adminId);
-    console.log(data);
     if (error) {
       console.error('Failed to fetch RSVP sessions:', error);
       return [];
@@ -433,7 +522,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
               .some((ele) => new Set(selectedLocations).has(ele)),
           );
         }
-
         if (filteredSessions && filteredSessions.length > 0) {
           setSessionsByDate(groupSessionByDate(filteredSessions));
         } else if (selectedDate) {
@@ -507,7 +595,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       }
     }
     setSessionDate(date);
-    console.log(date);
     setSessionStartTime(
       dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
@@ -524,6 +611,19 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     return (
       date.isAfter(dayjs(startDate).subtract(1, 'day')) &&
       date.isBefore(dayjs(endDate).add(1, 'day'))
+    );
+  };
+
+  const isDateAvailable = (date: Dayjs): boolean => {
+    if (sessionLocation === 'Custom') return false;
+    if (!selectedRoom?.bookings) return true;
+    const available = JSON.parse(selectedRoom?.bookings!);
+    const dayName = date.format('dddd');
+    const availableTime = available[dayName.toLowerCase()];
+    return (
+      availableTime.filter((item: any) => {
+        return item.startTime && item.endTime;
+      }).length === 0
     );
   };
 
@@ -820,6 +920,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       creatorDID: adminId,
       uuid: uuidv4(),
       liveStreamLink: sessionLiveStreamLink,
+      recording_link: sessionRecordingLink,
     };
     try {
       setBlockClickModal(true);
@@ -1100,6 +1201,16 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                   placeholder="https://"
                 />
               </Stack>
+              <Stack spacing="10px">
+                <Typography variant="bodyBB">Recording Link</Typography>
+                <Typography variant="bodyS" sx={{ opacity: 0.6 }}>
+                  Enter a link for where this session will be recorded
+                </Typography>
+                <ZuInput
+                  onChange={(e) => setSessionRecordingLink(e.target.value)}
+                  placeholder="https://"
+                />
+              </Stack>
             </Stack>
             <Stack
               direction={'column'}
@@ -1198,6 +1309,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                         )[0];
                         setSelectedRoom(selectedRoom);
                         setSessionLocation(e.target.value);
+                        setSessionDate(null);
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -1339,6 +1451,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                           {eventData?.timezone}
                         </Typography>
                         <DesktopDatePicker
+                          value={sessionDate}
                           onChange={(newValue) => {
                             if (newValue !== null) {
                               handleDateChange(newValue);
@@ -1349,7 +1462,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                               date,
                               eventData?.startTime,
                               eventData?.endTime,
-                            )
+                            ) || isDateAvailable(date)
                           }
                           sx={{
                             '& .MuiSvgIcon-root': {
@@ -1880,6 +1993,8 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
 
   const columnRef = useRef<HTMLDivElement>(null);
 
+  console.log(sessionsByDate);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack
@@ -2145,14 +2260,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             padding="20px"
                             borderRadius="10px"
                             sx={{ cursor: 'pointer' }}
+                            onClick={() => toggleDrawer('right', true)}
                           >
                             <PlusCircleIcon color="#6c6c6c" size={15} />
                             <Typography variant="subtitle2">
                               No Sessions
                             </Typography>
-                            <ZuButton
-                              onClick={() => toggleDrawer('right', true)}
-                            >
+                            <ZuButton>
                               <Typography variant="subtitle2">
                                 Create a Session
                               </Typography>
@@ -2171,10 +2285,11 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     padding="20px"
                     borderRadius="10px"
                     sx={{ cursor: 'pointer' }}
+                    onClick={() => toggleDrawer('right', true)}
                   >
                     <PlusCircleIcon color="#6c6c6c" size={15} />
                     <Typography variant="subtitle2">No Sessions</Typography>
-                    <ZuButton onClick={() => toggleDrawer('right', true)}>
+                    <ZuButton>
                       <Typography variant="subtitle2">
                         Create a Session
                       </Typography>
@@ -2515,6 +2630,31 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       </Typography>
                       <ChevronRightIcon />
                     </Stack>
+                  </Stack>
+                  <Stack
+                    direction={'row'}
+                    alignItems={'center'}
+                    justifyContent="center"
+                    padding={'10px'}
+                    borderRadius={'10px'}
+                    border={'solid 1px rgba(255, 255, 255, 0.10)'}
+                    onClick={handleClickExportAllSessions}
+                    sx={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                      cursor: 'pointer',
+                    }}
+                    spacing={'10px'}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      lineHeight={'160%'}
+                      sx={{
+                        opacity: '0.6',
+                      }}
+                    >
+                      Export all Sessions
+                    </Typography>
+                    <ArrowDownIcon size={4} />
                   </Stack>
                   <Popover
                     id={locationAnchorId}

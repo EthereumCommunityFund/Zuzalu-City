@@ -198,3 +198,9 @@ export const Zuconfig: PipelineEdDSATicketZuAuthConfig[] = [
     eventName: 'ZuVillage Georgia',
   },
 ];
+
+export const prodShowSpaceId = [
+  'kjzl6kcym7w8y8a2qyl4pwy07676eiu3nqd8qpuc31qz3zjg599xjjvr8bzwck3',
+  'kjzl6kcym7w8y8uao2darzcxz2fxxvpsni6eezxjaz5f7trqxktfjln9pnbqeen',
+  'kjzl6kcym7w8yahrne2e6t8drh7g6vvplzbd6gv6yfe8hb2mz4790lgmgx12mbw',
+];

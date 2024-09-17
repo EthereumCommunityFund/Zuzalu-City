@@ -73,16 +73,17 @@ const Header = () => {
   return (
     <Box
       height="50px"
-      bgcolor="#2D2D2D"
+      bgcolor="rgba(48, 48, 48, 0.8)"
       display="flex"
       alignItems="center"
       justifyContent="space-between"
       paddingX="10px"
       paddingY="8px"
-      borderBottom="1px solid #383838"
+      borderBottom="1px solid rgba(255, 255, 255, 0.1)"
       zIndex={1000}
       position={'sticky'}
       top={0}
+      sx={{ backdropFilter: 'blur(20px)' }}
     >
       <Box
         display="flex"

@@ -86,18 +86,25 @@ import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import {
   FormLabel,
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import { EditorPreview } from '@/components/editor/EditorPreview';
 import SlotDates from '@/components/calendar/SlotDate';
 import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
 import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 const Custom_Option: TimeStepOptions = {
   hours: 1,
@@ -272,7 +279,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
     const nearToday = getDay();
     if (sessionsByDate && nearToday) {
       const dom = document.getElementById(nearToday);
-      console.log(dom, 'dom', nearToday, 'nearToday');
       if (dom) {
         window.scrollTo({
           behavior: 'instant',
@@ -379,7 +385,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       .from('rsvp')
       .select('sessionID')
       .eq('userDID', adminId);
-    console.log(data);
     if (error) {
       console.error('Failed to fetch RSVP sessions:', error);
       return [];
@@ -526,7 +531,6 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
       }
     }
     setSessionDate(date);
-    console.log(date);
     setSessionStartTime(
       dayjs().tz(eventData?.timezone).set('hour', 0).set('minute', 0),
     );
@@ -2158,14 +2162,13 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             padding="20px"
                             borderRadius="10px"
                             sx={{ cursor: 'pointer' }}
+                            onClick={() => toggleDrawer('right', true)}
                           >
                             <PlusCircleIcon color="#6c6c6c" size={15} />
                             <Typography variant="subtitle2">
                               No Sessions
                             </Typography>
-                            <ZuButton
-                              onClick={() => toggleDrawer('right', true)}
-                            >
+                            <ZuButton>
                               <Typography variant="subtitle2">
                                 Create a Session
                               </Typography>

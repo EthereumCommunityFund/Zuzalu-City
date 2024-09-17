@@ -1,20 +1,32 @@
-'use client';
-
-import { Header, Sidebar } from 'components/layout';
-import SubSidebar from 'components/layout/Sidebar/SubSidebar';
-import { Box, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import React from 'react';
+import type { Metadata } from 'next';
 
 interface SpacePageLayoutPropTypes {
   children: React.ReactNode;
 }
 
+type Props = {
+  params: { spaceid: string };
+};
+
+export const generateMetadata = async ({
+  params,
+}: Props): Promise<Metadata> => {
+  const id = params.spaceid;
+
+  return {
+    title: 'Zuzalu City',
+    description: 'Zuzalu City Powered By Ethereum Community Fund',
+    openGraph: {
+      images: [`/api/og?id=${id}&type=space`],
+    },
+  };
+};
+
 export default function SpacePageLayout({
   children,
 }: SpacePageLayoutPropTypes) {
-  const theme = useTheme();
-
   return (
     <Box
       sx={{ color: 'white', display: 'flex', flexDirection: 'row' }}

@@ -164,6 +164,8 @@ export interface Session {
   organizers: string;
   rsvpNb?: number;
   creatorDID?: string;
+  liveStreamLink?: string;
+  recording_link?: string;
   uuid: string;
 }
 export type SessionSupabaseData = {
@@ -187,6 +189,7 @@ export type SessionSupabaseData = {
   creatorDID: string;
   uuid: string;
   liveStreamLink?: string;
+  recording_link?: string;
 };
 export interface SessionEdge {
   node: Session;
@@ -290,6 +293,10 @@ export interface CreateEventRequest {
   timezone: string;
 }
 
+export interface UpdateEventRequest extends CreateEventRequest {
+  id: string;
+}
+
 export interface ZuAutoCompleteProps {
   optionVals: Array<{
     value: string;
@@ -339,6 +346,7 @@ export interface FilterSessionsPopComponentProps extends SwipeableDrawerProps {
 }
 
 export interface TimezoneSelectorProps {
+  value?: ITimezoneOption;
   sx: CSSProperties;
   setSelectedTimezone: Dispatch<SetStateAction<ITimezoneOption>>;
 }

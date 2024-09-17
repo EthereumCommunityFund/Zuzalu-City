@@ -56,7 +56,7 @@ import SelectCategories from '@/components/select/selectCategories';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import { supaCreateSession } from '@/services/session';
-import { SuperEditor } from '@/components/editor/SuperEditor';
+import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import { v4 as uuidv4 } from 'uuid';
 

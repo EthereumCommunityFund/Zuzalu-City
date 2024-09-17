@@ -367,7 +367,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               />
             ) : null}
             <EventAbout description={eventData.description} />
-            <Stack
+            {/* <Stack
               bgcolor="#292929"
               padding="20px"
               spacing="20px"
@@ -436,7 +436,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                   <Typography variant="bodyS">SponsorName</Typography>
                 </Stack>
               </Box>
-            </Stack>
+            </Stack> */}
             {/*<Stack
               bgcolor="#292929"
               padding="20px"
@@ -497,7 +497,10 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                         Sponsored Banner
                       </Typography>
                     </Stack> */}
-            <LotteryCard inEvent />
+            {eventId ===
+            'kjzl6kcym7w8yaej4q6v4xtx6v3tnmg4iw9ocaz4zbw5fw5fz8lwn1k9l7f4flf' ? (
+              <LotteryCard inEvent />
+            ) : null}
             <EventDetail
               status={eventData.status}
               links={eventData.customLinks}

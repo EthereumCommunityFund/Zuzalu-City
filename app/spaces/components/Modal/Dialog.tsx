@@ -11,6 +11,7 @@ interface Proptypes {
   message: React.ReactNode;
   showModal: boolean;
   showActions?: boolean;
+  confirmText?: string;
   actions?: React.ReactNode;
   onClose?: () => void;
   onConfirm?: () => void;
@@ -24,6 +25,7 @@ export default function Dialog({
   message,
   actions,
   showActions = true,
+  confirmText = 'Finish',
 }: Proptypes) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -93,7 +95,7 @@ export default function Dialog({
           actions
         ) : showActions ? (
           <Button onClick={onConfirm} variant="contained" fullWidth>
-            Finish
+            {confirmText}
           </Button>
         ) : null}
       </DialogActions>
