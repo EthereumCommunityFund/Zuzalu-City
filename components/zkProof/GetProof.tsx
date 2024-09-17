@@ -27,7 +27,7 @@ const GetProof: React.FC<GetProofProps> = (props) => {
         var sSignature = Array.from(ethers.getBytes(signature));
         sSignature.pop();
 
-        const merkleData = await getMerklePath(nftAddress, address);
+        const merkleData = await getMerklePath(nftAddress, address as string);
 
         const input = JSON.stringify({
           pub_key_x: Array.from(ethers.getBytes('0x' + pub_key_x)),
@@ -46,8 +46,12 @@ const GetProof: React.FC<GetProofProps> = (props) => {
           input,
           true,
         );
-
-        const proof = result.proof.proof;
+        let proof;
+        if (result.proof) {
+          proof = result.proof.proof;
+        } else {
+          console.error('Proof is undefined');
+        }
         console.log(proof);
       }
     })();

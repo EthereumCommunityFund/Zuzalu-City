@@ -82,7 +82,17 @@ export const ZupassProvider = ({ children }: any) => {
           console.log('Response status:', loginResult.status);
           console.log('here', loginResult);
           setUser((await loginResult.json()).user);*/
-          const pcd = await authenticate(result.pcdStr, watermark, Zuconfig);
+          const pcd = await authenticate(result.pcdStr, {
+            watermark: watermark,
+            config: Zuconfig,
+            fieldsToReveal: {
+              revealAttendeeEmail: false,
+              revealAttendeeName: false,
+              revealEventId: true,
+              revealProductId: true,
+            },
+            externalNullifier: undefined,
+          });
           setNullifierHash(pcd.claim.nullifierHash as string);
           addLog('Authenticated successfully');
           setAuthState('authenticated');
