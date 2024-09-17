@@ -16,3 +16,7 @@ export function convertDateToEpoch(dateString: any) {
 
   return epochInSeconds;
 }
+
+export function covertNameToUrlName(name: string) {
+  return name.toLowerCase().replace(/ /g, '-');
+}
