@@ -23,66 +23,20 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
       borderBottom="1px solid #313131"
     >
       <Stack direction={'row'} justifyContent={'space-between'}>
-        <Typography variant="h5">Venue Spaces</Typography>
-        <Typography variant="bodyB">Total Spaces: {count}</Typography>
-      </Stack>
-      <Stack
-        direction={'row'}
-        gap={2}
-        sx={{
-          [breakpoints.down('md')]: {
-            flexDirection: 'column',
-          },
-        }}
-      >
-        <Stack
-          direction="row"
-          alignItems="center"
-          bgcolor="#383838"
-          borderRadius={2}
-          padding="5px 10px"
-          spacing={1}
-          width="50%"
-          onClick={() => onToggle('right', true)}
-          sx={{ cursor: 'pointer' }}
-        >
-          <GroupIcon />
-          <Stack>
-            <Typography variant="subtitle2" color="white">
-              Add a Location
-            </Typography>
-            <Typography
-              variant="caption"
-              color="white"
-              textTransform="uppercase"
-            >
-              a unit, room or location at the venue
-            </Typography>
-          </Stack>
+        <Typography variant="h5">Announcements</Typography>
+        <Stack direction="row">
+          <Typography variant="body1" color="white">
+            Today&apos;s Date:&nbsp;
+          </Typography>
+          <Typography variant="body1" color="white" sx={{ opacity: 0.7 }}>
+            {new Date().toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </Typography>
         </Stack>
-        {/* <Stack
-          direction="row"
-          alignItems="center"
-          bgcolor="#383838"
-          borderRadius={2}
-          padding="5px 10px"
-          spacing={1}
-          flex={1}
-        >
-          <NewspaperIcon />
-          <Stack>
-            <Typography variant="subtitle2" color="white">
-              Post Announcement
-            </Typography>
-            <Typography
-              variant="caption"
-              color="white"
-              textTransform="uppercase"
-            >
-              COMING SOON
-            </Typography>
-          </Stack>
-        </Stack> */}
       </Stack>
     </Stack>
   );
