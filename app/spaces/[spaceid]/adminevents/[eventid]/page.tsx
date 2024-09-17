@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Box, Stack, useMediaQuery } from '@mui/material';
 
-import { Ticket, Overview, Sessions, Venue } from './Tabs';
+import { Ticket, Overview, Sessions, Venue, Announcements } from './Tabs';
 import { Tabbar, Navbar } from 'components/layout';
 import { useParams } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
@@ -90,6 +90,8 @@ const Home: React.FC = () => {
     switch (tabName) {
       case 'Overview':
         return <Overview event={event} refetch={refetchData} />;
+      case 'Announcements':
+        return <Announcements event={event} />;
       case 'Tickets':
         return <Ticket event={event} />;
       /*case 'Event Sessions':
