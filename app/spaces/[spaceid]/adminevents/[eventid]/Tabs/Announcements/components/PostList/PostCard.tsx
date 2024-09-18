@@ -110,7 +110,7 @@ const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
         <Stack spacing="10px" flex="1">
           <Typography variant="bodyMB">{venue.name}</Typography>
           <Typography variant="buttonLB">{venue.name}</Typography>
-          <Typography variant="caption">
+          <Typography variant="caption" sx={{ opacity: 0.5 }}>
             {dayjs().format('YYYY-MM-DD')} CREATED | Tags
           </Typography>
         </Stack>
