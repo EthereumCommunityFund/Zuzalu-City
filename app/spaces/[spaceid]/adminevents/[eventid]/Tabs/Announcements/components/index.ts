@@ -1,5 +1,5 @@
-import VenueHeader from './VenueHeader';
-import VenueList from './VenueList';
+import Header from './Header';
+import PostList from './PostList';
 import TimeRange from './TimeRange';
 
-export { VenueHeader, VenueList, TimeRange };
+export { Header, PostList, TimeRange };

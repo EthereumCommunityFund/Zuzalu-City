@@ -14,11 +14,11 @@ import {
   SearchIcon,
 } from 'components/icons';
 import { Venue, Event } from '@/types';
-import VenueCard from './VenueCard';
+import VenueCard from './PostCard';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-interface VenueListProps {
+interface PostListListProps {
   venues?: Venue[];
   event?: Event;
   onToggle: (anchor: Anchor, open: boolean) => void;
@@ -26,7 +26,7 @@ interface VenueListProps {
   setSearchValue: React.Dispatch<React.SetStateAction<string>> | any;
 }
 
-const VenueList: React.FC<VenueListProps> = ({
+const PostList: React.FC<PostListListProps> = ({
   venues,
   event,
   onToggle,
@@ -40,54 +40,21 @@ const VenueList: React.FC<VenueListProps> = ({
       <Stack spacing="10px">
         <Stack direction="row" justifyContent="space-between">
           <Stack spacing="10px" direction="row" alignItems="center">
-            <Typography variant="subtitleMB">Spaces</Typography>
+            <Typography variant="subtitleMB">Posts</Typography>
             <InformationIcon size={5} />
           </Stack>
           <ZuButton
             startIcon={<PlusIcon />}
             onClick={() => onToggle('right', true)}
           >
-            Add a Space
+            Add a Post
           </ZuButton>
         </Stack>
         <Typography variant="bodyM" sx={{ opacity: 0.8 }}>
-          These are bookable areas at or near a venue for sessions
+          Announcement post live in the event view under a tab of the same name.
         </Typography>
       </Stack>
       <Stack spacing="20px">
-        <Stack
-          sx={{
-            flexDirection: 'column',
-            gap: '10px',
-            [theme.breakpoints.down('md')]: {
-              display: 'flex',
-            },
-          }}
-        >
-          <OutlinedInput
-            placeholder="Search Venue Spaces"
-            sx={{
-              backgroundColor: '#313131',
-              paddingX: '15px',
-              paddingY: '13px',
-              borderRadius: '10px',
-              height: '35px',
-              border: '1px solid var(--Hover-White, rgba(255, 255, 255, 0.10))',
-              fontFamily: 'Inter',
-              opacity: 0.7,
-              color: 'white',
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-            }}
-            onChange={(e) => setSearchValue(e.target.value)}
-            startAdornment={
-              <InputAdornment position="start" sx={{ opacity: 0.6 }}>
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-        </Stack>
         {venues?.length === 0 ? (
           <Stack
             direction="column"
@@ -99,9 +66,9 @@ const VenueList: React.FC<VenueListProps> = ({
             sx={{ cursor: 'pointer' }}
           >
             <PlusCircleIcon color="#6c6c6c" size={15} />
-            <Typography variant="subtitle2">No Spaces</Typography>
+            <Typography variant="subtitle2">No Posts</Typography>
             <Typography variant="body2" sx={{ opacity: 0.5 }}>
-              Add a Space
+              Add a Post
             </Typography>
           </Stack>
         ) : (
@@ -119,4 +86,4 @@ const VenueList: React.FC<VenueListProps> = ({
   );
 };
 
-export default VenueList;
+export default PostList;

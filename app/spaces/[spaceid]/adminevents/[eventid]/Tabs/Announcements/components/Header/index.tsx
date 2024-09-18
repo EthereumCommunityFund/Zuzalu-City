@@ -1,20 +1,7 @@
 import * as React from 'react';
-import { Stack, Typography, useTheme } from '@mui/material';
-import { GroupIcon, NewspaperIcon, PlusCircleIcon } from 'components/icons';
+import { Stack, Typography } from '@mui/material';
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
-interface SessionHeaderProps {
-  onToggle: (anchor: Anchor, open: boolean) => void;
-  count: number;
-}
-
-const VenueHeader: React.FC<SessionHeaderProps> = ({
-  onToggle = (anchor: Anchor, open: boolean) => {},
-  count = 0,
-}) => {
-  const { breakpoints } = useTheme();
-
+const Header = () => {
   return (
     <Stack
       direction={'column'}
@@ -42,4 +29,4 @@ const VenueHeader: React.FC<SessionHeaderProps> = ({
   );
 };
 
-export default VenueHeader;
+export default Header;

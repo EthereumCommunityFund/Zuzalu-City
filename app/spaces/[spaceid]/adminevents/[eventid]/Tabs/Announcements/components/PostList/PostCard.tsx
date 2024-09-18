@@ -3,12 +3,13 @@ import { Box, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { ThreeVerticalIcon } from '@/components/icons';
 import { Venue, Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import VenueForm from '@/components/form/VenueForm';
 import Drawer from '@/components/drawer';
+import dayjs from 'dayjs';
 
-type VenueCardProps = {
+type PostCardProps = {
   venue: Venue;
   event?: Event;
   refetch: () => void;
@@ -16,22 +17,11 @@ type VenueCardProps = {
 
 const options = ['Edit', 'Delete'];
 
-const VenueCard: React.FC<VenueCardProps> = ({ venue, event, refetch }) => {
+const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [drawOpen, setDrawOpen] = useState(false);
   const open = Boolean(anchorEl);
-
-  const { data: sessions } = useQuery({
-    queryKey: ['getSession', venue.name],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('location', venue.name);
-      return data;
-    },
-  });
 
   const deleteVenue = useMutation({
     mutationFn: async () => {
@@ -114,25 +104,14 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, event, refetch }) => {
           component="img"
           width="40px"
           height="40px"
-          borderRadius="6px"
+          borderRadius="50%"
           src={venue.avatar || '/7.jpg'}
         />
         <Stack spacing="10px" flex="1">
-          <Typography variant="bodyBB">{venue.name}</Typography>
-          <Stack direction="row" spacing="10px">
-            {venue.tags.split(',').map((item, i) => (
-              <Stack
-                bgcolor="#424242"
-                padding="3px 8px"
-                borderRadius="4px"
-                key={`Venue_Label${i}`}
-              >
-                <Typography variant="caption">{item}</Typography>
-              </Stack>
-            ))}
-          </Stack>
-          <Typography variant="bodyS">
-            Sessions Booked: {sessions?.length} Capacity: {venue.capacity}
+          <Typography variant="bodyMB">{venue.name}</Typography>
+          <Typography variant="buttonLB">{venue.name}</Typography>
+          <Typography variant="caption">
+            {dayjs().format('YYYY-MM-DD')} CREATED | Tags
           </Typography>
         </Stack>
         <Stack
@@ -172,4 +151,4 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, event, refetch }) => {
   );
 };
 
-export default VenueCard;
+export default PostCard;
