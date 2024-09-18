@@ -25,7 +25,6 @@ import { Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
-import { supabase } from '@/utils/supabase/client';
 import { covertNameToUrlName } from '@/utils/format';
 import { createUrl } from '@/services/url';
 

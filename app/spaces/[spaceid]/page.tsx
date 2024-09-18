@@ -65,8 +65,8 @@ export default function SpaceDetailPage() {
 
   const spaceId = params.spaceid.toString();
 
-  useQuery({
-    queryKey: ['getUrlFromIdAndName', spaceId, space?.name],
+  const { data: shareUrl } = useQuery({
+    queryKey: ['getUrlFromIdAndName'],
     queryFn: () => {
       return getUrlFromIdAndName(spaceId, space!.name);
     },
@@ -74,10 +74,7 @@ export default function SpaceDetailPage() {
     select: ({ data }) => {
       if (data) {
         const { name, hash } = data;
-        setCurrentHref(
-          `${window.location.origin}/s/${name}${hash !== 0 ? `/${hash}` : ''}`,
-        );
-        console.log(data);
+        return `${window.location.origin}/s/${name}${hash !== '0' ? `/${hash}` : ''}`;
       }
     },
   });
@@ -320,7 +317,7 @@ export default function SpaceDetailPage() {
               {/*  icon={<PlusCircleIcon />}*/}
               {/*/>*/}
               <CopyToClipboard
-                text={currentHref}
+                text={shareUrl || currentHref}
                 onCopy={() => {
                   setShowCopyToast(true);
                 }}

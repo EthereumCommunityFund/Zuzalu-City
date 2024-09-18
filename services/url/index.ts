@@ -32,7 +32,7 @@ const createUrl = async (
   const url = await getLastUrl(name);
   let hash = 0;
   if (url.data) {
-    hash = url.data.hash + 1;
+    hash = Number(url.data.hash) + 1;
   }
   const { data, error } = await supabase.from('url').insert({
     name,

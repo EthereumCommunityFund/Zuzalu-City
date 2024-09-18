@@ -6,16 +6,16 @@ export async function middleware(request: NextRequest) {
   const { pathname, origin } = request.nextUrl;
 
   if (pathname.startsWith('/s/') || pathname.startsWith('/e/')) {
-    const parts = pathname.split('/').filter(Boolean);
+    let parts = pathname.split('/').filter(Boolean);
 
     let name = '';
     let hash = '0';
 
-    if (parts.length === 2) {
+    if (parts.length >= 2) {
       name = parts[1];
-    } else if (parts.length === 3) {
-      name = parts[1];
-      hash = parts[2];
+      const hasHash = parts[2]?.length === 1;
+      hash = !hasHash ? '0' : parts[2];
+      parts = parts.slice(hasHash ? 3 : 2);
     } else {
       return NextResponse.redirect(origin);
     }
@@ -33,12 +33,14 @@ export async function middleware(request: NextRequest) {
 
     const { ceramicId, type } = data;
 
-    return NextResponse.redirect(`${origin}/${type}/${ceramicId}`);
+    return NextResponse.redirect(
+      `${origin}/${type}/${ceramicId}${parts.length ? `/${parts.join('/')}` : ''}`,
+    );
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/s/:path*', '/e/:path*'],
+  matcher: ['/s/:path*', '/e/:path'],
 };
