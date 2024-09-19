@@ -99,11 +99,14 @@ export async function POST(req: Request) {
         },
       },
     );
+
+    const eventId = update.data.createEvent.document.id;
+
     const { data: locationData, error: locationError } = await supabase
       .from('locations')
       .insert({
         name: locations.join(','),
-        eventId: update.data.createEvent.document.id,
+        eventId,
       });
 
     if (locationError) {
@@ -117,7 +120,7 @@ export async function POST(req: Request) {
       .from('events')
       .insert({
         privateKey: uint8ArrayToBase64(seed),
-        eventId: update.data.createEvent.document.id,
+        eventId,
       });
 
     if (eventError) {
@@ -127,6 +130,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
+        data: {
+          eventId,
+        },
         message:
           'Submitted! Create process probably complete after few minutes.',
       },

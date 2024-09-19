@@ -40,6 +40,8 @@ import FormHeader from './FormHeader';
 import FormatCheckboxGroup from './FormatCheckbox';
 import FormUploader from './FormUploader';
 import { PlusIcon } from '../icons';
+import { covertNameToUrlName } from '@/utils/format';
+import { createUrl, createUrlWhenEdit } from '@/services/url';
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Event name is required'),
@@ -225,6 +227,8 @@ export const EventForm: React.FC<EventFormProps> = ({
 
         const response = await createEventKeySupa(eventCreationInput);
         if (response.status === 200) {
+          const urlName = covertNameToUrlName(data.name);
+          await createUrl(urlName, response.data.data.eventId, 'events');
           setShowModal(true);
         }
       } catch (err) {
@@ -264,7 +268,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       />
       <Box
         sx={{
-          width: '100%',
+          width: '700px',
           backgroundColor: '#222222',
         }}
         role="presentation"

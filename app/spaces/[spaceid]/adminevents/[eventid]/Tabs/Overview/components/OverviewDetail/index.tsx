@@ -15,6 +15,7 @@ import { convertDateStringFormat } from '@/utils';
 import Link from 'next/link';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import dynamic from 'next/dynamic';
+import useGetShareLink from '@/hooks/useGetShareLink';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -34,6 +35,8 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
   const { breakpoints } = useTheme();
 
   const [showCopyToast, setShowCopyToast] = React.useState(false);
+  const { shareUrl } = useGetShareLink({ id: eventId, name: eventData?.title });
+  const url = shareUrl || `${window.origin}/events/${eventId}`;
 
   return eventData ? (
     <Stack
@@ -100,7 +103,7 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
             </ZuButton>
           </Link>
           <CopyToClipboard
-            text={`${window.origin}/events/${eventId}`}
+            text={url}
             onCopy={() => {
               setShowCopyToast(true);
             }}
@@ -195,7 +198,7 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
               </ZuButton>
             </Link>
             <CopyToClipboard
-              text={`${window.origin}/events/${eventId}`}
+              text={url}
               onCopy={() => {
                 setShowCopyToast(true);
               }}

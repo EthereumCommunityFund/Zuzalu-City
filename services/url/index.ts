@@ -1,7 +1,7 @@
 import { covertNameToUrlName } from '@/utils/format';
 import { supabase } from '@/utils/supabase/client';
 
-const getLastUrl = async (name: string) => {
+const getLastUrl = async (name: string): Promise<{ data: any; error: any }> => {
   const { data, error } = await supabase
     .from('url')
     .select('*')
@@ -43,4 +43,26 @@ const createUrl = async (
   return { data, error };
 };
 
-export { getUrlFromIdAndName, createUrl };
+const createUrlWhenEdit = async (
+  name: string,
+  ceramicId: string,
+  type: 'spaces' | 'events',
+) => {
+  const [url, oldUrl] = await Promise.all([
+    getLastUrl(name),
+    getUrlFromIdAndName(ceramicId, name),
+  ]);
+  if (oldUrl.data) {
+    return;
+  }
+  let hash = url.data ? Number(url.data.hash) + 1 : 0;
+  const { data, error } = await supabase.from('url').insert({
+    name,
+    hash,
+    ceramicId,
+    type,
+  });
+  return { data, error };
+};
+
+export { getUrlFromIdAndName, createUrl, createUrlWhenEdit };

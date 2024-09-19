@@ -17,7 +17,8 @@ import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview'
 import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import SaveAsRoundedIcon from '@mui/icons-material/SaveAsRounded';
-import { createUrl } from '@/services/url';
+import { createUrl, createUrlWhenEdit } from '@/services/url';
+import { covertNameToUrlName } from '@/utils/format';
 
 const Overview = () => {
   const theme = useTheme();
@@ -108,7 +109,8 @@ const Overview = () => {
         };
         await composeClient.executeQuery(query, variables);
         if (name !== space?.name) {
-          await createUrl(name, id, 'spaces');
+          const urlName = covertNameToUrlName(name);
+          await createUrlWhenEdit(urlName, id, 'spaces');
         }
       } catch (error) {
         console.error('Failed to update space:', error);

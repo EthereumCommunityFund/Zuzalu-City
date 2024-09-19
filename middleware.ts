@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
     let parts = pathname.split('/').filter(Boolean);
 
     let name = '';
-    let hash = '0';
+    let hash = '';
 
     if (parts.length >= 2) {
       name = parts[1];
@@ -42,5 +42,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/s/:path*', '/e/:path'],
+  matcher: ['/s/:path*', '/e/:path*'],
 };

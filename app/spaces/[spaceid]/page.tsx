@@ -40,6 +40,7 @@ import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import { getUrlFromIdAndName } from '@/services/url';
+import useGetShareLink from '@/hooks/useGetShareLink';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -64,20 +65,7 @@ export default function SpaceDetailPage() {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const spaceId = params.spaceid.toString();
-
-  const { data: shareUrl } = useQuery({
-    queryKey: ['getUrlFromIdAndName'],
-    queryFn: () => {
-      return getUrlFromIdAndName(spaceId, space!.name);
-    },
-    enabled: !!(spaceId && space?.name),
-    select: ({ data }) => {
-      if (data) {
-        const { name, hash } = data;
-        return `${window.location.origin}/s/${name}${hash !== '0' ? `/${hash}` : ''}`;
-      }
-    },
-  });
+  const { shareUrl } = useGetShareLink({ id: spaceId, name: space?.name });
 
   const getSpaceByID = async () => {
     setIsEventsLoading(true);
