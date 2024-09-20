@@ -2,23 +2,19 @@ import * as React from 'react';
 import { Stack, Typography } from '@mui/material';
 import ZuButton from 'components/core/Button';
 import { PlusIcon, PlusCircleIcon, InformationIcon } from 'components/icons';
-import { Venue, Event } from '@/types';
+import { Post } from '@/types';
 import PostCard from './PostCard';
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
 interface PostListListProps {
-  venues?: Venue[];
-  event?: Event;
-  onToggle: (anchor: Anchor, open: boolean) => void;
+  posts?: Post[];
+  onToggle: () => void;
   refetch: () => void;
 }
 
 const PostList: React.FC<PostListListProps> = ({
-  venues,
-  event,
   onToggle,
   refetch,
+  posts,
 }) => {
   return (
     <Stack direction="column" spacing="20px">
@@ -28,10 +24,7 @@ const PostList: React.FC<PostListListProps> = ({
             <Typography variant="subtitleMB">Posts</Typography>
             <InformationIcon size={5} />
           </Stack>
-          <ZuButton
-            startIcon={<PlusIcon />}
-            onClick={() => onToggle('right', true)}
-          >
+          <ZuButton startIcon={<PlusIcon />} onClick={onToggle}>
             Add a Post
           </ZuButton>
         </Stack>
@@ -40,14 +33,14 @@ const PostList: React.FC<PostListListProps> = ({
         </Typography>
       </Stack>
       <Stack spacing="20px">
-        {venues?.length === 0 ? (
+        {posts?.length === 0 ? (
           <Stack
             direction="column"
             alignItems="center"
             bgcolor="#2d2d2d"
             padding="20px 10px"
             borderRadius={2}
-            onClick={() => onToggle('right', true)}
+            onClick={onToggle}
             sx={{ cursor: 'pointer' }}
           >
             <PlusCircleIcon color="#6c6c6c" size={15} />
@@ -57,11 +50,10 @@ const PostList: React.FC<PostListListProps> = ({
             </Typography>
           </Stack>
         ) : (
-          venues?.map((venue, index) => (
+          posts?.map((post, index) => (
             <PostCard
               key={`PostCard-${index}`}
-              venue={venue}
-              event={event}
+              post={post}
               refetch={refetch}
             />
           ))

@@ -3,12 +3,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Stack } from '@mui/material';
 import { Header, PostList } from './components';
-import { Event } from '@/types';
+import { Event, Post } from '@/types';
 import { useQuery } from '@tanstack/react-query';
-import { getVenues } from '@/services/venues';
 import Drawer from '@/components/drawer';
 import PostForm from '@/components/form/PostForm';
-import { getAnnouncements } from '@/services/announcements';
+import { getPosts } from '@/services/announcements';
 
 interface IVenue {
   event: Event | undefined;
@@ -25,22 +24,15 @@ const Home: React.FC<IVenue> = ({ event }) => {
   }, []);
 
   const { data, refetch } = useQuery({
-    queryKey: ['announcements', eventId],
-    queryFn: () => getAnnouncements(eventId),
+    queryKey: ['getPosts', eventId],
+    queryFn: () => getPosts(eventId),
   });
-
-  console.log(data);
-
-  const venuesData = useMemo(() => {
-    return data?.data || [];
-  }, [data?.data]);
 
   return (
     <Stack spacing="30px" padding="30px">
       <Header />
       <PostList
-        event={event}
-        venues={venuesData}
+        posts={data?.data as Post[]}
         refetch={refetch}
         onToggle={toggleDrawer}
       />

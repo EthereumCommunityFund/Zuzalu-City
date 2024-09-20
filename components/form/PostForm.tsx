@@ -25,20 +25,16 @@ import Yup from '@/utils/yupExtensions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 import { POST_TAGS } from '@/constant';
-import { createAnnouncement } from '@/services/announcements';
+import { createPost, updatePost } from '@/services/announcements';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { useMutation } from '@tanstack/react-query';
+import { Post } from '@/types';
 
 interface PostFormProps {
   handleClose: () => void;
-  initialData?: {
-    id: string;
-    title: string;
-    tags: string[];
-    description: string;
-  };
+  initialData?: Post;
   refetch: () => void;
 }
 
@@ -60,10 +56,9 @@ const PostForm: React.FC<PostFormProps> = ({
 }) => {
   const { breakpoints } = useTheme();
   const descriptionEditorStore = useEditorStore();
-  const { ceramic } = useCeramicContext();
+  const { profile } = useCeramicContext();
   const params = useParams();
   const eventId = params.eventid.toString();
-  const adminId = ceramic?.did?.parent || '';
 
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -80,7 +75,7 @@ const PostForm: React.FC<PostFormProps> = ({
     resolver: yupResolver(schema),
     defaultValues: {
       title: initialData?.title || '',
-      tags: initialData?.tags || [],
+      tags: initialData?.tags.split(',') || [],
     },
   });
 
@@ -90,16 +85,20 @@ const PostForm: React.FC<PostFormProps> = ({
     if (initialData?.description) {
       descriptionEditorStore.setValue(initialData.description);
     }
-  }, [initialData, descriptionEditorStore]);
+  }, [initialData]);
 
   const resetForm = useCallback(() => {
     reset();
     descriptionEditorStore.clear();
   }, [descriptionEditorStore, reset]);
 
-  const createMutation = useMutation({
-    mutationFn: (data: any) => {
-      return createAnnouncement(data);
+  const submitMutation = useMutation({
+    mutationFn: ({ type, data }: { type: 'create' | 'edit'; data: any }) => {
+      if (type === 'create') {
+        return createPost(data);
+      } else {
+        return updatePost(data.id, data);
+      }
     },
     onSuccess: () => {
       setShowModal(true);
@@ -126,16 +125,25 @@ const PostForm: React.FC<PostFormProps> = ({
       const description = descriptionEditorStore.getValueString();
 
       if (initialData) {
-        // Edit existing post
-        console.log('Editing post:', initialData.id, title, tags, description);
-        // TODO: Implement edit post API call
+        await submitMutation.mutateAsync({
+          type: 'edit',
+          data: {
+            id: initialData.id,
+            title,
+            tags: tags.join(','),
+            description,
+          },
+        });
       } else {
-        await createMutation.mutateAsync({
-          eventId,
-          title,
-          tags: tags.join(','),
-          description,
-          creator: adminId,
+        await submitMutation.mutateAsync({
+          type: 'create',
+          data: {
+            eventId,
+            title,
+            tags: tags.join(','),
+            description,
+            creator: JSON.stringify(profile),
+          },
         });
       }
     },
@@ -143,9 +151,9 @@ const PostForm: React.FC<PostFormProps> = ({
       descriptionEditorStore,
       initialData,
       setError,
-      createMutation,
+      submitMutation,
       eventId,
-      adminId,
+      profile,
     ],
   );
 
@@ -175,7 +183,7 @@ const PostForm: React.FC<PostFormProps> = ({
       borderLeft="1px solid #383838"
     >
       <Dialog
-        title="Post Created"
+        title={initialData ? 'Post Updated' : 'Post Created'}
         message="Please view it."
         showModal={showModal}
         onClose={handleDialogClose}
@@ -184,8 +192,10 @@ const PostForm: React.FC<PostFormProps> = ({
       <Dialog
         showModal={blockClickModal}
         showActions={false}
-        title="Post Event"
-        message="Please wait while the post is being created..."
+        title={initialData ? 'Post Updated' : 'Post Created'}
+        message={`Please wait while the post is being ${
+          initialData ? 'updated...' : 'created...'
+        }`}
       />
       <FormHeader
         title={initialData ? 'Edit Post' : 'Create Post'}

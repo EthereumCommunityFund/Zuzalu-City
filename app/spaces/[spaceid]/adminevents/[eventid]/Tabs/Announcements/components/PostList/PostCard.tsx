@@ -1,14 +1,19 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Menu, MenuItem, Stack, Typography } from '@mui/material';
-import { ThreeVerticalIcon } from '@/components/icons';
-import { Venue, Event } from '@/types';
-import { supabase } from '@/utils/supabase/client';
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ThreeVerticalIcon,
+} from '@/components/icons';
+import { Post } from '@/types';
 import { useMutation } from '@tanstack/react-query';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import VenueForm from '@/components/form/VenueForm';
 import Drawer from '@/components/drawer';
 import dayjs from 'dayjs';
 import dynamic from 'next/dynamic';
+import { deletePost } from '@/services/announcements';
+import { ZuButton } from '@/components/core';
+import PostForm from '@/components/form/PostForm';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -18,41 +23,22 @@ const EditorPreview = dynamic(
 );
 
 type PostCardProps = {
-  venue: Venue;
-  event?: Event;
   refetch: () => void;
+  post: Post;
 };
 
 const options = ['Edit', 'Delete'];
 
-const desc = {
-  time: 1726797694101,
-  blocks: [
-    {
-      id: '8VhWKbcyYT',
-      type: 'paragraph',
-      data: {
-        text: '321312312312321312312',
-      },
-    },
-  ],
-  version: '2.29.1',
-};
-
-const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
+const PostCard: React.FC<PostCardProps> = ({ refetch, post }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [drawOpen, setDrawOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [isCanCollapse, setIsCanCollapse] = useState<boolean>(false);
   const open = Boolean(anchorEl);
 
-  const deleteVenue = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase
-        .from('venues')
-        .delete()
-        .eq('id', venue.id);
-      return error;
-    },
+  const deletePostMutation = useMutation({
+    mutationFn: deletePost,
     onSuccess: () => {
       refetch();
     },
@@ -81,13 +67,21 @@ const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
   }, []);
 
   const handleDeleteConfirm = useCallback(() => {
-    deleteVenue.mutate();
+    deletePostMutation.mutate(post.id);
     setOpenDialog(false);
-  }, [deleteVenue]);
+  }, [deletePostMutation, post.id]);
 
   const toggleDrawer = useCallback(() => {
     setDrawOpen((v) => !v);
   }, []);
+
+  const user = useMemo(() => {
+    try {
+      return JSON.parse(post.creator);
+    } catch (error) {
+      return {};
+    }
+  }, [post.creator]);
 
   return (
     <>
@@ -106,18 +100,17 @@ const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
       >
         <Drawer open={drawOpen} onClose={toggleDrawer} onOpen={toggleDrawer}>
           {drawOpen ? (
-            <VenueForm
-              event={event}
-              venue={venue}
+            <PostForm
               handleClose={toggleDrawer}
               refetch={refetch}
+              initialData={post}
             />
           ) : null}
         </Drawer>
         <Dialog
           showModal={openDialog}
-          title="Deleting Venue"
-          message="Are you sure you want to delete this venue?"
+          title="Deleting Post"
+          message="Are you sure you want to delete this post?"
           confirmText="Delete"
           onClose={handleDialogClose}
           onConfirm={handleDeleteConfirm}
@@ -127,19 +120,46 @@ const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
           width="40px"
           height="40px"
           borderRadius="50%"
-          src={venue.avatar || '/7.jpg'}
+          src={user.avatar || '/user/avatar_p.png'}
         />
         <Stack spacing="10px" flex="1">
-          <Typography variant="bodyMB">{venue.name}</Typography>
-          <Typography variant="buttonLB">{venue.name}</Typography>
+          <Typography variant="bodyMB" sx={{ opacity: 0.6 }}>
+            {user.username}
+          </Typography>
+          <Typography variant="buttonLB">{post.title}</Typography>
           <EditorPreview
-            value={desc}
+            value={post.description}
             fontSize={13}
-            collapsable={false}
+            collapsed={isCollapsed}
+            onCollapse={(collapsed) => {
+              setIsCanCollapse((v) => {
+                return v || collapsed;
+              });
+              setIsCollapsed(collapsed);
+            }}
             style={{ opacity: 0.8 }}
           />
+          {isCanCollapse && (
+            <ZuButton
+              startIcon={
+                isCollapsed ? (
+                  <ChevronDownIcon size={4} />
+                ) : (
+                  <ChevronUpIcon size={4} />
+                )
+              }
+              sx={{ backgroundColor: '#313131', width: '100%' }}
+              onClick={() => setIsCollapsed((prev) => !prev)}
+            >
+              {isCollapsed ? 'Show More' : 'Show Less'}
+            </ZuButton>
+          )}
           <Typography variant="caption" sx={{ opacity: 0.5 }}>
-            {dayjs().format('YYYY-MM-DD')} CREATED | Tags
+            {dayjs(post.created_at).format('YYYY-MM-DD')} CREATED |{' '}
+            {post.tags
+              .split(',')
+              .map((tag) => `# ${tag}`)
+              .join(' ')}
           </Typography>
         </Stack>
         <Stack

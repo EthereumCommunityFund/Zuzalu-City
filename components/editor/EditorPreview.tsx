@@ -69,6 +69,7 @@ const EditorPreview: React.FC<{
             );
             if (editorEl) {
               const editorHeight = editorEl.getBoundingClientRect().height;
+              console.log(editorHeight, collapseHeight! * 1.5);
               if (editorHeight > collapseHeight! * 1.5) {
                 setCollapsed(true);
                 props.onCollapse?.(true);
