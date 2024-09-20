@@ -9,7 +9,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import FormHeader from './FormHeader';
 import {
   FormLabel,
@@ -31,6 +31,7 @@ import { useParams } from 'next/navigation';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { useMutation } from '@tanstack/react-query';
 import { Post } from '@/types';
+import SelectCategories from '../select/selectCategories';
 
 interface PostFormProps {
   handleClose: () => void;
@@ -167,6 +168,11 @@ const PostForm: React.FC<PostFormProps> = ({
     handleClose();
   }, [handleClose]);
 
+  const initialTags = useMemo(() => {
+    if (!initialData) return [];
+    return POST_TAGS.filter((item) => initialData?.tags.includes(item.value));
+  }, [initialData]);
+
   return (
     <Box
       sx={{
@@ -248,65 +254,18 @@ const PostForm: React.FC<PostFormProps> = ({
                 control={control}
                 name="tags"
                 render={({ field }) => (
-                  <Select
-                    {...field}
-                    multiple
-                    value={field.value || []}
-                    style={{ width: '100%' }}
-                    input={<OutlinedInput label="Name" />}
-                    renderValue={(selected) =>
-                      (selected as string[]).join(', ')
-                    }
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          backgroundColor: '#222222',
-                        },
-                      },
+                  <SelectCategories
+                    onChange={(value) => {
+                      setValue('tags', value);
                     }}
-                  >
-                    {POST_TAGS.map((tag, index) => {
-                      return (
-                        <MenuItem value={tag.value} key={index}>
-                          <SelectCheckItem
-                            label={tag.label}
-                            isChecked={
-                              (field.value || []).findIndex(
-                                (item) => item === tag.value,
-                              ) > -1
-                            }
-                          />
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
+                    initialValues={initialTags}
+                    options={POST_TAGS}
+                  />
                 )}
               />
               {errors?.tags && (
                 <FormHelperText error>{errors?.tags.message}</FormHelperText>
               )}
-            </Box>
-            <Box
-              display={'flex'}
-              flexDirection={'row'}
-              gap={'10px'}
-              flexWrap={'wrap'}
-            >
-              {tags.map((tag, index) => {
-                return (
-                  <Chip
-                    label={POST_TAGS.find((item) => item.value === tag)?.label}
-                    sx={{
-                      borderRadius: '10px',
-                    }}
-                    onDelete={() => {
-                      const newArray = tags.filter((item) => item !== tag);
-                      setValue('tags', newArray);
-                    }}
-                    key={index}
-                  />
-                );
-              })}
             </Box>
             <Stack spacing="10px">
               <Typography variant="subtitle2" color="white">

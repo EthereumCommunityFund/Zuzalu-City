@@ -148,7 +148,11 @@ const PostCard: React.FC<PostCardProps> = ({ refetch, post }) => {
                   <ChevronUpIcon size={4} />
                 )
               }
-              sx={{ backgroundColor: '#313131', width: '100%' }}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                width: '100%',
+                marginTop: 0,
+              }}
               onClick={() => setIsCollapsed((prev) => !prev)}
             >
               {isCollapsed ? 'Show More' : 'Show Less'}

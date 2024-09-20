@@ -4,7 +4,11 @@ import { Post } from '@/types';
 type PostData = Omit<Post, 'id' | 'created_at'>;
 
 export const getPosts = async (eventId: string) => {
-  return supabase.from('eventPost').select('*').eq('eventId', eventId);
+  return supabase
+    .from('eventPost')
+    .select('*')
+    .eq('eventId', eventId)
+    .order('created_at', { ascending: false });
 };
 
 export const createPost = async (data: PostData) => {

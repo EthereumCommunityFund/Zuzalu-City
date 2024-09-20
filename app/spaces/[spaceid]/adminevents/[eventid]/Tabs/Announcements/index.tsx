@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Stack } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 import { Header, PostList } from './components';
 import { Event, Post } from '@/types';
 import { useQuery } from '@tanstack/react-query';
@@ -14,6 +14,7 @@ interface IVenue {
 }
 
 const Home: React.FC<IVenue> = ({ event }) => {
+  const { breakpoints } = useTheme();
   const params = useParams();
   const eventId = params.eventid.toString();
 
@@ -29,7 +30,15 @@ const Home: React.FC<IVenue> = ({ event }) => {
   });
 
   return (
-    <Stack spacing="30px" padding="30px">
+    <Stack
+      spacing="30px"
+      padding="0 30px 30px"
+      sx={{
+        [breakpoints.down('sm')]: {
+          padding: '0 20px 20px',
+        },
+      }}
+    >
       <Header />
       <PostList
         posts={data?.data as Post[]}

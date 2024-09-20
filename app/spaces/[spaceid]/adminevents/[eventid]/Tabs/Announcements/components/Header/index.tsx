@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, useTheme } from '@mui/material';
 
 const Header = () => {
+  const { breakpoints } = useTheme();
   return (
     <Stack
       direction={'column'}
@@ -9,7 +10,17 @@ const Header = () => {
       pb="30px"
       borderBottom="1px solid #313131"
     >
-      <Stack direction={'row'} justifyContent={'space-between'}>
+      <Stack
+        direction={'row'}
+        justifyContent={'space-between'}
+        sx={{
+          [breakpoints.down('sm')]: {
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: '10px',
+          },
+        }}
+      >
         <Typography variant="h5">Announcements</Typography>
         <Stack direction="row">
           <Typography variant="body1" color="white">
