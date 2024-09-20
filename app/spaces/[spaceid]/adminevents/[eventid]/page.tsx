@@ -4,17 +4,34 @@ import { Box, Stack, useMediaQuery } from '@mui/material';
 
 import { Ticket, Overview, Sessions, Venue, Announcements } from './Tabs';
 import { Tabbar, Navbar } from 'components/layout';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Event } from '@/types';
+import { Event, Space } from '@/types';
+import { useQuery } from '@tanstack/react-query';
+import { getSpaceQuery } from '@/services/space';
 
 const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
   const [event, setEvent] = React.useState<Event>();
 
-  const { composeClient } = useCeramicContext();
+  const { composeClient, ceramic } = useCeramicContext();
 
   const pathname = useParams();
+  const params = useParams();
+  const router = useRouter();
+  const spaceId = params.spaceid.toString();
+
+  const { data: spaceData } = useQuery({
+    queryKey: ['getSpaceByID', spaceId],
+    queryFn: () => {
+      return composeClient.executeQuery(getSpaceQuery(), {
+        id: spaceId,
+      });
+    },
+    select: (data) => {
+      return data?.data?.node as Space;
+    },
+  });
 
   const fetchEventById = async (id: string) => {
     const query = `
@@ -115,6 +132,21 @@ const Home: React.FC = () => {
     };
     fetchData();
   }, []);
+
+  React.useEffect(() => {
+    if (spaceData) {
+      const superAdmins =
+        spaceData?.superAdmin?.map((superAdmin) =>
+          superAdmin.id.toLowerCase(),
+        ) || [];
+      const admins =
+        spaceData?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+      const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+      if (!admins.includes(userDID) && !superAdmins.includes(userDID)) {
+        router.push('/');
+      }
+    }
+  }, [ceramic?.did?.parent, router, spaceData]);
 
   return (
     <Stack width="100%">
