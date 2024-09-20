@@ -375,7 +375,12 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
             fontWeight: 700,
             marginTop: '30px',
           }}
-          onClick={() => window.open('https://zuzalu.city', '_blank')}
+          onClick={() =>
+            window.open(
+              'https://zuzapp-v1-events-app-delta.vercel.app/dashboard/home',
+              '_blank',
+            )
+          }
         >
           Legacy Registry App
         </ZuButton>
