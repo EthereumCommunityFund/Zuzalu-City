@@ -1,20 +1,9 @@
 import * as React from 'react';
-import {
-  Stack,
-  Typography,
-  OutlinedInput,
-  InputAdornment,
-  useTheme,
-} from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import ZuButton from 'components/core/Button';
-import {
-  PlusIcon,
-  PlusCircleIcon,
-  InformationIcon,
-  SearchIcon,
-} from 'components/icons';
+import { PlusIcon, PlusCircleIcon, InformationIcon } from 'components/icons';
 import { Venue, Event } from '@/types';
-import VenueCard from './PostCard';
+import PostCard from './PostCard';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -23,18 +12,14 @@ interface PostListListProps {
   event?: Event;
   onToggle: (anchor: Anchor, open: boolean) => void;
   refetch: () => void;
-  setSearchValue: React.Dispatch<React.SetStateAction<string>> | any;
 }
 
 const PostList: React.FC<PostListListProps> = ({
   venues,
   event,
   onToggle,
-  setSearchValue,
   refetch,
 }) => {
-  const theme = useTheme();
-
   return (
     <Stack direction="column" spacing="20px">
       <Stack spacing="10px">
@@ -73,8 +58,8 @@ const PostList: React.FC<PostListListProps> = ({
           </Stack>
         ) : (
           venues?.map((venue, index) => (
-            <VenueCard
-              key={`VenueCard-${index}`}
+            <PostCard
+              key={`PostCard-${index}`}
               venue={venue}
               event={event}
               refetch={refetch}

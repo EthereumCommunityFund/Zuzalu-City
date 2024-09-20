@@ -8,6 +8,14 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import VenueForm from '@/components/form/VenueForm';
 import Drawer from '@/components/drawer';
 import dayjs from 'dayjs';
+import dynamic from 'next/dynamic';
+
+const EditorPreview = dynamic(
+  () => import('@/components/editor/EditorPreview'),
+  {
+    ssr: false,
+  },
+);
 
 type PostCardProps = {
   venue: Venue;
@@ -16,6 +24,20 @@ type PostCardProps = {
 };
 
 const options = ['Edit', 'Delete'];
+
+const desc = {
+  time: 1726797694101,
+  blocks: [
+    {
+      id: '8VhWKbcyYT',
+      type: 'paragraph',
+      data: {
+        text: '321312312312321312312',
+      },
+    },
+  ],
+  version: '2.29.1',
+};
 
 const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -110,6 +132,12 @@ const PostCard: React.FC<PostCardProps> = ({ venue, event, refetch }) => {
         <Stack spacing="10px" flex="1">
           <Typography variant="bodyMB">{venue.name}</Typography>
           <Typography variant="buttonLB">{venue.name}</Typography>
+          <EditorPreview
+            value={desc}
+            fontSize={13}
+            collapsable={false}
+            style={{ opacity: 0.8 }}
+          />
           <Typography variant="caption" sx={{ opacity: 0.5 }}>
             {dayjs().format('YYYY-MM-DD')} CREATED | Tags
           </Typography>

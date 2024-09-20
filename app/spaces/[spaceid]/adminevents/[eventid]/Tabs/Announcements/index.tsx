@@ -1,9 +1,7 @@
 'use client';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import {
-  Stack,
-} from '@mui/material';
+import { Stack } from '@mui/material';
 import { Header, PostList } from './components';
 import { Event } from '@/types';
 import { useQuery } from '@tanstack/react-query';
@@ -25,16 +23,14 @@ const Home: React.FC<IVenue> = ({ event }) => {
     setOpen((v) => !v);
   }, []);
 
-  const [searchValue, setSearchValue] = useState<string>('');
-
   const { data, refetch } = useQuery({
     queryKey: ['venues', eventId],
     queryFn: () => getVenues(eventId),
   });
 
   const venuesData = useMemo(() => {
-    return data?.data?.filter((item) => item.name.includes(searchValue)) || [];
-  }, [data?.data, searchValue]);
+    return data?.data || [];
+  }, [data?.data]);
 
   return (
     <Stack spacing="30px" padding="30px">
@@ -44,7 +40,6 @@ const Home: React.FC<IVenue> = ({ event }) => {
         venues={venuesData}
         refetch={refetch}
         onToggle={toggleDrawer}
-        setSearchValue={setSearchValue}
       />
       <Drawer open={open} onClose={toggleDrawer} onOpen={toggleDrawer}>
         <PostForm handleClose={toggleDrawer} />
