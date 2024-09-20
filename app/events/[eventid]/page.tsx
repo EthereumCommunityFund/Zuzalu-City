@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 import { Thumbnail, Subbar } from './components';
-import { About, Sessions } from './tabs';
+import { About, Sessions, Announcements } from './tabs';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
+
 const Home = () => {
   const [tabName, setTabName] = useState('About');
   const params = useParams();
@@ -140,6 +141,9 @@ const Home = () => {
       )}
       {tabName === 'Sessions' && (
         <Sessions eventData={eventData} option={urlOption} />
+      )}
+      {tabName === 'Announcements' && (
+        <Announcements eventData={eventData} setVerify={setVerify} />
       )}
     </Stack>
   );

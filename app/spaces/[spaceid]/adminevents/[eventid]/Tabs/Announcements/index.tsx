@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getVenues } from '@/services/venues';
 import Drawer from '@/components/drawer';
 import PostForm from '@/components/form/PostForm';
+import { getAnnouncements } from '@/services/announcements';
 
 interface IVenue {
   event: Event | undefined;
@@ -24,9 +25,11 @@ const Home: React.FC<IVenue> = ({ event }) => {
   }, []);
 
   const { data, refetch } = useQuery({
-    queryKey: ['venues', eventId],
-    queryFn: () => getVenues(eventId),
+    queryKey: ['announcements', eventId],
+    queryFn: () => getAnnouncements(eventId),
   });
+
+  console.log(data);
 
   const venuesData = useMemo(() => {
     return data?.data || [];
@@ -42,7 +45,7 @@ const Home: React.FC<IVenue> = ({ event }) => {
         onToggle={toggleDrawer}
       />
       <Drawer open={open} onClose={toggleDrawer} onOpen={toggleDrawer}>
-        <PostForm handleClose={toggleDrawer} />
+        <PostForm handleClose={toggleDrawer} refetch={refetch} />
       </Drawer>
     </Stack>
   );

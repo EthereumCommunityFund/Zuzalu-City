@@ -9,7 +9,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import FormHeader from './FormHeader';
 import {
   FormLabel,
@@ -24,7 +24,12 @@ import { useEditorStore } from '../editor/useEditorStore';
 import Yup from '@/utils/yupExtensions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
-import { VENUE_TAGS } from '@/constant';
+import { POST_TAGS } from '@/constant';
+import { createAnnouncement } from '@/services/announcements';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { useParams } from 'next/navigation';
+import Dialog from '@/app/spaces/components/Modal/Dialog';
+import { useMutation } from '@tanstack/react-query';
 
 interface PostFormProps {
   handleClose: () => void;
@@ -34,6 +39,7 @@ interface PostFormProps {
     tags: string[];
     description: string;
   };
+  refetch: () => void;
 }
 
 const schema = Yup.object().shape({
@@ -47,9 +53,20 @@ const schema = Yup.object().shape({
 
 type FormData = Yup.InferType<typeof schema>;
 
-const PostForm: React.FC<PostFormProps> = ({ handleClose, initialData }) => {
+const PostForm: React.FC<PostFormProps> = ({
+  handleClose,
+  initialData,
+  refetch,
+}) => {
   const { breakpoints } = useTheme();
   const descriptionEditorStore = useEditorStore();
+  const { ceramic } = useCeramicContext();
+  const params = useParams();
+  const eventId = params.eventid.toString();
+  const adminId = ceramic?.did?.parent || '';
+
+  const [blockClickModal, setBlockClickModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const {
     control,
@@ -80,8 +97,20 @@ const PostForm: React.FC<PostFormProps> = ({ handleClose, initialData }) => {
     descriptionEditorStore.clear();
   }, [descriptionEditorStore, reset]);
 
+  const createMutation = useMutation({
+    mutationFn: (data: any) => {
+      return createAnnouncement(data);
+    },
+    onSuccess: () => {
+      setShowModal(true);
+      setBlockClickModal(false);
+      resetForm();
+      refetch();
+    },
+  });
+
   const handlePost = useCallback(
-    (data: FormData) => {
+    async (data: FormData) => {
       if (
         !descriptionEditorStore.value ||
         !descriptionEditorStore.value.blocks ||
@@ -93,25 +122,42 @@ const PostForm: React.FC<PostFormProps> = ({ handleClose, initialData }) => {
         window.alert('Description is required');
         return;
       }
-      const { title, tags } = data;
-      const description = descriptionEditorStore.value;
+      const { title, tags = [] } = data;
+      const description = descriptionEditorStore.getValueString();
 
       if (initialData) {
         // Edit existing post
         console.log('Editing post:', initialData.id, title, tags, description);
         // TODO: Implement edit post API call
       } else {
-        // Create new post
-        console.log('Creating new post:', title, tags, description);
-        // TODO: Implement create post API call
+        await createMutation.mutateAsync({
+          eventId,
+          title,
+          tags: tags.join(','),
+          description,
+          creator: adminId,
+        });
       }
     },
-    [descriptionEditorStore.value, setError, initialData],
+    [
+      descriptionEditorStore,
+      initialData,
+      setError,
+      createMutation,
+      eventId,
+      adminId,
+    ],
   );
 
   const onFormError = useCallback(() => {
     window.alert('Please input all necessary fields.');
   }, []);
+
+  const handleDialogClose = useCallback(() => {
+    setShowModal(false);
+    setBlockClickModal(false);
+    handleClose();
+  }, [handleClose]);
 
   return (
     <Box
@@ -128,6 +174,19 @@ const PostForm: React.FC<PostFormProps> = ({ handleClose, initialData }) => {
       zIndex="100"
       borderLeft="1px solid #383838"
     >
+      <Dialog
+        title="Post Created"
+        message="Please view it."
+        showModal={showModal}
+        onClose={handleDialogClose}
+        onConfirm={handleDialogClose}
+      />
+      <Dialog
+        showModal={blockClickModal}
+        showActions={false}
+        title="Post Event"
+        message="Please wait while the post is being created..."
+      />
       <FormHeader
         title={initialData ? 'Edit Post' : 'Create Post'}
         handleClose={handleClose}
@@ -196,7 +255,7 @@ const PostForm: React.FC<PostFormProps> = ({ handleClose, initialData }) => {
                       },
                     }}
                   >
-                    {VENUE_TAGS.map((tag, index) => {
+                    {POST_TAGS.map((tag, index) => {
                       return (
                         <MenuItem value={tag.value} key={index}>
                           <SelectCheckItem
@@ -226,7 +285,7 @@ const PostForm: React.FC<PostFormProps> = ({ handleClose, initialData }) => {
               {tags.map((tag, index) => {
                 return (
                   <Chip
-                    label={VENUE_TAGS.find((item) => item.value === tag)?.label}
+                    label={POST_TAGS.find((item) => item.value === tag)?.label}
                     sx={{
                       borderRadius: '10px',
                     }}

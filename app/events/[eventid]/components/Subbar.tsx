@@ -3,11 +3,10 @@ import * as React from 'react';
 import { Typography, Stack } from '@mui/material';
 import {
   CalendarIcon,
-  HomeIcon,
   SessionIcon,
   LockIcon,
+  AnnouncementsIcon,
 } from 'components/icons';
-import { ZuButton } from 'components/core';
 
 interface SubbarProps {
   tabName: string;
@@ -32,14 +31,17 @@ const Subbar: React.FC<SubbarProps> = ({
       position={'sticky'}
       top={'50px'}
       zIndex={3}
+      width="100vw"
+      maxWidth="100vw"
+      sx={{ overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}
     >
-      <Stack direction="row" spacing={2} height="100%">
+      <Stack direction="row" height="100%">
         <Stack
           direction="row"
           spacing={1}
           alignItems="center"
           borderBottom={tabName === 'About' ? '1px solid white' : 'none'}
-          sx={{ cursor: 'pointer' }}
+          sx={{ cursor: 'pointer', padding: '0 14px' }}
         >
           <CalendarIcon />
           <Typography
@@ -55,7 +57,7 @@ const Subbar: React.FC<SubbarProps> = ({
           spacing={1}
           alignItems="center"
           borderBottom={tabName === 'Sessions' ? '1px solid white' : 'none'}
-          sx={{ cursor: 'pointer' }}
+          sx={{ cursor: 'pointer', padding: '0 14px' }}
         >
           {canViewSessions ? <SessionIcon /> : <LockIcon />}
           <Typography
@@ -67,20 +69,25 @@ const Subbar: React.FC<SubbarProps> = ({
             Sessions
           </Typography>
         </Stack>
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          borderBottom={
+            tabName === 'Announcements' ? '1px solid white' : 'none'
+          }
+          sx={{ cursor: 'pointer', padding: '0 14px' }}
+        >
+          <AnnouncementsIcon />
+          <Typography
+            onClick={() => setTabName('Announcements')}
+            color="white"
+            variant="bodyMB"
+          >
+            Announcements
+          </Typography>
+        </Stack>
       </Stack>
-      {/* <Stack
-        direction="row"
-        height="100%"
-        paddingLeft={3}
-        borderLeft="1px solid #383838"
-        spacing={1}
-        alignItems="center"
-        sx={{ cursor: 'pointer' }}
-      >
-        <ZuButton startIcon={<HomeIcon />} sx={{ backgroundColor: '#383838' }}>
-          Event Feed
-        </ZuButton>
-      </Stack> */}
     </Stack>
   );
 };
