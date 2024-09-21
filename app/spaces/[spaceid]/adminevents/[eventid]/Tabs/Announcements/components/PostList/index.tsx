@@ -51,11 +51,7 @@ const PostList: React.FC<PostListListProps> = ({
           </Stack>
         ) : (
           posts?.map((post, index) => (
-            <PostCard
-              key={`PostCard-${index}`}
-              post={post}
-              refetch={refetch}
-            />
+            <PostCard key={`PostCard-${index}`} post={post} refetch={refetch} />
           ))
         )}
       </Stack>

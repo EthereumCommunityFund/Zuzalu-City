@@ -1,9 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from '@/components/icons';
+import { ChevronDownIcon, ChevronUpIcon } from '@/components/icons';
 import { Post } from '@/types';
 import dayjs from 'dayjs';
 import dynamic from 'next/dynamic';
