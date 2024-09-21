@@ -490,7 +490,7 @@ const Home: React.FC = () => {
                     variant={isMobile ? 'subtitleMB' : 'subtitleLB'}
                     color="white"
                   >
-                    Explore Spaces
+                    Communities
                   </Typography>
                 </Box>
                 <Box
@@ -506,9 +506,13 @@ const Home: React.FC = () => {
                   <RightArrowCircleIcon />
                 </Box>
               </Box>
-              <Box marginY="20px">
-                <Typography color="white" variant="bodyM">
-                  Most Active Spaces
+              <Box margin="0 0 20px">
+                <Typography
+                  color="white"
+                  variant="bodyM"
+                  sx={{ opacity: '0.5', fontSize: '12px' }}
+                >
+                  Newest Spaces
                 </Typography>
               </Box>
               {spaces.length > 0 ? (

@@ -117,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
       url: '/',
     },
     {
-      content: 'Spaces',
+      content: 'Communities',
       icon: <SpaceIcon />,
       function: () => router.push('/spaces'),
       url: '/spaces',
