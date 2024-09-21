@@ -1,6 +1,6 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Stack,
   Box,
@@ -8,13 +8,9 @@ import {
   SwipeableDrawer,
   useTheme,
   useMediaQuery,
+  Skeleton,
 } from '@mui/material';
-import {
-  EventName,
-  EventDetail,
-  EventRegister,
-  EventAbout,
-} from 'components/event';
+import { EventDetail, EventRegister } from 'components/event';
 import {
   Verify,
   Agree,
@@ -29,21 +25,24 @@ import {
   SponsorComplete,
 } from '@/components/event/Sponsor';
 import { ZuButton } from '@/components/core';
-import { EditIcon, XMarkIcon } from '@/components/icons';
-import { useCeramicContext } from '@/context/CeramicContext';
+import { ArrowUpLeftIcon, XMarkIcon } from '@/components/icons';
 import { Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { Anchor, Contract } from '@/types';
 import { LatLngLiteral } from 'leaflet';
 import getLatLngFromAddress from '@/utils/osm';
 import { styled } from '@mui/system';
+import { useQuery } from '@tanstack/react-query';
+import { getPosts } from '@/services/announcements';
+import PostCard from './PostCard';
 
 interface IAbout {
   eventData: Event | undefined;
   setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
+  canEdit: boolean;
 }
 
-const Announcements: React.FC<IAbout> = ({ eventData, setVerify }) => {
+const Announcements: React.FC<IAbout> = ({ eventData, setVerify, canEdit }) => {
   const [location, setLocation] = useState<string>('');
 
   const [whitelist, setWhitelist] = useState<boolean>(false);
@@ -75,8 +74,6 @@ const Announcements: React.FC<IAbout> = ({ eventData, setVerify }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
-  const { composeClient } = useCeramicContext();
-
   const [state, setState] = useState({
     top: false,
     left: false,
@@ -89,6 +86,27 @@ const Announcements: React.FC<IAbout> = ({ eventData, setVerify }) => {
     lng: 0,
   });
   const ref = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
+  const [activeTag, setActiveTag] = useState<string>('All');
+
+  const { data: postsData, isLoading } = useQuery({
+    queryKey: ['getPosts', eventId],
+    queryFn: () => getPosts(eventId),
+  });
+
+  const tags = useMemo(() => {
+    const tagsData = postsData?.data
+      ?.map((post) => post.tags.split(','))
+      .flat();
+    const set = new Set(tagsData);
+    if (set.size === 0) return [];
+    return ['All', ...set];
+  }, [postsData]);
+
+  const filteredPosts = useMemo(() => {
+    if (activeTag === 'All') return postsData?.data;
+    return postsData?.data?.filter((post) => post.tags.includes(activeTag));
+  }, [activeTag, postsData]);
 
   const getLocation = async () => {
     try {
@@ -309,7 +327,6 @@ const Announcements: React.FC<IAbout> = ({ eventData, setVerify }) => {
           }}
         >
           <Stack
-            spacing="20px"
             boxSizing={'border-box'}
             sx={{
               width: '600px',
@@ -325,48 +342,102 @@ const Announcements: React.FC<IAbout> = ({ eventData, setVerify }) => {
               },
             }}
           >
-            <Stack
-              padding="10px"
-              bgcolor="#ffc77d1a"
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-              border="1px solid rgba(255, 199, 125, .1)"
-              borderRadius={'8px'}
+            {canEdit ? (
+              <Stack
+                padding="10px"
+                bgcolor="#ffc77d1a"
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+                border="1px solid rgba(255, 199, 125, .1)"
+                borderRadius={'8px'}
+              >
+                <Typography
+                  fontSize={'14px'}
+                  lineHeight={'160%'}
+                  color={'rgba(255, 199, 125, 1)'}
+                  fontWeight={600}
+                >
+                  You are organizing this event
+                </Typography>
+                <ZuButton
+                  startIcon={<ArrowUpLeftIcon size={5} />}
+                  sx={{
+                    padding: '6px 10px',
+                    backgroundColor: 'rgba(255, 199, 125, 0.05)',
+                    gap: '10px',
+                    '& > span': {
+                      margin: '0px',
+                    },
+                    color: 'rgba(255, 199, 125, 1)',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                  }}
+                  onClick={() =>
+                    router.push(
+                      `/spaces/${eventData?.space?.id}/adminevents/${eventId}`,
+                    )
+                  }
+                >
+                  Manage
+                </ZuButton>
+              </Stack>
+            ) : null}
+            <Box
+              display="flex"
+              flexDirection="column"
+              sx={{
+                position: 'sticky',
+                top: '95px',
+                zIndex: 10,
+                background: '#222',
+                padding: '30px 0',
+                [breakpoints.down('sm')]: {
+                  padding: '20px 0',
+                },
+              }}
             >
-              <Typography
-                fontSize={'14px'}
-                lineHeight={'160%'}
-                color={'rgba(255, 199, 125, 1)'}
-                fontWeight={600}
-              >
-                You are organizing this event
-              </Typography>
-              <ZuButton
-                startIcon={<EditIcon size={5} />}
-                sx={{
-                  padding: '6px 10px',
-                  backgroundColor: 'rgba(255, 199, 125, 0.05)',
-                  gap: '10px',
-                  '& > span': {
-                    margin: '0px',
-                  },
-                  color: 'rgba(255, 199, 125, 1)',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-                onClick={() => toggleDrawer('right', true)}
-              >
-                Manage
-              </ZuButton>
-            </Stack>
-            <Box gap="30px" display="flex" flexDirection="column">
               <Title>Host Announcements</Title>
-              <Box>
-                <TagButton># Announcement</TagButton>
-              </Box>
             </Box>
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="100%" height={40} />
+            ) : (
+              <Box display="flex" gap="10px" flexWrap="wrap">
+                {tags?.map((tag) => (
+                  <TagButton
+                    key={tag}
+                    active={activeTag === tag}
+                    onClick={() => setActiveTag(tag)}
+                  >
+                    {tag === 'All' ? 'All' : `# ${tag}`}
+                  </TagButton>
+                ))}
+              </Box>
+            )}
+            <Stack
+              direction="column"
+              spacing="10px"
+              marginTop="30px"
+              sx={{
+                [breakpoints.down('sm')]: {
+                  marginTop: '20px',
+                },
+              }}
+            >
+              {isLoading
+                ? Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      variant="rectangular"
+                      width="100%"
+                      height={200}
+                    />
+                  ))
+                : filteredPosts?.map((post) => {
+                    return <PostCard post={post} key={post.id} />;
+                  })}
+            </Stack>
             {isMobile ? (
               <EventRegister
                 onToggle={toggleDrawer}
@@ -439,7 +510,7 @@ const Title = styled(Typography)`
   text-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
 `;
 
-const TagButton = styled(ZuButton)`
+const TagButton = styled(ZuButton)<{ active?: boolean }>`
   padding: 6px 8px;
   justify-content: center;
   align-items: center;
@@ -448,6 +519,11 @@ const TagButton = styled(ZuButton)`
   font-size: 13px;
   line-height: 140%;
   color: #fff;
+  background-color: ${(props) =>
+    props.active ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)'};
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 `;
 
 export default Announcements;
