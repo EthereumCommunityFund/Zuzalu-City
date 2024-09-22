@@ -59,6 +59,7 @@ function RootLayout({
                           message="We are currently upgrading our Ceramic node. Some data may be temporarily unavailable or inconsistent. We apologize for any inconvenience."
                           showModal={show}
                           onClose={() => setShow(false)}
+                          onConfirm={() => setShow(false)}
                         />
                       )}
                       <div style={{ minHeight: `calc(100vh - 50px)` }}>
