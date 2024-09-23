@@ -1,0 +1,27 @@
+{
+  "noir_version": "0.22.0+3fae4a03fded4e3f5065e7461c563f7e39745604",
+  "hash": 12346288699978733002,
+  "abi": {
+    "parameters": [
+      { "name": "index", "type": { "kind": "field" }, "visibility": "private" },
+      {
+        "name": "left_leaf",
+        "type": { "kind": "field" },
+        "visibility": "private"
+      },
+      {
+        "name": "right_path",
+        "type": { "kind": "array", "length": 1, "type": { "kind": "field" } },
+        "visibility": "private"
+      }
+    ],
+    "param_witnesses": {
+      "index": [{ "start": 1, "end": 2 }],
+      "left_leaf": [{ "start": 2, "end": 3 }],
+      "right_path": [{ "start": 3, "end": 4 }]
+    },
+    "return_type": { "abi_type": { "kind": "field" }, "visibility": "public" },
+    "return_witnesses": [8]
+  },
+  "bytecode": "H4sIAAAAAAAA/9VV2w7CIAwtbt6j8VPogK28+Ssusv//gkWJRYmvax/WhEAIOTk9py03ADjDJzbvZeAX5Xzn3S4LNHJYtnBrmbcG35bx/3Gd7b1PQ5fQ4cN2caRgfRh7QsJA4dmRc4k8DXGMg43oXcIpRDcxcCuoQ2XXVwcNv9aSsyTPpVhbQS806jtrt1Wo76Ow19J5N6DT1yfQqfFGmOdOUEtBr1FaP41+0aibywr6RWNOXGEd/bIX1FLQa5TUL3ub8yz/aZ4RM9/NfHeotDX8tql0N9W7Ei9cO32LYAoAAA=="
+}
