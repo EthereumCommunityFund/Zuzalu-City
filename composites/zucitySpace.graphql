@@ -1,0 +1,44 @@
+type ZucitySpace
+  @createModel(
+    accountRelation: LIST
+    description: "Community Space for Zuzalu.city beta version"
+  )
+  @createIndex(fields: [{ path: "name" }])
+  @createIndex(fields: [{ path: "category" }])
+  @createIndex(fields: [{ path: "gated" }])
+  @createIndex(fields: [{ path: "tagline" }]) {
+  author: DID! @documentAccount
+  name: String! @string(minLength: 1, maxLength: 100)
+  description: String! @string(minLength: 1, maxLength: 5000)
+  admins: [DID!] @list(maxLength: 10000)
+  avatar: String @string(minLength: 1, maxLength: 1000)
+  banner: String @string(minLength: 1, maxLength: 1000)
+  profileId: StreamID! @documentReference(model: "ZucityProfile")
+  profile: MVPProfile! @relationDocument(property: "profileId")
+  members: [DID!] @list(maxLength: 10000)
+  website: String @string(minLength: 1, maxLength: 1000)
+  twitter: String @string(minLength: 1, maxLength: 1000)
+  github: String @string(minLength: 1, maxLength: 1000)
+  discord: String @string(minLength: 1, maxLength: 1000)
+  telegram: String @string(minLength: 1, maxLength: 1000)
+  ens: String @string(minLength: 1, maxLength: 1000)
+  lens: String @string(minLength: 1, maxLength: 1000)
+  nostr: String @string(minLength: 1, maxLength: 1000)
+  tagline: String @string(minLength: 1, maxLength: 1000)
+  gated: String @string(minLength: 1, maxLength: 100)
+  customLinks: [Link] @list(maxLength: 100)
+  category: String @string(minLength: 1, maxLength: 1000)
+  superAdmin: [DID!]! @list(maxLength: 1000) @immutable
+  customAttributes: [TBD] @list(maxLength: 10000)
+}
+
+type MVPProfile @loadModel(id: "$Profile_ID") {
+  id: ID!
+}
+type Link {
+  title: String! @string(minLength: 1, maxLength: 1000)
+  links: String! @string(maxLength: 1000)
+}
+type TBD {
+  tbd: String @string(minLength: 1, maxLength: 10000)
+}

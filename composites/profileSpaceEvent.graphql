@@ -1,0 +1,14 @@
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  id: ID!
+}
+
+type ZucitySpace @loadModel(id: "$Space_ID") {
+  id: ID!
+}
+
+type ZucityProfile @loadModel(id: "$Profile_ID") {
+  events: [ZucityEvent]
+    @relationFrom(model: "ZucityEvent", property: "profileId")
+  spaces: [ZucitySpace]
+    @relationFrom(model: "ZucitySpace", property: "profileId")
+}

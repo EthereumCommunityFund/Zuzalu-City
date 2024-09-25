@@ -1,0 +1,8 @@
+type ZucitySession @loadModel(id: "$Session_ID") {
+  id: ID!
+}
+
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  sessions: [ZucitySession]
+    @relationFrom(model: "ZucitySession", property: "eventId")
+}

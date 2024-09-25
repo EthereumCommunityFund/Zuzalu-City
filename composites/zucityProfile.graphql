@@ -1,0 +1,15 @@
+type ZucityProfile
+  @createModel(
+    accountRelation: SINGLE
+    description: "User Profile for Zuzalu.city beta version"
+  )
+  @createIndex(fields: [{ path: "username" }]) {
+  author: DID! @documentAccount
+  username: String! @string(minLength: 1, maxLength: 10000)
+  avatar: String @string(minLength: 1, maxLength: 10000)
+  customAttributes: [TBD] @list(maxLength: 10000)
+}
+
+type TBD {
+  tbd: String @string(minLength: 1, maxLength: 10000)
+}

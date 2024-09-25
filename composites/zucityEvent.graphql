@@ -1,0 +1,76 @@
+type ZucityEvent
+  @createModel(
+    accountRelation: LIST
+    description: "Event for Zuzalu.city beta version"
+  )
+  @createIndex(fields: [{ path: "title" }])
+  @createIndex(fields: [{ path: "status" }])
+  @createIndex(fields: [{ path: "startTime" }])
+  @createIndex(fields: [{ path: "endTime" }])
+  @createIndex(fields: [{ path: "createdAt" }])
+  @createIndex(fields: [{ path: "gated" }]) {
+  author: DID! @documentAccount
+  title: String! @string(minLength: 1, maxLength: 100)
+  description: String @string(minLength: 1, maxLength: 5000)
+  timezone: String @string(minLength: 1, maxLength: 1000)
+  meetingUrl: String @string(minLength: 1, maxLength: 1000)
+  status: String @string(minLength: 1, maxLength: 1000)
+  imageUrl: String @string(minLength: 1, maxLength: 1000)
+  createdAt: DateTime!
+  startTime: DateTime!
+  endTime: DateTime!
+  external_url: String @string(minLength: 3, maxLength: 1000)
+  spaceId: StreamID! @documentReference(model: "ZucitySpace")
+  space: Space! @relationDocument(property: "spaceId")
+  profileId: StreamID! @documentReference(model: "ZucityProfile")
+  profile: MVPProfile! @relationDocument(property: "profileId")
+  min_participant: Int @int(min: 1, max: 10000)
+  max_participant: Int @int(min: 1, max: 10000)
+  participant_count: Int @int(min: 1, max: 10000)
+  tagline: String @string(minLength: 1, maxLength: 1000)
+  gated: String @string(minLength: 1, maxLength: 1000)
+  contracts: [Ticket] @list(maxLength: 1000)
+  update: [OrganizerUpdate] @list(maxLength: 1000)
+  customLinks: [Link] @list(maxLength: 100)
+  contractID: Int
+  tracks: String @string(minLength: 1, maxLength: 1000)
+  admins: [DID!] @list(maxLength: 1000)
+  members: [DID!] @list(maxLength: 10000)
+  superAdmin: [DID!]! @list(maxLength: 1000) @immutable
+  zupassHash: [MemberZupass] @list(maxLength: 10000)
+  checkinPass: String @string(minLength: 1, maxLength: 1000)
+  zupassInfo: String @string(minLength: 1, maxLength: 1000)
+  sessionStorage: String @string(minLength: 1, maxLength: 1000)
+  customAttributes: [TBD] @list(maxLength: 10000)
+}
+
+type ZucitySpace @loadModel(id: "$Space_ID") {
+  id: ID!
+}
+type ZucityProfile @loadModel(id: "$Profile_ID") {
+  id: ID!
+}
+type Ticket {
+  type: String! @string(minLength: 1, maxLength: 200)
+  contractAddress: String! @string(maxLength: 1000)
+  description: String! @string(maxLength: 1000)
+  image_url: String! @string(maxLength: 1000)
+  status: String! @string(maxLength: 1000)
+  check-in: String! @string(maxLength: 1000)
+}
+type Link {
+  title: String! @string(minLength: 1, maxLength: 1000)
+  links: String! @string(maxLength: 1000)
+}
+type OrganizerUpdate {
+  title: String! @string(minLength: 1, maxLength: 200)
+  organizer: DID!
+  createdAt: DateTime!
+  content: String @string(maxLength: 1000)
+}
+type MemberZupass {
+  hash: String! @string(maxLength: 1000)
+}
+type TBD {
+  tbd: String @string(minLength: 1, maxLength: 10000)
+}
