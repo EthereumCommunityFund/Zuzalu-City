@@ -21,9 +21,9 @@ type ZucityEvent
   endTime: DateTime!
   external_url: String @string(minLength: 3, maxLength: 1000)
   spaceId: StreamID! @documentReference(model: "ZucitySpace")
-  space: Space! @relationDocument(property: "spaceId")
+  space: ZucitySpace! @relationDocument(property: "spaceId")
   profileId: StreamID! @documentReference(model: "ZucityProfile")
-  profile: MVPProfile! @relationDocument(property: "profileId")
+  profile: ZucityProfile! @relationDocument(property: "profileId")
   min_participant: Int @int(min: 1, max: 10000)
   max_participant: Int @int(min: 1, max: 10000)
   participant_count: Int @int(min: 1, max: 10000)
@@ -41,6 +41,7 @@ type ZucityEvent
   checkinPass: String @string(minLength: 1, maxLength: 1000)
   zupassInfo: String @string(minLength: 1, maxLength: 1000)
   sessionStorage: String @string(minLength: 1, maxLength: 1000)
+  supportChain: String @string(minLength: 1, maxLength: 1000)
   customAttributes: [TBD] @list(maxLength: 10000)
 }
 
@@ -56,7 +57,7 @@ type Ticket {
   description: String! @string(maxLength: 1000)
   image_url: String! @string(maxLength: 1000)
   status: String! @string(maxLength: 1000)
-  check-in: String! @string(maxLength: 1000)
+  checkin: String! @string(maxLength: 1000)
 }
 type Link {
   title: String! @string(minLength: 1, maxLength: 1000)

@@ -1,0 +1,35 @@
+type ZucityEventPost
+  @createModel(
+    accountRelation: LIST
+    description: "Event Posts for Zuzalu.city beta version"
+  )
+  @createIndex(fields: [{ path: "title" }])
+  @createIndex(fields: [{ path: "startTime" }])
+  @createIndex(fields: [{ path: "endTime" }])
+  @createIndex(fields: [{ path: "createdAt" }])
+  @createIndex(fields: [{ path: "tags" }]){
+  author: DID! @documentAccount
+  title: String! @string(minLength: 1, maxLength: 100)
+  description: String! @string(minLength: 1, maxLength: 5000)
+  createdAt: DateTime!
+  startTime: DateTime!
+  endTime: DateTime!
+  eventId: StreamID! @documentReference(model: "ZucityEvent")
+  event: ZucityEvent! @relationDocument(property: "eventId")
+  profileId: StreamID! @documentReference(model: "ZucityProfile")
+  profile: ZucityProfile! @relationDocument(property: "profileId")
+  tags: String! @string(minLength: 1, maxLength: 1000)
+  customAttributes: [TBD] @list(maxLength: 10000)
+}
+
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  id: ID!
+}
+
+type ZucityProfile @loadModel(id: "$Profile_ID") {
+  id: ID!
+}
+
+type TBD {
+  tbd: String @string(minLength: 1, maxLength: 10000)
+}

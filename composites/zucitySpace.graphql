@@ -14,7 +14,7 @@ type ZucitySpace
   avatar: String @string(minLength: 1, maxLength: 1000)
   banner: String @string(minLength: 1, maxLength: 1000)
   profileId: StreamID! @documentReference(model: "ZucityProfile")
-  profile: MVPProfile! @relationDocument(property: "profileId")
+  profile: ZucityProfile! @relationDocument(property: "profileId")
   members: [DID!] @list(maxLength: 10000)
   website: String @string(minLength: 1, maxLength: 1000)
   twitter: String @string(minLength: 1, maxLength: 1000)
@@ -32,7 +32,7 @@ type ZucitySpace
   customAttributes: [TBD] @list(maxLength: 10000)
 }
 
-type MVPProfile @loadModel(id: "$Profile_ID") {
+type ZucityProfile @loadModel(id: "$Profile_ID") {
   id: ID!
 }
 type Link {

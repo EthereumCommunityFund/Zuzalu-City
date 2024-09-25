@@ -1,0 +1,8 @@
+type ZucityEventPost @loadModel(id: "$EventPost_ID") {
+  id: ID!
+}
+
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  posts: [ZucityEventPost]
+    @relationFrom(model: "ZucitySession", property: "eventId")
+}

@@ -8,8 +8,16 @@ type ZucityProfile
   username: String! @string(minLength: 1, maxLength: 10000)
   avatar: String @string(minLength: 1, maxLength: 10000)
   customAttributes: [TBD] @list(maxLength: 10000)
+  myEvents: [Event!] @list(maxLength: 10000)
 }
 
 type TBD {
   tbd: String @string(minLength: 1, maxLength: 10000)
 }
+
+type Event {
+  streamID: String @string(minLength: 1, maxLength: 10000)
+  title: String @string(minLength: 1, maxLength: 10000)
+  imageUrl: String @string(minLength: 1, maxLength: 10000)
+}
+
