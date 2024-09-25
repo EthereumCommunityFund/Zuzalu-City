@@ -48,7 +48,7 @@
     "@mui/material-nextjs": "^5.15.11",
     "@mui/x-date-pickers": "^7.10.0",
     "@mui/x-date-pickers-pro": "^7.10.0",
-    "@pcd/zuauth": "^1.4.2",
+    "@pcd/zuauth": "^1.4.5",
     "@rainbow-me/rainbowkit": "^2.0.5",
     "@supabase/ssr": "^0.3.0",
     "@supabase/supabase-js": "^2.43.1",

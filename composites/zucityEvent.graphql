@@ -19,14 +19,14 @@ type ZucityEvent
   createdAt: DateTime!
   startTime: DateTime!
   endTime: DateTime!
-  external_url: String @string(minLength: 3, maxLength: 1000)
+  externalUrl: String @string(minLength: 3, maxLength: 1000)
   spaceId: StreamID! @documentReference(model: "ZucitySpace")
   space: ZucitySpace! @relationDocument(property: "spaceId")
   profileId: StreamID! @documentReference(model: "ZucityProfile")
   profile: ZucityProfile! @relationDocument(property: "profileId")
-  min_participant: Int @int(min: 1, max: 10000)
-  max_participant: Int @int(min: 1, max: 10000)
-  participant_count: Int @int(min: 1, max: 10000)
+  minParticipant: Int @int(min: 1, max: 10000)
+  maxParticipant: Int @int(min: 1, max: 10000)
+  participantCount: Int @int(min: 1, max: 10000)
   tagline: String @string(minLength: 1, maxLength: 1000)
   gated: String @string(minLength: 1, maxLength: 1000)
   contracts: [Ticket] @list(maxLength: 1000)

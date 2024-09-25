@@ -1,7 +1,7 @@
 export const getSpaceQuery = (eventCount: number = 10) => `
       query GetSpace($id: ID!) {
         node(id: $id) {
-          ...on Space {
+          ...on ZucitySpace {
             avatar
             banner
             description
@@ -28,14 +28,14 @@ export const getSpaceQuery = (eventCount: number = 10) => `
                   createdAt
                   description
                   endTime
-                  external_url
+                  externalUrl
                   gated
                   id
-                  image_url
-                  max_participant
-                  meeting_url
-                  min_participant
-                  participant_count
+                  imageUrl
+                  maxParticipant
+                  meetingUrl
+                  minParticipant
+                  participantCount
                   profileId
                   spaceId
                   startTime

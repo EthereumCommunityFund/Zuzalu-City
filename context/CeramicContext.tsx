@@ -77,20 +77,25 @@ export const CeramicProvider = ({ children }: any) => {
     if (ceramic.did !== undefined) {
       const profile: any = await composeClient.executeQuery(`
         query {
-          viewer {
-            mvpProfile {
-              id
-              username
-              avatar
-              author {
+            viewer {
+              zucityProfile {
+                author {
+                  id
+                }
+                avatar
                 id
+                username
+                myEvents {
+                  imageUrl
+                  streamID
+                  title
+                }
               }
             }
           }
-        }
       `);
       const basicProfile: { id: string; username: string } | undefined =
-        profile?.data?.viewer?.mvpProfile;
+        profile?.data?.viewer?.zucityProfile;
       if (basicProfile?.id) {
         localStorage.setItem('username', basicProfile.username);
         setProfile(basicProfile);
@@ -110,7 +115,7 @@ export const CeramicProvider = ({ children }: any) => {
     try {
       const update = await composeClient.executeQuery(`
         mutation {
-          createMVPProfile(input: {
+          createZucityProfile(input: {
             content: {
               username: "${newName}"
             }
