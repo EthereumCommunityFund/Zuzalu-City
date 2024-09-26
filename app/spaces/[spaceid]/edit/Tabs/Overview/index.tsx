@@ -35,9 +35,9 @@ const Overview = () => {
     try {
       const response: any = await composeClient.executeQuery(
         `
-        query GetSpace($id: ID!) {
+        query GetZucitySpace($id: ID!) {
           node(id: $id) {
-            ...on Space {
+            ...on ZucitySpace {
               id
               avatar
               banner
@@ -85,8 +85,8 @@ const Overview = () => {
       const { id, name, tagline, avatar, banner, description } = data;
       try {
         const query = `
-          mutation UpdateSpace($i: UpdateSpaceInput!) {
-            updateSpace(input: $i) {
+          mutation UpdateZucitySpace($i: UpdateZucitySpaceInput!) {
+            updateZucitySpace(input: $i) {
               document {
                 id
               },
@@ -139,8 +139,8 @@ const Overview = () => {
   };
   const deleteSpace = async () => {
     try {
-      const enableIndexingSpaceMutation = `mutation enableIndexingSpace($input: EnableIndexingSpaceInput!) {
-      enableIndexingSpace(input: $input) {
+      const enableIndexingSpaceMutation = `mutation enableIndexingZucitySpace($input: EnableIndexingZucitySpaceInput!) {
+      enableIndexingZucitySpace(input: $input) {
         document {
           id
         }

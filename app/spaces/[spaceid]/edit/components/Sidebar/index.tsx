@@ -51,7 +51,7 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
           Space Overview
         </Typography>
       </Stack>
-      <Stack
+      {/*<Stack
         spacing="10px"
         sx={{
           paddingBottom: '20px',
@@ -77,7 +77,7 @@ const SpaceEditSidebar: React.FC<SidebarProps> = ({ tabName, setTabName }) => {
         >
           Invite
         </Typography>
-      </Stack>
+      </Stack>*/}
       <Stack spacing="10px">
         <Typography fontSize={'10px'} textTransform={'uppercase'}>
           Apps

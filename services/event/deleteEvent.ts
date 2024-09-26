@@ -1,13 +1,13 @@
 import axiosInstance from '@/utils/axiosInstance';
 import axios from 'axios';
-export const addCheckInPass = async (addCheckInPassInput: {
+export const deleteEvent = async (deleteEventInput: {
   eventId: string;
-  checkinPass: string;
+  userDID: string;
 }) => {
   try {
     const response = await axiosInstance.post(
-      '/api/event/addCheckInPass',
-      addCheckInPassInput,
+      '/api/event/delete',
+      deleteEventInput,
     );
     return response;
   } catch (error) {

@@ -103,7 +103,7 @@ export default function SpaceDetailPage() {
       .finally(() => {
         setIsEventsLoading(false);
       });
-  }, []);
+  }, [ceramic?.did?.parent]);
 
   return (
     <Box

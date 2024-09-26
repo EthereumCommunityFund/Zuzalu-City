@@ -26,23 +26,6 @@ export async function POST(req: Request) {
     await did.authenticate();
     ceramic.did = did;
     composeClient.setDID(did);
-    const GET_Event_QUERY = `
-    query GetZucityEvent($id: ID!) {
-      node(id: $id) {
-          ... on ZucityEvent {
-            id
-            checkinPass
-          }
-        }
-      }
-    `;
-    const getEventResponse: any = await composeClient.executeQuery(
-      GET_Event_QUERY,
-      {
-        id: eventId,
-      },
-    );
-
     const query = `
             mutation UpdateZucityEvent($i: UpdateZucityEventInput!) {
             updateZucityEvent(input: $i) {

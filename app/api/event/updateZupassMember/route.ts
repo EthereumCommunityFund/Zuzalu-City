@@ -30,19 +30,19 @@ export async function POST(req: Request) {
     ceramic.did = did;
     composeClient.setDID(did);
     const GET_Event_QUERY = `
-    query GetEvent($id: ID!) {
+    query GetZucityEvent($id: ID!) {
       node(id: $id) {
-          ... on Event {
+          ... on ZucityEvent {
             id
             admins {
               id
-              mvpProfile {
+              zucityProfile {
                 username
               }
             }
             members {
               id
-              mvpProfile {
+              zucityProfile {
                 username
               }
             }
@@ -96,8 +96,8 @@ export async function POST(req: Request) {
       };
       const updatedZupass: zupass[] = [...existingZupass, newZupass];
       const query = `
-            mutation UpdateEvent($i: UpdateEventInput!) {
-            updateEvent(input: $i) {
+            mutation UpdateZucityEvent($i: UpdateZucityEventInput!) {
+            updateZucityEvent(input: $i) {
             document {
                 id
             }

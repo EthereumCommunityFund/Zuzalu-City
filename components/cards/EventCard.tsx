@@ -114,7 +114,11 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         component="img"
         width={isMobile ? '80px' : '140px'}
         height={isMobile ? '80px' : '140px'}
-        src={event.imageUrl}
+        src={
+          event.imageUrl
+            ? event.imageUrl
+            : 'https://framerusercontent.com/images/UkqE1HWpcAnCDpQzQYeFjpCWhRM.png'
+        }
         borderRadius="10px"
       />
       <Box display="flex" flexDirection="column" gap="10px" flexGrow={1}>
