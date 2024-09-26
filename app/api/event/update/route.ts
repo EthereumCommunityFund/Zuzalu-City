@@ -47,8 +47,8 @@ export async function POST(req: Request) {
     composeClient.setDID(did);
 
     const query = `
-          mutation UpdateEvent($i: UpdateEventInput!) {
-            updateEvent(input: $i) {
+          mutation UpdateZucityEvent($i: UpdateZucityEventInput!) {
+            updateZucityEvent(input: $i) {
               document {
                 id
               },
