@@ -2,11 +2,12 @@
 import * as React from 'react';
 import { Box, Stack, useMediaQuery } from '@mui/material';
 
-import { Ticket, Overview, Sessions, Venue } from './Tabs';
+import { Ticket, Overview, Venue } from './Tabs';
 import { Tabbar, Navbar } from 'components/layout';
 import { useParams } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event } from '@/types';
+import { useQuery } from '@tanstack/react-query';
 
 const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
@@ -57,6 +58,7 @@ const Home: React.FC = () => {
               type
               checkin
             }
+            checkinPass
           }
         }
       }
@@ -80,8 +82,14 @@ const Home: React.FC = () => {
 
   const isMobile = useMediaQuery('(max-width:768px)');
 
+  const { refetch } = useQuery({
+    queryKey: ['fetchEventById', pathname.eventid],
+    queryFn: () => fetchEventById(pathname.eventid as string),
+    enabled: !!pathname.eventid,
+  });
+
   const refetchData = () => {
-    pathname.eventid && fetchEventById(pathname.eventid as string);
+    pathname.eventid && refetch();
   };
 
   const renderPage = () => {
@@ -98,19 +106,6 @@ const Home: React.FC = () => {
         return <Overview />;
     }
   };
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (pathname.eventid) {
-          fetchEventById(pathname.eventid as string);
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
-  }, []);
 
   return (
     <Stack width="100%">
