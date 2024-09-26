@@ -79,6 +79,8 @@ import { ChevronDoubleRightIcon } from './ChevronDoubleRight';
 import { MicrophoneIcon } from './Microphone';
 import { TagIcon } from './Tag';
 import { UserCircleIcon } from './UserCircle';
+import { ScrollPassIcon } from './ScrollPass';
+import { ZuPassIcon } from './ZuPassIcon';
 export {
   HomeIcon,
   SearchIcon,
@@ -161,4 +163,6 @@ export {
   MicrophoneIcon,
   TagIcon,
   UserCircleIcon,
+  ScrollPassIcon,
+  ZuPassIcon,
 };
