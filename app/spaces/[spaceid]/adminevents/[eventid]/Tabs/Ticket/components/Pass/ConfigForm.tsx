@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Box,
   Typography,
@@ -16,9 +16,9 @@ import {
   ScrollPassIcon,
   ZuPassIcon,
 } from '@/components/icons';
-import useEventRequest from '@/hooks/useEventRequest';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
+import { updateCheckinPass } from '@/services/event/updateEvent';
 
 interface RegistrationMethod {
   id: string;
@@ -78,44 +78,46 @@ const RegistrationMethodSelector: React.FC<RegistrationMethodSelectorProps> = ({
   const [selectedMethod, setSelectedMethod] = useState('scrollpass');
   const [step, setStep] = useState(1);
 
-  const { updateEventPass } = useEventRequest();
   const queryClient = useQueryClient();
   const pathname = useParams();
   const eventId = pathname.eventid.toString();
+
+  const updateEventPass = useMutation({
+    mutationFn: ({ eventId, pass }: { eventId: string; pass: string }) => {
+      return updateCheckinPass(eventId, pass);
+    },
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ['fetchEventById', eventId],
+      });
+      setStep(1);
+      onClose();
+    },
+  });
   const isLoading = updateEventPass.isPending;
 
   const handleMethodChange = useCallback((methodId: string) => {
     setSelectedMethod(methodId);
   }, []);
 
-  const handleStep = useCallback((type: 'next' | 'back') => {
-    setStep((v) => (type === 'next' ? v + 1 : v - 1));
-  }, []);
+  const handleStep = useCallback(
+    (type: 'next' | 'back') => {
+      if (step === 2) {
+        updateEventPass.mutateAsync({
+          eventId,
+          pass: selectedMethod,
+        });
+        return;
+      }
+      setStep((v) => (type === 'next' ? v + 1 : v - 1));
+    },
+    [eventId, selectedMethod, step, updateEventPass],
+  );
 
   const method = useMemo(
     () => registrationMethods.find((item) => item.id === selectedMethod),
     [selectedMethod],
   );
-
-  useEffect(() => {
-    if (step === 3) {
-      updateEventPass.mutateAsync(
-        {
-          eventId,
-          pass: selectedMethod,
-        },
-        {
-          onSuccess: () => {
-            queryClient.refetchQueries({
-              queryKey: ['fetchEventById', eventId],
-            });
-            setStep(1);
-            onClose();
-          },
-        },
-      );
-    }
-  }, [eventId, onClose, queryClient, selectedMethod, step, updateEventPass]);
 
   return (
     <Box
