@@ -35,6 +35,7 @@ import { useRouter } from 'next/navigation';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import MiniDashboard from './components/MiniDashboard';
 import { EventComingSoonCard } from '@/components/cards/ComingSoonCard';
+import { getSpacesQuery } from '@/services/space';
 
 const doclink = process.env.NEXT_PUBLIC_LEARN_DOC_V2_URL || '';
 
@@ -73,52 +74,10 @@ const Home: React.FC = () => {
 
   const getSpaces = async () => {
     try {
-      const response: any = await composeClient.executeQuery(`
-        query MyQuery {
-          spaceIndex(first: 20) {
-            edges {
-              node {
-                id
-                admins {
-                  id
-                }
-                superAdmin {
-                  id
-                }
-                avatar
-                banner
-                description
-                name
-                profileId
-                tagline
-                website
-                twitter
-                telegram
-                nostr
-                lens
-                github
-                discord
-                ens
-                category
-                members{
-                  id
-                }
-                events(first: 1) {
-                  edges {
-                    node {
-                      startTime
-                      endTime
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      `);
-      if ('spaceIndex' in response.data) {
+      const response: any = await composeClient.executeQuery(getSpacesQuery);
+      if ('zucitySpaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
-        let fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+        let fetchedSpaces: Space[] = spaceData.zucitySpaceIndex.edges.map(
           (edge) => edge.node,
         );
         if (!isDev) {
@@ -140,20 +99,17 @@ const Home: React.FC = () => {
       setIsEventsLoading(true);
       const response: any = await composeClient.executeQuery(`
       query {
-        eventIndex(first: 20) {
+        zucityEventIndex(first: 20) {
           edges {
             node {
               createdAt
               description
               endTime
-              external_url
+              externalUrl
               gated
               id
-              image_url
-              max_participant
-              meeting_url
-              min_participant
-              participant_count
+              imageUrl
+              meetingUrl
               profileId
               spaceId
               startTime
@@ -185,9 +141,9 @@ const Home: React.FC = () => {
       }
     `);
 
-      if (response && response.data && 'eventIndex' in response.data) {
+      if (response && response.data && 'zucityEventIndex' in response.data) {
         const eventData: EventData = response.data as EventData;
-        const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+        const fetchedEvents: Event[] = eventData.zucityEventIndex.edges.map(
           (edge) => edge.node,
         );
         setEvents(fetchedEvents);
@@ -229,21 +185,18 @@ const Home: React.FC = () => {
       // TODO: clean selectedDate
       if (selectedDate) {
         const getEventsByDate_QUERY = `
-          query ($input:EventFiltersInput!) {
-          eventIndex(filters:$input, first: 20){
+          query ($input:ZucityEventFiltersInput!) {
+          zucityEventIndex(filters:$input, first: 20){
             edges {
               node {
                 createdAt
                 description
                 endTime
-                external_url
+                externalUrl
                 gated
                 id
-                image_url
-                max_participant
-                meeting_url
-                min_participant
-                participant_count
+                imageUrl
+                meetingUrl
                 profileId
                 spaceId
                 startTime
@@ -274,9 +227,9 @@ const Home: React.FC = () => {
             },
           },
         );
-        if (response && response.data && 'eventIndex' in response.data) {
+        if (response && response.data && 'zucityEventIndex' in response.data) {
           const eventData: EventData = response.data as EventData;
-          const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+          const fetchedEvents: Event[] = eventData.zucityEventIndex.edges.map(
             (edge) => edge.node,
           );
           setEvents(fetchedEvents);
@@ -293,18 +246,15 @@ const Home: React.FC = () => {
 
   const getEventsInMonth = async () => {
     const getEventsByDate_QUERY = `
-        query ($input:EventFiltersInput!) {
-        eventIndex(filters:$input, first: 20){
+        query ($input:ZucityEventFiltersInput!) {
+        zucityEventIndex(filters:$input, first: 20){
           edges {
             node {
               description
-              external_url
+              externalUrl
               gated
-              image_url
-              max_participant
-              meeting_url
-              min_participant
-              participant_count
+              imageUrl
+              meetingUrl
               profileId
               spaceId
               status
@@ -342,9 +292,9 @@ const Home: React.FC = () => {
         },
       },
     );
-    if (response && response.data && 'eventIndex' in response.data) {
+    if (response && response.data && 'zucityEventIndex' in response.data) {
       const eventData: EventData = response.data as EventData;
-      const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+      const fetchedEvents: Event[] = eventData.zucityEventIndex.edges.map(
         (edge) => edge.node,
       );
       setEventsForCalendar(fetchedEvents);
@@ -418,7 +368,7 @@ const Home: React.FC = () => {
           >
             {targetEvent && (
               <MiniDashboard
-                imageUrl={targetEvent.image_url}
+                imageUrl={targetEvent.imageUrl}
                 spaceName={targetEvent.title}
                 startTime={dayjs(targetEvent.startTime).format('MMMM DD')}
                 endTime={dayjs(targetEvent.endTime).format('MMMM DD')}

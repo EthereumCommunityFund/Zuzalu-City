@@ -20,7 +20,7 @@ interface EventRegisterProps {
   onToggle: (anchor: Anchor, open: boolean) => void;
   setWhitelist?: React.Dispatch<React.SetStateAction<boolean>> | any;
   setSponsor?: React.Dispatch<React.SetStateAction<boolean>> | any;
-  external_url?: string;
+  externalUrl?: string;
   eventId: string;
   setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
 }
@@ -29,7 +29,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
   onToggle,
   setWhitelist,
   setSponsor,
-  external_url,
+  externalUrl,
   eventId,
   setVerify,
 }) => {
@@ -155,7 +155,7 @@ const EventRegister: React.FC<EventRegisterProps> = ({
     onToggle('right', true);
   };
   const handleClick = () => {
-    window.open(external_url, '_blank');
+    window.open(externalUrl, '_blank');
   };
   const handleStep = (val: number) => {
     setCurrentStep(val);

@@ -51,11 +51,11 @@ const OverviewInvite = ({ event }: PropTypes) => {
       const GET_Event_QUERY = `
       query GetEvent($id: ID!) {
         node(id: $id) {
-            ... on Event {
+            ... on ZucityEvent {
               id
               admins {
                 id
-                mvpProfile {
+                zucityProfile {
                   username
                 }
               }
@@ -64,7 +64,7 @@ const OverviewInvite = ({ event }: PropTypes) => {
               }
               members {
                 id
-                mvpProfile {
+                zucityProfile {
                   username
                 }
               }

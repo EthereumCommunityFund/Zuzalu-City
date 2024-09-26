@@ -57,35 +57,22 @@ const Home = () => {
                   createdAt
                   description
               endTime
-              endTime
               timezone
               status
               tagline
-              image_url
-                  endTime
-              timezone
-              status
-              tagline
-              image_url
-                  external_url
-                  gated
-                  id
-                  image_url
-                  max_participant
-                  meeting_url
-                  min_participant
-                  participant_count
-                  profileId
-                  spaceId
-                  startTime
-                  status
-                  tagline
-                  timezone
-                  title
-                  space {
-                    avatar
-                    name
-                  }
+              imageUrl
+              externalUrl
+              gated
+              id
+              meetingUrl
+              profileId
+              spaceId
+              startTime
+              title
+              space {
+                avatar
+                name
+              }
                 }
               }
             }

@@ -49,9 +49,9 @@ const AuthPrompt: React.FC<{}> = () => {
         };
       case 'NEW_USER':
         return {
-          title: 'Welcome to Zuzalu City',
+          title: 'Welcome to Zuzalu City Beta',
           message:
-            "Let's get started with your username. You can change your username later or skip this.",
+            "Let's get started with your username. You can change your username later or skip this. For alpha users, now you need to recreate your profile but the old sessions you created will not be lost",
           actions: [
             <Box
               key="action-buttons"

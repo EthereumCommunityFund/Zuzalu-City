@@ -142,8 +142,8 @@ const Create = () => {
       });
       const result = await composeClient.executeQuery(
         `
-      mutation CreateSpaceMutation($input: CreateSpaceInput!) {
-        createSpace(
+      mutation createZucitySpaceMutation($input: CreateZucitySpaceInput!) {
+        createZucitySpace(
           input: $input
         ) {
           document {
@@ -180,7 +180,10 @@ const Create = () => {
         },
       );
       if (result.errors?.length) {
-        throw new Error('Error creating space.');
+        console.error('Detailed error info:', result.errors);
+        throw new Error(
+          `Error creating space: ${JSON.stringify(result.errors)}`,
+        );
       }
       setShowModal(true);
     } catch (err: any) {

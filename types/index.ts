@@ -20,6 +20,7 @@ export interface Contract {
   description?: string;
   image_url?: string;
   status?: string;
+  checkin?: string;
 }
 export interface Event {
   id: string;
@@ -30,14 +31,14 @@ export interface Event {
   timezone: string;
   status: string;
   tagline?: string;
-  image_url?: string;
-  external_url?: string;
-  meeting_url?: string;
+  imageUrl?: string;
+  externalUrl?: string;
+  meetingUrl?: string;
   profileId?: string;
   spaceId?: string;
-  participant_count: number;
-  min_participant: number;
-  max_participant: number;
+  participantCount: number;
+  minParticipant: number;
+  maxParticipant: number;
   createdAt: string;
   space?: {
     id?: string;
@@ -53,6 +54,10 @@ export interface Event {
   };
   customLinks?: [Link];
   tracks?: string;
+  checkinPass: string;
+  zupassInfo: string;
+  sessionStorage: string;
+  supportChain: string;
   contractID?: number;
   contracts?: [Contract];
   admins?: {
@@ -71,7 +76,7 @@ export interface EventEdge {
 }
 
 export interface EventData {
-  eventIndex: {
+  zucityEventIndex: {
     edges: EventEdge[];
   };
 }
@@ -127,7 +132,7 @@ export interface SpaceEdge {
 }
 
 export interface SpaceData {
-  spaceIndex: {
+  zucitySpaceIndex: {
     edges: SpaceEdge[];
   };
 }
@@ -224,7 +229,7 @@ export interface ProfileData {
 }
 
 export interface ProfileEdge {
-  mVPProfileIndex: {
+  zucityProfileIndex: {
     edges: ProfileData[];
   };
 }
@@ -275,14 +280,11 @@ export interface SocialLinks {
 export interface CreateEventRequest {
   name: string;
   tagline: string;
-  participant: number;
-  max_participant: number;
-  min_participant: number;
-  external_url: string;
+  externalUrl: string;
   strDesc: string;
   spaceId: string;
   profileId: string;
-  avatarURL: string;
+  imageUrl: string;
   startTime: string;
   endTime: string;
   socialLinks: SocialLinks[];

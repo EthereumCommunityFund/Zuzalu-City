@@ -12,7 +12,7 @@ const SpaceHeader = () => {
   const [showModal, setShowModal] = React.useState(false);
   const theme = useTheme();
   const router = useRouter();
-  const { ceramic, isAuthenticated } = useCeramicContext();
+  const { ceramic, isAuthenticated, showAuthPrompt } = useCeramicContext();
 
   const createButtonHandler = () => {
     if (isAuthenticated) {
@@ -50,7 +50,10 @@ const SpaceHeader = () => {
         message="Login to Create a Space"
         showModal={showModal}
         onClose={() => setShowModal(false)}
-        onConfirm={() => setShowModal(false)}
+        onConfirm={() => {
+          showAuthPrompt();
+          setShowModal(false);
+        }}
       />
     </Stack>
   );

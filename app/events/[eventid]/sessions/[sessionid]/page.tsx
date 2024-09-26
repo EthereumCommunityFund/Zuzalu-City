@@ -194,18 +194,15 @@ const Home = () => {
           `
         query MyQuery($id: ID!) {
           node (id: $id) {
-            ...on Event {
+            ...on zucityEvent {
               createdAt
               description
               endTime
-              external_url
+              externalUrl
               gated
               id
-              image_url
-              max_participant
-              meeting_url
-              min_participant
-              participant_count
+              imageUrl
+              meetingUrl
               profileId
               spaceId
               startTime
@@ -560,7 +557,7 @@ const Home = () => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          mVPProfileIndex(first: 1000) {
+          zucityProfileIndex(first: 1000) {
             edges {
               node {
                 id
@@ -575,11 +572,10 @@ const Home = () => {
         }
       `);
 
-      if ('mVPProfileIndex' in response.data) {
+      if ('zucityProfileIndex' in response.data) {
         const profileData: ProfileEdge = response.data as ProfileEdge;
-        const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
-          (edge) => edge.node,
-        );
+        const fetchedPeople: Profile[] =
+          profileData.zucityProfileIndex.edges.map((edge) => edge.node);
         setPeople(fetchedPeople);
       } else {
         console.error('Invalid data structure:', response.data);
@@ -1868,7 +1864,7 @@ const Home = () => {
       >
         <Thumbnail
           name={passingTitle ? eventData?.title : 'View Session'}
-          imageUrl={eventData?.image_url}
+          imageUrl={eventData?.imageUrl}
           backFun={() => {
             sessionStorage.setItem('tab', 'Sessions');
             router.push(`/events/${eventId}`);
@@ -2461,7 +2457,7 @@ const Home = () => {
                       borderRadius="10px"
                       width="80px"
                       height="80px"
-                      src={locationAvatar || eventData?.image_url}
+                      src={locationAvatar || eventData?.imageUrl}
                     />
                     <Stack alignItems="center">
                       <Typography variant="bodyM">

@@ -87,7 +87,7 @@ const OverviewHeader = ({ event }: PropTypes) => {
     try {
       const response: any = await composeClient.executeQuery(`
         query MyQuery {
-          mVPProfileIndex(first: 20) {
+          zucityProfileIndex(first: 20) {
             edges {
               node {
                 id
@@ -99,11 +99,10 @@ const OverviewHeader = ({ event }: PropTypes) => {
         }
       `);
 
-      if ('mVPProfileIndex' in response.data) {
+      if ('zucityProfileIndex' in response.data) {
         const profileData: ProfileEdge = response.data as ProfileEdge;
-        const fetchedPeople: Profile[] = profileData.mVPProfileIndex.edges.map(
-          (edge) => edge.node,
-        );
+        const fetchedPeople: Profile[] =
+          profileData.zucityProfileIndex.edges.map((edge) => edge.node);
         setPeople(fetchedPeople);
       } else {
         console.error('Invalid data structure:', response.data);

@@ -54,7 +54,7 @@ const schema = Yup.object().shape({
   external_url: Yup.string()
     .url('Must be a valid URL')
     .required('External URL is required'),
-  avatarURL: Yup.string(),
+  imageUrl: Yup.string(),
   participant: Yup.number()
     .positive()
     .integer()
@@ -200,7 +200,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           external_url,
           tracks,
           locations,
-          avatarURL,
+          imageUrl,
         } = data;
         setBlockClickModal(true);
         setLoading(true);
@@ -209,9 +209,9 @@ export const EventForm: React.FC<EventFormProps> = ({
           strDesc: descriptionEditorStore.getValueString(),
           spaceId,
           profileId,
-          external_url: external_url || '',
-          avatarURL:
-            avatarURL ||
+          externalUrl: external_url || '',
+          imageUrl:
+            imageUrl ||
             'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
           startTime: startTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
           endTime: endTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
@@ -350,7 +350,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                 Recommend min of 200x200px (1:1 Ratio)
               </FormLabelDesc>
               <Controller
-                name="avatarURL"
+                name="imageUrl"
                 control={control}
                 render={({ field }) => <FormUploader {...field} />}
               />
@@ -425,7 +425,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                 )}
               />
             </Stack>
-            <Stack spacing="10px" padding="20px">
+            {/*<Stack spacing="10px" padding="20px">
               <FormLabel>Participant*</FormLabel>
               <Controller
                 name="participant"
@@ -481,7 +481,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                   </>
                 )}
               />
-            </Stack>
+            </Stack>*/}
           </Box>
         </Box>
         <Box display="flex" flexDirection="column" gap="20px" padding={3}>

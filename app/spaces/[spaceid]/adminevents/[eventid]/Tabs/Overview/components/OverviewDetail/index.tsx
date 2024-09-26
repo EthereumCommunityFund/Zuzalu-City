@@ -55,7 +55,7 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
     >
       <Stack
         sx={{
-          backgroundImage: `url(${eventData.image_url ? eventData.image_url : '/12.webp'})`,
+          backgroundImage: `url(${eventData.imageUrl ? eventData.imageUrl : '/12.webp'})`,
           width: '100%',
           height: '100%',
           filter: 'blur(10px)',
@@ -67,7 +67,7 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
       ></Stack>
       <Box
         component="img"
-        src={eventData.image_url ? eventData.image_url : '/12.webp'}
+        src={eventData.imageUrl ? eventData.imageUrl : '/12.webp'}
         borderRadius={3}
         height={320}
         width={320}

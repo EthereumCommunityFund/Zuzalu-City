@@ -42,7 +42,7 @@ const EventsPage: React.FC = () => {
     setIsEventsLoading(true);
     const response: any = await composeClient.executeQuery(`
       query {
-        eventIndex(first: 10) {
+        zucityEventIndex(first: 20) {
           edges {
             node {
               id
@@ -53,14 +53,11 @@ const EventsPage: React.FC = () => {
               timezone
               status
               tagline
-              image_url
-              external_url
-              meeting_url
+              imageUrl
+              externalUrl
+              meetingUrl
               profileId
               spaceId
-              participant_count
-              min_participant
-              max_participant
               createdAt
               space {
                 name
@@ -72,9 +69,9 @@ const EventsPage: React.FC = () => {
         }
       }
     `);
-    if ('eventIndex' in response.data) {
+    if ('zucityEventIndex' in response.data) {
       const eventData: EventData = response.data as EventData;
-      const fetchedEvents: Event[] = eventData.eventIndex.edges.map(
+      const fetchedEvents: Event[] = eventData.zucityEventIndex.edges.map(
         (edge) => edge.node,
       );
       const searchedEvents: Event[] = fetchedEvents.filter((item) => {

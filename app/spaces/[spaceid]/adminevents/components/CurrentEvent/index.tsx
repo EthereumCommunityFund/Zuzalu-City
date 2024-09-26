@@ -31,14 +31,6 @@ const CurrentEvents: React.FC<CurrentEventsProps> = ({
         </ZuButton>
       </Stack>
       <Stack direction="column" spacing={2}>
-        <Typography
-          variant="body2"
-          color="white"
-          fontStyle="italic"
-          sx={{ opacity: 0.5 }}
-        >
-          Prototype Note: First card is click-able
-        </Typography>
         {events.map((event, index) => (
           <EventMCard key={`EventMCard-Index${index}`} event={event} />
         ))}

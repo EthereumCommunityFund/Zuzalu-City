@@ -18,6 +18,7 @@ import SidebarDrawer from '../Sidebar/SidebarDrawer';
 import { useAppContext } from '@/context/AppContext';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import Image from 'next/image';
+import { ZuButton } from '@/components/core';
 
 export function formatAddressString(str?: string, maxLength: number = 10) {
   if (!str) return;
@@ -120,7 +121,7 @@ const Header = () => {
             opacity: 0.8,
           }}
         >
-          alpha
+          beta
         </Typography>
       </Box>
       {isAuthenticated ? (
@@ -299,7 +300,7 @@ const Header = () => {
           </Menu>
         </>
       ) : (
-        /*<Button
+        <ZuButton
           sx={{
             textAlign: 'center',
             color: 'white',
@@ -320,8 +321,7 @@ const Header = () => {
         >
           <Image src="/user/wallet.png" alt="wallet" height={24} width={24} />
           Connect
-        </Button>*/
-        <Image src="/user/avatar_p.png" alt="avatar" height={30} width={30} />
+        </ZuButton>
       )}
       <SidebarDrawer
         selected={'Home'}

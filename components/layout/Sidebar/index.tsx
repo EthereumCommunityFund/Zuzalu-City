@@ -31,11 +31,11 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
       setIsLoading(true);
       const response: any = await composeClient.executeQuery(`
       query {
-        eventIndex(first: 100) {
+        zucityEventIndex(first: 100) {
           edges {
             node {
               id
-              image_url
+              imageUrl
               title
               members{
               id
@@ -61,9 +61,9 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
       }
     `);
 
-      if (response && response.data && 'eventIndex' in response.data) {
+      if (response && response.data && 'zucityEventIndex' in response.data) {
         const eventData: EventData = response.data as EventData;
-        return eventData.eventIndex.edges.map((edge) => edge.node);
+        return eventData.zucityEventIndex.edges.map((edge) => edge.node);
       } else {
         console.error('Invalid data structure:', response.data);
       }
@@ -257,7 +257,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
                         }}
                       >
                         <Image
-                          src={event.image_url!}
+                          src={event.imageUrl!}
                           alt={event.title}
                           width={20}
                           height={20}

@@ -20,6 +20,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { Space, SpaceData } from '@/types';
 import { SpaceCardSkeleton } from '@/components/cards/SpaceCard';
 import { isDev, prodShowSpaceId } from '@/constant';
+import { getSpacesQuery } from '@/services/space';
 
 const Home = () => {
   const theme = useTheme();
@@ -32,39 +33,11 @@ const Home = () => {
 
   const getSpaces = async () => {
     try {
-      const response: any = await composeClient.executeQuery(`
-        query MyQuery {
-          spaceIndex(first: 20) {
-            edges {
-              node {
-                id
-                avatar
-                banner
-                description
-                name
-                profileId
-                tagline
-                website
-                twitter
-                telegram
-                nostr
-                lens
-                github
-                discord
-                ens
-                category
-                members{
-                  id
-                }
-              }
-            }
-          }
-        }
-      `);
+      const response: any = await composeClient.executeQuery(getSpacesQuery);
 
-      if ('spaceIndex' in response.data) {
+      if ('zucitySpaceIndex' in response.data) {
         const spaceData: SpaceData = response.data as SpaceData;
-        let fetchedSpaces: Space[] = spaceData.spaceIndex.edges.map(
+        let fetchedSpaces: Space[] = spaceData.zucitySpaceIndex.edges.map(
           (edge) => edge.node,
         );
         if (!isDev) {

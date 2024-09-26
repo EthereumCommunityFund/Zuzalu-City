@@ -22,18 +22,15 @@ const Home = () => {
           `
         query MyQuery($id: ID!) {
           node (id: $id) {
-            ...on Event {
+            ...on ZucityEvent {
               createdAt
               description
               endTime
-              external_url
+              externalUrl
               gated
               id
-              image_url
-              max_participant
-              meeting_url
-              min_participant
-              participant_count
+              imageUrl
+              meetingUrl
               profileId
               spaceId
               startTime
@@ -74,6 +71,7 @@ const Home = () => {
                 image_url
                 status
                 type
+                checkin
               }
             }
           }

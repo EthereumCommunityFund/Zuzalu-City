@@ -66,11 +66,8 @@ type FormData = Yup.InferType<typeof schema>;
 interface Inputs {
   name: string;
   tagline: string;
-  participant: number;
-  max_participant: number;
-  min_participant: number;
   timezone: string;
-  external_url: string;
+  externalUrl: string;
 }
 
 interface PropTypes {
@@ -109,11 +106,8 @@ const Overview = ({ event, refetch }: PropTypes) => {
   const [inputs, setInputs] = useState<Inputs>({
     name: '',
     tagline: '',
-    participant: 10,
-    min_participant: 10,
-    max_participant: 10,
     timezone: '',
-    external_url: 'TBD',
+    externalUrl: 'TBD',
   });
 
   const descriptionEditorStore = useEditorStore();
@@ -173,11 +167,8 @@ const Overview = ({ event, refetch }: PropTypes) => {
       setInputs({
         name: event.title || '',
         tagline: event.tagline || '',
-        participant: event.participant_count || 10,
-        min_participant: event.min_participant || 10,
-        max_participant: event.max_participant || 10,
         timezone: event.timezone || '',
-        external_url: event.external_url || 'TBD',
+        externalUrl: event.externalUrl || 'TBD',
       });
       descriptionEditorStore.setValue(
         JSON.stringify(event.description)
@@ -185,7 +176,7 @@ const Overview = ({ event, refetch }: PropTypes) => {
           .replace(/\\\\/g, '\\')
           .replace(/\\"/g, '"'),
       );
-      avatarUploader.setUrl(event.image_url);
+      avatarUploader.setUrl(event.imageUrl);
       setStartTime(dayjs(event.startTime));
       setEndTime(dayjs(event.endTime));
       setSelectedTimezone(
@@ -278,18 +269,15 @@ const Overview = ({ event, refetch }: PropTypes) => {
           tagline: inputs.tagline,
           spaceId: spaceId,
           profileId: profileId,
-          avatarURL:
+          imageUrl:
             avatarUploader.getUrl() ||
             'https://bafkreifje7spdjm5tqts5ybraurrqp4u6ztabbpefp4kepyzcy5sk2uel4.ipfs.nftstorage.link',
           startTime: startTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
           endTime: endTime?.format('YYYY-MM-DDTHH:mm:ss[Z]'),
           socialLinks: socialLinks ?? [],
-          participant: inputs.participant,
-          max_participant: inputs.max_participant,
-          min_participant: inputs.min_participant,
           tracks: tracks,
           adminId: adminId,
-          external_url: inputs.external_url,
+          externalUrl: inputs.externalUrl,
           person: person,
           locations: locations,
           timezone: selectedTimezone
@@ -542,41 +530,11 @@ const Overview = ({ event, refetch }: PropTypes) => {
               <Stack spacing="10px" padding="20px">
                 <FormLabel>External_URL</FormLabel>
                 <ZuInput
-                  value={inputs.external_url}
+                  value={inputs.externalUrl}
                   onChange={handleInputChange}
                   type="string"
                   name="external_url"
                   placeholder="You can input the external URL "
-                />
-              </Stack>
-              <Stack spacing="10px" padding="20px">
-                <FormLabel>Participant</FormLabel>
-                <ZuInput
-                  value={inputs.participant}
-                  onChange={handleInputChange}
-                  type="number"
-                  name="participant"
-                  placeholder="Type Participant"
-                />
-              </Stack>
-              <Stack spacing="10px" padding="20px">
-                <FormLabel>Max Participant</FormLabel>
-                <ZuInput
-                  value={inputs.max_participant}
-                  onChange={handleInputChange}
-                  type="number"
-                  name="max_participant"
-                  placeholder="Type Max Participant"
-                />
-              </Stack>
-              <Stack spacing="10px" padding="20px">
-                <FormLabel>Min Participant</FormLabel>
-                <ZuInput
-                  value={inputs.min_participant}
-                  onChange={handleInputChange}
-                  type="number"
-                  name="min_participant"
-                  placeholder="Type Min Participant"
                 />
               </Stack>
             </Box>

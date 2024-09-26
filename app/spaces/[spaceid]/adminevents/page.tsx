@@ -8,7 +8,7 @@ import { Event, Space } from '@/types';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';
 
 import Drawer from '@/components/drawer';
-import { getSpaceQuery } from '@/services/space';
+import { getSpaceEventsQuery } from '@/services/space';
 import { useQuery } from '@tanstack/react-query';
 import { EventForm } from '@/components/form/EventForm';
 
@@ -30,7 +30,7 @@ const Home = () => {
   const { data: spaceData, refetch } = useQuery({
     queryKey: ['getSpaceByID', spaceId],
     queryFn: () => {
-      return composeClient.executeQuery(getSpaceQuery(), {
+      return composeClient.executeQuery(getSpaceEventsQuery(), {
         id: spaceId,
       });
     },
@@ -79,7 +79,7 @@ const Home = () => {
       <Box width="100%" borderLeft="1px solid #383838">
         <EventHeader />
         <CurrentEvents events={eventsData ?? []} onToggle={toggleDrawer} />
-        <Invite />
+        {/*<Invite />*/}
         <Drawer open={open} onClose={toggleDrawer} onOpen={toggleDrawer}>
           <EventForm spaceId={spaceId} handleClose={handleFormClose} />
         </Drawer>

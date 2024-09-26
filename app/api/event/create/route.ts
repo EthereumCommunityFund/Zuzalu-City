@@ -21,14 +21,11 @@ export async function POST(req: Request) {
     const {
       name,
       tagline,
-      participant,
-      max_participant,
-      min_participant,
-      external_url,
+      externalUrl,
       strDesc,
       spaceId,
       profileId,
-      avatarURL,
+      imageUrl,
       startTime,
       endTime,
       socialLinks,
@@ -41,8 +38,8 @@ export async function POST(req: Request) {
 
     const update: any = await composeClient.executeQuery(
       `
-      mutation CreateEventMutation($input: CreateEventInput!) {
-        createEvent(
+      mutation CreateZucityEventMutation($input: CreateZucityEventInput!) {
+        createZucityEvent(
           input: $input
         ) {
           document {
@@ -51,14 +48,11 @@ export async function POST(req: Request) {
             title
             description
             tagline
-            image_url
+            imageUrl
             createdAt
             startTime
             endTime
             profileId
-            participant_count
-            max_participant
-            min_participant
             status
             customLinks {
               title
@@ -68,7 +62,7 @@ export async function POST(req: Request) {
             superAdmin {
               id
             }
-            external_url
+            externalUrl
             timezone
           }
         }
@@ -82,18 +76,15 @@ export async function POST(req: Request) {
             tagline: tagline,
             spaceId: spaceId,
             profileId: profileId,
-            image_url: avatarURL,
+            imageUrl: imageUrl,
             createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
             startTime: startTime,
             endTime: endTime,
             customLinks: socialLinks,
-            participant_count: participant,
-            max_participant: max_participant,
-            min_participant: min_participant,
             status: person ? 'In-Person' : 'Online',
             tracks: tracks.join(','),
             superAdmin: adminId,
-            external_url: external_url,
+            externalUrl: externalUrl,
             timezone: timezone,
           },
         },
@@ -103,7 +94,7 @@ export async function POST(req: Request) {
       .from('locations')
       .insert({
         name: locations.join(','),
-        eventId: update.data.createEvent.document.id,
+        eventId: update.data.createZucityEvent.document.id,
       });
 
     if (locationError) {
@@ -117,7 +108,7 @@ export async function POST(req: Request) {
       .from('events')
       .insert({
         privateKey: uint8ArrayToBase64(seed),
-        eventId: update.data.createEvent.document.id,
+        eventId: update.data.createZucityEvent.document.id,
       });
 
     if (eventError) {

@@ -55,9 +55,9 @@ const getEventDetailInfo = async (eventId: string) => {
         `
         query MyQuery($id: ID!) {
           node (id: $id) {
-            ...on Event {
+            ...on zucityEvent {
               endTime
-              image_url
+              imageUrl
               startTime
               title
               timezone
@@ -172,7 +172,7 @@ const getEventImage = async (eventId: string, origin: string) => {
           <img src={`${origin}/ZuCityLogoSocial.png`} height={46} width={205} />
         </div>
         <img
-          src={eventData?.image_url}
+          src={eventData?.imageUrl}
           style={{
             height: '100%',
             borderRadius: '10px',

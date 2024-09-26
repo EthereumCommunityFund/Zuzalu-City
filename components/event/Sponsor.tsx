@@ -175,7 +175,7 @@ export const SponsorAgree: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src={event?.image_url ? event.image_url : '/14.webp'}
+            src={event?.imageUrl ? event.imageUrl : '/14.webp'}
           />
           <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
@@ -394,7 +394,7 @@ export const SponsorMint: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src={event?.image_url ? event.image_url : '/14.webp'}
+            src={event?.imageUrl ? event.imageUrl : '/14.webp'}
           />
           <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
@@ -525,7 +525,7 @@ export const SponsorTransaction: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src={event?.image_url ? event.image_url : '/14.webp'}
+            src={event?.imageUrl ? event.imageUrl : '/14.webp'}
           />
           <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>
@@ -619,7 +619,7 @@ export const SponsorComplete: React.FC<IProps> = ({
             height="30px"
             width="30px"
             borderRadius="2px"
-            src={event?.image_url ? event.image_url : '/14.webp'}
+            src={event?.imageUrl ? event.imageUrl : '/14.webp'}
           />
           <Typography variant="subtitleLB">{event?.title}</Typography>
         </Stack>

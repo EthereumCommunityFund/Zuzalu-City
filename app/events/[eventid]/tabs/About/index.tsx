@@ -353,7 +353,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               eventName={eventData.title}
               location={location}
               organizer={eventData.profile?.username as string}
-              image_url={eventData.image_url}
+              imageUrl={eventData.imageUrl}
               status={eventData.status}
             />
             {isMobile ? (
@@ -361,7 +361,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                 onToggle={toggleDrawer}
                 setWhitelist={setWhitelist}
                 setSponsor={setSponsor}
-                external_url={eventData.external_url}
+                externalUrl={eventData.externalUrl}
                 eventId={eventData.id}
                 setVerify={setVerify}
               />
@@ -486,7 +486,7 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                 onToggle={toggleDrawer}
                 setWhitelist={setWhitelist}
                 setSponsor={setSponsor}
-                external_url={eventData.external_url}
+                externalUrl={eventData.externalUrl}
                 eventId={eventData.id}
                 setVerify={setVerify}
               />

@@ -38,6 +38,7 @@ import {
 } from '@/components/cards/EventCard';
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import dynamic from 'next/dynamic';
+import { getSpaceEventsQuery } from '@/services/space';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -63,67 +64,14 @@ export default function SpaceDetailPage() {
 
   const getSpaceByID = async () => {
     setIsEventsLoading(true);
-    const GET_SPACE_QUERY = `
-      query GetSpace($id: ID!) {
-        node(id: $id) {
-          ...on Space {
-            avatar
-            banner
-            description
-            name
-            profileId
-            tagline
-            website
-            twitter
-            telegram
-            nostr
-            lens
-            github
-            discord
-            ens
-            admins {
-              id
-            }
-            superAdmin {
-              id
-            }
-            events(first: 10) {
-              edges {
-                node {
-                  createdAt
-                  description
-                  endTime
-                  external_url
-                  gated
-                  id
-                  image_url
-                  max_participant
-                  meeting_url
-                  min_participant
-                  participant_count
-                  profileId
-                  spaceId
-                  startTime
-                  status
-                  tagline
-                  timezone
-                  title
-                  space {
-                    avatar
-                    name
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      `;
     const spaceId = params.spaceid.toString();
 
-    const response: any = await composeClient.executeQuery(GET_SPACE_QUERY, {
-      id: spaceId,
-    });
+    const response: any = await composeClient.executeQuery(
+      getSpaceEventsQuery(),
+      {
+        id: spaceId,
+      },
+    );
     const spaceData: Space = response.data.node as Space;
     setSpace(spaceData);
     const eventData: SpaceEventData = response.data.node

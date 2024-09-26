@@ -20,7 +20,7 @@ const Home: React.FC = () => {
     const query = `
       query FetchEvent($id: ID!) {
         node(id: $id) {
-          ...on Event {
+          ...on ZucityEvent {
             title
             description
             status
@@ -29,18 +29,15 @@ const Home: React.FC = () => {
             tagline
             timezone
             createdAt
-            image_url
+            imageUrl
             profile {
               avatar
               username
             }
             startTime
             description
-            meeting_url
-            external_url
-            min_participant
-            max_participant
-            participant_count
+            meetingUrl
+            externalUrl
             tracks
             customLinks {
               title
@@ -58,6 +55,7 @@ const Home: React.FC = () => {
               image_url
               status
               type
+              checkin
             }
           }
         }

@@ -10,7 +10,7 @@ interface PropTypes {
   startTime: string;
   endTime: string;
   location: string;
-  image_url?: string;
+  imageUrl?: string;
   organizer: string;
   tagline?: string;
   avatar?: string;
@@ -24,7 +24,7 @@ const EventName = ({
   endTime,
   startTime,
   location,
-  image_url,
+  imageUrl,
   organizer,
   tagline,
   avatar,
@@ -51,7 +51,7 @@ const EventName = ({
             component="img"
             width={isMobile ? '350px' : '500px'}
             height={isMobile ? '350px' : '500px'}
-            src={image_url}
+            src={imageUrl}
             borderRadius="10px"
             border="1px solid rgba(255, 255, 255, 0.2)"
           />

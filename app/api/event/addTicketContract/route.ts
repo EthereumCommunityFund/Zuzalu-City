@@ -39,6 +39,7 @@ export async function POST(req: Request) {
               image_url
               status
               type
+              checkin
             }
           }
         }
