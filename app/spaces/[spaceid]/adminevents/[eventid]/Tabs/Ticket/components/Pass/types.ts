@@ -1,11 +1,13 @@
 import { ReactNode } from 'react';
 
-export interface RegistrationMethod {
+export interface ItemType {
   id: string;
-  name: string;
+  name?: string;
+  customName?: ReactNode;
   description: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   disabled?: boolean;
   hasWhitelisting?: boolean;
   selectedIcon?: ReactNode;
+  expandedContent?: ReactNode;
 }
