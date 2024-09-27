@@ -2,10 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import {
   Box,
   Typography,
-  Paper,
   Button,
   Stack,
-  Checkbox,
   CircularProgress,
 } from '@mui/material';
 import FormHeader from '@/components/form/FormHeader';
@@ -19,6 +17,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { updateCheckinPass } from '@/services/event/updateEvent';
+import { CommonWrapper, Title, Item } from './Common';
 
 interface RegistrationMethod {
   id: string;
@@ -119,6 +118,31 @@ const RegistrationMethodSelector: React.FC<RegistrationMethodSelectorProps> = ({
     [selectedMethod],
   );
 
+  const renderExpandedContent = useCallback((methodId: string) => {
+    switch (methodId) {
+      case 'scrollpass':
+        return (
+          <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.8 }}>
+            Additional information about Scrollpass. You can customize this section with more details or configuration options.
+          </Typography>
+        );
+      case 'zupass':
+        return (
+          <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.8 }}>
+            Additional information about Zupass. You can customize this section with more details or configuration options.
+          </Typography>
+        );
+      case 'none':
+        return (
+          <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.8 }}>
+            Additional information about No Registration method. You can customize this section with more details or configuration options.
+          </Typography>
+        );
+      default:
+        return null;
+    }
+  }, []);
+
   return (
     <Box
       sx={{
@@ -126,97 +150,27 @@ const RegistrationMethodSelector: React.FC<RegistrationMethodSelectorProps> = ({
       }}
       role="presentation"
       zIndex="100"
+      borderLeft="1px solid #383838"
     >
       <FormHeader handleClose={onClose} title="Configure Passes" />
       {step === 1 ? (
         <Stack padding="20px" spacing="20px">
-          <Stack
-            sx={{
-              border: '1px solid rgba(255, 255, 255, 0.10)',
-              padding: '20px',
-              background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: '10px',
-            }}
-            spacing="30px"
-          >
+          <CommonWrapper>
+            <Title
+              title="Select a Registration Method"
+              description="Select a method of registration and ticketing for this event to use this selection cannot be changed once confirmed."
+            />
             <Stack spacing="10px">
-              <Typography
-                fontSize={20}
-                fontWeight={700}
-                lineHeight={1.2}
-                sx={{ opacity: 0.7 }}
-              >
-                Select a Registration Method
-              </Typography>
-              <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.6 }}>
-                Select a method of registration and ticketing for this event to
-                use this selection cannot be changed once confirmed.
-              </Typography>
-            </Stack>
-            <Stack spacing="10px">
-              {registrationMethods.map((method) => {
-                const {
-                  id,
-                  name,
-                  description,
-                  icon,
-                  disabled,
-                  hasWhitelisting,
-                } = method;
-                const isSelected = id === selectedMethod;
-                return (
-                  <Paper
-                    key={method.id}
-                    sx={{
-                      border: isSelected
-                        ? '1px solid rgba(125, 255, 209, 0.10)'
-                        : '1px solid rgba(255, 255, 255, 0.10)',
-                      bgcolor: isSelected
-                        ? 'rgba(125, 255, 209, 0.10)'
-                        : 'rgba(255, 255, 255, 0.02)',
-                      p: '10px',
-                      borderRadius: '10px',
-                      opacity: disabled ? 0.6 : 1,
-                      cursor: disabled ? 'not-allowed' : 'pointer',
-                    }}
-                    onClick={() => !disabled && handleMethodChange(id)}
-                  >
-                    <Stack direction="column" spacing="10px">
-                      <Stack direction="row" justifyContent="space-between">
-                        <Box display="flex" gap="10px" alignItems="center">
-                          {icon}
-                          <Typography fontSize={16} lineHeight={1.6}>
-                            {name}
-                          </Typography>
-                          <Typography
-                            fontSize={13}
-                            lineHeight={1.4}
-                            sx={{ opacity: 0.8 }}
-                          >
-                            {hasWhitelisting
-                              ? '(+ whitelisting)'
-                              : '(External)'}
-                          </Typography>
-                        </Box>
-                        {!disabled ? (
-                          <Checkbox
-                            checked={isSelected}
-                            disabled={disabled}
-                            sx={{ p: 0 }}
-                          />
-                        ) : null}
-                      </Stack>
-                      <Typography
-                        fontSize={13}
-                        lineHeight={1.4}
-                        sx={{ opacity: 0.6 }}
-                      >
-                        {description}
-                      </Typography>
-                    </Stack>
-                  </Paper>
-                );
-              })}
+              {registrationMethods.map((method) => (
+                <Item
+                  key={method.id}
+                  method={method}
+                  isSelected={method.id === selectedMethod}
+                  onSelect={handleMethodChange}
+                  hasExpandableContent={!method.disabled}
+                  expandedContent={renderExpandedContent(method.id)}
+                />
+              ))}
               <Typography
                 fontSize={13}
                 lineHeight={1.4}
@@ -230,7 +184,7 @@ const RegistrationMethodSelector: React.FC<RegistrationMethodSelectorProps> = ({
                 the list will be accepted, approved and/or recognized.
               </Typography>
             </Stack>
-          </Stack>
+          </CommonWrapper>
           <Stack
             p="10px"
             spacing="20px"
