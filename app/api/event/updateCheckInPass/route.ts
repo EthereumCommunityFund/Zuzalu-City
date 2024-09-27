@@ -6,20 +6,11 @@ import { DID } from 'dids';
 import { ceramic, composeClient } from '@/constant';
 import { base64ToUint8Array, hashAndEncodeBase58 } from '@/utils';
 import { chainID } from '@/constant';
-import { Contract } from '@/types';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const {
-      eventId,
-      type,
-      contractAddress,
-      description,
-      image_url,
-      status,
-      checkin,
-    } = body;
+    const { eventId, checkinPass } = body;
     const { data, error } = await supabase
       .from('events')
       .select('privateKey')
@@ -35,30 +26,6 @@ export async function POST(req: Request) {
     await did.authenticate();
     ceramic.did = did;
     composeClient.setDID(did);
-    const GET_Event_QUERY = `
-    query GetZucityEvent($id: ID!) {
-      node(id: $id) {
-          ... on ZucityEvent {
-            id
-            contracts {
-              contractAddress
-              description
-              image_url
-              status
-              type
-              checkin
-            }
-          }
-        }
-      }
-    `;
-    const getEventResponse: any = await composeClient.executeQuery(
-      GET_Event_QUERY,
-      {
-        id: eventId,
-      },
-    );
-
     const query = `
             mutation UpdateZucityEvent($i: UpdateZucityEventInput!) {
             updateZucityEvent(input: $i) {
@@ -68,25 +35,12 @@ export async function POST(req: Request) {
         }
     }
     `;
-    const existingContracts: Contract[] = Array.isArray(
-      getEventResponse.data.node.contracts,
-    )
-      ? getEventResponse.data.node.contracts
-      : [];
-    const newContract: Contract = {
-      type,
-      contractAddress,
-      description,
-      image_url,
-      status,
-      checkin,
-    };
-    const updatedContracts: Contract[] = [...existingContracts, newContract];
+
     const variables = {
       i: {
         id: eventId,
         content: {
-          contracts: updatedContracts,
+          checkinPass: checkinPass,
         },
       },
     };

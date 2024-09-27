@@ -182,19 +182,21 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
                 width: '240px',
               }}
             >
-              <MenuItem
+              {/* <MenuItem
                 text={'Invite People'}
                 onClick={() => router.push(`/spaces/${spaceId}/edit/invite`)}
               >
                 <UserPlusIcon size={5} />
-              </MenuItem>
-              <MenuItem
-                onClick={() => router.push(`/spaces/${spaceId}/edit`)}
-                text={'Space Settings'}
-              >
-                <SettingIcon size={5} />
-              </MenuItem>
-              <MenuItem
+              </MenuItem>*/}
+              {isAdmin && (
+                <MenuItem
+                  onClick={() => router.push(`/spaces/${spaceId}/edit`)}
+                  text={'Space Settings'}
+                >
+                  <SettingIcon size={5} />
+                </MenuItem>
+              )}
+              {/*<MenuItem
                 onClick={() => router.push(`/spaces/${spaceId}/edit`)}
                 text={'Privacy Settings'}
               >
@@ -205,7 +207,7 @@ const SubSidebar: React.FC<SubSidebarProps> = ({
                 text={'Notification Settings'}
               >
                 <NotificationIcon size={5} />
-              </MenuItem>
+              </MenuItem>*/}
             </Stack>
           </Popover>
         </Stack>
