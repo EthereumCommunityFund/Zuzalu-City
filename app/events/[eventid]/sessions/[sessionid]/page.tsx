@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
   Stack,
@@ -1841,6 +1841,17 @@ const Home = () => {
     };
   }, []);
 
+  const isInTime = useMemo(() => {
+    return (
+      dayjs(session?.startTime)
+        .tz(eventData?.timezone)
+        .isBefore(dayjs().tz(eventData?.timezone)) &&
+      dayjs(session?.endTime)
+        .tz(eventData?.timezone)
+        .isAfter(dayjs().tz(eventData?.timezone))
+    );
+  }, [session?.startTime, session?.endTime, eventData?.timezone]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Dialog
@@ -2036,16 +2047,18 @@ const Home = () => {
                 <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                   <Stack spacing="10px">
                     <Box flex={1}>
-                      <Typography
-                        bgcolor="#7DFFD11A"
-                        padding="4px 8px"
-                        color="#7DFFD1"
-                        variant="bodyX"
-                        borderRadius="2px"
-                        marginRight="10px"
-                      >
-                        · LIVE
-                      </Typography>
+                      {isInTime ? (
+                        <Typography
+                          bgcolor="#7DFFD11A"
+                          padding="4px 8px"
+                          color="#7DFFD1"
+                          variant="bodyX"
+                          borderRadius="2px"
+                          marginRight="10px"
+                        >
+                          · LIVE
+                        </Typography>
+                      ) : null}
                       <Typography
                         bgcolor="rgba(255, 255, 255, 0.06)"
                         padding="4px 8px"

@@ -2,20 +2,36 @@
 import * as React from 'react';
 import { Box, Stack, useMediaQuery } from '@mui/material';
 
-import { Ticket, Overview, Venue } from './Tabs';
+import { Ticket, Overview, Venue, Announcements } from './Tabs';
 import { Tabbar, Navbar } from 'components/layout';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Event } from '@/types';
+import { Event, Space } from '@/types';
 import { useQuery } from '@tanstack/react-query';
+import { getSpacesQuery } from '@/services/space';
 
 const Home: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
   const [event, setEvent] = React.useState<Event>();
 
-  const { composeClient } = useCeramicContext();
+  const { composeClient, ceramic } = useCeramicContext();
 
   const pathname = useParams();
+  const params = useParams();
+  const router = useRouter();
+  const spaceId = params.spaceid.toString();
+
+  const { data: spaceData } = useQuery({
+    queryKey: ['getSpaceByID', spaceId],
+    queryFn: () => {
+      return composeClient.executeQuery(getSpacesQuery, {
+        id: spaceId,
+      });
+    },
+    select: (data) => {
+      return data?.data?.node as Space;
+    },
+  });
 
   const fetchEventById = async (id: string) => {
     const query = `
@@ -96,6 +112,8 @@ const Home: React.FC = () => {
     switch (tabName) {
       case 'Overview':
         return <Overview event={event} refetch={refetchData} />;
+      case 'Announcements':
+        return <Announcements event={event} />;
       case 'Tickets':
         return <Ticket event={event} />;
       /*case 'Event Sessions':
@@ -106,6 +124,34 @@ const Home: React.FC = () => {
         return <Overview />;
     }
   };
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (pathname.eventid) {
+          fetchEventById(pathname.eventid as string);
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  React.useEffect(() => {
+    if (spaceData) {
+      const superAdmins =
+        spaceData?.superAdmin?.map((superAdmin) =>
+          superAdmin.id.toLowerCase(),
+        ) || [];
+      const admins =
+        spaceData?.admins?.map((admin) => admin.id.toLowerCase()) || [];
+      const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
+      if (!admins.includes(userDID) && !superAdmins.includes(userDID)) {
+        router.push('/');
+      }
+    }
+  }, [ceramic?.did?.parent, router, spaceData]);
 
   return (
     <Stack width="100%">

@@ -25,6 +25,8 @@ import { Uploader3 } from '@lxdao/uploader3';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
 import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
+import { covertNameToUrlName } from '@/utils/format';
+import { createUrl } from '@/services/url';
 
 const validationSchema = yup.object({
   name: yup
@@ -185,6 +187,9 @@ const Create = () => {
           `Error creating space: ${JSON.stringify(result.errors)}`,
         );
       }
+      const urlName = covertNameToUrlName(name);
+      // @ts-ignore
+      await createUrl(urlName, result.data.createSpace.document.id, 'spaces');
       setShowModal(true);
     } catch (err: any) {
       console.log(err);

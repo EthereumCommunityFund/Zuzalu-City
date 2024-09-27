@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Stack,
@@ -219,6 +219,15 @@ const SessionCard: React.FC<SessionCardProps> = ({
               · LIVE
             </Typography>
           )}
+          <Typography
+            bgcolor="rgba(255, 255, 255, 0.05)"
+            padding="2px 4px"
+            color="#fff"
+            variant="bodyX"
+            borderRadius="2px"
+          >
+            {session.format === 'person' ? 'IRL' : 'ONLINE'}
+          </Typography>
           <Typography variant="caption" textTransform="uppercase">
             {session.track}
           </Typography>

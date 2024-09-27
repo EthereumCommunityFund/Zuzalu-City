@@ -117,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
       url: '/',
     },
     {
-      content: 'Spaces',
+      content: 'Communities',
       icon: <SpaceIcon />,
       function: () => router.push('/spaces'),
       url: '/spaces',
@@ -348,7 +348,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
             color="rgba(225, 225, 225, 0.7)"
             variant="body2"
             component="a"
-            href="https://s.craft.me/XUjXr6M4jT8VBZ"
+            href="https://zuzalu.craft.me/YWcT31Zw6UadLo"
             target="_blank"
             sx={{
               textDecoration: 'none',

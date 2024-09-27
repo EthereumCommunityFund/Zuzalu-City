@@ -9,6 +9,7 @@ import SelectCheckItem from '@/components/select/selectCheckItem';
 const filter = createFilterOptions<FilmOptionType>();
 
 interface IProps {
+  options?: FilmOptionType[];
   onChange: (value: string[]) => void;
   initialValues?: FilmOptionType[];
 }
@@ -16,6 +17,7 @@ interface IProps {
 export default function SelectCategories({
   onChange,
   initialValues = [],
+  options = SPACE_CATEGORIES,
 }: IProps) {
   const [value, setValue] = React.useState<FilmOptionType[]>(initialValues);
 
@@ -52,7 +54,7 @@ export default function SelectCategories({
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
-      options={SPACE_CATEGORIES}
+      options={options}
       getOptionLabel={(option) => {
         if ((option as any).isAdd) {
           return option.value;

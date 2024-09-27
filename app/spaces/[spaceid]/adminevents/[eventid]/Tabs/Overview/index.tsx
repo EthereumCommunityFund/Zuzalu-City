@@ -58,6 +58,8 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/utils/supabase/client';
 import { updateEventKeySupa } from '@/services/event/updateEvent';
+import { createUrlWhenEdit } from '@/services/url';
+import { covertNameToUrlName } from '@/utils/format';
 
 dayjs.extend(timezone);
 
@@ -285,6 +287,10 @@ const Overview = ({ event, refetch }: PropTypes) => {
             : dayjs.tz.guess(),
         };
         await updateEventKeySupa(eventUpdateInput);
+        if (inputs.name !== event.title) {
+          const urlName = covertNameToUrlName(inputs.name);
+          await createUrlWhenEdit(urlName, event.id, 'events');
+        }
         refetch?.();
         handleClose();
       } catch (error) {

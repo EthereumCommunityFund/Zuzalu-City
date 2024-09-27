@@ -25,6 +25,8 @@ const EditorPreview: React.FC<{
    * if scrollHeight is set, the editor will be scrollable
    */
   scrollHeight?: number;
+  fontSize?: number;
+  style?: React.CSSProperties;
   onCollapse?: (collapsed: boolean) => void;
 }> = (props) => {
   const {
@@ -32,6 +34,8 @@ const EditorPreview: React.FC<{
     collapseHeight = 200,
     collapsable = true,
     scrollHeight,
+    fontSize,
+    style,
   } = props;
 
   const [previewData, setPreviewData] = useState<OutputData | undefined>(
@@ -56,6 +60,7 @@ const EditorPreview: React.FC<{
       minHeight: 0,
       onReady() {
         container.classList.add('editor-ready');
+        removeExtraLines(container);
         if (collapsable) {
           // eslint-disable-next-line no-inner-declarations
           function calculateHeight() {
@@ -80,6 +85,15 @@ const EditorPreview: React.FC<{
       },
     });
   }, []);
+
+  const removeExtraLines = (container: HTMLElement) => {
+    const blocks = container.querySelectorAll('.ce-block');
+    blocks.forEach((block, index) => {
+      if (block.textContent?.trim() === '') {
+        block.remove();
+      }
+    });
+  };
 
   useEffect(() => {
     if (wrapperRef.current && !editorRef.current) {
@@ -117,7 +131,8 @@ const EditorPreview: React.FC<{
     <Wrapper
       ref={wrapperRef}
       scrollHeight={scrollHeight}
-      style={{ height: collapsed ? collapseHeight : 'auto' }}
+      fontSize={fontSize}
+      style={{ ...style, height: collapsed ? collapseHeight : 'auto' }}
     >
       <Global styles={globalStyles} />
     </Wrapper>
@@ -140,13 +155,18 @@ const globalStyles = css`
   .ce-block--selected .ce-block__content {
     background-color: unset;
   }
+
+  .cdx-block {
+    padding: 0;
+  }
 `;
 
 const Wrapper = styled('div')<{
   scrollHeight?: number;
+  fontSize?: number;
 }>`
   color: white;
-  font-size: 16px;
+  font-size: ${(props) => props.fontSize || 16}px;
   line-height: 1.6;
   font-family: 'Inter', sans-serif;
   overflow: hidden;

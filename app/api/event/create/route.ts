@@ -90,6 +90,9 @@ export async function POST(req: Request) {
         },
       },
     );
+
+    const eventId = update.data.createEvent.document.id;
+
     const { data: locationData, error: locationError } = await supabase
       .from('locations')
       .insert({
@@ -118,6 +121,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
+        data: {
+          eventId,
+        },
         message:
           'Submitted! Create process probably complete after few minutes.',
       },

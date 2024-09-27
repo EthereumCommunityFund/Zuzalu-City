@@ -358,3 +358,13 @@ export interface FilmOptionType {
   label: string;
   isAdd?: boolean;
 }
+
+export interface Post {
+  id: number;
+  title: string;
+  tags: string;
+  description: string;
+  creator: string;
+  eventId: string;
+  created_at: string;
+}

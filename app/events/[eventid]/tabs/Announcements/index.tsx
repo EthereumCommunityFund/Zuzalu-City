@@ -1,12 +1,6 @@
 'use client';
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from 'react';
-import { useParams } from 'next/navigation';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Stack,
   Box,
@@ -14,17 +8,9 @@ import {
   SwipeableDrawer,
   useTheme,
   useMediaQuery,
+  Skeleton,
 } from '@mui/material';
-import {
-  EventName,
-  EventDetail,
-  EventRegister,
-  EventAbout,
-  Initial,
-  Disclaimer,
-  Email,
-  Payment,
-} from 'components/event';
+import { EventDetail, EventRegister } from 'components/event';
 import {
   Verify,
   Agree,
@@ -39,22 +25,24 @@ import {
   SponsorComplete,
 } from '@/components/event/Sponsor';
 import { ZuButton } from '@/components/core';
-import { XMarkIcon } from '@/components/icons';
-import { useCeramicContext } from '@/context/CeramicContext';
-import { CeramicResponseType, EventEdge, Event } from '@/types';
+import { ArrowUpLeftIcon, XMarkIcon } from '@/components/icons';
+import { Event } from '@/types';
 import { supabase } from '@/utils/supabase/client';
-import { SpaceCard } from '@/components/cards';
 import { Anchor, Contract } from '@/types';
 import { LatLngLiteral } from 'leaflet';
 import getLatLngFromAddress from '@/utils/osm';
-import LotteryCard from '@/components/cards/LotteryCard';
+import { styled } from '@mui/system';
+import { useQuery } from '@tanstack/react-query';
+import { getPosts } from '@/services/announcements';
+import PostCard from './PostCard';
 
 interface IAbout {
   eventData: Event | undefined;
   setVerify: React.Dispatch<React.SetStateAction<boolean>> | any;
+  canEdit: boolean;
 }
 
-const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
+const Announcements: React.FC<IAbout> = ({ eventData, setVerify, canEdit }) => {
   const [location, setLocation] = useState<string>('');
 
   const [whitelist, setWhitelist] = useState<boolean>(false);
@@ -86,8 +74,6 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
-  const { composeClient } = useCeramicContext();
-
   const [state, setState] = useState({
     top: false,
     left: false,
@@ -100,6 +86,27 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
     lng: 0,
   });
   const ref = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
+  const [activeTag, setActiveTag] = useState<string>('All');
+
+  const { data: postsData, isLoading } = useQuery({
+    queryKey: ['getPosts', eventId],
+    queryFn: () => getPosts(eventId),
+  });
+
+  const tags = useMemo(() => {
+    const tagsData = postsData?.data
+      ?.map((post) => post.tags.split(','))
+      .flat();
+    const set = new Set(tagsData);
+    if (set.size === 0) return [];
+    return ['All', ...set];
+  }, [postsData]);
+
+  const filteredPosts = useMemo(() => {
+    if (activeTag === 'All') return postsData?.data;
+    return postsData?.data?.filter((post) => post.tags.includes(activeTag));
+  }, [activeTag, postsData]);
 
   const getLocation = async () => {
     try {
@@ -175,10 +182,6 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
           </ZuButton>
           <Typography variant="subtitleSB">Register for Event</Typography>
         </Stack>
-        {/* {!isInitial && !isDisclaimer && !isEmail && !isPayment && <Initial setIsInitial={setIsInitial} />}
-        {isInitial && !isDisclaimer && !isEmail && !isPayment && <Disclaimer setIsInitial={setIsInitial} setIsDisclaimer={setIsDisclaimer} />}
-        {!isInitial && isDisclaimer && !isEmail && !isPayment && <Email setIsDisclaimer={setIsDisclaimer} setIsEmail={setIsEmail} />}
-        {!isInitial && !isDisclaimer && isEmail && !isPayment && <Payment setIsEmail={setIsEmail} setIsPayment={setIsPayment} handleClose={handleClose} />} */}
         {whitelist && (
           <>
             {!isVerify &&
@@ -304,6 +307,11 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
       justifyContent="center"
       alignItems="center"
       bgcolor="#222222"
+      sx={{
+        [breakpoints.down('sm')]: {
+          padding: '20px',
+        },
+      }}
     >
       {eventData && (
         <Stack
@@ -319,7 +327,6 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
           }}
         >
           <Stack
-            spacing="20px"
             boxSizing={'border-box'}
             sx={{
               width: '600px',
@@ -335,136 +342,112 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               },
             }}
           >
-            {/* <Stack spacing="4px">
-                      <Box component="img" src="/sponsor_banner.png" height="100px" borderRadius="10px" />
-                      <Typography variant="caption" textAlign="right">
-                        Sponsored Banner
-                      </Typography>
-                    </Stack> */}
-
-            <EventName
-              avatar={eventData.space?.avatar}
-              tagline={eventData.tagline}
-              endTime={eventData.endTime}
-              startTime={eventData.startTime}
-              eventDescription={eventData.description}
-              spaceName={eventData.space?.name}
-              eventName={eventData.title}
-              location={location}
-              organizer={eventData.profile?.username as string}
-              imageUrl={eventData.imageUrl}
-              status={eventData.status}
-            />
+            {canEdit ? (
+              <Stack
+                padding="10px"
+                bgcolor="#ffc77d1a"
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+                border="1px solid rgba(255, 199, 125, .1)"
+                borderRadius={'8px'}
+              >
+                <Typography
+                  fontSize={'14px'}
+                  lineHeight={'160%'}
+                  color={'rgba(255, 199, 125, 1)'}
+                  fontWeight={600}
+                >
+                  You are organizing this event
+                </Typography>
+                <ZuButton
+                  startIcon={<ArrowUpLeftIcon size={5} />}
+                  sx={{
+                    padding: '6px 10px',
+                    backgroundColor: 'rgba(255, 199, 125, 0.05)',
+                    gap: '10px',
+                    '& > span': {
+                      margin: '0px',
+                    },
+                    color: 'rgba(255, 199, 125, 1)',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                  }}
+                  onClick={() =>
+                    router.push(
+                      `/spaces/${eventData?.space?.id}/adminevents/${eventId}`,
+                    )
+                  }
+                >
+                  Manage
+                </ZuButton>
+              </Stack>
+            ) : null}
+            <Box
+              display="flex"
+              flexDirection="column"
+              sx={{
+                position: 'sticky',
+                top: '95px',
+                zIndex: 10,
+                background: '#222',
+                padding: '30px 0',
+                [breakpoints.down('sm')]: {
+                  padding: '20px 0',
+                },
+              }}
+            >
+              <Title>Host Announcements</Title>
+            </Box>
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="100%" height={40} />
+            ) : (
+              <Box display="flex" gap="10px" flexWrap="wrap">
+                {tags?.map((tag) => (
+                  <TagButton
+                    key={tag}
+                    active={activeTag === tag}
+                    onClick={() => setActiveTag(tag)}
+                  >
+                    {tag === 'All' ? 'All' : `# ${tag}`}
+                  </TagButton>
+                ))}
+              </Box>
+            )}
+            <Stack
+              direction="column"
+              spacing="10px"
+              marginTop="30px"
+              sx={{
+                [breakpoints.down('sm')]: {
+                  marginTop: '20px',
+                },
+              }}
+            >
+              {isLoading
+                ? Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      variant="rectangular"
+                      width="100%"
+                      height={200}
+                    />
+                  ))
+                : filteredPosts?.map((post) => {
+                    return <PostCard post={post} key={post.id} />;
+                  })}
+            </Stack>
             {isMobile ? (
               <EventRegister
                 onToggle={toggleDrawer}
                 setWhitelist={setWhitelist}
                 setSponsor={setSponsor}
-                externalUrl={eventData.externalUrl}
+                external_url={eventData.external_url}
                 eventId={eventData.id}
                 setVerify={setVerify}
               />
             ) : null}
-            <EventAbout description={eventData.description} />
-            {/* <Stack
-              bgcolor="#292929"
-              padding="20px"
-              spacing="20px"
-              borderRadius="10px"
-            >
-              <Typography
-                variant="subtitleSB"
-                sx={{
-                  opacity: '0.6',
-                  textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)',
-                }}
-                fontSize={'18px'}
-                fontWeight={700}
-              >
-                EVENT SPONSORS
-              </Typography>
-              <Box display="flex" gap="20px" flexWrap="wrap">
-                <Stack alignItems="center" spacing="4px">
-                  <Box
-                    component="img"
-                    src="/sponsor.png"
-                    width="100px"
-                    height="100px"
-                    borderRadius="10px"
-                  />
-                  <Typography variant="bodyS">SponsorName</Typography>
-                </Stack>
-                <Stack alignItems="center" spacing="4px">
-                  <Box
-                    component="img"
-                    src="/sponsor.png"
-                    width="100px"
-                    height="100px"
-                    borderRadius="10px"
-                  />
-                  <Typography variant="bodyS">SponsorName</Typography>
-                </Stack>
-                <Stack alignItems="center" spacing="4px">
-                  <Box
-                    component="img"
-                    src="/sponsor.png"
-                    width="100px"
-                    height="100px"
-                    borderRadius="10px"
-                  />
-                  <Typography variant="bodyS">SponsorName</Typography>
-                </Stack>
-                <Stack alignItems="center" spacing="4px">
-                  <Box
-                    component="img"
-                    src="/sponsor.png"
-                    width="100px"
-                    height="100px"
-                    borderRadius="10px"
-                  />
-                  <Typography variant="bodyS">SponsorName</Typography>
-                </Stack>
-                <Stack alignItems="center" spacing="4px">
-                  <Box
-                    component="img"
-                    src="/sponsor.png"
-                    width="100px"
-                    height="100px"
-                    borderRadius="10px"
-                  />
-                  <Typography variant="bodyS">SponsorName</Typography>
-                </Stack>
-              </Box>
-            </Stack> */}
-            {/*<Stack
-              bgcolor="#292929"
-              padding="20px"
-              spacing="20px"
-              borderRadius="10px"
-              height="300px"
-            >
-              <Typography variant="subtitleSB" sx={{opacity: '0.6', textShadow: '0px 5px 10px rgba(0, 0, 0, 0.15)'}} fontSize={'18px'} fontWeight={700}>ORGANIZER UPDATES</Typography>
-              <Stack spacing="10px">
-                <Stack direction="row" alignItems="center" spacing="10px">
-                  <Box
-                    component="img"
-                    src="/5.webp"
-                    width="30px"
-                    height="30px"
-                    borderRadius="20px"
-                  />
-                  <Typography variant="bodyMB">drivenfast</Typography>
-                  <Typography variant="caption">3 DAYS AGO</Typography>
-                </Stack>
-                <Typography variant="bodyM">
-                  ZuConnect is an experience crafted with love by Zuzalu, whose
-                  mission is to foster a global network of communities to
-                  advance humanity by creating playgrounds at the intersection
-                  of free and open technology, science, health, and social
-                  innovation.
-                </Typography>
-              </Stack>
-            </Stack>*/}
           </Stack>
           <Stack
             spacing="20px"
@@ -485,20 +468,10 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
                 onToggle={toggleDrawer}
                 setWhitelist={setWhitelist}
                 setSponsor={setSponsor}
-                externalUrl={eventData.externalUrl}
+                external_url={eventData.external_url}
                 eventId={eventData.id}
                 setVerify={setVerify}
               />
-            ) : null}
-            {/* <Stack spacing="4px">
-                      <Box component="img" src="/sponsor_banner.png" height="200px" borderRadius="10px" width="100%" />
-                      <Typography variant="caption" textAlign="right">
-                        Sponsored Banner
-                      </Typography>
-                    </Stack> */}
-            {eventId ===
-            'kjzl6kcym7w8yaej4q6v4xtx6v3tnmg4iw9ocaz4zbw5fw5fz8lwn1k9l7f4flf' ? (
-              <LotteryCard inEvent />
             ) : null}
             <EventDetail
               status={eventData.status}
@@ -506,9 +479,6 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
               address={location}
               location={osm}
             />
-            {/* <Stack>
-                      <SpaceCard id={params.spaceid.toString()} title={eventData?.space?.name} logoImage={eventData?.space?.avatar} bgImage={eventData?.space?.banner} description={eventData?.space?.description} />
-                    </Stack> */}
           </Stack>
           <SwipeableDrawer
             hideBackdrop={true}
@@ -531,4 +501,29 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
   );
 };
 
-export default About;
+const Title = styled(Typography)`
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 120%;
+  color: #fff;
+  opacity: 0.6;
+  text-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
+`;
+
+const TagButton = styled(ZuButton)<{ active?: boolean }>`
+  padding: 6px 8px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  font-size: 13px;
+  line-height: 140%;
+  color: #fff;
+  background-color: ${(props) =>
+    props.active ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)'};
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+`;
+
+export default Announcements;
