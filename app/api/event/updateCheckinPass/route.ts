@@ -34,6 +34,7 @@ export async function POST(req: Request) {
         }
     }
     `;
+
     const variables = {
       i: {
         id: eventId,
