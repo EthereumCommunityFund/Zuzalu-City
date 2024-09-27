@@ -123,12 +123,9 @@ const RegistrationMethodSelector: React.FC<RegistrationMethodSelectorProps> = ({
     <Box
       sx={{
         width: '700px',
-        backgroundColor: '#222222',
-        minHeight: '100vh',
       }}
       role="presentation"
       zIndex="100"
-      borderLeft="1px solid #383838"
     >
       <FormHeader handleClose={onClose} title="Configure Passes" />
       {step === 1 ? (

@@ -21,6 +21,12 @@ const EventDrawer: React.FC<EventDrawerProps> = ({
       open={open}
       onClose={onClose}
       onOpen={onOpen}
+      sx={{
+        '& .MuiDrawer-paper': {
+          background: '#222',
+          borderLeft: '1px solid #383838',
+        },
+      }}
     >
       {children}
     </SwipeableDrawer>

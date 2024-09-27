@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
+import Yup from '@/utils/yupExtensions';
 import {
   Box,
   Typography,
@@ -41,7 +41,7 @@ import FormatCheckboxGroup from './FormatCheckbox';
 import FormUploader from './FormUploader';
 import { PlusIcon } from '../icons';
 import { covertNameToUrlName } from '@/utils/format';
-import { createUrl, createUrlWhenEdit } from '@/services/url';
+import { createUrl } from '@/services/url';
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Event name is required'),
