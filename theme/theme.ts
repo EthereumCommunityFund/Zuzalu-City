@@ -27,6 +27,12 @@ let theme = createTheme({
     },
     MuiButton: {
       styleOverrides: {
+        root: {
+          '&.Mui-disabled': {
+            color: 'inherit',
+            opacity: 0.26,
+          },
+        },
         contained: {
           ...Typography.buttonX,
           backgroundColor: '#373737',
@@ -142,6 +148,13 @@ let theme = createTheme({
           '&.Mui-checked': {
             color: '#7DFFD1',
           },
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: 'rgba(255, 255, 255, 0.1)',
         },
       },
     },

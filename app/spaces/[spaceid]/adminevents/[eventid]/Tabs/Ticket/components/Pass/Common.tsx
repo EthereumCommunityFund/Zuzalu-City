@@ -25,7 +25,7 @@ export const CommonWrapper = ({ children }: { children: React.ReactNode }) => {
         background: 'rgba(255, 255, 255, 0.02)',
         borderRadius: '10px',
       }}
-      spacing="30px"
+      spacing="20px"
     >
       {children}
     </Stack>
@@ -128,11 +128,10 @@ export const Item: React.FC<ItemProps> = ({
           {description}
         </Typography>
         {expandedContent && (
-          <Collapse in={isSelected} timeout="auto" unmountOnExit>
+          <Collapse in={isSelected} timeout={300} unmountOnExit>
             <Divider
               sx={{
                 margin: '0 0 10px',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
               }}
             />
             {expandedContent}
@@ -149,6 +148,7 @@ interface ButtonGroupProps {
   isDisabled?: boolean;
   isLoading?: boolean;
   isBackButton?: boolean;
+  isConfirmButton?: boolean;
 }
 
 export const ButtonGroup: React.FC<ButtonGroupProps> = ({
@@ -157,6 +157,7 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
   isLoading = false,
   isDisabled = false,
   isBackButton = true,
+  isConfirmButton = false,
 }) => {
   return (
     <Stack spacing="20px" direction="row">
@@ -192,7 +193,13 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
         onClick={handleNext}
         disabled={isDisabled || isLoading}
       >
-        {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Confirm'}
+        {isLoading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : isConfirmButton ? (
+          'Confirm'
+        ) : (
+          'Next'
+        )}
       </Button>
     </Stack>
   );
