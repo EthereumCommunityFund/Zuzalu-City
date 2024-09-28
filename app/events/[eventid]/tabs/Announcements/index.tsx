@@ -443,7 +443,7 @@ const Announcements: React.FC<IAbout> = ({ eventData, setVerify, canEdit }) => {
                 onToggle={toggleDrawer}
                 setWhitelist={setWhitelist}
                 setSponsor={setSponsor}
-                external_url={eventData.external_url}
+                externalUrl={eventData.externalUrl}
                 eventId={eventData.id}
                 setVerify={setVerify}
               />
@@ -468,7 +468,7 @@ const Announcements: React.FC<IAbout> = ({ eventData, setVerify, canEdit }) => {
                 onToggle={toggleDrawer}
                 setWhitelist={setWhitelist}
                 setSponsor={setSponsor}
-                external_url={eventData.external_url}
+                externalUrl={eventData.externalUrl}
                 eventId={eventData.id}
                 setVerify={setVerify}
               />
