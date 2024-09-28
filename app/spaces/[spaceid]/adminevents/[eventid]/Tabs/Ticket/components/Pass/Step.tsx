@@ -1,7 +1,7 @@
 import { Box, Divider, Stack, TextField, Typography } from '@mui/material';
 import { useMemo, useState, useCallback } from 'react';
 import { CommonWrapper, Title, Item, ButtonGroup } from './Common';
-import { ItemType } from './types';
+import { ItemType, ConfigFormType } from './types';
 import { isAddress } from 'viem';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MegaPhoneIcon, ScrollPassIcon, ZuPassIcon } from '@/components/icons';
@@ -14,9 +14,9 @@ interface CommonProps {
 export const StepOne = ({ handleClose, handleNext }: CommonProps) => {
   const [addressError, setAddressError] = useState('');
 
-  const { watch, setValue, control } = useFormContext();
-  const whitelist = watch('whitelist');
-  const access = watch('access');
+  const { watch, setValue, control } = useFormContext<ConfigFormType>();
+  const whitelist = watch('whitelist') || '';
+  const access = watch('access') || '';
 
   const validateAddresses = useCallback((input: string) => {
     if (!input) {
@@ -167,8 +167,19 @@ const stepTwoItems: ItemType[] = [
 ];
 
 export const StepTwo = ({ handleClose, handleNext }: CommonProps) => {
-  const { watch, setValue, control } = useFormContext();
-  const pass = watch('pass');
+  const { watch, setValue } = useFormContext<ConfigFormType>();
+  const pass = watch('pass') || '';
+
+  const handlePassChange = useCallback(
+    (id: string) => {
+      if (id !== pass) {
+        setValue('apply', '');
+        setValue('options', '');
+      }
+      setValue('pass', id);
+    },
+    [setValue, pass],
+  );
 
   return (
     <Stack padding="20px" spacing="20px">
@@ -202,7 +213,7 @@ export const StepTwo = ({ handleClose, handleNext }: CommonProps) => {
               key={item.id}
               item={item}
               isSelected={item.id === pass}
-              onSelect={() => setValue('pass', item.id)}
+              onSelect={() => handlePassChange(item.id)}
               expandedContent={item.expandedContent}
             />
           ))}
@@ -244,6 +255,104 @@ export const StepTwo = ({ handleClose, handleNext }: CommonProps) => {
       </Stack>
       <ButtonGroup
         isDisabled={!pass}
+        handleNext={handleNext}
+        handleBack={handleClose}
+      />
+    </Stack>
+  );
+};
+
+const stepThreeItemObject: Record<string, ItemType[]> = {
+  no: [
+    {
+      id: 'join',
+      name: 'Apply to Join',
+      description: 'Require users to apply to the event before they join',
+      options: [
+        {
+          id: 'approval',
+          name: 'Approval Required?',
+        },
+      ],
+    },
+    {
+      id: 'open',
+      name: 'Open',
+      description: 'Registration to event is open',
+      options: [
+        {
+          id: 'form',
+          name: 'Require basic information about user?',
+        },
+      ],
+    },
+  ],
+  zupass: [
+    {
+      id: 'purchase',
+      name: 'Apply to Purchase',
+      description: 'Require users to apply to the event before they purchase',
+      icon: <ZuPassIcon size={5} />,
+      options: [
+        {
+          id: 'approval',
+          name: 'Approval Required?',
+        },
+      ],
+    },
+  ],
+  scrollpass: [
+    {
+      id: 'purchase',
+      name: 'Apply to Purchase',
+      description: 'Require users to apply to the event before they purchase',
+      options: [
+        {
+          id: 'approval',
+          name: 'Approval Required?',
+        },
+      ],
+    },
+  ],
+};
+
+export const StepThree = ({ handleClose, handleNext }: CommonProps) => {
+  const { watch, setValue } = useFormContext<ConfigFormType>();
+  const apply = watch('apply') || '';
+  const pass = watch('pass') || '';
+  const options = watch('options') || '';
+
+  return (
+    <Stack padding="20px" spacing="20px">
+      <CommonWrapper>
+        <Title
+          title="Applying to Event"
+          description="Choose an option for users to apply to join this event"
+        />
+        <Stack spacing="10px">
+          {stepThreeItemObject[pass].map((item) => (
+            <Item
+              key={item.id}
+              item={item}
+              isSelected={item.id === apply}
+              onSelect={() => {
+                if (item.id !== apply) {
+                  setValue('options', '');
+                }
+                setValue('apply', item.id);
+              }}
+              options={item.options}
+              onOptionsChange={(optionIds) =>
+                setValue('options', optionIds.join(','))
+              }
+              selectedOptions={options.split(',') || []}
+            />
+          ))}
+        </Stack>
+      </CommonWrapper>
+      <ButtonGroup
+        isConfirmButton
+        isDisabled={!apply}
         handleNext={handleNext}
         handleBack={handleClose}
       />

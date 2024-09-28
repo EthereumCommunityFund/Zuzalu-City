@@ -1,30 +1,17 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Stack,
-  CircularProgress,
-} from '@mui/material';
+import React, { useCallback, useState } from 'react';
+import { Box } from '@mui/material';
 import FormHeader from '@/components/form/FormHeader';
-import { LeftArrowIcon, RightArrowIcon } from '@/components/icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { updateCheckinPass } from '@/services/event/updateEvent';
-import { StepOne, StepTwo } from './Step';
-import * as yup from 'yup';
+import { StepOne, StepThree, StepTwo } from './Step';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { schema } from './types';
 
 interface RegistrationMethodSelectorProps {
   onClose: () => void;
 }
-
-const schema = yup.object().shape({
-  access: yup.string(),
-  whitelist: yup.string(),
-  pass: yup.string(),
-});
 
 const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({ onClose }) => {
   const [step, setStep] = useState(1);
@@ -86,7 +73,12 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({ onClose }) => {
             handleClose={() => handleStep('back')}
             handleNext={() => handleStep('next')}
           />
-        ) : null}
+        ) : (
+          <StepThree
+            handleClose={() => handleStep('back')}
+            handleNext={() => handleStep('next')}
+          />
+        )}
       </FormProvider>
     </Box>
   );

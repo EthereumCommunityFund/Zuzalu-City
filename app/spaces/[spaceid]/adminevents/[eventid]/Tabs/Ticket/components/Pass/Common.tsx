@@ -10,7 +10,7 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-import { ItemType } from './types';
+import { ItemType, OptionType } from './types';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useCallback } from 'react';
@@ -61,14 +61,24 @@ interface ItemProps {
   isSelected: boolean;
   onSelect: (id: string) => void;
   expandedContent?: React.ReactNode;
+  options?: OptionType[];
+  selectedOptions?: string[];
+  onOptionsChange?: (optionIds: string[]) => void;
 }
 
 const RoundCheckbox: React.FC<CheckboxProps> = (props) => {
   return (
     <Checkbox
       {...props}
-      icon={<RadioButtonUncheckedIcon />}
-      checkedIcon={<CheckCircleIcon />}
+      icon={
+        <RadioButtonUncheckedIcon
+          sx={{
+            width: 16,
+            height: 16,
+          }}
+        />
+      }
+      checkedIcon={<CheckCircleIcon sx={{ width: 16, height: 16 }} />}
       sx={{
         p: 0,
         ...props.sx,
@@ -82,6 +92,9 @@ export const Item: React.FC<ItemProps> = ({
   isSelected,
   onSelect,
   expandedContent,
+  options = [],
+  selectedOptions = [],
+  onOptionsChange,
 }) => {
   const { id, name, description, icon, disabled, customName } = item;
 
@@ -90,6 +103,17 @@ export const Item: React.FC<ItemProps> = ({
       onSelect(id);
     }
   }, [disabled, id, onSelect]);
+
+  const handleOptionToggle = useCallback(
+    (optionId: string) => {
+      if (!isSelected) return;
+      const newSelectedOptions = selectedOptions.includes(optionId)
+        ? selectedOptions.filter((id) => id !== optionId)
+        : [...selectedOptions, optionId];
+      onOptionsChange?.(newSelectedOptions);
+    },
+    [selectedOptions, onOptionsChange, isSelected],
+  );
 
   return (
     <Paper
@@ -127,14 +151,44 @@ export const Item: React.FC<ItemProps> = ({
         <Typography fontSize={13} lineHeight={1.4} sx={{ opacity: 0.6 }}>
           {description}
         </Typography>
-        {expandedContent && (
+        {(expandedContent || options.length > 0) && (
           <Collapse in={isSelected} timeout={300} unmountOnExit>
             <Divider
               sx={{
                 margin: '0 0 10px',
               }}
             />
-            {expandedContent}
+            {expandedContent ? (
+              expandedContent
+            ) : (
+              <>
+                <Typography
+                  fontSize={14}
+                  lineHeight={1.6}
+                  sx={{ opacity: 0.6 }}
+                >
+                  Optional:
+                </Typography>
+                {options.map((option) => (
+                  <Box
+                    key={option.id}
+                    display="flex"
+                    gap="10px"
+                    alignItems="center"
+                    onClick={() => {
+                      handleOptionToggle(option.id);
+                    }}
+                  >
+                    <RoundCheckbox
+                      checked={selectedOptions.includes(option.id)}
+                    />
+                    <Typography fontSize={16} lineHeight={1.6}>
+                      {option.name}
+                    </Typography>
+                  </Box>
+                ))}
+              </>
+            )}
           </Collapse>
         )}
       </Stack>
