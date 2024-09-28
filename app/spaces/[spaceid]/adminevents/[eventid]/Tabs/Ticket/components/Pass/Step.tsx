@@ -348,6 +348,13 @@ export const StepThree = ({ handleClose, handleNext }: CommonProps) => {
               selectedOptions={options.split(',') || []}
             />
           ))}
+          <Typography fontSize={14} lineHeight={1.6} color="#7DFFD1">
+            Application setting will be available in your event panel.
+          </Typography>
+          <Typography fontSize={14} lineHeight={1.6} color="#7DFFD1">
+            {options.includes('form') &&
+              'Form setting will be available in your event panel.'}
+          </Typography>
         </Stack>
       </CommonWrapper>
       <ButtonGroup
