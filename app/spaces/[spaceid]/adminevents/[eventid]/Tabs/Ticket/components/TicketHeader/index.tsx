@@ -22,6 +22,7 @@ import { ethers } from 'ethers';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { updateContractID } from '@/services/event/addContractID';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import { StatusIndicatorPanel, SwitchWithLabel } from '../Common';
 
 interface PropTypes {
   event?: Event;
@@ -101,90 +102,36 @@ const TicketHeader = ({ event, visible }: PropTypes) => {
       paddingBottom={'30px'}
       borderBottom={'1px solid rgba(255,255,255,0.10)'}
     >
-      <Dialog
-        title="Added"
-        message="You can create ticekts now."
-        showModal={showModal}
-        onClose={() => {
-          setShowModal(false);
-        }}
-        onConfirm={() => {
-          setShowModal(false);
-        }}
-      />
-      <Dialog
-        showModal={blockClickModal}
-        showActions={false}
-        title="Updating"
-        message="Please wait while the data is being updated..."
-      />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"
       >
         <Typography variant="h5" color="white">
-          Ticketing
-        </Typography>
-        <Typography variant="body2" color="white">
-          Total Sold: 18
+          Event Registration
         </Typography>
       </Stack>
       <Stack direction="row" spacing="20px">
-        <Stack
-          direction="row"
-          spacing="10px"
-          bgcolor="#2d2d2d"
-          borderRadius="10px"
-          padding="10px"
-          flex={1}
-        >
-          <ZuSwitch
-            checked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
-          />
-          <Stack direction="column">
-            <Typography variant="subtitleSB">Registration Status</Typography>
-            <Typography variant="caption">CLOSED</Typography>
-          </Stack>
-        </Stack>
-        <Stack
-          direction="row"
-          spacing="10px"
-          bgcolor="#2d2d2d"
-          borderRadius="10px"
-          padding="10px"
-          flex={1}
-        >
-          <GroupIcon size={8} />
-          <Stack direction="column">
-            <Typography variant="subtitleSB">Event Capacity</Typography>
-            <Typography variant="caption">SETTING COMING SOON</Typography>
-          </Stack>
-        </Stack>
-        <Stack
-          direction="row"
-          spacing="10px"
-          bgcolor="#2d2d2d"
-          borderRadius="10px"
-          padding="10px"
-          flex={1}
-        >
-          <QRCodeIcon />
-          <Stack direction="column">
-            <Typography variant="subtitleSB">Scan QR Code</Typography>
-            <Typography variant="caption">No tracks</Typography>
-          </Stack>
-        </Stack>
+        <StatusIndicatorPanel
+          name="Registration"
+          desc="CLOSED"
+          checked={false}
+          disabled
+          onChange={() => {}}
+        />
+        <StatusIndicatorPanel
+          name="Event Check-In"
+          desc="CLOSED"
+          checked={false}
+          disabled
+          onChange={() => {}}
+        />
+        <StatusIndicatorPanel
+          name="Event Capacity"
+          desc="COMING SOON"
+          left={<QRCodeIcon />}
+          disabled
+        />
       </Stack>
-      {visible ? (
-        <ZuButton
-          onClick={() => {
-            createEventID();
-          }}
-        >
-          Use NFT Tickets
-        </ZuButton>
-      ) : null}
     </Stack>
   );
 };

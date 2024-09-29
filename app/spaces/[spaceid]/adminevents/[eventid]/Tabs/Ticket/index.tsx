@@ -507,8 +507,6 @@ const Ticket = ({ event }: PropTypes) => {
     </Box>
   );
 
-  console.log(event);
-
   return (
     <Stack spacing="40px">
       <Dialog

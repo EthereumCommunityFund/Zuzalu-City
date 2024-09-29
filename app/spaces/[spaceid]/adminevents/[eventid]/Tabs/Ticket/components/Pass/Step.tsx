@@ -1,7 +1,7 @@
-import { Box, Divider, Stack, TextField, Typography } from '@mui/material';
+import { Divider, Stack, TextField, Typography } from '@mui/material';
 import { useMemo, useState, useCallback } from 'react';
-import { CommonWrapper, Title, Item, ButtonGroup } from './Common';
-import { ItemType, ConfigFormType } from './types';
+import { CommonWrapper, Title, Item, ButtonGroup } from '../Common';
+import { ItemType, ConfigFormType } from '../types';
 import { isAddress } from 'viem';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MegaPhoneIcon, ScrollPassIcon, ZuPassIcon } from '@/components/icons';

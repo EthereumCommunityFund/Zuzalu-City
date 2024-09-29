@@ -114,7 +114,7 @@ const Home: React.FC = () => {
         return <Overview event={event} refetch={refetchData} />;
       case 'Announcements':
         return <Announcements event={event} />;
-      case 'Tickets':
+      case 'Registration':
         return <Ticket event={event} />;
       /*case 'Event Sessions':
         return <Sessions />;*/

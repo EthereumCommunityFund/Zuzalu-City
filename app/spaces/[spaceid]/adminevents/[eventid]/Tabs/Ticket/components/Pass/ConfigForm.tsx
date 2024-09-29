@@ -7,7 +7,7 @@ import { updateCheckinPass } from '@/services/event/updateEvent';
 import { StepOne, StepThree, StepTwo } from './Step';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { schema } from './types';
+import { schema } from '../types';
 
 interface RegistrationMethodSelectorProps {
   onClose: () => void;

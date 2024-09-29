@@ -10,11 +10,12 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-import { ItemType, OptionType } from './types';
+import { ItemType, OptionType } from '../types';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useCallback } from 'react';
 import { CloseIcon, LeftArrowIcon, RightArrowIcon } from '@/components/icons';
+import { ZuSwitch } from '@/components/core';
 
 export const CommonWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -255,6 +256,57 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
           'Next'
         )}
       </Button>
+    </Stack>
+  );
+};
+
+export const StatusIndicatorPanel = ({
+  name,
+  desc,
+  checked,
+  left,
+  onChange,
+  disabled = false,
+}: {
+  name: string;
+  desc: string;
+  checked?: boolean;
+  left?: React.ReactNode;
+  disabled?: boolean;
+  onChange?: (checked: boolean) => void;
+}) => {
+  return (
+    <Stack
+      direction="row"
+      spacing="14px"
+      bgcolor="rgba(255, 255, 255, 0.05)"
+      borderRadius="10px"
+      padding="10px"
+      flex={1}
+      sx={{
+        opacity: disabled ? 0.5 : 1,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+      onClick={() => !disabled && !left && onChange?.(!checked)}
+    >
+      {left ? (
+        left
+      ) : (
+        <ZuSwitch
+          checked={checked}
+          disabled={disabled}
+          width={40}
+          height={20}
+        />
+      )}
+      <Stack direction="column" spacing="4px">
+        <Typography fontSize={18} fontWeight={700} lineHeight={1.2}>
+          {name}
+        </Typography>
+        <Typography fontSize={10} lineHeight={1.2}>
+          {desc}
+        </Typography>
+      </Stack>
     </Stack>
   );
 };

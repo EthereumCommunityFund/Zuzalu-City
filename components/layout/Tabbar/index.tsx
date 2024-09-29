@@ -15,7 +15,7 @@ const tabItems: TabItems[] = [
   { name: 'Overview', label: 'Overview' },
   { name: 'Announcements', label: 'Announcements' },
   { name: 'Venue', label: 'Venue' },
-  { name: 'Tickets', label: 'Tickets' },
+  { name: 'Registration', label: 'Registration' },
   { name: 'Attendees', label: 'Attendees' },
 ];
 
