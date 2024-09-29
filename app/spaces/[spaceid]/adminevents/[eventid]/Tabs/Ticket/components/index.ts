@@ -12,7 +12,7 @@ import {
   TicketProcessingProgress,
   TicketSetup,
 } from './CreateTicket';
-import { ConfigPanel } from './Pass';
+import { RegistrationPanel } from './Registration';
 
 export {
   TicketHeader,
@@ -27,5 +27,5 @@ export {
   ProcessingTicket,
   TicketProcessingProgress,
   TicketVault,
-  ConfigPanel,
+  RegistrationPanel,
 };

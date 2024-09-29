@@ -11,7 +11,7 @@ import {
   TicketCreationSummary,
   ProcessingTicket,
   TicketVault,
-  ConfigPanel,
+  RegistrationPanel,
 } from './components';
 import { ZuButton } from 'components/core';
 import { scroll, scrollSepolia } from 'viem/chains';
@@ -532,7 +532,7 @@ const Ticket = ({ event }: PropTypes) => {
           <Typography>Loading...</Typography>
         </Box>
       ) : !event?.checkinPass ? (
-        <ConfigPanel />
+        <RegistrationPanel registered={false} />
       ) : tickets.length > 0 ? (
         <TicketList
           setVaultIndex={setVaultIndex}
