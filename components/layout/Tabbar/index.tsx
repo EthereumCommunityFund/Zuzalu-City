@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Box, Typography, useMediaQuery } from '@mui/material';
 
 interface TabbarProps {
@@ -21,9 +21,18 @@ const tabItems: TabItems[] = [
 
 const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
   const isSmallScreen = useMediaQuery('(max-width: 550px)');
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isSmallScreen && tabsContainerRef.current) {
+      const activeTab = tabsContainerRef.current.querySelector(`[data-tab-name="${tabName}"]`);
+      activeTab?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [tabName, isSmallScreen]);
 
   return (
     <Box
+      ref={tabsContainerRef}
       bgcolor="#2b2b2b"
       height="45px"
       display="flex"
@@ -35,7 +44,7 @@ const Tabbar: React.FC<TabbarProps> = ({ tabName, setTabName }) => {
       position="sticky"
       top="50px"
       zIndex={3}
-      sx={{ scrollbarWidth: 'none' }}
+      sx={{ scrollbarWidth: 'none', msOverflowStyle: 'none', '&::-webkit-scrollbar': { display: 'none' } }}
     >
       {tabItems.map((item) => (
         <TabItem
@@ -57,7 +66,7 @@ interface TabItemProps {
   onClick: () => void;
 }
 
-const TabItem: React.FC<TabItemProps> = ({ label, isActive, onClick }) => (
+const TabItem: React.FC<TabItemProps> = ({ name, label, isActive, onClick }) => (
   <Typography
     onClick={onClick}
     color="white"
@@ -69,6 +78,7 @@ const TabItem: React.FC<TabItemProps> = ({ label, isActive, onClick }) => (
     lineHeight="45px"
     borderBottom={isActive ? '1px solid white' : 'none'}
     sx={{ cursor: 'pointer' }}
+    data-tab-name={name}
   >
     {label}
   </Typography>
