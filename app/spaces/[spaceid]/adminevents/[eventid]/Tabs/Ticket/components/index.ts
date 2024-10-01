@@ -13,6 +13,7 @@ import {
   TicketSetup,
 } from './CreateTicket';
 import { RegistrationPanel } from './Registration';
+import { RegistrationStatus } from './Status';
 
 export {
   TicketHeader,
@@ -28,4 +29,5 @@ export {
   TicketProcessingProgress,
   TicketVault,
   RegistrationPanel,
+  RegistrationStatus,
 };

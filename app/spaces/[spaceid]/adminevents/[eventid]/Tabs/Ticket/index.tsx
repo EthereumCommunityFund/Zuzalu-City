@@ -12,6 +12,7 @@ import {
   ProcessingTicket,
   TicketVault,
   RegistrationPanel,
+  RegistrationStatus,
 } from './components';
 import { ZuButton } from 'components/core';
 import { scroll, scrollSepolia } from 'viem/chains';
@@ -527,6 +528,7 @@ const Ticket = ({ event }: PropTypes) => {
         message="Please wait while the data is being updated..."
       />
       <TicketHeader event={event} visible={event?.contractID === null} />
+      <RegistrationStatus />
       {isLoading ? (
         <Box>
           <Typography>Loading...</Typography>

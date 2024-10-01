@@ -281,7 +281,7 @@ export const StatusIndicatorPanel = ({
   sx,
 }: {
   name: string;
-  desc: string;
+  desc?: string;
   checked?: boolean;
   left?: React.ReactNode;
   disabled?: boolean;
@@ -320,10 +320,16 @@ export const StatusIndicatorPanel = ({
         <Typography fontSize={18} fontWeight={700} lineHeight={1.2}>
           {name}
         </Typography>
-        <Typography fontSize={10} lineHeight={1.2}>
-          {desc}
-        </Typography>
+        {desc && (
+          <Typography fontSize={10} lineHeight={1.2}>
+            {desc}
+          </Typography>
+        )}
       </Stack>
     </Stack>
   );
 };
+
+export const Tag = () => {
+  
+}
