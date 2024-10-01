@@ -508,7 +508,7 @@ const Ticket = ({ event }: PropTypes) => {
   );
 
   return (
-    <Stack spacing="40px">
+    <Stack direction="column" spacing={4} padding="0 30px 30px">
       <Dialog
         title="Created"
         message="Your new NFT ticket is created."

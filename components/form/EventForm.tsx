@@ -266,15 +266,7 @@ export const EventForm: React.FC<EventFormProps> = ({
         title="Creating Event"
         message="Please wait while the event is being created..."
       />
-      <Box
-        sx={{
-          width: '700px',
-          backgroundColor: '#222222',
-        }}
-        role="presentation"
-        zIndex="10"
-        borderLeft="1px solid #383838"
-      >
+      <Box>
         <FormHeader title="Create Event" handleClose={handleClose} />
         <Box display="flex" flexDirection="column" gap="20px" padding={3}>
           <Box bgcolor="#262626" borderRadius="10px">

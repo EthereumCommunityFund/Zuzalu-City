@@ -53,14 +53,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({ onClose }) => {
   );
 
   return (
-    <Box
-      sx={{
-        width: '700px',
-      }}
-      role="presentation"
-      zIndex="100"
-      borderLeft="1px solid #383838"
-    >
+    <Box>
       <FormHeader handleClose={onClose} title="Configure Passes" />
       <FormProvider {...formMethods}>
         {step === 1 ? (

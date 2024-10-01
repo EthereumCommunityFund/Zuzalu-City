@@ -1307,7 +1307,7 @@ const Sessions = () => {
   };
 
   return (
-    <Stack direction={'column'} gap={6} padding={'30px'}>
+    <Stack direction={'column'} gap={6} padding="0 30px 30px">
       <SessionHeader onToggle={toggleDrawer} />
       <SessionList
         sessions={sessions}

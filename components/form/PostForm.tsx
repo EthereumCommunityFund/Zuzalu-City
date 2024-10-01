@@ -174,20 +174,7 @@ const PostForm: React.FC<PostFormProps> = ({
   }, [initialData]);
 
   return (
-    <Box
-      sx={{
-        width: '700px',
-        backgroundColor: '#222222',
-        [breakpoints.down('md')]: {
-          width: '100%',
-        },
-      }}
-      display="flex"
-      flexDirection="column"
-      role="presentation"
-      zIndex="100"
-      borderLeft="1px solid #383838"
-    >
+    <Box>
       <Dialog
         title={initialData ? 'Post Updated' : 'Post Created'}
         message="Please view it."

@@ -866,7 +866,7 @@ const Overview = ({ event, refetch }: PropTypes) => {
     );
   };
   return (
-    <Stack direction="column" spacing={4} padding={'30px'}>
+    <Stack direction="column" spacing={4} padding="0 30px 30px">
       <OverviewHeader event={event} />
       <OverviewDetail
         eventData={event}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Stack } from '@mui/material';
+import { Typography, Stack, useTheme } from '@mui/material';
 import { ZuSwitch } from 'components/core';
 import { GroupIcon, QRCodeIcon } from '@/components/icons';
 import { ZuButton } from 'components/core';
@@ -29,6 +29,7 @@ interface PropTypes {
   visible?: boolean;
 }
 const TicketHeader = ({ event, visible }: PropTypes) => {
+  const breakpoints = useTheme().breakpoints;
   const [isChecked, setIsChecked] = useState(true);
   const { ceramic, composeClient, profile } = useCeramicContext();
   const { address } = useAccount();
@@ -110,7 +111,17 @@ const TicketHeader = ({ event, visible }: PropTypes) => {
           Event Registration
         </Typography>
       </Stack>
-      <Stack direction="row" spacing="20px">
+      <Stack
+        direction="row"
+        gap="20px"
+        sx={{
+          [breakpoints.down('sm')]: {
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: '10px',
+          },
+        }}
+      >
         <StatusIndicatorPanel
           name="Registration"
           desc="CLOSED"

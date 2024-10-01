@@ -9,6 +9,7 @@ import {
   Divider,
   Button,
   CircularProgress,
+  useTheme,
 } from '@mui/material';
 import { ItemType, OptionType } from '../types';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -214,8 +215,18 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
   isBackButton = true,
   isConfirmButton = false,
 }) => {
+  const breakpoints = useTheme().breakpoints;
   return (
-    <Stack spacing="20px" direction="row">
+    <Stack
+      gap="20px"
+      direction="row"
+      sx={{
+        [breakpoints.down('sm')]: {
+          flexDirection: 'column',
+          gap: '10px',
+        },
+      }}
+    >
       <Button
         sx={{
           color: 'white',
@@ -267,6 +278,7 @@ export const StatusIndicatorPanel = ({
   left,
   onChange,
   disabled = false,
+  sx,
 }: {
   name: string;
   desc: string;
@@ -274,6 +286,7 @@ export const StatusIndicatorPanel = ({
   left?: React.ReactNode;
   disabled?: boolean;
   onChange?: (checked: boolean) => void;
+  sx?: React.CSSProperties;
 }) => {
   return (
     <Stack
@@ -286,6 +299,8 @@ export const StatusIndicatorPanel = ({
       sx={{
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
+        width: '100%',
+        ...sx,
       }}
       onClick={() => !disabled && !left && onChange?.(!checked)}
     >
