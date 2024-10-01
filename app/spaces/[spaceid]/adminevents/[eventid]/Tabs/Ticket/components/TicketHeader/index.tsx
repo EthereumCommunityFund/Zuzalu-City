@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import { Typography, Stack, useTheme } from '@mui/material';
-import { ZuSwitch } from 'components/core';
-import { GroupIcon, QRCodeIcon } from '@/components/icons';
-import { ZuButton } from 'components/core';
+import { QRCodeIcon } from '@/components/icons';
 import { useAccount } from 'wagmi';
 import { scroll, scrollSepolia } from 'viem/chains';
 import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
-import { client, config } from '@/context/WalletContext';
+import { config } from '@/context/WalletContext';
 import { isDev } from '@/constant';
 import {
   TICKET_FACTORY_ADDRESS,
-  mUSDC_TOKEN,
-  mUSDT_TOKEN,
-  ticketFactoryGetContract,
 } from '@/constant';
 import { Address } from 'viem';
 import { convertDateToEpoch } from '@/utils/format';
@@ -21,8 +16,7 @@ import { Event } from '@/types';
 import { ethers } from 'ethers';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { updateContractID } from '@/services/event/addContractID';
-import Dialog from '@/app/spaces/components/Modal/Dialog';
-import { StatusIndicatorPanel, SwitchWithLabel } from '../Common';
+import { StatusIndicatorPanel } from '../Common';
 
 interface PropTypes {
   event?: Event;
