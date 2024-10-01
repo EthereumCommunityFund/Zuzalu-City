@@ -7,9 +7,7 @@ import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
 import { config } from '@/context/WalletContext';
 import { isDev } from '@/constant';
-import {
-  TICKET_FACTORY_ADDRESS,
-} from '@/constant';
+import { TICKET_FACTORY_ADDRESS } from '@/constant';
 import { Address } from 'viem';
 import { convertDateToEpoch } from '@/utils/format';
 import { Event } from '@/types';
@@ -119,8 +117,8 @@ const TicketHeader = ({ event, visible }: PropTypes) => {
         <StatusIndicatorPanel
           name="Registration"
           desc="CLOSED"
-          checked={false}
-          disabled
+          checked={true}
+          // disabled
           onChange={() => {}}
         />
         <StatusIndicatorPanel

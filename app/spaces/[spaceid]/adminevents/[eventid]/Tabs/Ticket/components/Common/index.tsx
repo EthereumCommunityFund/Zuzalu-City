@@ -292,7 +292,6 @@ export const StatusIndicatorPanel = ({
     <Stack
       direction="row"
       spacing="14px"
-      bgcolor="rgba(255, 255, 255, 0.05)"
       borderRadius="10px"
       padding="10px"
       flex={1}
@@ -300,6 +299,9 @@ export const StatusIndicatorPanel = ({
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
         width: '100%',
+        background: checked
+          ? 'linear-gradient(90deg, rgba(125, 255, 209, 0.15) 0, rgba(255, 255, 255, 0.03) 100%)'
+          : 'rgba(255, 255, 255, 0.05)',
         ...sx,
       }}
       onClick={() => !disabled && !left && onChange?.(!checked)}
