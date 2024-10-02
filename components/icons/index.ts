@@ -81,6 +81,7 @@ import { TagIcon } from './Tag';
 import { UserCircleIcon } from './UserCircle';
 import { ScrollPassIcon } from './ScrollPass';
 import { ZuPassIcon } from './ZuPassIcon';
+import { ExclamationCircleIcon } from './ExclamationCircle';
 export {
   HomeIcon,
   SearchIcon,
@@ -165,4 +166,5 @@ export {
   UserCircleIcon,
   ScrollPassIcon,
   ZuPassIcon,
+  ExclamationCircleIcon,
 };
