@@ -158,6 +158,15 @@ let theme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& > div > input': {
+            padding: '8.5px 12px',
+          },
+        },
+      },
+    },
   },
 });
 
