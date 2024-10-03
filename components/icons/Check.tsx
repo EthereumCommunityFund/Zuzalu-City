@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { IconProps } from 'types';
 
-export const CheckIcon: React.FC<IconProps> = () => {
+export const CheckIcon: React.FC<IconProps> = ({
+  size = 6,
+  color = 'white',
+}) => {
   return (
     <svg
-      width="21"
-      height="20"
+      width={`${size * 4}px`}
+      height={`${size * 4}px`}
       viewBox="0 0 21 20"
-      fill="none"
+      fill={color}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

@@ -9,6 +9,7 @@ import { PlusIcon, XCricleIcon } from '@/components/icons';
 import { ZuButton } from '@/components/core';
 
 interface FormProps {
+  questions: string[];
   onClose: () => void;
 }
 
@@ -20,15 +21,15 @@ const schema = yup.object().shape({
   ),
 });
 
-export default function Form({ onClose }: FormProps) {
+export default function Form({ questions = [''], onClose }: FormProps) {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      questions: [{ question: '' }],
+    values: {
+      questions: questions.map((question) => ({ question })),
     },
   });
 
