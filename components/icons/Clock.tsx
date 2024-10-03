@@ -1,8 +1,8 @@
 export default function ClockIcon({
-  size,
+  size = 6,
   opacity = 1,
 }: {
-  size: number;
+  size?: number;
   opacity?: number;
 }) {
   return (
