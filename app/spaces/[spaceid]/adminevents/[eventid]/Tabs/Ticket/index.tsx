@@ -528,13 +528,12 @@ const Ticket = ({ event }: PropTypes) => {
         message="Please wait while the data is being updated..."
       />
       <TicketHeader event={event} visible={event?.contractID === null} />
-      <NoTicketList />
+      {event?.checkinPass === 'noTicket' && <NoTicketList />}
+      {!event?.checkinPass && <RegistrationPanel registered={false} />}
       {isLoading ? (
         <Box>
           <Typography>Loading...</Typography>
         </Box>
-      ) : !event?.checkinPass ? (
-        <RegistrationPanel registered={false} />
       ) : tickets.length > 0 ? (
         <TicketList
           setVaultIndex={setVaultIndex}

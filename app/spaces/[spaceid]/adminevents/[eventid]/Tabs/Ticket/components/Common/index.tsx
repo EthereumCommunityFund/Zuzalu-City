@@ -474,3 +474,58 @@ export const TitleWithTag = ({
     </>
   );
 };
+
+interface ConfigPanelProps {
+  isGreenBorder?: boolean;
+  title: string;
+  desc: string;
+  handleOpen: () => void;
+}
+
+export const ConfigPanel = ({
+  isGreenBorder = false,
+  title,
+  desc,
+  handleOpen,
+}: ConfigPanelProps) => {
+  return (
+    <Stack
+      direction="column"
+      alignItems="center"
+      bgcolor="#2d2d2d"
+      padding="20px 10px"
+      borderRadius="10px"
+      spacing="14px"
+      border={!isGreenBorder ? 'none' : '1px solid rgba(125, 255, 209, 0.40)'}
+    >
+      <SettingIcon color="#6c6c6c" size={7.5} />
+      <Stack spacing="10px" alignItems="center">
+        <Typography
+          fontSize="18px"
+          fontWeight={700}
+          lineHeight={1.2}
+          sx={{ opacity: 0.8 }}
+        >
+          {title}
+        </Typography>
+        <Typography fontSize="13px" lineHeight={1.4} sx={{ opacity: 0.5 }}>
+          {desc}
+        </Typography>
+      </Stack>
+      <ZuButton
+        sx={{
+          padding: '6px 10px',
+          borderRadius: '10px',
+          opacity: 0.7,
+          bgcolor: 'rgba(255, 255, 255, 0.05)',
+          fontSize: '16px',
+          fontWeight: 600,
+          lineHeight: 1.2,
+        }}
+        onClick={handleOpen}
+      >
+        Go Setup
+      </ZuButton>
+    </Stack>
+  );
+};
