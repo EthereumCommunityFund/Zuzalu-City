@@ -166,7 +166,11 @@ const stepTwoItems: ItemType[] = [
   },
 ];
 
-export const StepTwo = ({ handleClose, handleNext }: CommonProps) => {
+export const StepTwo = ({
+  handleClose,
+  handleNext,
+  isFirstStep = false,
+}: CommonProps & { isFirstStep: boolean }) => {
   const { watch, setValue } = useFormContext<ConfigFormType>();
   const pass = watch('pass') || '';
 
@@ -254,6 +258,7 @@ export const StepTwo = ({ handleClose, handleNext }: CommonProps) => {
         </Typography>
       </Stack>
       <ButtonGroup
+        isBackButton={!isFirstStep}
         isDisabled={!pass}
         handleNext={handleNext}
         handleBack={handleClose}

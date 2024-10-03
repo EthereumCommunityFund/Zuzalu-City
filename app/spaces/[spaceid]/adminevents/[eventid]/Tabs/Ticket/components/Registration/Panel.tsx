@@ -1,19 +1,17 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Stack, Typography } from '@mui/material';
 import { SettingIcon } from 'components/icons';
 import Drawer from '@/components/drawer';
 import ConfigForm from './Form';
 import { ZuButton } from '@/components/core';
+import useOpenDraw from '@/hooks/useOpenDraw';
 
 interface PanelProps {
   registered: boolean;
 }
 
 const Panel: React.FC<PanelProps> = ({ registered }) => {
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = useCallback(() => setOpen(true), []);
-  const handleClose = useCallback(() => setOpen(false), []);
+  const { open, handleOpen, handleClose } = useOpenDraw();
 
   if (!registered)
     return (

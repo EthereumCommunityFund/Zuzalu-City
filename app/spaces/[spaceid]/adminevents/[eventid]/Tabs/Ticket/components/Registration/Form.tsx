@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import FormHeader from '@/components/form/FormHeader';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,10 +11,14 @@ import { schema } from '../types';
 
 interface RegistrationMethodSelectorProps {
   onClose: () => void;
+  initialStep?: number;
 }
 
-const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({ onClose }) => {
-  const [step, setStep] = useState(1);
+const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
+  onClose,
+  initialStep = 1,
+}) => {
+  const [step, setStep] = useState(initialStep);
 
   const queryClient = useQueryClient();
   const pathname = useParams();
@@ -32,7 +36,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({ onClose }) => {
       queryClient.refetchQueries({
         queryKey: ['fetchEventById', eventId],
       });
-      setStep(1);
+      setStep(initialStep);
       onClose();
     },
   });
@@ -40,17 +44,26 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({ onClose }) => {
 
   const handleStep = useCallback(
     (type: 'next' | 'back') => {
-      if (step === 2) {
+      if (type === 'back' && step === initialStep) {
+        onClose();
+        return;
+      }
+      if (type === 'next' && step === 2) {
+        // 如果需要在 step 2 执行特定操作，可以在这里添加逻辑
+        // 例如：
         // updateEventPass.mutateAsync({
         //   eventId,
-        //   pass: selectedMethod,
+        //   pass: formMethods.getValues('selectedMethod'),
         // });
-        // return;
       }
       setStep((v) => (type === 'next' ? v + 1 : v - 1));
     },
-    [step],
+    [initialStep, onClose, step],
   );
+
+  useEffect(() => {
+    setStep(initialStep);
+  }, [initialStep]);
 
   return (
     <Box>
@@ -63,6 +76,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({ onClose }) => {
           />
         ) : step === 2 ? (
           <StepTwo
+            isFirstStep={step === initialStep}
             handleClose={() => handleStep('back')}
             handleNext={() => handleStep('next')}
           />

@@ -15,8 +15,14 @@ import { ItemType, OptionType } from '../types';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useCallback } from 'react';
-import { CloseIcon, LeftArrowIcon, RightArrowIcon } from '@/components/icons';
-import { ZuSwitch } from '@/components/core';
+import {
+  CloseIcon,
+  ExclamationCircleIcon,
+  LeftArrowIcon,
+  RightArrowIcon,
+  SettingIcon,
+} from '@/components/icons';
+import { ZuButton, ZuSwitch } from '@/components/core';
 
 export const CommonWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -39,7 +45,7 @@ export const Title = ({
   description,
 }: {
   title: string;
-  description: string;
+  description?: string;
 }) => {
   return (
     <Stack spacing="10px">
@@ -51,9 +57,11 @@ export const Title = ({
       >
         {title}
       </Typography>
-      <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.6 }}>
-        {description}
-      </Typography>
+      {description && (
+        <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.6 }}>
+          {description}
+        </Typography>
+      )}
     </Stack>
   );
 };
@@ -330,6 +338,139 @@ export const StatusIndicatorPanel = ({
   );
 };
 
-export const Tag = () => {
-  
+interface TagProps {
+  type: 'text' | 'required' | 'warning';
+  text: string;
 }
+
+export const Tag = ({ type, text }: TagProps) => {
+  if (type === 'text') {
+    return (
+      <Box p="4px 10px" borderRadius="6px" bgcolor="rgba(255, 255, 255, 0.05)">
+        <Typography fontSize={13} lineHeight={1.4}>
+          {text}
+        </Typography>
+      </Box>
+    );
+  }
+  if (type === 'required') {
+    return (
+      <Stack
+        p="4px 8px"
+        borderRadius="2px"
+        bgcolor="rgba(255, 94, 94, 0.10)"
+        gap="4px"
+        direction="row"
+        alignItems="center"
+      >
+        <ExclamationCircleIcon size={4} color="#FF5E5E" />
+        <Typography
+          fontSize={10}
+          fontWeight={700}
+          lineHeight={1.2}
+          color="#FF5E5E"
+        >
+          {text}
+        </Typography>
+      </Stack>
+    );
+  }
+  if (type === 'warning') {
+    return (
+      <Stack
+        p="4px 8px"
+        borderRadius="2px"
+        bgcolor="rgba(255, 156, 102, 0.10)"
+        direction="row"
+        alignItems="center"
+      >
+        <Typography
+          fontSize={10}
+          fontWeight={700}
+          lineHeight={1.2}
+          color="#FF9C66"
+        >
+          {text}
+        </Typography>
+      </Stack>
+    );
+  }
+  return null;
+};
+
+export const ConfigButton = ({
+  children,
+  ...buttonProps
+}: React.PropsWithChildren<React.ComponentProps<typeof ZuButton>>) => {
+  return (
+    <ZuButton
+      startIcon={<SettingIcon size={4} />}
+      sx={{
+        padding: '4px 10px',
+        borderRadius: '10px',
+        bgcolor: 'rgba(255, 255, 255, 0.05)',
+        fontSize: '14px',
+        fontWeight: 600,
+        lineHeight: 1.2,
+        ...buttonProps.sx,
+      }}
+      {...buttonProps}
+    >
+      {children}
+    </ZuButton>
+  );
+};
+
+export const TitleWithTag = ({
+  required = true,
+  tags = [],
+  title,
+  desc,
+  buttonText,
+  onClick,
+}: {
+  required?: boolean;
+  tags: TagProps[];
+  title: string;
+  desc: string;
+  buttonText?: string;
+  onClick?: () => void;
+}) => {
+  return (
+    <>
+      <Stack direction="row" spacing="40px" justifyContent="space-between">
+        <Stack alignItems="center" direction="row" gap="10px">
+          <Stack alignItems="flex-start" flexDirection="row" gap="10px">
+            {required && (
+              <Typography
+                fontSize={20}
+                fontWeight={700}
+                lineHeight={1.2}
+                color="#FF9C66"
+              >
+                *
+              </Typography>
+            )}
+            <Typography fontSize={20} fontWeight={700} lineHeight={1.2}>
+              {title}
+            </Typography>
+          </Stack>
+          {tags.map((tag) => (
+            <Tag key={tag.text} {...tag} />
+          ))}
+        </Stack>
+        {buttonText && (
+          <ConfigButton onClick={onClick}>{buttonText}</ConfigButton>
+        )}
+      </Stack>
+      <Typography
+        mt="10px"
+        fontSize={14}
+        lineHeight={1.6}
+        sx={{ opacity: 0.8 }}
+      >
+        {desc}
+      </Typography>
+    </>
+  );
+};
