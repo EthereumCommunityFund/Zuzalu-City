@@ -308,7 +308,7 @@ export default function SidebarDrawer({ open, onClose, selected }: PropTypes) {
             }
           >
             <Typography fontSize={10} color="rgba(255, 255, 255, 0.7)">
-              Zuzalu city is open source
+              Zuzalu.city is open source
             </Typography>
             <Image
               src="/sidebar/gitHub.png"
@@ -370,7 +370,7 @@ export default function SidebarDrawer({ open, onClose, selected }: PropTypes) {
               color="rgba(225, 225, 225, 0.7)"
               variant="body2"
               component="a"
-              href="https://s.craft.me/XUjXr6M4jT8VBZ"
+              href="https://zuzalu.gitbook.io/zuzalucitybeta/welcome/what-is-zuzalu.city/what-is-zuzalu"
               target="_blank"
               sx={{
                 textDecoration: 'none',
@@ -382,7 +382,25 @@ export default function SidebarDrawer({ open, onClose, selected }: PropTypes) {
                 },
               }}
             >
-              About Zuzalu City
+              About Zuzalu
+            </Typography>
+            <Typography
+              color="rgba(225, 225, 225, 0.7)"
+              variant="body2"
+              component="a"
+              href="https://zuzalu.gitbook.io/zuzalucitybeta"
+              target="_blank"
+              sx={{
+                textDecoration: 'none',
+                '&:hover': {
+                  textDecoration: 'underline',
+                  textDecorationColor: '#7dffd1',
+                  color: '#7dffd1',
+                  opacity: 0.7,
+                },
+              }}
+            >
+              About Zuzalu.city
             </Typography>
           </Box>
           <ZuButton
