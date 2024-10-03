@@ -15,6 +15,7 @@ import {
 import { RegistrationPanel } from './Registration';
 import { RegistrationStatus } from './Status';
 import NoTicketList from './NoTicketList';
+import ZupassList from './ZupassList';
 
 export {
   TicketHeader,
@@ -32,4 +33,5 @@ export {
   RegistrationPanel,
   RegistrationStatus,
   NoTicketList,
+  ZupassList,
 };

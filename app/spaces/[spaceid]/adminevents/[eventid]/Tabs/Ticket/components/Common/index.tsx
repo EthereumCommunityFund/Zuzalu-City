@@ -21,6 +21,7 @@ import {
   LeftArrowIcon,
   RightArrowIcon,
   SettingIcon,
+  ZuPassIcon,
 } from '@/components/icons';
 import { ZuButton, ZuSwitch } from '@/components/core';
 
@@ -339,15 +340,26 @@ export const StatusIndicatorPanel = ({
 };
 
 interface TagProps {
-  type: 'text' | 'required' | 'warning';
-  text: string;
+  type: 'text' | 'required' | 'warning' | 'pass';
+  pass?: 'zupass' | 'scrollpass';
+  text?: string;
+  bgColor?: string;
+  textColor?: string;
 }
 
-export const Tag = ({ type, text }: TagProps) => {
+export const Tag = ({ type, pass, text, bgColor, textColor }: TagProps) => {
   if (type === 'text') {
     return (
-      <Box p="4px 10px" borderRadius="6px" bgcolor="rgba(255, 255, 255, 0.05)">
-        <Typography fontSize={13} lineHeight={1.4}>
+      <Box
+        p="4px 10px"
+        borderRadius="6px"
+        bgcolor={bgColor || 'rgba(255, 255, 255, 0.05)'}
+      >
+        <Typography
+          fontSize={13}
+          lineHeight={1.4}
+          color={textColor || '#FFFFFF'}
+        >
           {text}
         </Typography>
       </Box>
@@ -395,6 +407,23 @@ export const Tag = ({ type, text }: TagProps) => {
       </Stack>
     );
   }
+  if (type === 'pass') {
+    return (
+      <Stack
+        p="4px 10px"
+        borderRadius="6px"
+        bgcolor="rgba(255, 255, 255, 0.05)"
+        spacing="4px"
+        direction="row"
+        alignItems="center"
+      >
+        <ZuPassIcon size={4} />
+        <Typography fontSize={13} lineHeight={1.4}>
+          {pass === 'zupass' ? 'Zupass' : 'Scrollpass'}
+        </Typography>
+      </Stack>
+    );
+  }
   return null;
 };
 
@@ -423,21 +452,25 @@ export const ConfigButton = ({
 
 export const TitleWithTag = ({
   required = true,
+  leftIcon,
   tags = [],
   title,
   desc,
   buttonText,
+  opacity = 1,
   onClick,
 }: {
   required?: boolean;
-  tags: TagProps[];
+  leftIcon?: React.ReactNode;
+  tags?: TagProps[];
   title: string;
   desc: string;
+  opacity?: number;
   buttonText?: string;
   onClick?: () => void;
 }) => {
   return (
-    <>
+    <Stack spacing="10px">
       <Stack direction="row" spacing="40px" justifyContent="space-between">
         <Stack alignItems="center" direction="row" gap="10px">
           <Stack alignItems="flex-start" flexDirection="row" gap="10px">
@@ -451,7 +484,13 @@ export const TitleWithTag = ({
                 *
               </Typography>
             )}
-            <Typography fontSize={20} fontWeight={700} lineHeight={1.2}>
+            {leftIcon ? leftIcon : null}
+            <Typography
+              fontSize={20}
+              fontWeight={700}
+              lineHeight={1.2}
+              sx={{ opacity }}
+            >
               {title}
             </Typography>
           </Stack>
@@ -463,15 +502,10 @@ export const TitleWithTag = ({
           <ConfigButton onClick={onClick}>{buttonText}</ConfigButton>
         )}
       </Stack>
-      <Typography
-        mt="10px"
-        fontSize={14}
-        lineHeight={1.6}
-        sx={{ opacity: 0.8 }}
-      >
+      <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.8 }}>
         {desc}
       </Typography>
-    </>
+    </Stack>
   );
 };
 

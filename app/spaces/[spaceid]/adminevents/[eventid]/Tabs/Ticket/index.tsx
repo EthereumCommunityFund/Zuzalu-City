@@ -13,6 +13,7 @@ import {
   TicketVault,
   RegistrationPanel,
   NoTicketList,
+  ZupassList,
 } from './components';
 import { ZuButton } from 'components/core';
 import { scroll, scrollSepolia } from 'viem/chains';
@@ -529,6 +530,7 @@ const Ticket = ({ event }: PropTypes) => {
       />
       <TicketHeader event={event} visible={event?.contractID === null} />
       {event?.checkinPass === 'noTicket' && <NoTicketList />}
+      {event?.checkinPass !== 'zupass' && <ZupassList />}
       {!event?.checkinPass && <RegistrationPanel registered={false} />}
       {isLoading ? (
         <Box>
