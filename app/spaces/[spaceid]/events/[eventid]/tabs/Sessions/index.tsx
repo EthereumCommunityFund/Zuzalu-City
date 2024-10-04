@@ -98,6 +98,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { FilterSessionPop } from './FilterSessionPop';
 import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
+import { formatUserName } from '@/utils/format';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -2709,7 +2710,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             src={speaker.avatar || '/user/avatar_p.png'}
                           />
                           <Typography variant="bodyB">
-                            {speaker.username}
+                            {formatUserName(speaker.username)}
                           </Typography>
                         </Stack>
                       ),
@@ -2721,7 +2722,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                     By:
                   </Typography>
                   <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                    {JSON.parse(selectedSession.organizers)[0].username}
+                    {formatUserName(
+                      JSON.parse(selectedSession.organizers)[0].username,
+                    )}
                   </Typography>
                 </Stack>
                 <Stack spacing="10px">
@@ -2797,7 +2800,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       Last Edited By:
                     </Typography>
                     <Typography variant="bodyS">
-                      {JSON.parse(selectedSession.organizers)[0].username}
+                      {formatUserName(
+                        JSON.parse(selectedSession.organizers)[0].username,
+                      )}
                     </Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       {formatDateAgo(selectedSession.createdAt)}
@@ -2808,7 +2813,9 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                       Edited By:
                     </Typography>
                     <Typography variant="bodyS">
-                      {JSON.parse(selectedSession.organizers)[0].username}
+                      {formatUserName(
+                        JSON.parse(selectedSession.organizers)[0].username,
+                      )}
                     </Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                       {formatDateAgo(selectedSession.createdAt)}
@@ -2886,7 +2893,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             src={organizer.avatar || '/user/avatar_p.png'}
                           />
                           <Typography variant="bodyS">
-                            {organizer.username}
+                            {formatUserName(organizer.username)}
                           </Typography>
                         </Stack>
                       ),
@@ -2917,7 +2924,7 @@ const Sessions: React.FC<ISessions> = ({ eventData, option }) => {
                             src={speaker.avatar || '/user/avatar_p.png'}
                           />
                           <Typography variant="bodyS">
-                            {speaker.username}
+                            {formatUserName(speaker.username)}
                           </Typography>
                         </Stack>
                       ),

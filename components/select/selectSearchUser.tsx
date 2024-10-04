@@ -7,6 +7,7 @@ import { Profile } from '@/types';
 import { Box, Chip, ListItemText, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 import Checkbox from '@mui/material/Checkbox';
+import { formatUserName } from '@/utils/format';
 
 interface IProps {
   users: Profile[];
@@ -190,7 +191,7 @@ export default function SelectSearchUser({
                           alt="avatar"
                         />
                         <Typography variant="bodyMB" sx={{ lineHeight: 1.6 }}>
-                          {i.username}
+                          {formatUserName(i.username)}
                         </Typography>
                       </Stack>
                     }

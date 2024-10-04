@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         `
     query MyQuery($id: ID!) {
       node (id: $id) {
-        ...on Event {
+        ...on ZucityEvent {
             admins {
               id
             }

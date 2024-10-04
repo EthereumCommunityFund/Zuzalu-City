@@ -70,6 +70,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
+import { formatUserName } from '@/utils/format';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -194,7 +195,7 @@ const Home = () => {
           `
         query MyQuery($id: ID!) {
           node (id: $id) {
-            ...on zucityEvent {
+            ...on ZucityEvent {
               createdAt
               description
               endTime
@@ -804,6 +805,7 @@ const Home = () => {
           await authenticate();
         }
         const adminId = ceramic?.did?.parent.toString().toLowerCase() || '';
+        console.log(adminId, superadmins, admins, members);
         if (!adminId) {
           setDialogTitle('You are not logged in');
           setDialogMessage('Please login and refresh the page');
@@ -2142,7 +2144,7 @@ const Home = () => {
                               src={speaker.avatar || '/user/avatar_p.png'}
                             />
                             <Typography variant="bodyB">
-                              {speaker.username}
+                              {formatUserName(speaker.username)}
                             </Typography>
                           </Stack>
                         ),
@@ -2192,7 +2194,9 @@ const Home = () => {
                       By:
                     </Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                      {JSON.parse(session.organizers)[0].username}
+                      {formatUserName(
+                        JSON.parse(session.organizers)[0].username,
+                      )}
                     </Typography>
                   </Stack>
                   <Stack spacing="10px">
@@ -2308,7 +2312,9 @@ const Home = () => {
                         Last Edited By:
                       </Typography>
                       <Typography variant="bodyS">
-                        {JSON.parse(session.organizers)[0].username}
+                        {formatUserName(
+                          JSON.parse(session.organizers)[0].username,
+                        )}
                       </Typography>
                       <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                         {formatDateAgo(session.createdAt)}
@@ -2319,7 +2325,9 @@ const Home = () => {
                         Edited By:
                       </Typography>
                       <Typography variant="bodyS">
-                        {JSON.parse(session.organizers)[0].username}
+                        {formatUserName(
+                          JSON.parse(session.organizers)[0].username,
+                        )}
                       </Typography>
                       <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                         {formatDateAgo(session.createdAt)}
@@ -2396,7 +2404,7 @@ const Home = () => {
                             src={organizer.avatar || '/user/avatar_p.png'}
                           />
                           <Typography variant="bodyS">
-                            {organizer.username}
+                            {formatUserName(organizer.username)}
                           </Typography>
                         </Stack>
                       ),
@@ -2427,7 +2435,7 @@ const Home = () => {
                             src={speaker.avatar || '/user/avatar_p.png'}
                           />
                           <Typography variant="bodyS">
-                            {speaker.username}
+                            {formatUserName(speaker.username)}
                           </Typography>
                         </Stack>
                       ),

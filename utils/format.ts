@@ -20,3 +20,11 @@ export function convertDateToEpoch(dateString: any) {
 export function covertNameToUrlName(name: string) {
   return name.toLowerCase().replace(/ /g, '-');
 }
+
+export function formatUserName(name?: string) {
+  if (!name) return '';
+  if (name.length > 20) {
+    return `${name.slice(0, 6)}...${name.slice(-6)}`;
+  }
+  return name;
+}
