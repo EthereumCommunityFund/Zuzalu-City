@@ -12,7 +12,7 @@ export default function AccessRules() {
   return (
     <Stack spacing="20px">
       <Drawer open={open} onClose={handleClose} onOpen={handleOpen}>
-        <Form onClose={handleClose} />
+        <Form onClose={handleClose} ids={[]} />
       </Drawer>
       <TitleWithTag
         title="Access Rules"
