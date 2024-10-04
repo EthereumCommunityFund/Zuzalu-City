@@ -82,6 +82,7 @@ import { UserCircleIcon } from './UserCircle';
 import { ScrollPassIcon } from './ScrollPass';
 import { ZuPassIcon } from './ZuPassIcon';
 import { ExclamationCircleIcon } from './ExclamationCircle';
+import { BuildStoreFrontIcon } from './BuildStoreFront';
 export {
   HomeIcon,
   SearchIcon,
@@ -167,4 +168,5 @@ export {
   ScrollPassIcon,
   ZuPassIcon,
   ExclamationCircleIcon,
+  BuildStoreFrontIcon,
 };
