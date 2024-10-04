@@ -9,7 +9,7 @@ import ScrollpassForm from './ScrollpassForm';
 
 interface AccessRulesProps {
   event?: Event;
-  type: 'zupass' | 'scrollpass';
+  type?: 'zupass' | 'scrollpass';
 }
 
 export default function AccessRules({
