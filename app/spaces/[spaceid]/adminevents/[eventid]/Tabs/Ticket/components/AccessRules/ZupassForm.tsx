@@ -23,7 +23,7 @@ const schema = yup.object().shape({
   allowAll: yup.boolean(),
 });
 
-export default function Form({ ids = [''], onClose }: FormProps) {
+export default function ZupassForm({ ids = [''], onClose }: FormProps) {
   const {
     control,
     handleSubmit,

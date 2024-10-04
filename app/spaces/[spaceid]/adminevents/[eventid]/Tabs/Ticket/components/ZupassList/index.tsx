@@ -15,7 +15,7 @@ export default function ZupassList() {
     <>
       <Stack spacing="20px">
         <TitleWithTag
-          title="Event Tickets"
+          title="Event Ticketing"
           desc="These are tickets for this event"
           tags={[
             { type: 'pass', pass: 'zupass' },

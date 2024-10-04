@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { Stack, Box, SwipeableDrawer, Typography } from '@mui/material';
+import { Stack, Box, Typography } from '@mui/material';
 import {
   TicketHeader,
-  TicketList,
-  TicketAdd,
-  TicketAccess,
   InitialSetup,
   TicketSetup,
   CreateTicket,
@@ -14,6 +11,7 @@ import {
   RegistrationPanel,
   NoTicketList,
   ZupassList,
+  ScrollPassList,
 } from './components';
 import { ZuButton } from 'components/core';
 import { scroll, scrollSepolia } from 'viem/chains';
@@ -39,23 +37,15 @@ import { TicketType } from './components/CreateTicket';
 import { SelectedFile } from '@lxdao/uploader3';
 import { updateTicketContract } from '@/services/event/addTicketContract';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import useOpenDraw from '@/hooks/useOpenDraw';
+import Drawer from '@/components/drawer';
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface PropTypes {
   event?: Event;
 }
 
 const Ticket = ({ event }: PropTypes) => {
-  const [state, setState] = useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
-
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
+  const { open, handleOpen, handleClose } = useOpenDraw();
 
   const [ticketInfo, setTicketInfo] = useState<any>({});
   const [isTicketFree, setIsTicketFree] = useState(false);
@@ -237,6 +227,7 @@ const Ticket = ({ event }: PropTypes) => {
   };
 
   const readFromContract = async () => {
+    if (!event?.contractID) return;
     try {
       setIsLoading(true);
 
@@ -342,10 +333,10 @@ const Ticket = ({ event }: PropTypes) => {
     readFromContract();
   }, []);
 
-  const list = (anchor: Anchor) => (
+  const list = () => (
     <Box
       sx={{
-        width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+        width: '700px',
         backgroundColor: '#222222',
       }}
       role="presentation"
@@ -361,7 +352,8 @@ const Ticket = ({ event }: PropTypes) => {
       >
         <ZuButton
           onClick={() => {
-            toggleDrawer('right', false), setIsConfirm(false);
+            handleClose();
+            setIsConfirm(false);
             setGoToSummary(false);
             setPurchasingTicket(false);
             setIsNext(false);
@@ -471,17 +463,17 @@ const Ticket = ({ event }: PropTypes) => {
         !isTicket && (
           <ProcessingTicket
             setPurchasingTicket={setPurchasingTicket}
-            toggleDrawer={toggleDrawer}
+            toggleDrawer={handleClose}
             isSubmitLoading={isSubmitLoading}
             txnHash={txnHash}
           />
         )}
     </Box>
   );
-  const vault = (anchor: Anchor) => (
+  const vault = () => (
     <Box
       sx={{
-        maxWidth: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+        maxWidth: '700px',
         backgroundColor: '#222222',
       }}
       role="presentation"
@@ -495,7 +487,7 @@ const Ticket = ({ event }: PropTypes) => {
         borderBottom="1px solid #383838"
         paddingX={3}
       >
-        <ZuButton onClick={() => toggleDrawer('right', false)}>Close</ZuButton>
+        <ZuButton onClick={handleClose}>Close</ZuButton>
         <Typography marginLeft={'14px'} fontSize="18px" fontWeight="bold">
           Create Ticket
         </Typography>
@@ -530,49 +522,27 @@ const Ticket = ({ event }: PropTypes) => {
       />
       <TicketHeader event={event} visible={event?.contractID === null} />
       {event?.checkinPass === 'noTicket' && <NoTicketList />}
-      {event?.checkinPass !== 'zupass' && <ZupassList />}
-      {!event?.checkinPass && <RegistrationPanel registered={false} />}
-      {isLoading ? (
-        <Box>
-          <Typography>Loading...</Typography>
-        </Box>
-      ) : tickets.length > 0 ? (
-        <TicketList
+      {event?.checkinPass === 'zupass' && <ZupassList />}
+      {event?.checkinPass !== 'scrollpass' && (
+        <ScrollPassList
           setVaultIndex={setVaultIndex}
           ticketAddresses={ticketAddresses}
           tickets={tickets}
           setToggleAction={setToggleAction}
-          onToggle={toggleDrawer}
+          onToggle={handleOpen}
+          event={event!}
           eventContracts={event?.contracts ? event.contracts : []}
         />
-      ) : (
-        <TicketAdd
-          onToggle={toggleDrawer}
-          setToggleAction={setToggleAction}
-          visible={event?.contractID !== null}
-        />
       )}
-      <TicketAccess />
-      <SwipeableDrawer
-        hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '50px',
-            height: 'calc(100% - 35px)',
-            boxShadow: 'none',
-          },
-        }}
-        anchor="right"
-        open={state['right']}
-        onClose={() => toggleDrawer('right', false)}
-        onOpen={() => toggleDrawer('right', true)}
-      >
+      {!event?.checkinPass && <RegistrationPanel registered={false} />}
+      {/* <TicketAccess /> */}
+      <Drawer open={open} onOpen={handleOpen} onClose={handleClose}>
         {toggleAction === 'CreateTicket'
-          ? list('right')
+          ? list()
           : toggleAction === 'ViewVault'
-            ? vault('right')
+            ? vault()
             : null}
-      </SwipeableDrawer>
+      </Drawer>
     </Stack>
   );
 };

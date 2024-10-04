@@ -1,17 +1,31 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { TitleWithTag } from '../Common';
 import useOpenDraw from '@/hooks/useOpenDraw';
-import Form from './Form';
+import ZupassForm from './ZupassForm';
 import Drawer from '@/components/drawer';
 import Panel from './Panel';
+import { Event } from '@/types';
+import ScrollpassForm from './ScrollpassForm';
 
-export default function AccessRules() {
+interface AccessRulesProps {
+  event?: Event;
+  type: 'zupass' | 'scrollpass';
+}
+
+export default function AccessRules({
+  event,
+  type = 'zupass',
+}: AccessRulesProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
   const isAvailable = true;
   return (
     <Stack spacing="20px">
       <Drawer open={open} onClose={handleClose} onOpen={handleOpen}>
-        <Form onClose={handleClose} ids={[]} />
+        {type === 'zupass' ? (
+          <ZupassForm onClose={handleClose} ids={[]} />
+        ) : (
+          <ScrollpassForm onClose={handleClose} ids={[]} />
+        )}
       </Drawer>
       <TitleWithTag
         title="Access Rules"

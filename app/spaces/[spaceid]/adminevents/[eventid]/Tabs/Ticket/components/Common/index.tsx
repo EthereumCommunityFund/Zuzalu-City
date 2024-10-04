@@ -20,6 +20,7 @@ import {
   ExclamationCircleIcon,
   LeftArrowIcon,
   RightArrowIcon,
+  ScrollPassIcon,
   SettingIcon,
   ZuPassIcon,
 } from '@/components/icons';
@@ -77,7 +78,7 @@ interface ItemProps {
   onOptionsChange?: (optionIds: string[]) => void;
 }
 
-const RoundCheckbox: React.FC<CheckboxProps> = (props) => {
+export const RoundCheckbox: React.FC<CheckboxProps> = (props) => {
   return (
     <Checkbox
       {...props}
@@ -417,7 +418,11 @@ export const Tag = ({ type, pass, text, bgColor, textColor }: TagProps) => {
         direction="row"
         alignItems="center"
       >
-        <ZuPassIcon size={4} />
+        {pass === 'zupass' ? (
+          <ZuPassIcon size={4} />
+        ) : (
+          <ScrollPassIcon size={4} />
+        )}
         <Typography fontSize={13} lineHeight={1.4}>
           {pass === 'zupass' ? 'Zupass' : 'Scrollpass'}
         </Typography>
@@ -459,6 +464,7 @@ export const TitleWithTag = ({
   buttonText,
   opacity = 1,
   onClick,
+  right,
 }: {
   required?: boolean;
   leftIcon?: React.ReactNode;
@@ -467,6 +473,7 @@ export const TitleWithTag = ({
   desc: string;
   opacity?: number;
   buttonText?: string;
+  right?: React.ReactNode;
   onClick?: () => void;
 }) => {
   return (
@@ -494,13 +501,15 @@ export const TitleWithTag = ({
               {title}
             </Typography>
           </Stack>
-          {tags.map((tag) => (
-            <Tag key={tag.text} {...tag} />
+          {tags.map((tag, index) => (
+            <Tag key={index} {...tag} />
           ))}
         </Stack>
-        {buttonText && (
-          <ConfigButton onClick={onClick}>{buttonText}</ConfigButton>
-        )}
+        {right
+          ? right
+          : buttonText && (
+              <ConfigButton onClick={onClick}>{buttonText}</ConfigButton>
+            )}
       </Stack>
       <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.8 }}>
         {desc}
@@ -515,6 +524,7 @@ interface ConfigPanelProps {
   desc: React.ReactNode;
   icon?: React.ReactNode;
   needButton?: boolean;
+  buttonText?: string;
   handleOpen?: () => void;
 }
 
@@ -524,6 +534,7 @@ export const ConfigPanel = ({
   desc,
   icon,
   needButton = true,
+  buttonText = 'Go Setup',
   handleOpen,
 }: ConfigPanelProps) => {
   return (
@@ -563,7 +574,7 @@ export const ConfigPanel = ({
           }}
           onClick={handleOpen}
         >
-          Go Setup
+          {buttonText}
         </ZuButton>
       )}
     </Stack>

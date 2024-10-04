@@ -3,12 +3,15 @@ import { TitleWithTag } from '../Common';
 import ClockIcon from '@/components/icons/Clock';
 import { ZuSwitch } from '@/components/core';
 import { BuildStoreFrontIcon } from '@/components/icons';
+import { useCallback } from 'react';
 
 interface PanelProps {
   handleOpen: () => void;
 }
 
 export default function Panel({ handleOpen }: PanelProps) {
+  const handleSwitch = useCallback(() => {}, []);
+
   return (
     <Stack spacing="10px">
       <Stack
@@ -35,7 +38,7 @@ export default function Panel({ handleOpen }: PanelProps) {
           onClick={handleOpen}
         />
         <Stack direction="row" alignItems="center" spacing="14px">
-          <ZuSwitch width={40} height={20} />
+          <ZuSwitch width={40} height={20} onChange={handleSwitch} />
           <Typography
             fontSize={14}
             fontWeight={600}
