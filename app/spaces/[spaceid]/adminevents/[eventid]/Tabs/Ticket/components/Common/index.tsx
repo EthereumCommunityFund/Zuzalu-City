@@ -512,14 +512,18 @@ export const TitleWithTag = ({
 interface ConfigPanelProps {
   isGreenBorder?: boolean;
   title: string;
-  desc: string;
-  handleOpen: () => void;
+  desc: React.ReactNode;
+  icon?: React.ReactNode;
+  needButton?: boolean;
+  handleOpen?: () => void;
 }
 
 export const ConfigPanel = ({
   isGreenBorder = false,
   title,
   desc,
+  icon,
+  needButton = true,
   handleOpen,
 }: ConfigPanelProps) => {
   return (
@@ -532,7 +536,7 @@ export const ConfigPanel = ({
       spacing="14px"
       border={!isGreenBorder ? 'none' : '1px solid rgba(125, 255, 209, 0.40)'}
     >
-      <SettingIcon color="#6c6c6c" size={7.5} />
+      {icon || <SettingIcon color="#6c6c6c" size={7.5} />}
       <Stack spacing="10px" alignItems="center">
         <Typography
           fontSize="18px"
@@ -546,20 +550,22 @@ export const ConfigPanel = ({
           {desc}
         </Typography>
       </Stack>
-      <ZuButton
-        sx={{
-          padding: '6px 10px',
-          borderRadius: '10px',
-          opacity: 0.7,
-          bgcolor: 'rgba(255, 255, 255, 0.05)',
-          fontSize: '16px',
-          fontWeight: 600,
-          lineHeight: 1.2,
-        }}
-        onClick={handleOpen}
-      >
-        Go Setup
-      </ZuButton>
+      {needButton && (
+        <ZuButton
+          sx={{
+            padding: '6px 10px',
+            borderRadius: '10px',
+            opacity: 0.7,
+            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            fontSize: '16px',
+            fontWeight: 600,
+            lineHeight: 1.2,
+          }}
+          onClick={handleOpen}
+        >
+          Go Setup
+        </ZuButton>
+      )}
     </Stack>
   );
 };

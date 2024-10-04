@@ -167,6 +167,14 @@ let theme = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: '#7DFFD1',
+          textDecorationColor: '#7DFFD1',
+        },
+      },
+    },
   },
 });
 
