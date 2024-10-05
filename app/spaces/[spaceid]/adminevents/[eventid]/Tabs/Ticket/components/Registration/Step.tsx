@@ -488,6 +488,17 @@ export const StepFour = ({ handleClose, handleNext }: CommonProps) => {
     ];
   }, [access, pass, apply]);
 
+  const tipsContent = useMemo(() => {
+    if (pass === TicketingMethod.NoTicketing) {
+      return 'Reminder: You can still choose a ticketing method later if needed.';
+    }
+    if (pass === TicketingMethod.ZuPass) {
+      return 'Reminder: As Zupass is a not fully-integrated app, you will need to contact the Zupass team to generate credentials for this event.';
+    }
+    if (pass === TicketingMethod.ScrollPass) {
+      return 'Reminder: The address you are using to configure this event with Scrollpass ticketing will become the sole admin that can interact with the parent contract.';
+    }
+  }, [pass]);
   return (
     <Stack padding="20px" spacing="20px">
       <CommonWrapper>
@@ -523,6 +534,60 @@ export const StepFour = ({ handleClose, handleNext }: CommonProps) => {
             </Stack>
           ))}
         </Stack>
+        <Stack
+          p="10px"
+          bgcolor="rgba(255, 156, 102, 0.10)"
+          borderRadius="10px"
+          direction="row"
+          alignItems="center"
+          spacing="10px"
+        >
+          <ExclamationCircleIcon size={4} color="#FF9C66" />
+          <Typography fontSize={14} lineHeight={1.6} color="#FF9C66">
+            {tipsContent}
+          </Typography>
+        </Stack>
+        {pass === TicketingMethod.ScrollPass && (
+          <Typography
+            fontSize={13}
+            fontWeight={700}
+            lineHeight={1.2}
+            color="#FF9C66"
+            textAlign="center"
+          >
+            Ensure that your address also contains ETH on the Scroll Network.
+            You can bridge funds from other chains to Scroll:{' '}
+            <Link
+              href="https://scroll.io/bridge"
+              target="_blank"
+              sx={{ textDecoration: 'none' }}
+            >
+              Official Scroll Bridge
+            </Link>
+          </Typography>
+        )}
+        {pass !== TicketingMethod.NoTicketing && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing="10px"
+            justifyContent="center"
+          >
+            <Typography fontSize={10} lineHeight={1.2} sx={{ opacity: 0.6 }}>
+              Ticketing PROTOCOL:
+            </Typography>
+            {pass === TicketingMethod.ZuPass ? (
+              <ZuPassIcon size={4} />
+            ) : pass === TicketingMethod.LottoPGF ? (
+              <LottoPGFIcon size={4} />
+            ) : (
+              <ScrollPassIcon size={4} />
+            )}
+            <Typography fontSize={13} lineHeight={1.4}>
+              {pass}
+            </Typography>
+          </Stack>
+        )}
       </CommonWrapper>
       <ButtonGroup
         isConfirmButton
