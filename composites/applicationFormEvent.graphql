@@ -1,0 +1,8 @@
+type ZucityApplicationForm @loadModel(id: "$ApplicationForm_ID") {
+  id: ID!
+}
+
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  applicationForms: [ZucityApplicationForm]
+    @relationFrom(model: "ZucityApplicationForm", property: "eventId")
+}
