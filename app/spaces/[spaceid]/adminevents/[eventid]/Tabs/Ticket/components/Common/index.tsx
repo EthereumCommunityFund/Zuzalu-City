@@ -108,7 +108,16 @@ export const Item: React.FC<ItemProps> = ({
   selectedOptions = [],
   onOptionsChange,
 }) => {
-  const { id, name, description, icon, disabled, customName } = item;
+  const {
+    id,
+    name,
+    description,
+    icon,
+    disabled,
+    customName,
+    isExternal,
+    warning,
+  } = item;
 
   const handleClick = useCallback(() => {
     if (!disabled) {
@@ -155,6 +164,11 @@ export const Item: React.FC<ItemProps> = ({
             ) : (
               customName
             )}
+            {isExternal && (
+              <Typography fontSize={13} lineHeight={1.4} sx={{ opacity: 0.8 }}>
+                (External Management)
+              </Typography>
+            )}
           </Box>
           {!disabled ? (
             <RoundCheckbox checked={isSelected} disabled={disabled} />
@@ -163,8 +177,18 @@ export const Item: React.FC<ItemProps> = ({
         <Typography fontSize={13} lineHeight={1.4} sx={{ opacity: 0.6 }}>
           {description}
         </Typography>
+        {warning && (
+          <Typography
+            fontSize={10}
+            lineHeight={1.2}
+            color="#FF9C66"
+            sx={{ opacity: 0.8 }}
+          >
+            {warning}
+          </Typography>
+        )}
         {(expandedContent || options.length > 0) && (
-          <Collapse in={isSelected} timeout={300} unmountOnExit>
+          <Collapse in={isSelected}>
             <Divider
               sx={{
                 margin: '0 0 10px',
@@ -182,22 +206,32 @@ export const Item: React.FC<ItemProps> = ({
                   Optional:
                 </Typography>
                 {options.map((option) => (
-                  <Box
-                    key={option.id}
-                    display="flex"
-                    gap="10px"
-                    alignItems="center"
-                    onClick={() => {
-                      handleOptionToggle(option.id);
-                    }}
-                  >
-                    <RoundCheckbox
-                      checked={selectedOptions.includes(option.id)}
-                    />
-                    <Typography fontSize={16} lineHeight={1.6}>
-                      {option.name}
-                    </Typography>
-                  </Box>
+                  <Stack key={option.id} spacing="10px">
+                    <Box
+                      display="flex"
+                      gap="10px"
+                      alignItems="center"
+                      onClick={() => {
+                        handleOptionToggle(option.id);
+                      }}
+                    >
+                      <RoundCheckbox
+                        checked={selectedOptions.includes(option.id)}
+                      />
+                      <Typography fontSize={16} lineHeight={1.6}>
+                        {option.name}
+                      </Typography>
+                    </Box>
+                    {option.warning && (
+                      <Typography
+                        fontSize={13}
+                        lineHeight={1.4}
+                        color="#FF9C66"
+                      >
+                        {option.warning}
+                      </Typography>
+                    )}
+                  </Stack>
                 ))}
               </>
             )}

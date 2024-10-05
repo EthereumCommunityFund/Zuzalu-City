@@ -83,6 +83,7 @@ import { ScrollPassIcon } from './ScrollPass';
 import { ZuPassIcon } from './ZuPassIcon';
 import { ExclamationCircleIcon } from './ExclamationCircle';
 import { BuildStoreFrontIcon } from './BuildStoreFront';
+import { LottoPGFIcon } from './LottoPGF';
 export {
   HomeIcon,
   SearchIcon,
@@ -169,4 +170,5 @@ export {
   ZuPassIcon,
   ExclamationCircleIcon,
   BuildStoreFrontIcon,
+  LottoPGFIcon,
 };
