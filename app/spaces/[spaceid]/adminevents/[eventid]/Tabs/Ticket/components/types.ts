@@ -24,7 +24,7 @@ export interface OptionType {
 
 export const schema = yup.object().shape({
   access: yup.string(),
-  whitelist: yup.string(),
+  whitelist: yup.string().nullable(),
   pass: yup.string(),
   apply: yup.string(),
   options: yup.string().nullable(),
@@ -52,8 +52,8 @@ export enum ApplyRule {
 }
 
 export enum ApplyOption {
-  RequireApprove = 'requireApprove',
-  RequireBasicInfo = 'requireBasicInfo',
+  RequireApprove = 'Require Approve',
+  RequireBasicInfo = 'Require Basic Info',
 }
 
 export interface TagProps {

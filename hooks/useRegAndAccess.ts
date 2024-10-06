@@ -1,6 +1,7 @@
 import {
   ApplyOption,
   ApplyRule,
+  RegistrationAccess,
   TicketingMethod,
 } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Ticket/components/types';
 import { useCallback, useMemo } from 'react';
@@ -11,7 +12,6 @@ import { useEventContext } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Ev
 import { debounce } from 'lodash';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
-import { TicketType } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Ticket/components/CreateTicket';
 
 interface Props {
   regAndAccess?: RegistrationAndAccess;
@@ -78,10 +78,19 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
 
   const registrationAvailable = useMemo(() => {
     if (regAndAccess?.ticketType === TicketingMethod.NoTicketing) {
+      if (regAndAccess?.registrationAccess === RegistrationAccess.Whitelist) {
+        return regAndAccess?.registrationWhitelist?.length > 0;
+      }
       return noApplication || hasConfigedApplicationForm;
     }
     return false;
-  }, [hasConfigedApplicationForm, noApplication, regAndAccess?.ticketType]);
+  }, [
+    hasConfigedApplicationForm,
+    noApplication,
+    regAndAccess?.registrationAccess,
+    regAndAccess?.registrationWhitelist?.length,
+    regAndAccess?.ticketType,
+  ]);
 
   return {
     noApplication,

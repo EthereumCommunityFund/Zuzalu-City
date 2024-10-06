@@ -87,7 +87,9 @@ export interface Event {
 export interface RegistrationAndAccess {
   applyRule: string;
   applyOption: string;
-  registrationWhitelist: any;
+  registrationWhitelist: {
+    id: string;
+  }[];
   registrationAccess: string;
   ticketType: string;
   applicationForm: string;
@@ -412,7 +414,7 @@ export interface CreateRegAndAccessRequest {
 
 export interface UpdateRegAndAccessRequest
   extends Partial<CreateRegAndAccessRequest> {
-  type: 'question' | 'method' | 'switch';
+  type: 'question' | 'method' | 'switch' | 'whitelist';
   id: string;
   applicationForm?: string;
   checkinOpen?: string;

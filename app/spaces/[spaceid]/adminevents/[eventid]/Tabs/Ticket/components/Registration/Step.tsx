@@ -43,11 +43,10 @@ export const StepOne = ({ handleClose, handleNext }: CommonProps) => {
   const access = watch('access') || '';
 
   const validateAddresses = useCallback((input: string) => {
-    if (!input) {
-      setAddressError('Please enter addresses');
-      return false;
-    }
-    const addressList = input.split(',').map((addr) => addr.trim());
+    const addressList = input
+      .split(',')
+      .filter(Boolean)
+      .map((addr) => addr.trim());
     const invalidAddresses = addressList.filter((addr) => !isAddress(addr));
 
     const hasInvalidAddresses = invalidAddresses.length > 0;

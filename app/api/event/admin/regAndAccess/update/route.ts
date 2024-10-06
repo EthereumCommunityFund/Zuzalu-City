@@ -93,6 +93,27 @@ async function updateSwitch({
   });
 }
 
+async function updateWhitelist({
+  id,
+  registrationWhitelist,
+  profileId,
+}: {
+  registrationWhitelist: string;
+  id: string;
+  profileId: string;
+}) {
+  const d = await composeClient.executeQuery(Update_QUERY, {
+    input: {
+      id,
+      content: {
+        registrationWhitelist: registrationWhitelist || null,
+        profileId,
+      },
+    },
+  });
+  console.log(d);
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -108,6 +129,7 @@ export async function POST(req: Request) {
       ticketType,
       registrationOpen,
       checkinOpen,
+      registrationWhitelist,
     } = body;
     const { data, error } = await supabase
       .from('events')
@@ -188,6 +210,15 @@ export async function POST(req: Request) {
         id,
         registrationOpen,
         checkinOpen,
+        profileId,
+      });
+    }
+
+    if (type === 'whitelist') {
+      console.log(registrationWhitelist);
+      await updateWhitelist({
+        id,
+        registrationWhitelist,
         profileId,
       });
     }

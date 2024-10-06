@@ -34,46 +34,48 @@ const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
           Event Registration
         </Typography>
       </Stack>
-      <Stack
-        direction="row"
-        gap="20px"
-        sx={{
-          [breakpoints.down('sm')]: {
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '10px',
-          },
-        }}
-      >
-        <StatusIndicatorPanel
-          name="Registration Status"
-          desc={
-            registrationOpen
-              ? 'OPEN'
-              : registrationAvailable
-                ? 'CLOSED'
-                : 'Unavailable'
-          }
-          checked={registrationOpen}
-          disabled={!registrationAvailable}
-          onChange={handleRegistrationOpenChange}
-        />
-        {hasCheckin && (
+      {regAndAccess && (
+        <Stack
+          direction="row"
+          gap="20px"
+          sx={{
+            [breakpoints.down('sm')]: {
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '10px',
+            },
+          }}
+        >
           <StatusIndicatorPanel
-            name="Check-In Status"
-            desc={checkinOpen ? 'OPEN' : 'CLOSED'}
-            checked={checkinOpen}
-            // disabled
-            onChange={() => {}}
+            name="Registration Status"
+            desc={
+              registrationOpen
+                ? 'OPEN'
+                : registrationAvailable
+                  ? 'CLOSED'
+                  : 'Unavailable'
+            }
+            checked={registrationOpen}
+            disabled={!registrationAvailable}
+            onChange={handleRegistrationOpenChange}
           />
-        )}
-        <StatusIndicatorPanel
-          name="Event Capacity"
-          desc="COMING SOON"
-          left={<QRCodeIcon />}
-          disabled
-        />
-      </Stack>
+          {hasCheckin && (
+            <StatusIndicatorPanel
+              name="Check-In Status"
+              desc={checkinOpen ? 'OPEN' : 'CLOSED'}
+              checked={checkinOpen}
+              // disabled
+              onChange={() => {}}
+            />
+          )}
+          <StatusIndicatorPanel
+            name="Event Capacity"
+            desc="COMING SOON"
+            left={<QRCodeIcon />}
+            disabled
+          />
+        </Stack>
+      )}
     </Stack>
   );
 };
