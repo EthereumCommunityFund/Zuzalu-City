@@ -92,6 +92,8 @@ export interface RegistrationAndAccess {
   ticketType: string;
   applicationForm: string;
   id: string;
+  registrationOpen: string;
+  checkinOpen: string;
 }
 
 export interface ApplicationForm {
@@ -410,7 +412,9 @@ export interface CreateRegAndAccessRequest {
 
 export interface UpdateRegAndAccessRequest
   extends Partial<CreateRegAndAccessRequest> {
-  type: 'question' | 'method';
+  type: 'question' | 'method' | 'switch';
   id: string;
   applicationForm?: string;
+  checkinOpen?: string;
+  registrationOpen?: string;
 }

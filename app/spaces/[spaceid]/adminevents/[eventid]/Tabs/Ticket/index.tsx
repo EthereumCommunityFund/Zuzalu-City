@@ -525,7 +525,7 @@ const Ticket = ({ event }: PropTypes) => {
         title="Updating"
         message="Please wait while the data is being updated..."
       />
-      <TicketHeader event={event} visible={event?.contractID === null} />
+      <TicketHeader regAndAccess={regAndAccess} />
       {!regAndAccess && <RegistrationPanel registered={false} />}
       {regAndAccess?.ticketType === TicketingMethod.NoTicketing && (
         <NoTicketList regAndAccess={regAndAccess} />

@@ -7,12 +7,7 @@ import { ceramic, composeClient } from '@/constant';
 import { base64ToUint8Array } from '@/utils';
 import { TicketingMethod } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Ticket/components/types';
 
-async function updateQuestion(
-  id: string,
-  applicationForm: string,
-  profileId: string,
-) {
-  const Update_QUERY = `
+const Update_QUERY = `
       mutation UpdateZucityEventRegistrationAndAccessMutation($input: UpdateZucityEventRegistrationAndAccessInput!) {
         updateZucityEventRegistrationAndAccess(
           input: $input
@@ -23,6 +18,11 @@ async function updateQuestion(
         }
       }
       `;
+async function updateQuestion(
+  id: string,
+  applicationForm: string,
+  profileId: string,
+) {
   await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
@@ -49,17 +49,6 @@ async function updateMethod({
   ticketType: string;
   profileId: string;
 }) {
-  const Update_QUERY = `
-      mutation UpdateZucityEventRegistrationAndAccessMutation($input: UpdateZucityEventRegistrationAndAccessInput!) {
-        updateZucityEventRegistrationAndAccess(
-          input: $input
-        ) {
-          document {
-            id
-          }
-        }
-      }
-      `;
   const d = await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
@@ -75,6 +64,35 @@ async function updateMethod({
   console.log(d);
 }
 
+async function updateSwitch({
+  id,
+  registrationOpen,
+  checkinOpen,
+  profileId,
+}: {
+  id: string;
+  registrationOpen: string;
+  checkinOpen: string;
+  profileId: string;
+}) {
+  const content = checkinOpen
+    ? {
+        checkinOpen,
+      }
+    : {
+        registrationOpen,
+      };
+  await composeClient.executeQuery(Update_QUERY, {
+    input: {
+      id,
+      content: {
+        ...content,
+        profileId,
+      },
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -88,6 +106,8 @@ export async function POST(req: Request) {
       applyOption,
       registrationAccess,
       ticketType,
+      registrationOpen,
+      checkinOpen,
     } = body;
     const { data, error } = await supabase
       .from('events')
@@ -104,7 +124,13 @@ export async function POST(req: Request) {
     await did.authenticate();
     ceramic.did = did;
     composeClient.setDID(did);
-    const GET_Event_QUERY = `
+
+    if (type === 'question') {
+      await updateQuestion(id, applicationForm, profileId);
+    }
+
+    if (type === 'method') {
+      const GET_Event_QUERY = `
     query GetZucityEvent($id: ID!) {
       node(id: $id) {
           ... on ZucityEvent {
@@ -130,21 +156,15 @@ export async function POST(req: Request) {
       }
     `;
 
-    const getEventResponse: any = await composeClient.executeQuery(
-      GET_Event_QUERY,
-      {
-        id: eventId,
-      },
-    );
+      const getEventResponse: any = await composeClient.executeQuery(
+        GET_Event_QUERY,
+        {
+          id: eventId,
+        },
+      );
 
-    const regAndAccess =
-      getEventResponse.data.node.regAndAccess.edges?.[0].node;
-
-    if (type === 'question') {
-      await updateQuestion(id, applicationForm, profileId);
-    }
-
-    if (type === 'method') {
+      const regAndAccess =
+        getEventResponse.data.node.regAndAccess.edges?.[0].node;
       if (regAndAccess.ticketType !== TicketingMethod.NoTicketing) {
         return NextResponse.json(
           {
@@ -162,6 +182,16 @@ export async function POST(req: Request) {
         profileId,
       });
     }
+
+    if (type === 'switch') {
+      await updateSwitch({
+        id,
+        registrationOpen,
+        checkinOpen,
+        profileId,
+      });
+    }
+
     return NextResponse.json(
       {
         message:

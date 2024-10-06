@@ -15,9 +15,9 @@ interface NoTicketListProps {
 export default function NoTicketList({ regAndAccess }: NoTicketListProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
 
-  const { noApplication } = useRegAndAccess({ regAndAccess });
-
-  console.log(noApplication, regAndAccess);
+  const { registrationAvailable, noApplication } = useRegAndAccess({
+    regAndAccess,
+  });
 
   return (
     <>
@@ -44,7 +44,10 @@ export default function NoTicketList({ regAndAccess }: NoTicketListProps) {
         </Typography>
         <ConfigButton onClick={handleOpen}>Add Ticketing Method</ConfigButton>
       </Stack>
-      <RegistrationStatus />
+      <RegistrationStatus
+        regAndAccess={regAndAccess}
+        isAvailable={registrationAvailable}
+      />
       {!noApplication && <ApplicationPanel regAndAccess={regAndAccess} />}
     </>
   );

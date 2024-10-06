@@ -9,10 +9,11 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, Space } from '@/types';
 import { useQuery } from '@tanstack/react-query';
 import { getSpacesQuery } from '@/services/space';
+import { EventProvider, useEventContext } from './EventContext';
 
-const Home: React.FC = () => {
+const EventContent: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
-  const [event, setEvent] = React.useState<Event>();
+  const { event, setEvent } = useEventContext();
 
   const { composeClient, ceramic } = useCeramicContext();
 
@@ -124,7 +125,6 @@ const Home: React.FC = () => {
     queryKey: ['fetchEventById', pathname.eventid],
     queryFn: () => fetchEventById(pathname.eventid as string),
     enabled: !!pathname.eventid,
-    staleTime: 0,
   });
 
   const refetchData = () => {
@@ -173,6 +173,14 @@ const Home: React.FC = () => {
         </Box>
       </Stack>
     </Stack>
+  );
+};
+
+const Home: React.FC = () => {
+  return (
+    <EventProvider>
+      <EventContent />
+    </EventProvider>
   );
 };
 
