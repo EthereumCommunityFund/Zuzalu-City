@@ -53,7 +53,8 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
   const { shareUrl } = useGetShareLink({ id: eventId, name: eventData?.title });
   const url =
     shareUrl ||
-    (typeof window !== 'undefined' && `${window.origin}/events/${eventId}`);
+    (typeof window !== 'undefined' && `${window.origin}/events/${eventId}`) ||
+    '';
 
   return eventData ? (
     <Stack
