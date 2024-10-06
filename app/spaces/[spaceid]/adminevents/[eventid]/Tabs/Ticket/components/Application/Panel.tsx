@@ -60,7 +60,9 @@ export default function Panel({ regAndAccess }: PanelProps) {
     const tags: TagProps[] = [
       {
         type: 'text',
-        text: `Setting: ${regAndAccess?.applyRule}`,
+        text: `Setting: ${regAndAccess?.applyRule}${
+          regAndAccess?.applyOption && `- ${regAndAccess?.applyOption}`
+        }`,
       },
     ];
     if (!hasConfiged) {

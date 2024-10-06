@@ -62,7 +62,7 @@ export default function Form({ regAndAccess, onClose }: FormProps) {
   const {
     control,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors },
     reset,
   } = useForm({
     resolver: yupResolver(schema),
@@ -100,6 +100,7 @@ export default function Form({ regAndAccess, onClose }: FormProps) {
       queryClient.invalidateQueries({
         queryKey: ['fetchEventById'],
       });
+      setOpenTips(false);
       reset();
       onClose();
     },
@@ -110,12 +111,12 @@ export default function Form({ regAndAccess, onClose }: FormProps) {
     (data: yup.InferType<typeof schema>) => {
       const registrationWhitelist = data.addresses
         ?.map((q) => q.address)
+        .concat(whitelistFields.map((v) => v.address || ''))
         .filter(Boolean)
         .map(
           (address) =>
             `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
-        )
-        .join(',');
+        );
       updateMutation.mutate({
         type: 'whitelist',
         id: regAndAccess!.id,
@@ -124,7 +125,7 @@ export default function Form({ regAndAccess, onClose }: FormProps) {
         eventId,
       });
     },
-    [updateMutation, regAndAccess, profileId, eventId],
+    [whitelistFields, updateMutation, regAndAccess, profileId, eventId],
   );
 
   const handleDialog = useCallback(() => {
@@ -142,9 +143,17 @@ export default function Form({ regAndAccess, onClose }: FormProps) {
   const handleConfirm = useCallback(async () => {
     whitelistRemove(removeIndex);
     handleDialog();
-    const registrationWhitelist = regAndAccess?.registrationWhitelist
-      .filter((q, i) => i !== removeIndex)
-      .join(',');
+    const registrationWhitelist = whitelistFields
+      ?.map((q) => q.address)
+      .filter(Boolean)
+      .filter((v, index) => index !== removeIndex)
+      .map(
+        (address) =>
+          `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
+      );
+    queryClient.cancelQueries({
+      queryKey: ['fetchEventById'],
+    });
     await updateRegAndAccess({
       type: 'whitelist',
       id: regAndAccess!.id,
@@ -162,6 +171,7 @@ export default function Form({ regAndAccess, onClose }: FormProps) {
     queryClient,
     regAndAccess,
     removeIndex,
+    whitelistFields,
     whitelistRemove,
   ]);
 
@@ -336,7 +346,6 @@ export default function Form({ regAndAccess, onClose }: FormProps) {
             isBackButton={false}
             isConfirmButton
             isLoading={isLoading}
-            isDisabled={!isDirty}
             handleNext={handleSubmit(onSubmit)}
             handleBack={onClose}
           />

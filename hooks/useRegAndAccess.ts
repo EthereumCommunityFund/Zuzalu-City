@@ -78,10 +78,11 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
 
   const registrationAvailable = useMemo(() => {
     if (regAndAccess?.ticketType === TicketingMethod.NoTicketing) {
+      let hasWhitelist = true;
       if (regAndAccess?.registrationAccess === RegistrationAccess.Whitelist) {
-        return regAndAccess?.registrationWhitelist?.length > 0;
+        hasWhitelist = regAndAccess?.registrationWhitelist?.length > 0;
       }
-      return noApplication || hasConfigedApplicationForm;
+      return hasWhitelist && (noApplication || hasConfigedApplicationForm);
     }
     return false;
   }, [

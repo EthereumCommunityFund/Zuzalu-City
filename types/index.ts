@@ -406,7 +406,7 @@ export interface CreateRegAndAccessRequest {
   applyRule: string;
   eventId: string;
   applyOption: string;
-  registrationWhitelist: any;
+  registrationWhitelist?: string[];
   registrationAccess: string;
   ticketType: string;
   profileId: string;

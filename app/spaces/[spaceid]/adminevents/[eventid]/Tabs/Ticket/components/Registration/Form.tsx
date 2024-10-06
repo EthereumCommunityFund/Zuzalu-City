@@ -83,14 +83,14 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
     (data: ConfigFormType) => {
       const { apply, options, whitelist, access, pass } = data;
       if (!regAndAccess?.id) {
-        const registrationWhitelist = whitelist
-          ?.split(',')
-          .filter(Boolean)
-          .map(
-            (address) =>
-              `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
-          )
-          .join(',');
+        const registrationWhitelist =
+          whitelist
+            ?.split(',')
+            .filter(Boolean)
+            .map(
+              (address) =>
+                `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
+            ) || undefined;
         createMutation.mutate({
           eventId,
           registrationWhitelist,
