@@ -5,6 +5,7 @@ import { getResolver } from 'key-did-resolver';
 import { DID } from 'dids';
 import { ceramic, composeClient } from '@/constant';
 import { base64ToUint8Array } from '@/utils';
+import { TicketingMethod } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Ticket/components/types';
 
 async function updateQuestion(
   id: string,
@@ -33,10 +34,61 @@ async function updateQuestion(
   });
 }
 
+async function updateMethod({
+  id,
+  applyRule,
+  applyOption,
+  registrationAccess,
+  ticketType,
+  profileId,
+}: {
+  id: string;
+  applyRule: string;
+  applyOption: string;
+  registrationAccess: string;
+  ticketType: string;
+  profileId: string;
+}) {
+  const Update_QUERY = `
+      mutation UpdateZucityEventRegistrationAndAccessMutation($input: UpdateZucityEventRegistrationAndAccessInput!) {
+        updateZucityEventRegistrationAndAccess(
+          input: $input
+        ) {
+          document {
+            id
+          }
+        }
+      }
+      `;
+  const d = await composeClient.executeQuery(Update_QUERY, {
+    input: {
+      id,
+      content: {
+        applyRule,
+        ticketType,
+        applyOption: applyOption || null,
+        registrationAccess,
+        profileId,
+      },
+    },
+  });
+  console.log(d);
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { eventId, type, applicationForm, profileId, id } = body;
+    const {
+      eventId,
+      type,
+      applicationForm,
+      profileId,
+      id,
+      applyRule,
+      applyOption,
+      registrationAccess,
+      ticketType,
+    } = body;
     const { data, error } = await supabase
       .from('events')
       .select('privateKey')
@@ -85,10 +137,31 @@ export async function POST(req: Request) {
       },
     );
 
+    const regAndAccess =
+      getEventResponse.data.node.regAndAccess.edges?.[0].node;
+
     if (type === 'question') {
       await updateQuestion(id, applicationForm, profileId);
     }
 
+    if (type === 'method') {
+      if (regAndAccess.ticketType !== TicketingMethod.NoTicketing) {
+        return NextResponse.json(
+          {
+            message: 'You cannot change the ticketing method once it is set.',
+          },
+          { status: 500 },
+        );
+      }
+      await updateMethod({
+        id,
+        applyRule,
+        applyOption,
+        registrationAccess,
+        ticketType,
+        profileId,
+      });
+    }
     return NextResponse.json(
       {
         message:

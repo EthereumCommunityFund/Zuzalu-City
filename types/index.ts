@@ -410,7 +410,7 @@ export interface CreateRegAndAccessRequest {
 
 export interface UpdateRegAndAccessRequest
   extends Partial<CreateRegAndAccessRequest> {
-  type: 'question';
+  type: 'question' | 'method';
   id: string;
   applicationForm?: string;
 }

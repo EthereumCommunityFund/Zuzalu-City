@@ -7,13 +7,21 @@ import { StepFour, StepOne, StepThree, StepTwo } from './Step';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ConfigFormType, schema } from '../types';
-import { createRegAndAccess } from '@/services/event/regAndAccess';
-import { CreateRegAndAccessRequest } from '@/types';
+import {
+  createRegAndAccess,
+  updateRegAndAccess,
+} from '@/services/event/regAndAccess';
+import {
+  CreateRegAndAccessRequest,
+  RegistrationAndAccess,
+  UpdateRegAndAccessRequest,
+} from '@/types';
 import { isDev } from '@/constant';
 import { scroll, scrollSepolia } from 'viem/chains';
 import { useCeramicContext } from '@/context/CeramicContext';
 
 interface RegistrationMethodSelectorProps {
+  regAndAccess?: RegistrationAndAccess;
   onClose: () => void;
   initialStep?: number;
 }
@@ -21,6 +29,7 @@ interface RegistrationMethodSelectorProps {
 const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
   onClose,
   initialStep = 1,
+  regAndAccess,
 }) => {
   const [step, setStep] = useState(initialStep);
 
@@ -28,8 +37,16 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
   const pathname = useParams();
   const formMethods = useForm({
     resolver: yupResolver(schema),
+    values: regAndAccess
+      ? {
+          apply: regAndAccess.applyRule,
+          options: regAndAccess.applyOption,
+          access: regAndAccess.registrationAccess,
+          pass: regAndAccess.ticketType,
+        }
+      : {},
   });
-  const { profile, ceramic } = useCeramicContext();
+  const { profile } = useCeramicContext();
   const profileId = profile?.id || '';
 
   const eventId = pathname.eventid.toString();
@@ -39,33 +56,58 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
       return createRegAndAccess(input);
     },
     onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ['fetchEventById', eventId],
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
       });
       setStep(initialStep);
       formMethods.reset();
       onClose();
     },
   });
-  const isLoading = createMutation.isPending;
+  const updateMutation = useMutation({
+    mutationFn: (input: UpdateRegAndAccessRequest) => {
+      return updateRegAndAccess(input);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
+      });
+      setStep(initialStep);
+      formMethods.reset();
+      onClose();
+    },
+  });
+  const isLoading = createMutation.isPending || updateMutation.isPending;
 
   const handleSubmit = useCallback(
     (data: ConfigFormType) => {
       const { apply, options, whitelist, access, pass } = data;
-      const registrationWhitelist = whitelist?.split(',').map((address) => ({
-        id: `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
-      }));
-      createMutation.mutate({
-        eventId,
-        registrationWhitelist,
-        applyOption: options || '',
-        applyRule: apply!,
-        registrationAccess: access!,
-        ticketType: pass!,
-        profileId,
-      });
+      if (!regAndAccess?.id) {
+        const registrationWhitelist = whitelist?.split(',').map((address) => ({
+          id: `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
+        }));
+        createMutation.mutate({
+          eventId,
+          registrationWhitelist,
+          applyOption: options || '',
+          applyRule: apply!,
+          registrationAccess: access!,
+          ticketType: pass!,
+          profileId,
+        });
+      } else {
+        updateMutation.mutate({
+          eventId,
+          id: regAndAccess!.id,
+          type: 'method',
+          applyOption: options || '',
+          applyRule: apply!,
+          registrationAccess: access!,
+          ticketType: pass!,
+        });
+      }
     },
-    [createMutation, eventId, profileId],
+    [createMutation, eventId, profileId, regAndAccess, updateMutation],
   );
 
   const handleStep = useCallback(
@@ -74,7 +116,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
         onClose();
         return;
       }
-      if (type === 'next' && step === 5 - initialStep) {
+      if (type === 'next' && step === 4) {
         formMethods.handleSubmit(handleSubmit)();
         return;
       }

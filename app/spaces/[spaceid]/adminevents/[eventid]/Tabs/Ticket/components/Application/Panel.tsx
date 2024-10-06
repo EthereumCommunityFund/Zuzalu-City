@@ -25,7 +25,7 @@ export default function Panel({ regAndAccess }: PanelProps) {
   const eventId = pathname.eventid.toString();
 
   const { data: applicationForms } = useQuery({
-    queryKey: ['fetchEventById', eventId],
+    queryKey: ['fetchApplicationForms', eventId],
     queryFn: () => {
       const query = `
       query FetchEvent($id: ID!) {

@@ -5,7 +5,8 @@ import useOpenDraw from '@/hooks/useOpenDraw';
 import { RegistrationStatus } from '../Status';
 import ApplicationPanel from '../Application/Panel';
 import { ConfigButton } from '../Common';
-import { Event, RegistrationAndAccess } from '@/types';
+import { RegistrationAndAccess } from '@/types';
+import useRegAndAccess from '@/hooks/useRegAndAccess';
 
 interface NoTicketListProps {
   regAndAccess?: RegistrationAndAccess;
@@ -14,10 +15,18 @@ interface NoTicketListProps {
 export default function NoTicketList({ regAndAccess }: NoTicketListProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
 
+  const { noApplication } = useRegAndAccess({ regAndAccess });
+
+  console.log(noApplication, regAndAccess);
+
   return (
     <>
       <Drawer open={open} onClose={handleClose} onOpen={handleOpen}>
-        <ConfigForm initialStep={2} onClose={handleClose} />
+        <ConfigForm
+          initialStep={2}
+          regAndAccess={regAndAccess}
+          onClose={handleClose}
+        />
       </Drawer>
       <Stack
         spacing="10px"
@@ -36,7 +45,7 @@ export default function NoTicketList({ regAndAccess }: NoTicketListProps) {
         <ConfigButton onClick={handleOpen}>Add Ticketing Method</ConfigButton>
       </Stack>
       <RegistrationStatus />
-      <ApplicationPanel regAndAccess={regAndAccess} />
+      {!noApplication && <ApplicationPanel regAndAccess={regAndAccess} />}
     </>
   );
 }

@@ -34,6 +34,7 @@ const Home: React.FC = () => {
   });
 
   const fetchEventById = async (id: string) => {
+    console.log('FETCH EVENT BY ID: ', id);
     const query = `
       query FetchEvent($id: ID!) {
         node(id: $id) {
@@ -123,6 +124,7 @@ const Home: React.FC = () => {
     queryKey: ['fetchEventById', pathname.eventid],
     queryFn: () => fetchEventById(pathname.eventid as string),
     enabled: !!pathname.eventid,
+    staleTime: 0,
   });
 
   const refetchData = () => {
@@ -145,19 +147,6 @@ const Home: React.FC = () => {
         return <Overview />;
     }
   };
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (pathname.eventid) {
-          fetchEventById(pathname.eventid as string);
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
-  }, []);
 
   React.useEffect(() => {
     if (spaceData) {

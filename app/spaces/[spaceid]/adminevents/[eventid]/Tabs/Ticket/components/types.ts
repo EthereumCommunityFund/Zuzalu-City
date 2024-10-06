@@ -27,7 +27,7 @@ export const schema = yup.object().shape({
   whitelist: yup.string(),
   pass: yup.string(),
   apply: yup.string(),
-  options: yup.string(),
+  options: yup.string().nullable(),
 });
 
 export type ConfigFormType = yup.InferType<typeof schema>;

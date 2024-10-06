@@ -53,8 +53,8 @@ export default function Form({ questions = [''], onClose, id }: FormProps) {
   const updateMutation = useMutation({
     mutationFn: updateRegAndAccess,
     onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ['fetchEventById', eventId],
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
       });
       reset();
       onClose();
