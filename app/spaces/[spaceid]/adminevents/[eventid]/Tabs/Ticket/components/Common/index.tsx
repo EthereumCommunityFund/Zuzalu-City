@@ -299,7 +299,15 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
           border: '1px solid rgba(103, 219, 255, 0.20)',
           flex: 1,
         }}
-        startIcon={!isLoading && <RightArrowIcon size={5} color="#67DBFF" />}
+        startIcon={
+          !isLoading ? (
+            isConfirmButton ? (
+              <CheckCircleIcon sx={{ color: '#67DBFF', fontSize: '20px' }} />
+            ) : (
+              <RightArrowIcon size={5} color="#67DBFF" />
+            )
+          ) : null
+        }
         onClick={handleNext}
         disabled={isDisabled || isLoading}
       >

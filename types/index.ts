@@ -54,7 +54,13 @@ export interface Event {
   };
   customLinks?: [Link];
   tracks?: string;
-  checkinPass: string;
+  regAndAccess: {
+    edges: [
+      {
+        node: RegistrationAndAccess;
+      },
+    ];
+  };
   zupassInfo: string;
   sessionStorage: string;
   supportChain: string;
@@ -69,6 +75,14 @@ export interface Event {
   superAdmin?: {
     id: string;
   }[];
+}
+
+export interface RegistrationAndAccess {
+  applyRule: string;
+  applyOption: string;
+  registrationWhitelist: any;
+  registrationAccess: string;
+  ticketType: string;
 }
 
 export interface EventEdge {
@@ -367,4 +381,14 @@ export interface Post {
   creator: string;
   eventId: string;
   created_at: string;
+}
+
+export interface CreateRegAndAccessRequest {
+  applyRule: string;
+  eventId: string;
+  applyOption: string;
+  registrationWhitelist: any;
+  registrationAccess: string;
+  ticketType: string;
+  profileId: string;
 }

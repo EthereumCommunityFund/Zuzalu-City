@@ -11,7 +11,7 @@ interface PanelProps {
   registered: boolean;
 }
 
-const Panel: React.FC<PanelProps> = ({ registered }) => {
+const RegistrationPanel: React.FC<PanelProps> = ({ registered }) => {
   const { open, handleOpen, handleClose } = useOpenDraw();
 
   if (!registered)
@@ -73,4 +73,4 @@ const Panel: React.FC<PanelProps> = ({ registered }) => {
   );
 };
 
-export default Panel;
+export default RegistrationPanel;

@@ -39,6 +39,9 @@ const Home: React.FC = () => {
         node(id: $id) {
           ...on ZucityEvent {
             title
+            author {
+              id
+            }
             description
             status
             endTime
@@ -64,17 +67,26 @@ const Home: React.FC = () => {
               name
               gated
             }
-            contractID
             id
-            contracts {
-              contractAddress
-              description
-              image_url
-              status
-              type
-              checkin
+            regAndAccess(first:1) {
+              edges {
+                node {
+                  id
+                  profileId
+                  registrationAccess
+                  registrationOpen
+                  registrationWhitelist {
+                    id
+                  }
+                  ticketType
+                  checkinOpen
+                  applyRule
+                  applyOption
+                  applicationForm
+                  eventId
+                }
+              }
             }
-            checkinPass
           }
         }
       }
@@ -86,6 +98,7 @@ const Home: React.FC = () => {
 
     try {
       const result: any = await composeClient.executeQuery(query, variable);
+      console.log('RESULT: ', result);
       if (result.data) {
         if (result.data.node) {
           setEvent(result.data.node);

@@ -3,11 +3,15 @@ import { Box } from '@mui/material';
 import FormHeader from '@/components/form/FormHeader';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { updateCheckinPass } from '@/services/event/updateEvent';
 import { StepFour, StepOne, StepThree, StepTwo } from './Step';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { schema } from '../types';
+import { ConfigFormType, schema } from '../types';
+import { createRegAndAccess } from '@/services/event/regAndAccess';
+import { CreateRegAndAccessRequest } from '@/types';
+import { isDev } from '@/constant';
+import { scroll, scrollSepolia } from 'viem/chains';
+import { useCeramicContext } from '@/context/CeramicContext';
 
 interface RegistrationMethodSelectorProps {
   onClose: () => void;
@@ -25,22 +29,44 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
   const formMethods = useForm({
     resolver: yupResolver(schema),
   });
+  const { profile, ceramic } = useCeramicContext();
+  const profileId = profile?.id || '';
 
   const eventId = pathname.eventid.toString();
 
-  const updateEventPass = useMutation({
-    mutationFn: ({ eventId, pass }: { eventId: string; pass: string }) => {
-      return updateCheckinPass(eventId, pass);
+  const createMutation = useMutation({
+    mutationFn: (input: CreateRegAndAccessRequest) => {
+      return createRegAndAccess(input);
     },
     onSuccess: () => {
       queryClient.refetchQueries({
         queryKey: ['fetchEventById', eventId],
       });
       setStep(initialStep);
+      formMethods.reset();
       onClose();
     },
   });
-  // const isLoading = updateEventPass.isPending;
+  const isLoading = createMutation.isPending;
+
+  const handleSubmit = useCallback(
+    (data: ConfigFormType) => {
+      const { apply, options, whitelist, access, pass } = data;
+      const registrationWhitelist = whitelist?.split(',').map((address) => ({
+        id: `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
+      }));
+      createMutation.mutate({
+        eventId,
+        registrationWhitelist,
+        applyOption: options || '',
+        applyRule: apply!,
+        registrationAccess: access!,
+        ticketType: pass!,
+        profileId,
+      });
+    },
+    [createMutation, eventId, profileId],
+  );
 
   const handleStep = useCallback(
     (type: 'next' | 'back') => {
@@ -49,17 +75,12 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
         return;
       }
       if (type === 'next' && step === 5 - initialStep) {
-        // 如果需要在 step 2 执行特定操作，可以在这里添加逻辑
-        // 例如：
-        // updateEventPass.mutateAsync({
-        //   eventId,
-        //   pass: formMethods.getValues('selectedMethod'),
-        // });
+        formMethods.handleSubmit(handleSubmit)();
         return;
       }
       setStep((v) => (type === 'next' ? v + 1 : v - 1));
     },
-    [initialStep, onClose, step],
+    [formMethods, handleSubmit, initialStep, onClose, step],
   );
 
   useEffect(() => {
@@ -88,6 +109,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
           />
         ) : (
           <StepFour
+            isLoading={isLoading}
             handleClose={() => handleStep('back')}
             handleNext={() => handleStep('next')}
           />

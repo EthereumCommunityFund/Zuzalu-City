@@ -424,9 +424,9 @@ export const StepThree = ({ handleClose, handleNext }: CommonProps) => {
               }}
               options={item.options}
               onOptionsChange={(optionIds) =>
-                setValue('options', optionIds.join(','))
+                setValue('options', optionIds.filter(Boolean).join(','))
               }
-              selectedOptions={options.split(',') || []}
+              selectedOptions={options.split(',').filter(Boolean) || []}
             />
           ))}
           <Typography fontSize={14} lineHeight={1.6} color="#7DFFD1">
@@ -447,12 +447,15 @@ export const StepThree = ({ handleClose, handleNext }: CommonProps) => {
   );
 };
 
-export const StepFour = ({ handleClose, handleNext }: CommonProps) => {
+export const StepFour = ({
+  handleClose,
+  handleNext,
+  isLoading,
+}: CommonProps & { isLoading: boolean }) => {
   const { watch } = useFormContext<ConfigFormType>();
   const access = watch('access') || '';
   const apply = watch('apply') || '';
   const pass = watch('pass') || '';
-  const options = watch('options') || '';
 
   const list = useMemo(() => {
     return [
@@ -591,6 +594,7 @@ export const StepFour = ({ handleClose, handleNext }: CommonProps) => {
       </CommonWrapper>
       <ButtonGroup
         isConfirmButton
+        isLoading={isLoading}
         handleNext={handleNext}
         handleBack={handleClose}
       />
