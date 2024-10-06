@@ -61,6 +61,13 @@ export interface Event {
       },
     ];
   };
+  applicationForms: {
+    edges: [
+      {
+        node: ApplicationForm;
+      },
+    ];
+  };
   zupassInfo: string;
   sessionStorage: string;
   supportChain: string;
@@ -83,6 +90,14 @@ export interface RegistrationAndAccess {
   registrationWhitelist: any;
   registrationAccess: string;
   ticketType: string;
+  applicationForm: string;
+  id: string;
+}
+
+export interface ApplicationForm {
+  id: string;
+  answers: string;
+  approveStatus: string;
 }
 
 export interface EventEdge {
@@ -391,4 +406,11 @@ export interface CreateRegAndAccessRequest {
   registrationAccess: string;
   ticketType: string;
   profileId: string;
+}
+
+export interface UpdateRegAndAccessRequest
+  extends Partial<CreateRegAndAccessRequest> {
+  type: 'question';
+  id: string;
+  applicationForm?: string;
 }

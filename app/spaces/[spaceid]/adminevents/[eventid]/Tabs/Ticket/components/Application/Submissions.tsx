@@ -76,7 +76,11 @@ const Item = ({ isLast, handleOperate, handleView }: ItemProps) => {
   );
 };
 
-export default function Submissions() {
+interface SubmissionsProps {
+  list: any[];
+}
+
+export default function Submissions({ list = [] }: SubmissionsProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
   const [showDialog, setShowDialog] = useState(false);
   const [needApprove, setNeedApprove] = useState(false);
@@ -101,15 +105,40 @@ export default function Submissions() {
     handleDialog();
   }, [handleDialog]);
 
-  const list = Array.from({ length: 10 }, (_, i) => i);
-
   return (
-    <Stack
-      p="20px"
-      spacing="20px"
-      bgcolor="rgba(255, 255, 255, 0.02)"
-      sx={{ borderRadius: '10px' }}
-    >
+    <>
+      <Stack
+        p="20px"
+        mt="20px"
+        spacing="20px"
+        bgcolor="rgba(255, 255, 255, 0.02)"
+        sx={{ borderRadius: '10px' }}
+      >
+        <Typography
+          fontSize={16}
+          fontWeight={600}
+          lineHeight={1.2}
+          sx={{ opacity: 0.8 }}
+        >
+          Application Submissions
+        </Typography>
+        <Stack spacing="10px">
+          {list.length === 0 ? (
+            <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.8 }}>
+              No Submissions
+            </Typography>
+          ) : (
+            list.map((item, index) => (
+              <Item
+                key={item}
+                isLast={index === list.length - 1}
+                handleOperate={handleOperate}
+                handleView={handleView}
+              />
+            ))
+          )}
+        </Stack>
+      </Stack>
       <Dialog
         title={needApprove ? 'Approve Applicant' : 'Deny Applicant'}
         message={
@@ -125,30 +154,6 @@ export default function Submissions() {
       <Draw open={open} onClose={handleClose} onOpen={handleOpen}>
         <ViewForm onClose={handleClose} handleOperate={handleOperate} />
       </Draw>
-      <Typography
-        fontSize={16}
-        fontWeight={600}
-        lineHeight={1.2}
-        sx={{ opacity: 0.8 }}
-      >
-        Application Submissions
-      </Typography>
-      <Stack spacing="10px">
-        {list.length === 0 ? (
-          <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.8 }}>
-            No Submissions
-          </Typography>
-        ) : (
-          list.map((item, index) => (
-            <Item
-              key={item}
-              isLast={index === list.length - 1}
-              handleOperate={handleOperate}
-              handleView={handleView}
-            />
-          ))
-        )}
-      </Stack>
-    </Stack>
+    </>
   );
 }

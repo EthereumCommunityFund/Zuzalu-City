@@ -1,5 +1,3 @@
-import { ZuButton } from '@/components/core';
-import { SettingIcon } from '@/components/icons';
 import { Stack, Typography } from '@mui/material';
 import ConfigForm from '../Registration/Form';
 import Drawer from '@/components/drawer';
@@ -7,8 +5,13 @@ import useOpenDraw from '@/hooks/useOpenDraw';
 import { RegistrationStatus } from '../Status';
 import ApplicationPanel from '../Application/Panel';
 import { ConfigButton } from '../Common';
+import { Event, RegistrationAndAccess } from '@/types';
 
-export default function NoTicketList() {
+interface NoTicketListProps {
+  regAndAccess?: RegistrationAndAccess;
+}
+
+export default function NoTicketList({ regAndAccess }: NoTicketListProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
 
   return (
@@ -33,7 +36,7 @@ export default function NoTicketList() {
         <ConfigButton onClick={handleOpen}>Add Ticketing Method</ConfigButton>
       </Stack>
       <RegistrationStatus />
-      <ApplicationPanel />
+      <ApplicationPanel regAndAccess={regAndAccess} />
     </>
   );
 }

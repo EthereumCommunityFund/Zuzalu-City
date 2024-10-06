@@ -528,7 +528,7 @@ const Ticket = ({ event }: PropTypes) => {
       <TicketHeader event={event} visible={event?.contractID === null} />
       {!regAndAccess && <RegistrationPanel registered={false} />}
       {regAndAccess?.ticketType === TicketingMethod.NoTicketing && (
-        <NoTicketList />
+        <NoTicketList regAndAccess={regAndAccess} />
       )}
       {regAndAccess?.ticketType === TicketingMethod.ZuPass && <ZupassList />}
       {regAndAccess?.ticketType === TicketingMethod.ScrollPass && (

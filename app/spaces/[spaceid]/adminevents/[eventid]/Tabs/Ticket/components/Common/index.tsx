@@ -11,7 +11,7 @@ import {
   CircularProgress,
   useTheme,
 } from '@mui/material';
-import { ItemType, OptionType } from '../types';
+import { ItemType, OptionType, TagProps } from '../types';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useCallback } from 'react';
@@ -381,14 +381,6 @@ export const StatusIndicatorPanel = ({
     </Stack>
   );
 };
-
-interface TagProps {
-  type: 'text' | 'required' | 'warning' | 'pass';
-  pass?: 'zupass' | 'scrollpass';
-  text?: string;
-  bgColor?: string;
-  textColor?: string;
-}
 
 export const Tag = ({ type, pass, text, bgColor, textColor }: TagProps) => {
   if (type === 'text') {

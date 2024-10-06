@@ -55,3 +55,11 @@ export enum ApplyOption {
   RequireApprove = 'requireApprove',
   RequireBasicInfo = 'requireBasicInfo',
 }
+
+export interface TagProps {
+  type: 'text' | 'required' | 'warning' | 'pass';
+  pass?: 'zupass' | 'scrollpass';
+  text?: string;
+  bgColor?: string;
+  textColor?: string;
+}

@@ -68,6 +68,13 @@ const Home: React.FC = () => {
               gated
             }
             id
+            applicationForms(first:1000) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
             regAndAccess(first:1) {
               edges {
                 node {
@@ -84,6 +91,7 @@ const Home: React.FC = () => {
                   applyOption
                   applicationForm
                   eventId
+                  applicationForm
                 }
               }
             }

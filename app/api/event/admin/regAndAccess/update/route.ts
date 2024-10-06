@@ -6,10 +6,37 @@ import { DID } from 'dids';
 import { ceramic, composeClient } from '@/constant';
 import { base64ToUint8Array } from '@/utils';
 
+async function updateQuestion(
+  id: string,
+  applicationForm: string,
+  profileId: string,
+) {
+  const Update_QUERY = `
+      mutation UpdateZucityEventRegistrationAndAccessMutation($input: UpdateZucityEventRegistrationAndAccessInput!) {
+        updateZucityEventRegistrationAndAccess(
+          input: $input
+        ) {
+          document {
+            id
+          }
+        }
+      }
+      `;
+  await composeClient.executeQuery(Update_QUERY, {
+    input: {
+      id,
+      content: {
+        applicationForm,
+        profileId,
+      },
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { eventId } = body;
+    const { eventId, type, applicationForm, profileId, id } = body;
     const { data, error } = await supabase
       .from('events')
       .select('privateKey')
@@ -31,22 +58,21 @@ export async function POST(req: Request) {
           ... on ZucityEvent {
             id
             regAndAccess(first:1) {
-          edges {
-            node {
-              id
-              profileId
-              registrationAccess
-              registrationOpen
-              ticketType
-              checkinOpen
-              applyRule
-              applyOption
-              applicationForm
-              eventId
+              edges {
+                node {
+                  id
+                  profileId
+                  registrationAccess
+                  registrationOpen
+                  ticketType
+                  checkinOpen
+                  applyRule
+                  applyOption
+                  applicationForm
+                  eventId
+                }
+              }
             }
-          }
-        }
-
           }
         }
       }
@@ -58,9 +84,18 @@ export async function POST(req: Request) {
         id: eventId,
       },
     );
-    return new NextResponse(JSON.stringify(getEventResponse.data.node), {
-      status: 200,
-    });
+
+    if (type === 'question') {
+      await updateQuestion(id, applicationForm, profileId);
+    }
+
+    return NextResponse.json(
+      {
+        message:
+          'Submitted! Create process probably complete after few minutes.',
+      },
+      { status: 200 },
+    );
   } catch (err) {
     console.error(err);
     return new NextResponse('An unexpected error occurred', { status: 500 });

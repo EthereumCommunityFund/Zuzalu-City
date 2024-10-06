@@ -14,11 +14,15 @@ import { PreviewFile } from '@/components';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Space } from '@/types';
 import { useUploaderPreview } from '@/components/PreviewFile/useUploaderPreview';
-import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import SaveAsRoundedIcon from '@mui/icons-material/SaveAsRounded';
 import { createUrl, createUrlWhenEdit } from '@/services/url';
 import { covertNameToUrlName } from '@/utils/format';
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 const Overview = () => {
   const theme = useTheme();

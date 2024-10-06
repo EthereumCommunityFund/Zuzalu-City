@@ -17,7 +17,6 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
-import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import { ZuButton, ZuInput } from 'components/core';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -42,6 +41,11 @@ import FormUploader from './FormUploader';
 import { PlusIcon } from '../icons';
 import { covertNameToUrlName } from '@/utils/format';
 import { createUrl } from '@/services/url';
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Event name is required'),

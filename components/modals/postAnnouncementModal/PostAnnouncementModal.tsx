@@ -2,7 +2,11 @@ import { ClickAwayListener, Stack, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { ZuButton } from 'components/core';
-import SuperEditor from '@/components/editor/SuperEditor';
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 interface ModalProps {
   showModal: boolean;

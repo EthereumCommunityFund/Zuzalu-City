@@ -42,7 +42,6 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import SuperEditor from '@/components/editor/SuperEditor';
 import { PreviewFile } from '@/components';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
@@ -64,6 +63,11 @@ import { covertNameToUrlName } from '@/utils/format';
 dayjs.extend(timezone);
 
 type FormData = Yup.InferType<typeof schema>;
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 interface Inputs {
   name: string;
