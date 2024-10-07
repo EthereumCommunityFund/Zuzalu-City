@@ -434,10 +434,17 @@ export interface CreateRegAndAccessRequest {
 
 export interface UpdateRegAndAccessRequest
   extends Partial<CreateRegAndAccessRequest> {
-  type: 'question' | 'method' | 'switch' | 'whitelist' | 'zuPass';
+  type:
+    | 'question'
+    | 'method'
+    | 'switch'
+    | 'whitelist'
+    | 'zuPass'
+    | 'scrollpass';
   id: string;
   applicationForm?: string;
   checkinOpen?: string;
   registrationOpen?: string;
   zuPassInfo?: ZuPassInfo[];
+  scrollPassTickets?: ScrollPassTickets[];
 }

@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Skeleton, Stack } from '@mui/material';
 import { ConfigPanel, TitleWithTag } from '../Common';
 import { RegistrationStatus } from '../Status';
 import ApplicationPanel from '../Application/Panel';
@@ -9,13 +9,15 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import TicketCard, { TicketCardProps } from '../TicketList/TicketCard';
 import { Contract, Event, RegistrationAndAccess } from '@/types';
 import { useCreateEventId } from '../../hooks/useCreateEventId';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import useRegAndAccess from '@/hooks/useRegAndAccess';
+import { TagProps } from '../types';
 
 interface ScrollPassListProps {
   onToggle: () => void;
   setToggleAction: React.Dispatch<React.SetStateAction<string>>;
   setVaultIndex: React.Dispatch<React.SetStateAction<number>>;
+  ticketsIsLoading: boolean;
   tickets: Array<any>;
   ticketAddresses: Array<string>;
   eventContracts: Contract[];
@@ -31,12 +33,24 @@ export default function ScrollPassList({
   ticketAddresses,
   eventContracts,
   regAndAccess,
+  ticketsIsLoading,
 }: ScrollPassListProps) {
   const hasTickets = tickets.length > 0;
 
-  const { registrationAvailable, noApplication } = useRegAndAccess({
-    regAndAccess,
-  });
+  const { registrationAvailable, noApplication, accessRulesAvailable } =
+    useRegAndAccess({
+      regAndAccess,
+    });
+
+  const tags = useMemo(() => {
+    const tags: TagProps[] = [{ type: 'pass', pass: 'scrollpass' }];
+    if (!hasTickets) {
+      tags.push({ type: 'warning', text: 'Required to open event' });
+    }
+    return tags;
+  }, [hasTickets]);
+
+  console.log(regAndAccess);
 
   return (
     <>
@@ -44,10 +58,7 @@ export default function ScrollPassList({
         <TitleWithTag
           title="Event Ticketing"
           desc="These are tickets for this event"
-          tags={[
-            { type: 'pass', pass: 'scrollpass' },
-            { type: 'warning', text: 'Required to open event' },
-          ]}
+          tags={tags}
           required={!hasTickets}
           right={
             hasTickets ? (
@@ -69,7 +80,18 @@ export default function ScrollPassList({
           }
           onClick={onToggle}
         />
-        {!hasTickets ? (
+        {ticketsIsLoading ? (
+          <Stack spacing="10px">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                variant="rounded"
+                height="120px"
+                width="100%"
+              />
+            ))}
+          </Stack>
+        ) : !hasTickets ? (
           <ConfigPanel
             icon={
               <PlusCircleIcon size={7.5} color="rgba(255, 255, 255, 0.5)" />
@@ -80,7 +102,7 @@ export default function ScrollPassList({
             handleOpen={onToggle}
           />
         ) : (
-          <>
+          <Stack spacing="10px">
             {tickets.map((ticket: TicketCardProps, index: number) => {
               const eventContract = eventContracts.find((contract) => {
                 if (contract.contractAddress) {
@@ -94,6 +116,7 @@ export default function ScrollPassList({
 
               return (
                 <TicketCard
+                  regAndAccess={regAndAccess}
                   key={`TicketListItem-${index}`}
                   ticket={ticket}
                   index={index}
@@ -105,14 +128,19 @@ export default function ScrollPassList({
                 />
               );
             })}
-          </>
+          </Stack>
         )}
       </Stack>
+      <AccessRules
+        type="scrollpass"
+        regAndAccess={regAndAccess}
+        isAvailable={accessRulesAvailable}
+        ticketAddresses={ticketAddresses}
+      />
       <RegistrationStatus
         regAndAccess={regAndAccess}
         isAvailable={registrationAvailable}
       />
-      <AccessRules type="scrollpass" />
       {!noApplication && <ApplicationPanel regAndAccess={regAndAccess} />}
     </>
   );

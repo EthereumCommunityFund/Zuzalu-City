@@ -108,6 +108,20 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
     regAndAccess?.zuPassInfo,
   ]);
 
+  const accessRulesAvailable = useMemo(() => {
+    if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
+      return (regAndAccess?.scrollPassTickets?.length ?? 0) > 0;
+    }
+    if (regAndAccess?.ticketType === TicketingMethod.ZuPass) {
+      return !!regAndAccess?.zuPassInfo;
+    }
+    return true;
+  }, [
+    regAndAccess?.ticketType,
+    regAndAccess?.scrollPassTickets?.length,
+    regAndAccess?.zuPassInfo,
+  ]);
+
   return {
     noApplication,
     hasConfigedApplicationForm,
@@ -115,6 +129,7 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
     handleRegistrationOpenChange,
     registrationAvailable,
     hasCheckin,
+    accessRulesAvailable,
   };
 };
 

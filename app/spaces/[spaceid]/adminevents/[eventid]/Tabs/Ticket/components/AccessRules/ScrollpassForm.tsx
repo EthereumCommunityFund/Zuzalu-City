@@ -7,10 +7,17 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useMemo } from 'react';
 import Image from 'next/image';
+import { RegistrationAndAccess } from '@/types';
+import { shortenAddress } from '@/utils/format';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { updateRegAndAccess } from '@/services/event/regAndAccess';
+import { useParams } from 'next/navigation';
+import { useCeramicContext } from '@/context/CeramicContext';
 
 interface FormProps {
-  ids: string[];
+  ticketAddresses: Array<string>;
   onClose: () => void;
+  regAndAccess?: RegistrationAndAccess;
 }
 
 const schema = yup.object().shape({
@@ -21,23 +28,36 @@ const schema = yup.object().shape({
   ),
 });
 
-export default function ScrollpassForm({ ids = [''], onClose }: FormProps) {
+export default function ScrollpassForm({ onClose, regAndAccess }: FormProps) {
   const { handleSubmit, setValue, watch } = useForm({
     resolver: yupResolver(schema),
     values: {
-      ids: ids.map((id) => ({ id })),
+      ids: regAndAccess?.scrollPassTickets
+        ?.filter((ticket) => ticket.checkin === '1')
+        .map((ticket) => ({ id: ticket.contractAddress })),
     },
   });
 
+  const tickets = regAndAccess?.scrollPassTickets ?? [];
+
   const selectedIds = watch('ids') || [];
 
-  const tickets = useMemo(
-    () =>
-      Array.from({ length: 10 }, (_, index) => ({
-        id: index.toString(),
-      })),
-    [],
-  );
+  const queryClient = useQueryClient();
+  const pathname = useParams();
+  const { profile } = useCeramicContext();
+  const profileId = profile?.id || '';
+  const eventId = pathname.eventid.toString();
+
+  const updateMutation = useMutation({
+    mutationFn: updateRegAndAccess,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
+      });
+      onClose();
+    },
+  });
+  const isLoading = updateMutation.isPending;
 
   const toggleTicketSelection = useCallback(
     (ticketId: string) => {
@@ -57,14 +77,38 @@ export default function ScrollpassForm({ ids = [''], onClose }: FormProps) {
     } else {
       setValue(
         'ids',
-        tickets.map((ticket) => ({ id: ticket.id })),
+        tickets.map((ticket) => ({ id: ticket.contractAddress })),
       );
     }
   }, [selectedIds.length, tickets, setValue]);
 
-  const onSubmit = useCallback((data: any) => {
-    console.log('submit', data);
-  }, []);
+  const onSubmit = useCallback(
+    (data: any) => {
+      const ids = data.ids.map((id: any) => id.id);
+      const scrollPassTickets = regAndAccess?.scrollPassTickets ?? [];
+      scrollPassTickets.map((ticket) => {
+        if (ids.includes(ticket.contractAddress)) {
+          ticket.checkin = '1';
+        } else {
+          ticket.checkin = '0';
+        }
+      });
+      updateMutation.mutate({
+        type: 'scrollpass',
+        id: regAndAccess?.id || '',
+        scrollPassTickets,
+        profileId,
+        eventId,
+      });
+    },
+    [
+      eventId,
+      profileId,
+      regAndAccess?.id,
+      regAndAccess?.scrollPassTickets,
+      updateMutation,
+    ],
+  );
 
   return (
     <Box>
@@ -114,10 +158,12 @@ export default function ScrollpassForm({ ids = [''], onClose }: FormProps) {
               </Button>
             </Box>
             {tickets.map((item) => {
-              const isSelected = selectedIds.some((id) => id.id === item.id);
+              const isSelected = selectedIds.some(
+                (id) => id.id === item.contractAddress,
+              );
               return (
                 <Stack
-                  key={item.id}
+                  key={item.contractAddress}
                   p="10px"
                   borderRadius="10px"
                   bgcolor={
@@ -130,10 +176,10 @@ export default function ScrollpassForm({ ids = [''], onClose }: FormProps) {
                   alignItems="center"
                   spacing="10px"
                   sx={{ cursor: 'pointer' }}
-                  onClick={() => toggleTicketSelection(item.id)}
+                  onClick={() => toggleTicketSelection(item.contractAddress)}
                 >
                   <Image
-                    src="/images/ticket-image.png"
+                    src={item.image_url || '/24.webp'}
                     alt="ticket"
                     width={60}
                     height={60}
@@ -154,7 +200,7 @@ export default function ScrollpassForm({ ids = [''], onClose }: FormProps) {
                         lineHeight={1.6}
                         sx={{ opacity: 0.6 }}
                       >
-                        Ticket ID
+                        {item.description}
                       </Typography>
                       <RoundCheckbox checked={isSelected} />
                     </Stack>
@@ -163,7 +209,7 @@ export default function ScrollpassForm({ ids = [''], onClose }: FormProps) {
                       lineHeight={1.2}
                       sx={{ opacity: 0.6 }}
                     >
-                      Ticket Address: 0x00000...000000
+                      Ticket Address: {shortenAddress(item.contractAddress)}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -174,6 +220,7 @@ export default function ScrollpassForm({ ids = [''], onClose }: FormProps) {
         <ButtonGroup
           isBackButton={false}
           isConfirmButton
+          isLoading={isLoading}
           handleNext={handleSubmit(onSubmit)}
           handleBack={onClose}
         />

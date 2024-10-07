@@ -138,6 +138,23 @@ async function updateZuPass({
   });
 }
 
+async function updateScrollPass({
+  id,
+  scrollPassTickets,
+}: {
+  id: string;
+  scrollPassTickets: any;
+}) {
+  return await composeClient.executeQuery(Update_QUERY, {
+    input: {
+      id,
+      content: {
+        scrollPassTickets,
+      },
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -155,6 +172,7 @@ export async function POST(req: Request) {
       checkinOpen,
       registrationWhitelist,
       zuPassInfo,
+      scrollPassTickets,
     } = body;
     const { data, error } = await supabase
       .from('events')
@@ -253,6 +271,13 @@ export async function POST(req: Request) {
       result = await updateZuPass({
         id,
         zuPassInfo,
+      });
+    }
+
+    if (type === 'scrollpass') {
+      result = await updateScrollPass({
+        id,
+        scrollPassTickets,
       });
     }
 

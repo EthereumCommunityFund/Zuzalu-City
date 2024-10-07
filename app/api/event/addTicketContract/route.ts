@@ -78,10 +78,12 @@ export async function POST(req: Request) {
         }
       }
       `;
+    const regAndAccess =
+      getEventResponse.data.node.regAndAccess.edges?.[0]?.node;
     const existingContracts: Contract[] = Array.isArray(
-      getEventResponse.data.node.contracts,
+      regAndAccess.scrollPassTickets,
     )
-      ? getEventResponse.data.node.contracts
+      ? regAndAccess.scrollPassTickets
       : [];
     const newContract: Contract = {
       type,

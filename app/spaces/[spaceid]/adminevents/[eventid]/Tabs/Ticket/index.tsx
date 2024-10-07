@@ -40,6 +40,7 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import useOpenDraw from '@/hooks/useOpenDraw';
 import Drawer from '@/components/drawer';
 import { TicketingMethod } from './components/types';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface PropTypes {
   event?: Event;
@@ -110,6 +111,7 @@ const Ticket = ({ event }: PropTypes) => {
   const initialWhitelist = ['0x0000000000000000000000000000000000000000'];
 
   const regAndAccess = event?.regAndAccess.edges?.[0]?.node;
+  const queryClient = useQueryClient();
 
   const updateEventContract = async (
     type: string,
@@ -205,13 +207,11 @@ const Ticket = ({ event }: PropTypes) => {
         });
 
       if (createTicketStatus === 'success') {
-        const defaultPreviewImage =
-          'https://unsplash.com/photos/a-small-yellow-boat-floating-on-top-of-a-lake-HONnVkEnzDo';
-        const previewImageToUse = ticketImageURL ?? defaultPreviewImage;
+        const previewImageToUse = ticketImageURL ?? '';
 
         if (createTicketLogs.length > 0) {
           const newContractAddress = createTicketLogs[0].address;
-          updateEventContract(
+          await updateEventContract(
             selectedType,
             newContractAddress?.toString(),
             ticketInfo?.description,
@@ -222,6 +222,9 @@ const Ticket = ({ event }: PropTypes) => {
           setGoToSummary(false);
         }
       }
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
+      });
       await readFromContract();
       setIsSubmitLoading(false);
     } catch (error) {
@@ -534,6 +537,7 @@ const Ticket = ({ event }: PropTypes) => {
       )}
       {regAndAccess?.ticketType === TicketingMethod.ScrollPass && (
         <ScrollPassList
+          ticketsIsLoading={isLoading}
           regAndAccess={regAndAccess}
           setVaultIndex={setVaultIndex}
           ticketAddresses={ticketAddresses}

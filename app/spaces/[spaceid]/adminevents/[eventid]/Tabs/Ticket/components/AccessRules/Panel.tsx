@@ -26,14 +26,6 @@ export default function Panel({ handleOpen }: PanelProps) {
           leftIcon={<ClockIcon size={6} opacity={0.5} />}
           title="Event Schedule Access"
           desc="Choose which tickets/credentials can have access to this app"
-          tags={[
-            {
-              type: 'text',
-              text: 'OPEN',
-              bgColor: 'rgba(125, 255, 209, 0.10)',
-              textColor: '#7DFFD1',
-            },
-          ]}
           buttonText="Configure"
           onClick={handleOpen}
         />
