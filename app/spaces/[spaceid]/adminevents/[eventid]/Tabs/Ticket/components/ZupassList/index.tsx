@@ -7,21 +7,38 @@ import useOpenDraw from '@/hooks/useOpenDraw';
 import Drawer from '@/components/drawer';
 import Form from './Form';
 import { TicketIcon } from '@/components/icons/Ticket';
+import { RegistrationAndAccess } from '@/types';
+import { useMemo } from 'react';
+import { TagProps } from '../types';
 
-export default function ZupassList() {
+interface ZupassListProps {
+  regAndAccess?: RegistrationAndAccess;
+}
+
+export default function ZupassList({ regAndAccess }: ZupassListProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
-  const isConfigured = true;
+  const isConfigured = !!regAndAccess?.zuPassInfo;
+
+  const tags = useMemo(() => {
+    const tags: TagProps[] = [{ type: 'pass', pass: 'zupass' }];
+    if (!isConfigured) {
+      tags.push({
+        type: 'warning',
+        text: 'Required to open event',
+      });
+    }
+    return tags;
+  }, [isConfigured]);
+
   return (
     <>
       <Stack spacing="20px">
         <TitleWithTag
           title="Event Ticketing"
           desc="These are tickets for this event"
-          tags={[
-            { type: 'pass', pass: 'zupass' },
-            { type: 'warning', text: 'Required to open event' },
-          ]}
+          tags={tags}
           buttonText={isConfigured ? 'Configure' : undefined}
+          required={!isConfigured}
           onClick={handleOpen}
         />
         {!isConfigured ? (
@@ -51,7 +68,7 @@ export default function ZupassList() {
       </Stack>
       <RegistrationStatus />
       <AccessRules />
-      <ApplicationPanel />
+      <ApplicationPanel regAndAccess={regAndAccess} />
     </>
   );
 }

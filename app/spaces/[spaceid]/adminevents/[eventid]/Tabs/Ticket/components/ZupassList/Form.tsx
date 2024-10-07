@@ -6,8 +6,13 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { updateRegAndAccess } from '@/services/event/regAndAccess';
+import { RegistrationAndAccess } from '@/types';
+import { useParams } from 'next/navigation';
 
 interface FormProps {
+  regAndAccess?: RegistrationAndAccess;
   onClose: () => void;
 }
 
@@ -17,23 +22,55 @@ const schema = yup.object().shape({
   eventName: yup.string().required('Event Name is required'),
 });
 
-export default function Form({ onClose }: FormProps) {
+export default function Form({ onClose, regAndAccess }: FormProps) {
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     values: {
-      publicKey: '',
-      eventId: '',
-      eventName: '',
+      publicKey:
+        '1ebfb986fbac5113f8e2c72286fe9362f8e7d211dbc68227a468d7b919e75003,10ec38f11baacad5535525bbe8e343074a483c051aa1616266f3b1df3fb7d204',
+      eventId: '6f5f194b-97b5-5fe9-994d-0998f3eacc75',
+      eventName: 'ZuVillage Georgia',
     },
   });
 
-  const onSubmit = useCallback((data: any) => {
-    console.log('submit', data);
-  }, []);
+  const queryClient = useQueryClient();
+  const pathname = useParams();
+  const eventId = pathname.eventid.toString();
+  const updateMutation = useMutation({
+    mutationFn: updateRegAndAccess,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
+      });
+      reset();
+      onClose();
+    },
+  });
+  const isLoading = updateMutation.isPending;
+
+  const onSubmit = useCallback(
+    (data: yup.InferType<typeof schema>) => {
+      updateMutation.mutate({
+        type: 'zuPass',
+        id: regAndAccess?.id || '',
+        eventId,
+        zuPassInfo: [{
+          registration: data.publicKey
+            .split(',')
+            .map((key) => key.trim())
+            .join(','),
+          eventId: data.eventId,
+          eventName: data.eventName,
+        }],
+      });
+    },
+    [eventId, regAndAccess?.id, updateMutation],
+  );
 
   return (
     <Box>
@@ -91,6 +128,10 @@ export default function Form({ onClose }: FormProps) {
                   <TextField
                     {...field}
                     fullWidth
+                    placeholder="e.g. 1ebfb9...e75003,10ec38...b7d204"
+                    multiline
+                    maxRows={4}
+                    minRows={4}
                     error={!!errors.publicKey}
                     helperText={errors.publicKey?.message}
                   />
@@ -108,6 +149,7 @@ export default function Form({ onClose }: FormProps) {
                   <TextField
                     {...field}
                     fullWidth
+                    placeholder="e.g. 6f5f194b-xxxx-xxxx-xxxx-0998f3eacc75"
                     error={!!errors.eventId}
                     helperText={errors.eventId?.message}
                   />
@@ -125,6 +167,7 @@ export default function Form({ onClose }: FormProps) {
                   <TextField
                     {...field}
                     fullWidth
+                    placeholder="e.g. ZuVillage Georgia"
                     error={!!errors.eventName}
                     helperText={errors.eventName?.message}
                   />
@@ -136,6 +179,7 @@ export default function Form({ onClose }: FormProps) {
         <ButtonGroup
           isBackButton={false}
           isConfirmButton
+          isLoading={isLoading}
           handleNext={handleSubmit(onSubmit)}
           handleBack={onClose}
         />

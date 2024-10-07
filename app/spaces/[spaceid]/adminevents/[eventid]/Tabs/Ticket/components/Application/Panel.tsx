@@ -11,7 +11,7 @@ import { useParams } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, RegistrationAndAccess } from '@/types';
 import { useMemo } from 'react';
-import { TagProps } from '../types';
+import { TagProps, TicketingMethod } from '../types';
 
 interface PanelProps {
   regAndAccess?: RegistrationAndAccess;
@@ -61,7 +61,7 @@ export default function Panel({ regAndAccess }: PanelProps) {
       {
         type: 'text',
         text: `Setting: ${regAndAccess?.applyRule}${
-          regAndAccess?.applyOption && `- ${regAndAccess?.applyOption}`
+          regAndAccess?.applyOption ? `- ${regAndAccess?.applyOption}` : ''
         }`,
       },
     ];
@@ -72,7 +72,7 @@ export default function Panel({ regAndAccess }: PanelProps) {
       });
     }
     return tags;
-  }, [hasConfiged, regAndAccess?.applyRule]);
+  }, [hasConfiged, regAndAccess?.applyOption, regAndAccess?.applyRule]);
 
   return (
     <Stack>

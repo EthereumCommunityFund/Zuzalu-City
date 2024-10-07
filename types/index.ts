@@ -96,6 +96,25 @@ export interface RegistrationAndAccess {
   id: string;
   registrationOpen: string;
   checkinOpen: string;
+  zuPassInfo?: ZuPassInfo[];
+  scrollPassTickets?: ScrollPassTickets[];
+  scrollPassContractFactoryID?: number;
+}
+
+export interface ScrollPassTickets {
+  type: string;
+  status: string;
+  checkin: string;
+  image_url: string;
+  description: string;
+  contractAddress: string;
+}
+
+export interface ZuPassInfo {
+  access?: string;
+  eventId: string;
+  eventName: string;
+  registration: string;
 }
 
 export interface ApplicationForm {
@@ -410,13 +429,15 @@ export interface CreateRegAndAccessRequest {
   registrationAccess: string;
   ticketType: string;
   profileId: string;
+  scrollPassContractFactoryID?: number;
 }
 
 export interface UpdateRegAndAccessRequest
   extends Partial<CreateRegAndAccessRequest> {
-  type: 'question' | 'method' | 'switch' | 'whitelist';
+  type: 'question' | 'method' | 'switch' | 'whitelist' | 'zuPass';
   id: string;
   applicationForm?: string;
   checkinOpen?: string;
   registrationOpen?: string;
+  zuPassInfo?: ZuPassInfo[];
 }

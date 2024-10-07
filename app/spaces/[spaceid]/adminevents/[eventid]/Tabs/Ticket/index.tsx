@@ -39,7 +39,6 @@ import { updateTicketContract } from '@/services/event/addTicketContract';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import useOpenDraw from '@/hooks/useOpenDraw';
 import Drawer from '@/components/drawer';
-import { useCeramicContext } from '@/context/CeramicContext';
 import { TicketingMethod } from './components/types';
 
 interface PropTypes {
@@ -336,7 +335,6 @@ const Ticket = ({ event }: PropTypes) => {
   }, []);
 
   const regAndAccess = event?.regAndAccess.edges?.[0]?.node;
-  console.log(regAndAccess);
 
   const list = () => (
     <Box
@@ -530,7 +528,9 @@ const Ticket = ({ event }: PropTypes) => {
       {regAndAccess?.ticketType === TicketingMethod.NoTicketing && (
         <NoTicketList regAndAccess={regAndAccess} />
       )}
-      {regAndAccess?.ticketType === TicketingMethod.ZuPass && <ZupassList />}
+      {regAndAccess?.ticketType === TicketingMethod.ZuPass && (
+        <ZupassList regAndAccess={regAndAccess} />
+      )}
       {regAndAccess?.ticketType === TicketingMethod.ScrollPass && (
         <ScrollPassList
           setVaultIndex={setVaultIndex}

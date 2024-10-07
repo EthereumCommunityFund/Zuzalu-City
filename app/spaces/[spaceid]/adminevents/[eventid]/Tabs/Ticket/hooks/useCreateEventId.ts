@@ -19,30 +19,9 @@ export const useCreateEventId = ({ event }: PropTypes) => {
   const { address } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
 
-  const updateContract = useCallback(async (contractEventid: number) => {
-    const addContractIDInput = {
-      eventId: event?.id as string,
-      contractID: contractEventid,
-    };
-    try {
-      const response = await updateContractID(addContractIDInput);
-      if (response.status === 200) {
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error('Error updating contract:', err);
-    }
-  }, [event?.id]);
-
   const createEventID = useCallback(async () => {
     try {
       setIsLoading(true);
-      console.log(
-        address,
-        event?.title,
-        event?.id,
-        convertDateToEpoch(event?.endTime),
-      );
       const createEventHash = await writeContract(config, {
         chainId: isDev ? scrollSepolia.id : scroll.id,
         address: TICKET_FACTORY_ADDRESS as Address,
@@ -74,8 +53,7 @@ export const useCreateEventId = ({ event }: PropTypes) => {
           log.data,
           log.topics,
         );
-        const eventTicketId = Number(decodedLog.eventId);
-        await updateContract(eventTicketId);
+        return Number(decodedLog.eventId);
       } else {
         console.error('EventCreated event not found in transaction receipt');
       }
@@ -84,7 +62,7 @@ export const useCreateEventId = ({ event }: PropTypes) => {
     } finally {
       setIsLoading(false);
     }
-  }, [address, event?.title, event?.id, event?.endTime, updateContract]);
+  }, [address, event?.title, event?.id, event?.endTime]);
 
   return { createEventID, isLoading };
 };

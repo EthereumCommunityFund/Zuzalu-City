@@ -544,7 +544,11 @@ export const StepFour = ({
           alignItems="center"
           spacing="10px"
         >
-          <ExclamationCircleIcon size={4} color="#FF9C66" />
+          <ExclamationCircleIcon
+            size={4}
+            color="#FF9C66"
+            style={{ flexShrink: 0 }}
+          />
           <Typography fontSize={14} lineHeight={1.6} color="#FF9C66">
             {tipsContent}
           </Typography>

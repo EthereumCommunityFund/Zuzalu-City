@@ -114,6 +114,33 @@ async function updateWhitelist({
   console.log(d);
 }
 
+async function updateZuPass({
+  id,
+  zuPassInfo,
+}: {
+  id: string;
+  zuPassInfo: any;
+}) {
+  console.log(zuPassInfo);
+  const d = await composeClient.executeQuery(Update_QUERY, {
+    input: {
+      id,
+      content: {
+        zuPassInfo: [
+          {
+            // name: '11231',
+            eventName: '111',
+            registration: '112',
+            eventId: '113',
+            access: '114',
+          },
+        ],
+      },
+    },
+  });
+  console.log(d.errors?.[0]);
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -130,6 +157,7 @@ export async function POST(req: Request) {
       registrationOpen,
       checkinOpen,
       registrationWhitelist,
+      zuPassInfo,
     } = body;
     const { data, error } = await supabase
       .from('events')
@@ -215,11 +243,17 @@ export async function POST(req: Request) {
     }
 
     if (type === 'whitelist') {
-      console.log(registrationWhitelist);
       await updateWhitelist({
         id,
         registrationWhitelist,
         profileId,
+      });
+    }
+
+    if (type === 'zuPass') {
+      await updateZuPass({
+        id,
+        zuPassInfo,
       });
     }
 

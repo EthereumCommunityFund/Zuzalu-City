@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { IconProps } from 'types';
 
-export const ExclamationCircleIcon: React.FC<IconProps> = ({
-  size = 6,
-  color = 'white',
-}) => {
+export const ExclamationCircleIcon: React.FC<
+  IconProps & { style?: React.CSSProperties }
+> = ({ size = 6, color = 'white', style }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +11,7 @@ export const ExclamationCircleIcon: React.FC<IconProps> = ({
       height={`${size * 4}px`}
       viewBox="0 0 16 16"
       fill={color}
+      style={style}
     >
       <path
         fillRule="evenodd"

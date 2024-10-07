@@ -94,6 +94,21 @@ const EventContent: React.FC = () => {
                   applicationForm
                   eventId
                   applicationForm
+                  zuPassInfo {
+                    access
+                    eventId
+                    eventName
+                    registration
+                  }
+                  scrollPassContractFactoryID
+                  scrollPassTickets {
+                    type
+                    status
+                    checkin
+                    image_url
+                    description
+                    contractAddress
+                  }
                 }
               }
             }

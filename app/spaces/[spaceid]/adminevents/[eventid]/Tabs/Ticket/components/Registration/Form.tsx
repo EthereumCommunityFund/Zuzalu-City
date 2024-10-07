@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { StepFour, StepOne, StepThree, StepTwo } from './Step';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ConfigFormType, schema } from '../types';
+import { ConfigFormType, schema, TicketingMethod } from '../types';
 import {
   createRegAndAccess,
   updateRegAndAccess,
@@ -19,6 +19,8 @@ import {
 import { isDev } from '@/constant';
 import { scroll, scrollSepolia } from 'viem/chains';
 import { useCeramicContext } from '@/context/CeramicContext';
+import { useCreateEventId } from '../../hooks/useCreateEventId';
+import { useEventContext } from '../../../../EventContext';
 
 interface RegistrationMethodSelectorProps {
   regAndAccess?: RegistrationAndAccess;
@@ -33,6 +35,8 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
 }) => {
   const [step, setStep] = useState(initialStep);
 
+  const { event } = useEventContext();
+  const { createEventID } = useCreateEventId({ event: event! });
   const queryClient = useQueryClient();
   const pathname = useParams();
   const formMethods = useForm({
@@ -80,16 +84,20 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
   const handleSubmit = useCallback(
-    (data: ConfigFormType) => {
+    async (data: ConfigFormType) => {
       const { apply, options, whitelist, access, pass } = data;
       if (!regAndAccess?.id) {
+        let scrollPassContractFactoryID;
+        if (pass === TicketingMethod.ScrollPass) {
+          scrollPassContractFactoryID = await createEventID();
+        }
         const registrationWhitelist =
           whitelist
             ?.split(',')
             .filter(Boolean)
             .map(
               (address) =>
-                `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address}`,
+                `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address.trim()}`,
             ) || undefined;
         createMutation.mutate({
           eventId,
@@ -99,6 +107,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
           registrationAccess: access!,
           ticketType: pass!,
           profileId,
+          scrollPassContractFactoryID,
         });
       } else {
         updateMutation.mutate({

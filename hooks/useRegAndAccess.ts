@@ -73,16 +73,22 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
     }
     return false;
   }, [regAndAccess?.applyOption, regAndAccess?.applyRule]);
+
   const hasConfigedApplicationForm = !!regAndAccess?.applicationForm;
   const hasCheckin = regAndAccess?.ticketType !== TicketingMethod.NoTicketing;
 
   const registrationAvailable = useMemo(() => {
+    let hasWhitelist =
+      regAndAccess?.registrationAccess !== RegistrationAccess.Whitelist;
+    hasWhitelist = Number(regAndAccess?.registrationWhitelist?.length) > 0;
+
     if (regAndAccess?.ticketType === TicketingMethod.NoTicketing) {
-      let hasWhitelist = true;
-      if (regAndAccess?.registrationAccess === RegistrationAccess.Whitelist) {
-        hasWhitelist = regAndAccess?.registrationWhitelist?.length > 0;
-      }
       return hasWhitelist && (noApplication || hasConfigedApplicationForm);
+    }
+    if (regAndAccess?.ticketType === TicketingMethod.ZuPass) {
+      return (
+        hasWhitelist && hasConfigedApplicationForm && !!regAndAccess?.zuPassInfo
+      );
     }
     return false;
   }, [
@@ -91,6 +97,7 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
     regAndAccess?.registrationAccess,
     regAndAccess?.registrationWhitelist?.length,
     regAndAccess?.ticketType,
+    regAndAccess?.zuPassInfo,
   ]);
 
   return {
