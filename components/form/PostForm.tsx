@@ -18,7 +18,6 @@ import {
 } from '../typography/formTypography';
 import { ZuInput } from '../core';
 import SelectCheckItem from '../select/selectCheckItem';
-import SuperEditor from '../editor/SuperEditor';
 import FormFooter from './FormFooter';
 import { useEditorStore } from '../editor/useEditorStore';
 import Yup from '@/utils/yupExtensions';
@@ -32,6 +31,11 @@ import Dialog from '@/app/spaces/components/Modal/Dialog';
 import { useMutation } from '@tanstack/react-query';
 import { Post } from '@/types';
 import SelectCategories from '../select/selectCategories';
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 interface PostFormProps {
   handleClose: () => void;

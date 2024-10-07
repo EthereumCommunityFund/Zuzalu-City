@@ -7,8 +7,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { PlusIcon, XCricleIcon } from '@/components/icons';
 import { ZuButton } from '@/components/core';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { updateRegAndAccess } from '@/services/event/regAndAccess';
+import { useParams } from 'next/navigation';
+import { useCeramicContext } from '@/context/CeramicContext';
 
 interface FormProps {
+  id: string;
   questions: string[];
   onClose: () => void;
 }
@@ -21,11 +26,12 @@ const schema = yup.object().shape({
   ),
 });
 
-export default function Form({ questions = [''], onClose }: FormProps) {
+export default function Form({ questions = [''], onClose, id }: FormProps) {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     values: {
@@ -38,9 +44,36 @@ export default function Form({ questions = [''], onClose }: FormProps) {
     name: 'questions',
   });
 
-  const onSubmit = useCallback((data: any) => {
-    console.log('submit', data);
-  }, []);
+  const queryClient = useQueryClient();
+  const pathname = useParams();
+  const { profile } = useCeramicContext();
+  const profileId = profile?.id || '';
+  const eventId = pathname.eventid.toString();
+
+  const updateMutation = useMutation({
+    mutationFn: updateRegAndAccess,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
+      });
+      reset();
+      onClose();
+    },
+  });
+  const isLoading = updateMutation.isPending;
+
+  const onSubmit = useCallback(
+    (data: yup.InferType<typeof schema>) => {
+      updateMutation.mutate({
+        type: 'question',
+        id,
+        applicationForm: data.questions?.map((q) => q.question).join(','),
+        profileId,
+        eventId,
+      });
+    },
+    [updateMutation, profileId, id, eventId],
+  );
 
   return (
     <Box>
@@ -48,7 +81,7 @@ export default function Form({ questions = [''], onClose }: FormProps) {
       <Stack padding="20px" spacing="20px">
         <Stack spacing="10px">
           <Typography fontSize={20} fontWeight={700} lineHeight={1.2}>
-            Create Application Form
+            {questions.length ? 'Edit' : 'Create'} Application Form
           </Typography>
           <Typography fontSize={16} lineHeight={1.6} sx={{ opacity: 0.6 }}>
             Create the application form for users to submit
@@ -95,6 +128,8 @@ export default function Form({ questions = [''], onClose }: FormProps) {
         <ButtonGroup
           isBackButton={false}
           isConfirmButton
+          isLoading={isLoading}
+          isDisabled={!isDirty}
           handleNext={handleSubmit(onSubmit)}
           handleBack={onClose}
         />

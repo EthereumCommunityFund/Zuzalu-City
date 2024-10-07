@@ -54,7 +54,20 @@ export interface Event {
   };
   customLinks?: [Link];
   tracks?: string;
-  checkinPass: string;
+  regAndAccess: {
+    edges: [
+      {
+        node: RegistrationAndAccess;
+      },
+    ];
+  };
+  applicationForms: {
+    edges: [
+      {
+        node: ApplicationForm;
+      },
+    ];
+  };
   zupassInfo: string;
   sessionStorage: string;
   supportChain: string;
@@ -69,6 +82,26 @@ export interface Event {
   superAdmin?: {
     id: string;
   }[];
+}
+
+export interface RegistrationAndAccess {
+  applyRule: string;
+  applyOption: string;
+  registrationWhitelist: {
+    id: string;
+  }[];
+  registrationAccess: string;
+  ticketType: string;
+  applicationForm: string;
+  id: string;
+  registrationOpen: string;
+  checkinOpen: string;
+}
+
+export interface ApplicationForm {
+  id: string;
+  answers: string;
+  approveStatus: string;
 }
 
 export interface EventEdge {
@@ -367,4 +400,23 @@ export interface Post {
   creator: string;
   eventId: string;
   created_at: string;
+}
+
+export interface CreateRegAndAccessRequest {
+  applyRule: string;
+  eventId: string;
+  applyOption: string;
+  registrationWhitelist?: string[];
+  registrationAccess: string;
+  ticketType: string;
+  profileId: string;
+}
+
+export interface UpdateRegAndAccessRequest
+  extends Partial<CreateRegAndAccessRequest> {
+  type: 'question' | 'method' | 'switch' | 'whitelist';
+  id: string;
+  applicationForm?: string;
+  checkinOpen?: string;
+  registrationOpen?: string;
 }

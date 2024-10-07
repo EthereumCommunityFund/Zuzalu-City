@@ -1,15 +1,23 @@
 import React from 'react';
 import { Typography, Stack, useTheme } from '@mui/material';
 import { QRCodeIcon } from '@/components/icons';
-import { Event } from '@/types';
+import { Event, RegistrationAndAccess } from '@/types';
 import { StatusIndicatorPanel } from '../Common';
+import { useEventContext } from '../../../../EventContext';
+import useRegAndAccess from '@/hooks/useRegAndAccess';
 
-interface PropTypes {
-  event?: Event;
-  visible?: boolean;
+interface TicketHeaderProps {
+  regAndAccess?: RegistrationAndAccess;
 }
-const TicketHeader = ({ event, visible }: PropTypes) => {
+
+const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
   const breakpoints = useTheme().breakpoints;
+  const { event, setEvent } = useEventContext();
+  const registrationOpen = regAndAccess?.registrationOpen === '1';
+  const checkinOpen = regAndAccess?.checkinOpen === '1';
+
+  const { handleRegistrationOpenChange, registrationAvailable, hasCheckin } =
+    useRegAndAccess({ regAndAccess });
 
   return (
     <Stack
@@ -26,38 +34,48 @@ const TicketHeader = ({ event, visible }: PropTypes) => {
           Event Registration
         </Typography>
       </Stack>
-      <Stack
-        direction="row"
-        gap="20px"
-        sx={{
-          [breakpoints.down('sm')]: {
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '10px',
-          },
-        }}
-      >
-        <StatusIndicatorPanel
-          name="Registration"
-          desc="CLOSED"
-          checked={true}
-          // disabled
-          onChange={() => {}}
-        />
-        <StatusIndicatorPanel
-          name="Event Check-In"
-          desc="CLOSED"
-          checked={false}
-          disabled
-          onChange={() => {}}
-        />
-        <StatusIndicatorPanel
-          name="Event Capacity"
-          desc="COMING SOON"
-          left={<QRCodeIcon />}
-          disabled
-        />
-      </Stack>
+      {regAndAccess && (
+        <Stack
+          direction="row"
+          gap="20px"
+          sx={{
+            [breakpoints.down('sm')]: {
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '10px',
+            },
+          }}
+        >
+          <StatusIndicatorPanel
+            name="Registration Status"
+            desc={
+              registrationOpen
+                ? 'OPEN'
+                : registrationAvailable
+                  ? 'CLOSED'
+                  : 'Unavailable'
+            }
+            checked={registrationOpen}
+            disabled={!registrationAvailable}
+            onChange={handleRegistrationOpenChange}
+          />
+          {hasCheckin && (
+            <StatusIndicatorPanel
+              name="Check-In Status"
+              desc={checkinOpen ? 'OPEN' : 'CLOSED'}
+              checked={checkinOpen}
+              // disabled
+              onChange={() => {}}
+            />
+          )}
+          <StatusIndicatorPanel
+            name="Event Capacity"
+            desc="COMING SOON"
+            left={<QRCodeIcon />}
+            disabled
+          />
+        </Stack>
+      )}
     </Stack>
   );
 };

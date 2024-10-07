@@ -1,3 +1,3 @@
-import Panel from './Panel';
+import RegistrationPanel from './Panel';
 
-export { Panel as RegistrationPanel };
+export { RegistrationPanel };

@@ -86,7 +86,6 @@ import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectCategories from '@/components/select/selectCategories';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
-import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import {
   FormLabel,
@@ -100,6 +99,9 @@ import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 import { formatUserName } from '@/utils/format';
 
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
   {

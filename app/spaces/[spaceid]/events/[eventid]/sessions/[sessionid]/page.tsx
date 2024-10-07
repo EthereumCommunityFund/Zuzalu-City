@@ -88,7 +88,6 @@ import { authenticate } from '@pcd/zuauth/server';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import SidebarButton from 'components/layout/Sidebar/SidebarButton';
 import SelectCategories from '@/components/select/selectCategories';
-import SuperEditor from '@/components/editor/SuperEditor';
 import {
   useEditorStore,
   decodeOutputData,
@@ -111,6 +110,10 @@ const EditorPreview = dynamic(
     ssr: false,
   },
 );
+
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 const Home = () => {
   const theme = useTheme();

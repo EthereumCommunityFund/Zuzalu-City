@@ -9,10 +9,11 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, Space } from '@/types';
 import { useQuery } from '@tanstack/react-query';
 import { getSpacesQuery } from '@/services/space';
+import { EventProvider, useEventContext } from './EventContext';
 
-const Home: React.FC = () => {
+const EventContent: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
-  const [event, setEvent] = React.useState<Event>();
+  const { event, setEvent } = useEventContext();
 
   const { composeClient, ceramic } = useCeramicContext();
 
@@ -34,11 +35,15 @@ const Home: React.FC = () => {
   });
 
   const fetchEventById = async (id: string) => {
+    console.log('FETCH EVENT BY ID: ', id);
     const query = `
       query FetchEvent($id: ID!) {
         node(id: $id) {
           ...on ZucityEvent {
             title
+            author {
+              id
+            }
             description
             status
             endTime
@@ -64,17 +69,34 @@ const Home: React.FC = () => {
               name
               gated
             }
-            contractID
             id
-            contracts {
-              contractAddress
-              description
-              image_url
-              status
-              type
-              checkin
+            applicationForms(first:1000) {
+              edges {
+                node {
+                  id
+                }
+              }
             }
-            checkinPass
+            regAndAccess(first:1) {
+              edges {
+                node {
+                  id
+                  profileId
+                  registrationAccess
+                  registrationOpen
+                  registrationWhitelist {
+                    id
+                  }
+                  ticketType
+                  checkinOpen
+                  applyRule
+                  applyOption
+                  applicationForm
+                  eventId
+                  applicationForm
+                }
+              }
+            }
           }
         }
       }
@@ -86,6 +108,7 @@ const Home: React.FC = () => {
 
     try {
       const result: any = await composeClient.executeQuery(query, variable);
+      console.log('RESULT: ', result);
       if (result.data) {
         if (result.data.node) {
           setEvent(result.data.node);
@@ -126,19 +149,6 @@ const Home: React.FC = () => {
   };
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (pathname.eventid) {
-          fetchEventById(pathname.eventid as string);
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  React.useEffect(() => {
     if (spaceData) {
       const superAdmins =
         spaceData?.superAdmin?.map((superAdmin) =>
@@ -163,6 +173,14 @@ const Home: React.FC = () => {
         </Box>
       </Stack>
     </Stack>
+  );
+};
+
+const Home: React.FC = () => {
+  return (
+    <EventProvider>
+      <EventContent />
+    </EventProvider>
   );
 };
 

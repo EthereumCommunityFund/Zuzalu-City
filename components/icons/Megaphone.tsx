@@ -3,12 +3,13 @@ import React, { CSSProperties } from 'react';
 export const MegaPhoneIcon: React.FC<{
   size?: number;
   style?: CSSProperties;
-}> = ({ size = 6, style }) => {
+  color?: string;
+}> = ({ size = 6, style, color = 'white' }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="white"
+      fill={color}
       width={`${size * 4}px`}
       height={`${size * 4}px`}
       style={style}

@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 import { ZupassProvider } from '@/context/ZupassContext';
 import '@/utils/yupExtensions';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ function RootLayout({
                 <WalletProvider>
                   <ZupassProvider>
                     <AppContextProvider>
+                      <ReactQueryDevtools initialIsOpen={false} />
                       <Header />
                       {isClient && <AuthPrompt />}
                       {/* {isClient && (

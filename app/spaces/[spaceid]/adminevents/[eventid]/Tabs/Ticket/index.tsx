@@ -39,6 +39,8 @@ import { updateTicketContract } from '@/services/event/addTicketContract';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import useOpenDraw from '@/hooks/useOpenDraw';
 import Drawer from '@/components/drawer';
+import { useCeramicContext } from '@/context/CeramicContext';
+import { TicketingMethod } from './components/types';
 
 interface PropTypes {
   event?: Event;
@@ -333,6 +335,9 @@ const Ticket = ({ event }: PropTypes) => {
     readFromContract();
   }, []);
 
+  const regAndAccess = event?.regAndAccess.edges?.[0]?.node;
+  console.log(regAndAccess);
+
   const list = () => (
     <Box
       sx={{
@@ -520,10 +525,13 @@ const Ticket = ({ event }: PropTypes) => {
         title="Updating"
         message="Please wait while the data is being updated..."
       />
-      <TicketHeader event={event} visible={event?.contractID === null} />
-      {event?.checkinPass === 'noTicket' && <NoTicketList />}
-      {event?.checkinPass === 'zupass' && <ZupassList />}
-      {event?.checkinPass !== 'scrollpass' && (
+      {<TicketHeader regAndAccess={regAndAccess} />}
+      {!regAndAccess && <RegistrationPanel registered={false} />}
+      {regAndAccess?.ticketType === TicketingMethod.NoTicketing && (
+        <NoTicketList regAndAccess={regAndAccess} />
+      )}
+      {regAndAccess?.ticketType === TicketingMethod.ZuPass && <ZupassList />}
+      {regAndAccess?.ticketType === TicketingMethod.ScrollPass && (
         <ScrollPassList
           setVaultIndex={setVaultIndex}
           ticketAddresses={ticketAddresses}
@@ -534,7 +542,6 @@ const Ticket = ({ event }: PropTypes) => {
           eventContracts={event?.contracts ? event.contracts : []}
         />
       )}
-      {!event?.checkinPass && <RegistrationPanel registered={false} />}
       {/* <TicketAccess /> */}
       <Drawer open={open} onOpen={handleOpen} onClose={handleClose}>
         {toggleAction === 'CreateTicket'
