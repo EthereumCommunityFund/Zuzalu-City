@@ -63,7 +63,7 @@ export default function ZupassList({ regAndAccess }: ZupassListProps) {
           />
         )}
         <Drawer open={open} onClose={handleClose} onOpen={handleOpen}>
-          <Form onClose={handleClose} />
+          <Form onClose={handleClose} regAndAccess={regAndAccess} />
         </Drawer>
       </Stack>
       <RegistrationStatus />

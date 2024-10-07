@@ -36,7 +36,9 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
   const [step, setStep] = useState(initialStep);
 
   const { event } = useEventContext();
-  const { createEventID } = useCreateEventId({ event: event! });
+  const { createEventID, isLoading: createEventIDLoading } = useCreateEventId({
+    event: event!,
+  });
   const queryClient = useQueryClient();
   const pathname = useParams();
   const formMethods = useForm({
@@ -81,47 +83,65 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
       onClose();
     },
   });
-  const isLoading = createMutation.isPending || updateMutation.isPending;
+  const isLoading =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    createEventIDLoading;
 
   const handleSubmit = useCallback(
     async (data: ConfigFormType) => {
-      const { apply, options, whitelist, access, pass } = data;
-      if (!regAndAccess?.id) {
-        let scrollPassContractFactoryID;
-        if (pass === TicketingMethod.ScrollPass) {
-          scrollPassContractFactoryID = await createEventID();
+      try {
+        const { apply, options, whitelist, access, pass } = data;
+        if (!regAndAccess?.id) {
+          let scrollPassContractFactoryID;
+          if (pass === TicketingMethod.ScrollPass) {
+            const result = await createEventID();
+            if (!result?.contractID) {
+              throw new Error('Failed to create scroll pass contract');
+            }
+            scrollPassContractFactoryID = result?.contractID;
+          }
+          const registrationWhitelist =
+            whitelist
+              ?.split(',')
+              .filter(Boolean)
+              .map(
+                (address) =>
+                  `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address.trim()}`,
+              ) || undefined;
+          createMutation.mutate({
+            eventId,
+            registrationWhitelist,
+            applyOption: options || '',
+            applyRule: apply!,
+            registrationAccess: access!,
+            ticketType: pass!,
+            profileId,
+            scrollPassContractFactoryID,
+          });
+        } else {
+          updateMutation.mutate({
+            eventId,
+            id: regAndAccess!.id,
+            type: 'method',
+            applyOption: options || '',
+            applyRule: apply!,
+            registrationAccess: access!,
+            ticketType: pass!,
+          });
         }
-        const registrationWhitelist =
-          whitelist
-            ?.split(',')
-            .filter(Boolean)
-            .map(
-              (address) =>
-                `did:pkh:eip155:${isDev ? scrollSepolia.id : scroll.id}:${address.trim()}`,
-            ) || undefined;
-        createMutation.mutate({
-          eventId,
-          registrationWhitelist,
-          applyOption: options || '',
-          applyRule: apply!,
-          registrationAccess: access!,
-          ticketType: pass!,
-          profileId,
-          scrollPassContractFactoryID,
-        });
-      } else {
-        updateMutation.mutate({
-          eventId,
-          id: regAndAccess!.id,
-          type: 'method',
-          applyOption: options || '',
-          applyRule: apply!,
-          registrationAccess: access!,
-          ticketType: pass!,
-        });
+      } catch (error) {
+        console.error(error);
       }
     },
-    [createMutation, eventId, profileId, regAndAccess, updateMutation],
+    [
+      createEventID,
+      createMutation,
+      eventId,
+      profileId,
+      regAndAccess,
+      updateMutation,
+    ],
   );
 
   const handleStep = useCallback(

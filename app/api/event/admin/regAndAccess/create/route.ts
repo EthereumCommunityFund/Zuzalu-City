@@ -17,6 +17,7 @@ export async function POST(req: Request) {
       registrationAccess,
       ticketType,
       profileId,
+      scrollPassContractFactoryID,
     } = body;
     const { data, error } = await supabase
       .from('events')
@@ -46,12 +47,13 @@ export async function POST(req: Request) {
             registrationWhitelist {
               id
             }
+            scrollPassContractFactoryID
           }
         }
       }
       `;
 
-    await composeClient.executeQuery(Create_QUERY, {
+    const result = await composeClient.executeQuery(Create_QUERY, {
       input: {
         content: {
           eventId,
@@ -61,9 +63,16 @@ export async function POST(req: Request) {
           registrationWhitelist: registrationWhitelist || null,
           registrationAccess,
           profileId,
+          scrollPassContractFactoryID,
         },
       },
     });
+    if (result.errors) {
+      console.error('Error creating registration and access:', result.errors);
+      return new NextResponse('Error creating registration and access', {
+        status: 500,
+      });
+    }
     return NextResponse.json(
       {
         message:

@@ -7,9 +7,10 @@ import { PlusCircleIcon, PlusIcon } from '@/components/icons';
 import { ZuButton } from '@/components/core';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
 import TicketCard, { TicketCardProps } from '../TicketList/TicketCard';
-import { Contract, Event } from '@/types';
+import { Contract, Event, RegistrationAndAccess } from '@/types';
 import { useCreateEventId } from '../../hooks/useCreateEventId';
 import { useCallback } from 'react';
+import useRegAndAccess from '@/hooks/useRegAndAccess';
 
 interface ScrollPassListProps {
   onToggle: () => void;
@@ -19,6 +20,7 @@ interface ScrollPassListProps {
   ticketAddresses: Array<string>;
   eventContracts: Contract[];
   event: Event;
+  regAndAccess?: RegistrationAndAccess;
 }
 
 export default function ScrollPassList({
@@ -28,28 +30,17 @@ export default function ScrollPassList({
   tickets,
   ticketAddresses,
   eventContracts,
-  event,
+  regAndAccess,
 }: ScrollPassListProps) {
-  const { isLoading, createEventID } = useCreateEventId({ event });
-  const isConfigured = false;
+  const hasTickets = tickets.length > 0;
 
-  const handleCreateTicket = useCallback(() => {
-    if (!event?.contractID) {
-      createEventID();
-    } else {
-      onToggle();
-    }
-  }, [createEventID, event?.contractID, onToggle]);
+  const { registrationAvailable, noApplication } = useRegAndAccess({
+    regAndAccess,
+  });
 
   return (
     <>
       <Stack spacing="20px">
-        <Dialog
-          showModal={isLoading}
-          showActions={false}
-          title="Creating Event ID"
-          message="Please wait while we create the Event ID. This is a necessary step before creating tickets. The process may take a few moments to complete."
-        />
         <TitleWithTag
           title="Event Ticketing"
           desc="These are tickets for this event"
@@ -57,8 +48,9 @@ export default function ScrollPassList({
             { type: 'pass', pass: 'scrollpass' },
             { type: 'warning', text: 'Required to open event' },
           ]}
+          required={!hasTickets}
           right={
-            isConfigured ? (
+            hasTickets ? (
               <ZuButton
                 startIcon={<PlusIcon size={4} />}
                 sx={{
@@ -77,7 +69,7 @@ export default function ScrollPassList({
           }
           onClick={onToggle}
         />
-        {!isConfigured ? (
+        {!hasTickets ? (
           <ConfigPanel
             icon={
               <PlusCircleIcon size={7.5} color="rgba(255, 255, 255, 0.5)" />
@@ -85,7 +77,7 @@ export default function ScrollPassList({
             title="No Tickets"
             desc="Create ticketing for this event"
             buttonText="Go Create"
-            handleOpen={handleCreateTicket}
+            handleOpen={onToggle}
           />
         ) : (
           <>
@@ -116,9 +108,12 @@ export default function ScrollPassList({
           </>
         )}
       </Stack>
-      <RegistrationStatus />
+      <RegistrationStatus
+        regAndAccess={regAndAccess}
+        isAvailable={registrationAvailable}
+      />
       <AccessRules type="scrollpass" />
-      <ApplicationPanel />
+      {!noApplication && <ApplicationPanel regAndAccess={regAndAccess} />}
     </>
   );
 }

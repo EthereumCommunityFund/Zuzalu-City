@@ -40,8 +40,7 @@ export const useCreateEventId = ({ event }: PropTypes) => {
       });
 
       if (receipt.status !== 'success') {
-        console.error('Transaction failed');
-        return;
+        throw new Error('Transaction failed');
       }
       const eventTopic = ethers.id('EventCreated(uint256,address,string)');
 
@@ -53,9 +52,12 @@ export const useCreateEventId = ({ event }: PropTypes) => {
           log.data,
           log.topics,
         );
-        return Number(decodedLog.eventId);
+        return {
+          contractID: Number(decodedLog.eventId),
+          hash: createEventHash,
+        };
       } else {
-        console.error('EventCreated event not found in transaction receipt');
+        throw new Error('EventCreated event not found in transaction receipt');
       }
     } catch (error) {
       console.error('Error creating event:', error);

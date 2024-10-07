@@ -38,7 +38,7 @@ const isDev = process.env.NEXT_PUBLIC_ENV === 'dev';
 
 const selectedChain = isDev ? scrollSepolia : scroll;
 const transportUrl = isDev
-  ? 'https://scroll-sepolia.drpc.org'
+  ? 'https://scroll-sepolia.g.alchemy.com/v2/24B-9uSD-ck0hRLnIwu3Fp4piDCUVlU9'
   : 'https://scroll.drpc.org';
 
 export const config = createConfig({

@@ -90,12 +90,20 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
         hasWhitelist && hasConfigedApplicationForm && !!regAndAccess?.zuPassInfo
       );
     }
+    if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
+      return (
+        hasWhitelist &&
+        hasConfigedApplicationForm &&
+        !!regAndAccess?.scrollPassTickets?.length
+      );
+    }
     return false;
   }, [
     hasConfigedApplicationForm,
     noApplication,
     regAndAccess?.registrationAccess,
     regAndAccess?.registrationWhitelist?.length,
+    regAndAccess?.scrollPassTickets?.length,
     regAndAccess?.ticketType,
     regAndAccess?.zuPassInfo,
   ]);

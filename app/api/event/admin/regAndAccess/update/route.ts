@@ -23,7 +23,7 @@ async function updateQuestion(
   applicationForm: string,
   profileId: string,
 ) {
-  await composeClient.executeQuery(Update_QUERY, {
+  return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
@@ -49,7 +49,7 @@ async function updateMethod({
   ticketType: string;
   profileId: string;
 }) {
-  const d = await composeClient.executeQuery(Update_QUERY, {
+  return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
@@ -61,7 +61,6 @@ async function updateMethod({
       },
     },
   });
-  console.log(d);
 }
 
 async function updateSwitch({
@@ -82,7 +81,7 @@ async function updateSwitch({
     : {
         registrationOpen,
       };
-  await composeClient.executeQuery(Update_QUERY, {
+  return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
@@ -102,7 +101,7 @@ async function updateWhitelist({
   id: string;
   profileId: string;
 }) {
-  const d = await composeClient.executeQuery(Update_QUERY, {
+  return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
@@ -111,7 +110,6 @@ async function updateWhitelist({
       },
     },
   });
-  console.log(d);
 }
 
 async function updateZuPass({
@@ -122,7 +120,7 @@ async function updateZuPass({
   zuPassInfo: any;
 }) {
   console.log(zuPassInfo);
-  const d = await composeClient.executeQuery(Update_QUERY, {
+  return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
@@ -138,7 +136,6 @@ async function updateZuPass({
       },
     },
   });
-  console.log(d.errors?.[0]);
 }
 
 export async function POST(req: Request) {
@@ -175,8 +172,10 @@ export async function POST(req: Request) {
     ceramic.did = did;
     composeClient.setDID(did);
 
+    let result;
+
     if (type === 'question') {
-      await updateQuestion(id, applicationForm, profileId);
+      result = await updateQuestion(id, applicationForm, profileId);
     }
 
     if (type === 'method') {
@@ -223,7 +222,7 @@ export async function POST(req: Request) {
           { status: 500 },
         );
       }
-      await updateMethod({
+      result = await updateMethod({
         id,
         applyRule,
         applyOption,
@@ -234,7 +233,7 @@ export async function POST(req: Request) {
     }
 
     if (type === 'switch') {
-      await updateSwitch({
+      result = await updateSwitch({
         id,
         registrationOpen,
         checkinOpen,
@@ -243,7 +242,7 @@ export async function POST(req: Request) {
     }
 
     if (type === 'whitelist') {
-      await updateWhitelist({
+      result = await updateWhitelist({
         id,
         registrationWhitelist,
         profileId,
@@ -251,9 +250,16 @@ export async function POST(req: Request) {
     }
 
     if (type === 'zuPass') {
-      await updateZuPass({
+      result = await updateZuPass({
         id,
         zuPassInfo,
+      });
+    }
+
+    if (result?.errors) {
+      console.error('Error updating registration and access:', result.errors);
+      return new NextResponse('Error updating registration and access', {
+        status: 500,
       });
     }
 

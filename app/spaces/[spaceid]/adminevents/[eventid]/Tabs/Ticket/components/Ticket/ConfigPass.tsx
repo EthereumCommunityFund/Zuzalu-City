@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Stack, Typography } from '@mui/material';
-import ZuButton from 'components/core/Button';
-import { PlusIcon, PlusCircleIcon, SettingIcon } from 'components/icons';
+import { SettingIcon } from 'components/icons';
 
 interface TicketAddProps {}
 

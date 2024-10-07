@@ -109,6 +109,8 @@ const Ticket = ({ event }: PropTypes) => {
   const [ticketAddresses, setTicketAddresses] = useState<Array<string>>([]);
   const initialWhitelist = ['0x0000000000000000000000000000000000000000'];
 
+  const regAndAccess = event?.regAndAccess.edges?.[0]?.node;
+
   const updateEventContract = async (
     type: string,
     contractAddress: string,
@@ -123,6 +125,7 @@ const Ticket = ({ event }: PropTypes) => {
       description: description,
       image_url: image_url,
       status: status,
+      id: regAndAccess?.id,
     };
     try {
       setBlockClickModal(true);
@@ -171,7 +174,7 @@ const Ticket = ({ event }: PropTypes) => {
         functionName: 'createNewTicket',
         args: isWhiteList
           ? [
-              event?.contractID,
+              regAndAccess?.scrollPassContractFactoryID,
               ticketInfo?.ticketName,
               selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
               convertDateToEpoch(ticketMintClose),
@@ -182,7 +185,7 @@ const Ticket = ({ event }: PropTypes) => {
               initialWhitelist,
             ]
           : [
-              event?.contractID,
+              regAndAccess?.scrollPassContractFactoryID,
               ticketInfo?.ticketName,
               selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
               convertDateToEpoch(ticketMintClose),
@@ -228,7 +231,7 @@ const Ticket = ({ event }: PropTypes) => {
   };
 
   const readFromContract = async () => {
-    if (!event?.contractID) return;
+    if (!regAndAccess?.scrollPassContractFactoryID) return;
     try {
       setIsLoading(true);
 
@@ -236,7 +239,7 @@ const Ticket = ({ event }: PropTypes) => {
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI as Abi,
         functionName: 'getTickets',
-        args: [event?.contractID],
+        args: [regAndAccess?.scrollPassContractFactoryID],
       })) as Array<string>;
 
       setTicketAddresses(getTicketAddresses);
@@ -333,8 +336,6 @@ const Ticket = ({ event }: PropTypes) => {
   useEffect(() => {
     readFromContract();
   }, []);
-
-  const regAndAccess = event?.regAndAccess.edges?.[0]?.node;
 
   const list = () => (
     <Box
@@ -533,6 +534,7 @@ const Ticket = ({ event }: PropTypes) => {
       )}
       {regAndAccess?.ticketType === TicketingMethod.ScrollPass && (
         <ScrollPassList
+          regAndAccess={regAndAccess}
           setVaultIndex={setVaultIndex}
           ticketAddresses={ticketAddresses}
           tickets={tickets}
