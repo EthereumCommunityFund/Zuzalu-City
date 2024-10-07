@@ -12,12 +12,16 @@ interface TicketHeaderProps {
 
 const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
   const breakpoints = useTheme().breakpoints;
-  const { event, setEvent } = useEventContext();
   const registrationOpen = regAndAccess?.registrationOpen === '1';
   const checkinOpen = regAndAccess?.checkinOpen === '1';
 
-  const { handleRegistrationOpenChange, registrationAvailable, hasCheckin } =
-    useRegAndAccess({ regAndAccess });
+  const {
+    handleRegistrationOpenChange,
+    handleCheckinOpenChange,
+    registrationAvailable,
+    hasCheckin,
+    showAccessRuleCheckin,
+  } = useRegAndAccess({ regAndAccess });
 
   return (
     <Stack
@@ -62,10 +66,16 @@ const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
           {hasCheckin && (
             <StatusIndicatorPanel
               name="Check-In Status"
-              desc={checkinOpen ? 'OPEN' : 'CLOSED'}
+              desc={
+                checkinOpen
+                  ? 'OPEN'
+                  : showAccessRuleCheckin
+                    ? 'CLOSED'
+                    : 'Unavailable'
+              }
               checked={checkinOpen}
-              // disabled
-              onChange={() => {}}
+              disabled={!showAccessRuleCheckin}
+              onChange={handleCheckinOpenChange}
             />
           )}
           <StatusIndicatorPanel

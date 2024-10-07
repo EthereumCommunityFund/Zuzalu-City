@@ -50,8 +50,6 @@ export default function ScrollPassList({
     return tags;
   }, [hasTickets]);
 
-  console.log(regAndAccess);
-
   return (
     <>
       <Stack spacing="20px">

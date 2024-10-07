@@ -26,13 +26,24 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
   const eventId = pathname.eventid.toString();
 
   const registrationOpen = regAndAccess?.registrationOpen === '1';
-
+  const checkinOpen = regAndAccess?.checkinOpen === '1';
   const updateRegistrationOpenMutation = useMutation({
     mutationFn: updateRegAndAccess,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fetchEventById'] });
     },
-    onMutate: () => {
+  });
+
+  const changeOpen = useCallback(
+    (type: 'registration' | 'checkin') => {
+      const obj =
+        type === 'checkin'
+          ? {
+              checkinOpen: !checkinOpen ? '1' : '0',
+            }
+          : {
+              registrationOpen: !registrationOpen ? '1' : '0',
+            };
       if (event) {
         setEvent({
           ...event,
@@ -41,7 +52,7 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
               {
                 node: {
                   ...regAndAccess!,
-                  registrationOpen: !registrationOpen ? '1' : '0',
+                  ...obj,
                 },
               },
             ],
@@ -49,16 +60,32 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
         });
       }
     },
-  });
+    [checkinOpen, registrationOpen, event, setEvent, regAndAccess],
+  );
 
   const handleRegistrationOpenChange = useCallback(
     debounce((checked: boolean) => {
+      changeOpen('registration');
       updateRegistrationOpenMutation.mutate({
         type: 'switch',
         id: regAndAccess!.id,
         profileId,
         eventId,
         registrationOpen: checked ? '1' : '0',
+      });
+    }, 1000),
+    [],
+  );
+
+  const handleCheckinOpenChange = useCallback(
+    debounce((checked: boolean) => {
+      changeOpen('checkin');
+      updateRegistrationOpenMutation.mutate({
+        type: 'switch',
+        id: regAndAccess!.id,
+        profileId,
+        eventId,
+        checkinOpen: checked ? '1' : '0',
       });
     }, 1000),
     [],
@@ -77,6 +104,15 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
   const hasConfigedApplicationForm = !!regAndAccess?.applicationForm;
   const hasCheckin = regAndAccess?.ticketType !== TicketingMethod.NoTicketing;
 
+  const showAccessRuleCheckin = useMemo(() => {
+    if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
+      return regAndAccess.scrollPassTickets?.some(
+        (ticket) => ticket.checkin === '1',
+      );
+    }
+    return false;
+  }, [regAndAccess?.ticketType, regAndAccess?.scrollPassTickets]);
+
   const registrationAvailable = useMemo(() => {
     let hasWhitelist =
       regAndAccess?.registrationAccess !== RegistrationAccess.Whitelist;
@@ -91,10 +127,14 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
       );
     }
     if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
+      const hasConfigTicketCheckin = regAndAccess.scrollPassTickets?.some(
+        (ticket) => ticket.checkin === '1',
+      );
       return (
         hasWhitelist &&
         hasConfigedApplicationForm &&
-        !!regAndAccess?.scrollPassTickets?.length
+        !!regAndAccess?.scrollPassTickets?.length &&
+        hasConfigTicketCheckin
       );
     }
     return false;
@@ -103,7 +143,7 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
     noApplication,
     regAndAccess?.registrationAccess,
     regAndAccess?.registrationWhitelist?.length,
-    regAndAccess?.scrollPassTickets?.length,
+    regAndAccess?.scrollPassTickets,
     regAndAccess?.ticketType,
     regAndAccess?.zuPassInfo,
   ]);
@@ -130,6 +170,8 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
     registrationAvailable,
     hasCheckin,
     accessRulesAvailable,
+    showAccessRuleCheckin,
+    handleCheckinOpenChange,
   };
 };
 

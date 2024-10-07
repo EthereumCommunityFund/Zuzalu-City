@@ -18,7 +18,6 @@ interface AccessRulesProps {
 }
 
 export default function AccessRules({
-  event,
   regAndAccess,
   type = 'zupass',
   isAvailable,
@@ -60,7 +59,7 @@ export default function AccessRules({
         tags={tags}
       />
       {isAvailable ? (
-        <Panel handleOpen={handleOpen} />
+        <Panel handleOpen={handleOpen} regAndAccess={regAndAccess} />
       ) : (
         <Box p="10px" bgcolor="rgba(255, 255, 255, 0.05)" borderRadius="10px">
           <Typography

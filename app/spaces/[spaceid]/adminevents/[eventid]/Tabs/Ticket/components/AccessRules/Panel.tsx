@@ -4,13 +4,19 @@ import ClockIcon from '@/components/icons/Clock';
 import { ZuSwitch } from '@/components/core';
 import { BuildStoreFrontIcon } from '@/components/icons';
 import { useCallback } from 'react';
+import useRegAndAccess from '@/hooks/useRegAndAccess';
+import { RegistrationAndAccess } from '@/types';
 
 interface PanelProps {
+  regAndAccess?: RegistrationAndAccess;
   handleOpen: () => void;
 }
 
-export default function Panel({ handleOpen }: PanelProps) {
-  const handleSwitch = useCallback(() => {}, []);
+export default function Panel({ handleOpen, regAndAccess }: PanelProps) {
+  const { showAccessRuleCheckin, handleCheckinOpenChange } = useRegAndAccess({
+    regAndAccess,
+  });
+  const checked = regAndAccess?.checkinOpen === '1';
 
   return (
     <Stack spacing="10px">
@@ -29,17 +35,24 @@ export default function Panel({ handleOpen }: PanelProps) {
           buttonText="Configure"
           onClick={handleOpen}
         />
-        <Stack direction="row" alignItems="center" spacing="14px">
-          <ZuSwitch width={40} height={20} onChange={handleSwitch} />
-          <Typography
-            fontSize={14}
-            fontWeight={600}
-            lineHeight={1.6}
-            sx={{ opacity: 0.8 }}
-          >
-            Enable Attendee Check-in for this app
-          </Typography>
-        </Stack>
+        {showAccessRuleCheckin && (
+          <Stack direction="row" alignItems="center" spacing="14px">
+            <ZuSwitch
+              width={40}
+              height={20}
+              checked={!!checked}
+              onChange={() => handleCheckinOpenChange(!checked)}
+            />
+            <Typography
+              fontSize={14}
+              fontWeight={600}
+              lineHeight={1.6}
+              sx={{ opacity: 0.8 }}
+            >
+              Enable Attendee Check-in for this app
+            </Typography>
+          </Stack>
+        )}
       </Stack>
       <Stack
         p="10px"
