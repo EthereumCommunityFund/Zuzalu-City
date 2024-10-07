@@ -14,7 +14,14 @@ import {
 import { ItemType, OptionType, TagProps } from '../types';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import {
   CloseIcon,
   ExclamationCircleIcon,
@@ -331,6 +338,8 @@ export const StatusIndicatorPanel = ({
   onChange,
   disabled = false,
   sx,
+  type,
+  noWrapper = false,
 }: {
   name: string;
   desc?: string;
@@ -339,7 +348,10 @@ export const StatusIndicatorPanel = ({
   disabled?: boolean;
   onChange?: (checked: boolean) => void;
   sx?: React.CSSProperties;
+  type?: 'registration' | 'checkin';
+  noWrapper?: boolean;
 }) => {
+  const { setStatus } = useStatusContext();
   const [internalChecked, setInternalChecked] = useState(initialChecked);
 
   useEffect(() => {
@@ -349,25 +361,32 @@ export const StatusIndicatorPanel = ({
   const handleToggle = useCallback(() => {
     if (!disabled && !left) {
       const newChecked = !internalChecked;
+      setStatus((v) => ({
+        ...v,
+        [type === 'registration' ? 'registrationOpen' : 'checkinOpen']:
+          newChecked,
+      }));
       setInternalChecked(newChecked);
       onChange?.(newChecked);
     }
-  }, [disabled, left, internalChecked, onChange]);
+  }, [disabled, left, internalChecked, setStatus, onChange, type]);
 
   return (
     <Stack
       direction="row"
       spacing="14px"
       borderRadius="10px"
-      padding="10px"
+      padding={noWrapper ? undefined : '10px'}
       flex={1}
       sx={{
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
         width: '100%',
-        background: internalChecked
-          ? 'linear-gradient(90deg, rgba(125, 255, 209, 0.15) 0, rgba(255, 255, 255, 0.03) 100%)'
-          : 'rgba(255, 255, 255, 0.05)',
+        background: noWrapper
+          ? 'none'
+          : internalChecked
+            ? 'linear-gradient(90deg, rgba(125, 255, 209, 0.15) 0, rgba(255, 255, 255, 0.03) 100%)'
+            : 'rgba(255, 255, 255, 0.05)',
         ...sx,
       }}
       onClick={handleToggle}
@@ -383,9 +402,20 @@ export const StatusIndicatorPanel = ({
         />
       )}
       <Stack direction="column" spacing="4px">
-        <Typography fontSize={18} fontWeight={700} lineHeight={1.2}>
-          {name}
-        </Typography>
+        {noWrapper ? (
+          <Typography
+            fontSize={14}
+            fontWeight={600}
+            lineHeight={1.6}
+            sx={{ opacity: 0.8 }}
+          >
+            {name}
+          </Typography>
+        ) : (
+          <Typography fontSize={18} fontWeight={700} lineHeight={1.2}>
+            {name}
+          </Typography>
+        )}
         {desc && (
           <Typography fontSize={10} lineHeight={1.2}>
             {desc}
@@ -626,5 +656,41 @@ export const ConfigPanel = ({
         </ZuButton>
       )}
     </Stack>
+  );
+};
+
+type Status = { checkinOpen: boolean; registrationOpen: boolean };
+
+interface EventContextType {
+  status: Status;
+  setStatus: React.Dispatch<React.SetStateAction<Status>>;
+}
+
+const StatusContext = createContext<EventContextType | undefined>(undefined);
+
+export const useStatusContext = () => {
+  const context = useContext(StatusContext);
+  if (context === undefined) {
+    throw new Error('useStatusContext must be used within an StatusProvider');
+  }
+  return context;
+};
+
+interface StatusProviderProps {
+  children: ReactNode;
+}
+
+export const StatusProvider: React.FC<StatusProviderProps> = ({ children }) => {
+  const [status, setStatus] = useState<Status>({
+    checkinOpen: false,
+    registrationOpen: false,
+  });
+
+  console.log(status);
+
+  return (
+    <StatusContext.Provider value={{ status, setStatus }}>
+      {children}
+    </StatusContext.Provider>
   );
 };

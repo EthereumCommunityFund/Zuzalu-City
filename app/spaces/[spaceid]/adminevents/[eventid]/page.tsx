@@ -6,14 +6,19 @@ import { Ticket, Overview, Venue, Announcements } from './Tabs';
 import { Tabbar, Navbar } from 'components/layout';
 import { useParams, useRouter } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
-import { Event, Space } from '@/types';
+import { Space } from '@/types';
 import { useQuery } from '@tanstack/react-query';
 import { getSpacesQuery } from '@/services/space';
 import { EventProvider, useEventContext } from './EventContext';
+import {
+  StatusProvider,
+  useStatusContext,
+} from './Tabs/Ticket/components/Common';
 
 const EventContent: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
   const { event, setEvent } = useEventContext();
+  const { setStatus } = useStatusContext();
 
   const { composeClient, ceramic } = useCeramicContext();
 
@@ -127,6 +132,11 @@ const EventContent: React.FC = () => {
       if (result.data) {
         if (result.data.node) {
           setEvent(result.data.node);
+          const regAndAccess = result.data.node.regAndAccess.edges[0].node;
+          setStatus({
+            checkinOpen: regAndAccess?.checkinOpen === '1',
+            registrationOpen: regAndAccess?.registrationOpen === '1',
+          });
         }
       }
     } catch (err) {
@@ -194,7 +204,9 @@ const EventContent: React.FC = () => {
 const Home: React.FC = () => {
   return (
     <EventProvider>
-      <EventContent />
+      <StatusProvider>
+        <EventContent />
+      </StatusProvider>
     </EventProvider>
   );
 };

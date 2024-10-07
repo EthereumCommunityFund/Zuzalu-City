@@ -1,5 +1,9 @@
 import { Stack, Typography } from '@mui/material';
-import { TitleWithTag } from '../Common';
+import {
+  StatusIndicatorPanel,
+  TitleWithTag,
+  useStatusContext,
+} from '../Common';
 import ClockIcon from '@/components/icons/Clock';
 import { ZuSwitch } from '@/components/core';
 import { BuildStoreFrontIcon } from '@/components/icons';
@@ -15,7 +19,8 @@ export default function Panel({ handleOpen, regAndAccess }: PanelProps) {
   const { showAccessRuleCheckin, handleCheckinOpenChange } = useRegAndAccess({
     regAndAccess,
   });
-  const checked = regAndAccess?.checkinOpen === '1';
+  const { status } = useStatusContext();
+  const checked = status.checkinOpen;
 
   return (
     <Stack spacing="10px">
@@ -36,20 +41,12 @@ export default function Panel({ handleOpen, regAndAccess }: PanelProps) {
         />
         {showAccessRuleCheckin && (
           <Stack direction="row" alignItems="center" spacing="14px">
-            <ZuSwitch
-              width={40}
-              height={20}
+            <StatusIndicatorPanel
+              name="Enable Attendee Check-in for this app"
               checked={!!checked}
-              onChange={() => handleCheckinOpenChange(!checked)}
+              noWrapper
+              onChange={handleCheckinOpenChange}
             />
-            <Typography
-              fontSize={14}
-              fontWeight={600}
-              lineHeight={1.6}
-              sx={{ opacity: 0.8 }}
-            >
-              Enable Attendee Check-in for this app
-            </Typography>
           </Stack>
         )}
       </Stack>

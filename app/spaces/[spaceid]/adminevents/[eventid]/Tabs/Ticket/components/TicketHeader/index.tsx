@@ -1,9 +1,8 @@
 import React from 'react';
 import { Typography, Stack, useTheme } from '@mui/material';
 import { QRCodeIcon } from '@/components/icons';
-import { Event, RegistrationAndAccess } from '@/types';
-import { StatusIndicatorPanel } from '../Common';
-import { useEventContext } from '../../../../EventContext';
+import { RegistrationAndAccess } from '@/types';
+import { StatusIndicatorPanel, useStatusContext } from '../Common';
 import useRegAndAccess from '@/hooks/useRegAndAccess';
 
 interface TicketHeaderProps {
@@ -12,8 +11,8 @@ interface TicketHeaderProps {
 
 const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
   const breakpoints = useTheme().breakpoints;
-  const registrationOpen = regAndAccess?.registrationOpen === '1';
-  const checkinOpen = regAndAccess?.checkinOpen === '1';
+  const { status } = useStatusContext();
+  const { registrationOpen, checkinOpen } = status;
 
   const {
     handleRegistrationOpenChange,
@@ -51,6 +50,7 @@ const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
           }}
         >
           <StatusIndicatorPanel
+            type="registration"
             name="Registration Status"
             desc={
               registrationOpen
@@ -65,6 +65,7 @@ const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
           />
           {hasCheckin && (
             <StatusIndicatorPanel
+              type="checkin"
               name="Check-In Status"
               desc={
                 checkinOpen

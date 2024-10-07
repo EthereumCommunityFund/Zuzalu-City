@@ -1,5 +1,9 @@
 import { Box, Stack } from '@mui/material';
-import { StatusIndicatorPanel, TitleWithTag } from '../Common';
+import {
+  StatusIndicatorPanel,
+  TitleWithTag,
+  useStatusContext,
+} from '../Common';
 import { RegistrationAndAccess, Event } from '@/types';
 import { useMemo } from 'react';
 import { RegistrationAccess, TagProps } from '../types';
@@ -18,7 +22,8 @@ const RegistrationStatus = ({
   isAvailable = false,
   regAndAccess,
 }: StatusProps) => {
-  const isOpen = regAndAccess?.registrationOpen === '1';
+  const { status } = useStatusContext();
+  const isOpen = status.registrationOpen;
 
   const { handleRegistrationOpenChange } = useRegAndAccess({ regAndAccess });
   const { handleOpen, handleClose, open } = useOpenDraw();
@@ -56,9 +61,15 @@ const RegistrationStatus = ({
         />
         <Box mt="20px">
           {!isAvailable ? (
-            <StatusIndicatorPanel name="Unavailable" checked={false} disabled />
+            <StatusIndicatorPanel
+              name="Unavailable"
+              checked={false}
+              disabled
+              type="registration"
+            />
           ) : (
             <StatusIndicatorPanel
+              type="registration"
               name={isOpen ? 'Open' : 'Close'}
               desc={
                 isOpen
