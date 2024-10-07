@@ -8,7 +8,6 @@ import { useCallback, useMemo } from 'react';
 import { RegistrationAndAccess } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateRegAndAccess } from '@/services/event/regAndAccess';
-import { useEventContext } from '@/app/spaces/[spaceid]/adminevents/[eventid]/EventContext';
 import { debounce } from 'lodash';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
@@ -19,14 +18,11 @@ interface Props {
 
 const useRegAndAccess = ({ regAndAccess }: Props) => {
   const queryClient = useQueryClient();
-  const { event, setEvent } = useEventContext();
   const pathname = useParams();
   const { profile } = useCeramicContext();
   const profileId = profile?.id || '';
   const eventId = pathname.eventid.toString();
 
-  const registrationOpen = regAndAccess?.registrationOpen === '1';
-  const checkinOpen = regAndAccess?.checkinOpen === '1';
   const updateRegistrationOpenMutation = useMutation({
     mutationFn: updateRegAndAccess,
     onSuccess: () => {
@@ -34,38 +30,9 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
     },
   });
 
-  const changeOpen = useCallback(
-    (type: 'registration' | 'checkin') => {
-      const obj =
-        type === 'checkin'
-          ? {
-              checkinOpen: !checkinOpen ? '1' : '0',
-            }
-          : {
-              registrationOpen: !registrationOpen ? '1' : '0',
-            };
-      if (event) {
-        setEvent({
-          ...event,
-          regAndAccess: {
-            edges: [
-              {
-                node: {
-                  ...regAndAccess!,
-                  ...obj,
-                },
-              },
-            ],
-          },
-        });
-      }
-    },
-    [checkinOpen, registrationOpen, event, setEvent, regAndAccess],
-  );
-
   const handleRegistrationOpenChange = useCallback(
     debounce((checked: boolean) => {
-      changeOpen('registration');
+      // changeOpen('registration', checked);
       updateRegistrationOpenMutation.mutate({
         type: 'switch',
         id: regAndAccess!.id,
@@ -79,7 +46,7 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
 
   const handleCheckinOpenChange = useCallback(
     debounce((checked: boolean) => {
-      changeOpen('checkin');
+      // changeOpen('checkin', checked);
       updateRegistrationOpenMutation.mutate({
         type: 'switch',
         id: regAndAccess!.id,
@@ -110,43 +77,28 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
         (ticket) => ticket.checkin === '1',
       );
     }
+    if (regAndAccess?.ticketType === TicketingMethod.ZuPass) {
+      return regAndAccess.zuPassInfo?.some((ticket) => ticket.access);
+    }
     return false;
-  }, [regAndAccess?.ticketType, regAndAccess?.scrollPassTickets]);
+  }, [
+    regAndAccess?.ticketType,
+    regAndAccess?.scrollPassTickets,
+    regAndAccess?.zuPassInfo,
+  ]);
 
   const registrationAvailable = useMemo(() => {
-    let hasWhitelist =
+    let needWhitelist =
       regAndAccess?.registrationAccess !== RegistrationAccess.Whitelist;
-    hasWhitelist = Number(regAndAccess?.registrationWhitelist?.length) > 0;
+    const hasWhitelist = needWhitelist
+      ? true
+      : Number(regAndAccess?.registrationWhitelist?.length) > 0;
 
     if (regAndAccess?.ticketType === TicketingMethod.NoTicketing) {
       return hasWhitelist && (noApplication || hasConfigedApplicationForm);
     }
-    if (regAndAccess?.ticketType === TicketingMethod.ZuPass) {
-      return (
-        hasWhitelist && hasConfigedApplicationForm && !!regAndAccess?.zuPassInfo
-      );
-    }
-    if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
-      const hasConfigTicketCheckin = regAndAccess.scrollPassTickets?.some(
-        (ticket) => ticket.checkin === '1',
-      );
-      return (
-        hasWhitelist &&
-        hasConfigedApplicationForm &&
-        !!regAndAccess?.scrollPassTickets?.length &&
-        hasConfigTicketCheckin
-      );
-    }
-    return false;
-  }, [
-    hasConfigedApplicationForm,
-    noApplication,
-    regAndAccess?.registrationAccess,
-    regAndAccess?.registrationWhitelist?.length,
-    regAndAccess?.scrollPassTickets,
-    regAndAccess?.ticketType,
-    regAndAccess?.zuPassInfo,
-  ]);
+    return hasWhitelist && hasConfigedApplicationForm;
+  }, [hasConfigedApplicationForm, noApplication, regAndAccess]);
 
   const accessRulesAvailable = useMemo(() => {
     if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {

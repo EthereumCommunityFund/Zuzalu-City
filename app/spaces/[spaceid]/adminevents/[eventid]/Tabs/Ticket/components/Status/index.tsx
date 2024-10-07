@@ -30,14 +30,14 @@ const RegistrationStatus = ({
         text: `Setting: ${regAndAccess?.registrationAccess}`,
       },
     ];
-    if (!isAvailable) {
+    if (!isAvailable || !isOpen) {
       tags.push({
         type: 'warning',
         text: 'Required to open event',
       });
     }
     return tags;
-  }, [isAvailable, regAndAccess?.registrationAccess]);
+  }, [isAvailable, isOpen, regAndAccess?.registrationAccess]);
 
   return (
     <>

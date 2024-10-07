@@ -14,7 +14,7 @@ import {
 import { ItemType, OptionType, TagProps } from '../types';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   CloseIcon,
   ExclamationCircleIcon,
@@ -326,7 +326,7 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
 export const StatusIndicatorPanel = ({
   name,
   desc,
-  checked,
+  checked: initialChecked,
   left,
   onChange,
   disabled = false,
@@ -340,6 +340,20 @@ export const StatusIndicatorPanel = ({
   onChange?: (checked: boolean) => void;
   sx?: React.CSSProperties;
 }) => {
+  const [internalChecked, setInternalChecked] = useState(initialChecked);
+
+  useEffect(() => {
+    setInternalChecked(initialChecked);
+  }, [initialChecked]);
+
+  const handleToggle = useCallback(() => {
+    if (!disabled && !left) {
+      const newChecked = !internalChecked;
+      setInternalChecked(newChecked);
+      onChange?.(newChecked);
+    }
+  }, [disabled, left, internalChecked, onChange]);
+
   return (
     <Stack
       direction="row"
@@ -351,18 +365,18 @@ export const StatusIndicatorPanel = ({
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
         width: '100%',
-        background: checked
+        background: internalChecked
           ? 'linear-gradient(90deg, rgba(125, 255, 209, 0.15) 0, rgba(255, 255, 255, 0.03) 100%)'
           : 'rgba(255, 255, 255, 0.05)',
         ...sx,
       }}
-      onClick={() => !disabled && !left && onChange?.(!checked)}
+      onClick={handleToggle}
     >
       {left ? (
         left
       ) : (
         <ZuSwitch
-          checked={checked}
+          checked={internalChecked}
           disabled={disabled}
           width={40}
           height={20}

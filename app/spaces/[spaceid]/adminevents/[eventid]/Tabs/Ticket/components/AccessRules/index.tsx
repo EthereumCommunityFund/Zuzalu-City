@@ -26,8 +26,8 @@ export default function AccessRules({
   const { open, handleOpen, handleClose } = useOpenDraw();
 
   const tags = useMemo((): TagProps[] => {
-    if (regAndAccess?.scrollPassTickets?.length === 0) {
-      return [{ type: 'warning', text: 'Requires Tickets' }];
+    if (!regAndAccess?.scrollPassTickets) {
+      return [{ type: 'required', text: 'Requires Tickets' }];
     }
     if (regAndAccess?.scrollPassTickets?.length) {
       const data = regAndAccess?.scrollPassTickets.filter(
@@ -36,9 +36,12 @@ export default function AccessRules({
       if (data.length === 0) {
         return [{ type: 'warning', text: 'Requires completed SETUP' }];
       }
+      if (regAndAccess.checkinOpen !== '1') {
+        return [{ type: 'warning', text: 'Required to open event' }];
+      }
     }
     return [];
-  }, [regAndAccess?.scrollPassTickets]);
+  }, [regAndAccess?.checkinOpen, regAndAccess?.scrollPassTickets]);
 
   return (
     <Stack spacing="20px">

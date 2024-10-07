@@ -3,7 +3,6 @@ import { TitleWithTag } from '../Common';
 import ClockIcon from '@/components/icons/Clock';
 import { ZuSwitch } from '@/components/core';
 import { BuildStoreFrontIcon } from '@/components/icons';
-import { useCallback } from 'react';
 import useRegAndAccess from '@/hooks/useRegAndAccess';
 import { RegistrationAndAccess } from '@/types';
 
