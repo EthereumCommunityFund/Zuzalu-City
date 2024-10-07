@@ -59,14 +59,14 @@ export default function Form({ onClose, regAndAccess }: FormProps) {
         type: 'zuPass',
         id: regAndAccess?.id || '',
         eventId,
-        zuPassInfo: [{
+        zuPassInfo: {
           registration: data.publicKey
             .split(',')
             .map((key) => key.trim())
             .join(','),
           eventId: data.eventId,
           eventName: data.eventName,
-        }],
+        },
       });
     },
     [eventId, regAndAccess?.id, updateMutation],

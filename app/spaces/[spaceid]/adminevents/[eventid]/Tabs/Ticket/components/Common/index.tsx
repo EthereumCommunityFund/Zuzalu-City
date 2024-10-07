@@ -686,8 +686,6 @@ export const StatusProvider: React.FC<StatusProviderProps> = ({ children }) => {
     registrationOpen: false,
   });
 
-  console.log(status);
-
   return (
     <StatusContext.Provider value={{ status, setStatus }}>
       {children}

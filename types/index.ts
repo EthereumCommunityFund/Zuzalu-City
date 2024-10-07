@@ -445,6 +445,6 @@ export interface UpdateRegAndAccessRequest
   applicationForm?: string;
   checkinOpen?: string;
   registrationOpen?: string;
-  zuPassInfo?: ZuPassInfo[];
+  zuPassInfo?: ZuPassInfo;
   scrollPassTickets?: ScrollPassTickets[];
 }

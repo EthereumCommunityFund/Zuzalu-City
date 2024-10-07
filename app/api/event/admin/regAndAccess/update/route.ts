@@ -119,20 +119,11 @@ async function updateZuPass({
   id: string;
   zuPassInfo: any;
 }) {
-  console.log(zuPassInfo);
   return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
-        zuPassInfo: [
-          {
-            // name: '11231',
-            eventName: '111',
-            registration: '112',
-            eventId: '113',
-            access: '114',
-          },
-        ],
+        zuPassInfo: [zuPassInfo],
       },
     },
   });
