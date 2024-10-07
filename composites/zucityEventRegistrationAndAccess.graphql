@@ -8,9 +8,10 @@ type ZucityEventRegistrationAndAccess
   profile: ZucityProfile! @relationDocument(property: "profileId")
   eventId: StreamID! @documentReference(model: "ZucityEvent")
   event: ZucityEvent! @relationDocument(property: "eventId")
-  zuPassInfo: ZuPass
-  scrollPassInfo: ScrollPass
-  zuLottoInfo: ZuLotto
+  zuPassInfo: [ZuPass] @list(maxLength: 10000)
+  scrollPassTickets: [ScrollPassTicket] @list(maxLength: 1000)
+  scrollPassContractFactoryID: Int
+  zuLottoInfo: [ZuLotto] @list(maxLength: 10000)
   customAttributes: [TBD] @list(maxLength: 10000)
   registrationAccess: String @string(minLength: 1, maxLength: 1000)
   registrationWhitelist: [DID!] @list(maxLength: 10000)
@@ -28,11 +29,6 @@ type ZucityEvent @loadModel(id: "$Event_ID") {
 
 type ZucityProfile @loadModel(id: "$Profile_ID") {
   id: ID!
-}
-
-type ScrollPass {
-  tickets: [ScrollPassTicket] @list(maxLength: 1000)
-  contractFactoryID: Int
 }
 
 type ScrollPassTicket {
