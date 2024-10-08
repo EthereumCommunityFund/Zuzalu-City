@@ -8,7 +8,11 @@ interface ZuSwitchProps extends SwitchProps {
 const ZuSwitch = styled((props: ZuSwitchProps) => {
   const { width, height, ...otherProps } = props;
   return (
-    <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...otherProps} />
+    <Switch
+      focusVisibleClassName=".Mui-focusVisible"
+      disableRipple
+      {...otherProps}
+    />
   );
 })(({ theme, width = 42, height = 26 }) => ({
   width,
