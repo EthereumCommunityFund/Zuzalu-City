@@ -79,6 +79,7 @@ interface Inputs {
 interface PropTypes {
   event?: Event;
   refetch?: () => void;
+  setTabName: (value: string | ((prevVar: string) => string)) => void;
 }
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
@@ -95,7 +96,7 @@ const schema = Yup.object().shape({
   ),
 });
 
-const Overview = ({ event, refetch }: PropTypes) => {
+const Overview = ({ event, refetch, setTabName }: PropTypes) => {
   const { ceramic, profile, composeClient } = useCeramicContext();
   const params = useParams();
   const spaceId = params.spaceid.toString();
@@ -871,7 +872,7 @@ const Overview = ({ event, refetch }: PropTypes) => {
   };
   return (
     <Stack direction="column" spacing={4} padding="0 30px 30px">
-      <OverviewHeader event={event} />
+      <OverviewHeader event={event} setTabName={setTabName} />
       <OverviewDetail
         eventData={event}
         handleEditEvent={() => toggleDrawer('right', true)}

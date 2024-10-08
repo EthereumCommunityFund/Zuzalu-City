@@ -44,11 +44,8 @@ export default function ScrollPassList({
 
   const tags = useMemo(() => {
     const tags: TagProps[] = [{ type: 'pass', pass: 'scrollpass' }];
-    if (!hasTickets) {
-      tags.push({ type: 'warning', text: 'Required to open event' });
-    }
     return tags;
-  }, [hasTickets]);
+  }, []);
 
   return (
     <>

@@ -25,14 +25,8 @@ export default function ZupassList({ regAndAccess }: ZupassListProps) {
 
   const tags = useMemo(() => {
     const tags: TagProps[] = [{ type: 'pass', pass: 'zupass' }];
-    if (!isConfigured) {
-      tags.push({
-        type: 'warning',
-        text: 'Required to open event',
-      });
-    }
     return tags;
-  }, [isConfigured]);
+  }, []);
 
   return (
     <>

@@ -555,7 +555,7 @@ export const TitleWithTag = ({
   onClick?: () => void;
 }) => {
   return (
-    <Stack spacing="10px">
+    <Stack spacing="10px" id={title.replace(/\s+/g, '')}>
       <Stack direction="row" spacing="40px" justifyContent="space-between">
         <Stack alignItems="center" direction="row" gap="10px">
           <Stack alignItems="flex-start" flexDirection="row" gap="10px">

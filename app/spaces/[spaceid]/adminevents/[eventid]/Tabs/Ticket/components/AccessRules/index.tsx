@@ -7,7 +7,7 @@ import Panel from './Panel';
 import { Event, RegistrationAndAccess } from '@/types';
 import ScrollpassForm from './ScrollpassForm';
 import { useMemo } from 'react';
-import { TagProps } from '../types';
+import { TagProps, TicketingMethod } from '../types';
 
 interface AccessRulesProps {
   regAndAccess?: RegistrationAndAccess;
@@ -23,23 +23,38 @@ export default function AccessRules({
 }: AccessRulesProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
 
-  const tags = useMemo((): TagProps[] => {
-    if (!regAndAccess?.scrollPassTickets) {
-      return [{ type: 'required', text: 'Requires Tickets' }];
+  const tags = useMemo(() => {
+    const tags: TagProps[] = [];
+    if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
+      if (!regAndAccess?.scrollPassTickets) {
+        tags.push({ type: 'required', text: 'Requires Tickets' });
+      }
+    }
+    if (regAndAccess?.ticketType === TicketingMethod.ZuPass) {
+      if (!regAndAccess?.zuPassInfo) {
+        tags.push({ type: 'required', text: 'Requires Tickets' });
+      }
     }
     if (regAndAccess?.scrollPassTickets?.length) {
       const data = regAndAccess?.scrollPassTickets.filter(
         (ticket) => ticket.checkin === '1',
       );
       if (data.length === 0) {
-        return [{ type: 'warning', text: 'Requires completed SETUP' }];
-      }
-      if (regAndAccess.checkinOpen !== '1') {
-        return [{ type: 'warning', text: 'Required to open event' }];
+        tags.push({ type: 'warning', text: 'Requires completed SETUP' });
       }
     }
-    return [];
-  }, [regAndAccess?.checkinOpen, regAndAccess?.scrollPassTickets]);
+    if (regAndAccess?.zuPassInfo?.length) {
+      const data = regAndAccess?.zuPassInfo.filter((ticket) => ticket.access);
+      if (data.length === 0) {
+        tags.push({ type: 'warning', text: 'Requires completed SETUP' });
+      }
+    }
+    return tags;
+  }, [
+    regAndAccess?.scrollPassTickets,
+    regAndAccess?.ticketType,
+    regAndAccess?.zuPassInfo,
+  ]);
 
   return (
     <Stack spacing="20px">
@@ -54,6 +69,7 @@ export default function AccessRules({
         title="Access Rules"
         desc="Select which tickets will have access to the event’s apps"
         tags={tags}
+        required={regAndAccess?.checkinOpen !== '1'}
       />
       {isAvailable ? (
         <Panel handleOpen={handleOpen} regAndAccess={regAndAccess} />

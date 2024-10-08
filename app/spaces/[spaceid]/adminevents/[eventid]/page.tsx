@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { Box, Stack, useMediaQuery } from '@mui/material';
+import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 
 import { Ticket, Overview, Venue, Announcements } from './Tabs';
 import { Tabbar, Navbar } from 'components/layout';
@@ -14,6 +14,8 @@ import {
   StatusProvider,
   useStatusContext,
 } from './Tabs/Ticket/components/Common';
+import { ApplyOption, ApplyRule } from './Tabs/Ticket/components/types';
+import Navigation from './Navigation';
 
 const EventContent: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
@@ -159,7 +161,13 @@ const EventContent: React.FC = () => {
   const renderPage = () => {
     switch (tabName) {
       case 'Overview':
-        return <Overview event={event} refetch={refetchData} />;
+        return (
+          <Overview
+            event={event}
+            refetch={refetchData}
+            setTabName={setTabName}
+          />
+        );
       case 'Announcements':
         return <Announcements event={event} />;
       case 'Registration':
@@ -169,7 +177,7 @@ const EventContent: React.FC = () => {
       case 'Venue':
         return <Venue event={event} />;
       default:
-        return <Overview />;
+        return <Overview setTabName={setTabName} />;
     }
   };
 
@@ -189,11 +197,16 @@ const EventContent: React.FC = () => {
   }, [ceramic?.did?.parent, router, spaceData]);
 
   return (
-    <Stack width="100%">
+    <Stack width="100%" id="111122">
       <Navbar spaceName={event?.space?.name} />
-      <Tabbar tabName={tabName} setTabName={setTabName} />
+      <Tabbar tabName={tabName} setTabName={setTabName} event={event} />
       <Stack direction="row" justifyContent="center">
-        <Box width={isMobile ? '100%' : '860px'} marginTop={3}>
+        <Box
+          width={isMobile ? '100%' : '860px'}
+          marginTop={3}
+          sx={{ position: 'relative' }}
+        >
+          {/* {tabName === 'Registration' && <Navigation event={event} />} */}
           {renderPage()}
         </Box>
       </Stack>
