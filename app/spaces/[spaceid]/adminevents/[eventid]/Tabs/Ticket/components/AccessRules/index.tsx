@@ -14,14 +14,12 @@ interface AccessRulesProps {
   event?: Event;
   type?: 'zupass' | 'scrollpass';
   isAvailable?: boolean;
-  ticketAddresses: Array<string>;
 }
 
 export default function AccessRules({
   regAndAccess,
   type = 'zupass',
   isAvailable,
-  ticketAddresses,
 }: AccessRulesProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
 
@@ -47,13 +45,9 @@ export default function AccessRules({
     <Stack spacing="20px">
       <Drawer open={open} onClose={handleClose} onOpen={handleOpen}>
         {type === 'zupass' ? (
-          <ZupassForm onClose={handleClose} ids={[]} />
+          <ZupassForm onClose={handleClose} regAndAccess={regAndAccess} />
         ) : (
-          <ScrollpassForm
-            regAndAccess={regAndAccess}
-            onClose={handleClose}
-            ticketAddresses={ticketAddresses}
-          />
+          <ScrollpassForm regAndAccess={regAndAccess} onClose={handleClose} />
         )}
       </Drawer>
       <TitleWithTag

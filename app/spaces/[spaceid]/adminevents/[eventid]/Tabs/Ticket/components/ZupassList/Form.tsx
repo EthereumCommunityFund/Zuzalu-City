@@ -23,6 +23,7 @@ const schema = yup.object().shape({
 });
 
 export default function Form({ onClose, regAndAccess }: FormProps) {
+  const zupassInfo = regAndAccess?.zuPassInfo?.[0];
   const {
     control,
     handleSubmit,
@@ -31,10 +32,9 @@ export default function Form({ onClose, regAndAccess }: FormProps) {
   } = useForm({
     resolver: yupResolver(schema),
     values: {
-      publicKey:
-        '1ebfb986fbac5113f8e2c72286fe9362f8e7d211dbc68227a468d7b919e75003,10ec38f11baacad5535525bbe8e343074a483c051aa1616266f3b1df3fb7d204',
-      eventId: '6f5f194b-97b5-5fe9-994d-0998f3eacc75',
-      eventName: 'ZuVillage Georgia',
+      publicKey: zupassInfo?.registration ?? '',
+      eventId: zupassInfo?.eventId ?? '',
+      eventName: zupassInfo?.eventName ?? '',
     },
   });
 

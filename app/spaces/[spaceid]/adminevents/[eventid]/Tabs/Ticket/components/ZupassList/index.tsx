@@ -10,6 +10,7 @@ import { TicketIcon } from '@/components/icons/Ticket';
 import { RegistrationAndAccess } from '@/types';
 import { useMemo } from 'react';
 import { TagProps } from '../types';
+import useRegAndAccess from '@/hooks/useRegAndAccess';
 
 interface ZupassListProps {
   regAndAccess?: RegistrationAndAccess;
@@ -17,6 +18,9 @@ interface ZupassListProps {
 
 export default function ZupassList({ regAndAccess }: ZupassListProps) {
   const { open, handleOpen, handleClose } = useOpenDraw();
+  const { registrationAvailable, accessRulesAvailable } = useRegAndAccess({
+    regAndAccess,
+  });
   const isConfigured = !!regAndAccess?.zuPassInfo;
 
   const tags = useMemo(() => {
@@ -66,8 +70,14 @@ export default function ZupassList({ regAndAccess }: ZupassListProps) {
           <Form onClose={handleClose} regAndAccess={regAndAccess} />
         </Drawer>
       </Stack>
-      <RegistrationStatus />
-      <AccessRules />
+      <RegistrationStatus
+        regAndAccess={regAndAccess}
+        isAvailable={registrationAvailable}
+      />
+      <AccessRules
+        regAndAccess={regAndAccess}
+        isAvailable={accessRulesAvailable}
+      />
       <ApplicationPanel regAndAccess={regAndAccess} />
     </>
   );

@@ -15,7 +15,6 @@ import { useParams } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
 
 interface FormProps {
-  ticketAddresses: Array<string>;
   onClose: () => void;
   regAndAccess?: RegistrationAndAccess;
 }

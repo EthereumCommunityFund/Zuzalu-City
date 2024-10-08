@@ -11,7 +11,6 @@ import { updateRegAndAccess } from '@/services/event/regAndAccess';
 import { debounce } from 'lodash';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
-import { useStatusContext } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Ticket/components/Common';
 
 interface Props {
   regAndAccess?: RegistrationAndAccess;
@@ -21,7 +20,6 @@ const useRegAndAccess = ({ regAndAccess }: Props) => {
   const queryClient = useQueryClient();
   const pathname = useParams();
   const { profile } = useCeramicContext();
-  const { setStatus } = useStatusContext();
   const profileId = profile?.id || '';
   const eventId = pathname.eventid.toString();
 
