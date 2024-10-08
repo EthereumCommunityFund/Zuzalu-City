@@ -72,7 +72,7 @@ export const MOCK_DATA = {
         'Greetings, esteemed members and newcomers alike, to our digital hub dedicated to the vibrant community of Zuzalu City Contributors! As part of the illustrious Zuzalu project, our community serves as the beating heart of collaboration, creativity, and camaraderie.',
     },
     {
-      title: 'About Zuzalu City Contributors:',
+      title: 'About Zuzalu.city Contributors:',
       content:
         "Zuzalu City Contributors is a collective of passionate individuals committed to enhancing the fabric of Zuzalu City. Whether you're an artist, developer, urban planner, or simply someone with a deep love for community building, there's a place for you here. Our mission? To foster innovation, inclusivity, and sustainable growth within our beloved city.",
     },
