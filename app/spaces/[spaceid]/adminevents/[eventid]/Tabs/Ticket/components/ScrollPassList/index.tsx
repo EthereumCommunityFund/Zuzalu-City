@@ -130,7 +130,6 @@ export default function ScrollPassList({
         type="scrollpass"
         regAndAccess={regAndAccess}
         isAvailable={accessRulesAvailable}
-        ticketAddresses={ticketAddresses}
       />
       <RegistrationStatus
         regAndAccess={regAndAccess}
