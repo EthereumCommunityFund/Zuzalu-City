@@ -43,6 +43,10 @@ export const getSpaceEventsQuery = (eventCount: number = 10) => `
                   tagline
                   timezone
                   title
+                  space {
+                    name
+                    avatar
+                  }
                 }
               }
             }

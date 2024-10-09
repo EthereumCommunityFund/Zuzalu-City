@@ -79,6 +79,11 @@ import { ChevronDoubleRightIcon } from './ChevronDoubleRight';
 import { MicrophoneIcon } from './Microphone';
 import { TagIcon } from './Tag';
 import { UserCircleIcon } from './UserCircle';
+import { ScrollPassIcon } from './ScrollPass';
+import { ZuPassIcon } from './ZuPassIcon';
+import { ExclamationCircleIcon } from './ExclamationCircle';
+import { BuildStoreFrontIcon } from './BuildStoreFront';
+import { LottoPGFIcon } from './LottoPGF';
 export {
   HomeIcon,
   SearchIcon,
@@ -161,4 +166,9 @@ export {
   MicrophoneIcon,
   TagIcon,
   UserCircleIcon,
+  ScrollPassIcon,
+  ZuPassIcon,
+  ExclamationCircleIcon,
+  BuildStoreFrontIcon,
+  LottoPGFIcon,
 };

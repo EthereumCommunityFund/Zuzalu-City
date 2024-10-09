@@ -13,6 +13,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
       eventId,
+      id,
       type,
       contractAddress,
       description,
@@ -40,13 +41,19 @@ export async function POST(req: Request) {
       node(id: $id) {
           ... on ZucityEvent {
             id
-            contracts {
-              contractAddress
-              description
-              image_url
-              status
-              type
-              checkin
+            regAndAccess(first:1) {
+              edges {
+                node {
+                  scrollPassTickets {
+                    type
+                    status
+                    checkin
+                    image_url
+                    description
+                    contractAddress
+                  }
+                }
+              }
             }
           }
         }
@@ -58,20 +65,25 @@ export async function POST(req: Request) {
         id: eventId,
       },
     );
+    console.log(getEventResponse);
 
-    const query = `
-            mutation UpdateZucityEvent($i: UpdateZucityEventInput!) {
-            updateZucityEvent(input: $i) {
-            document {
-                id
-            }
+    const Update_QUERY = `
+      mutation UpdateZucityEventRegistrationAndAccessMutation($input: UpdateZucityEventRegistrationAndAccessInput!) {
+        updateZucityEventRegistrationAndAccess(
+          input: $input
+        ) {
+          document {
+            id
+          }
         }
-    }
-    `;
+      }
+      `;
+    const regAndAccess =
+      getEventResponse.data.node.regAndAccess.edges?.[0]?.node;
     const existingContracts: Contract[] = Array.isArray(
-      getEventResponse.data.node.contracts,
+      regAndAccess.scrollPassTickets,
     )
-      ? getEventResponse.data.node.contracts
+      ? regAndAccess.scrollPassTickets
       : [];
     const newContract: Contract = {
       type,
@@ -79,21 +91,22 @@ export async function POST(req: Request) {
       description,
       image_url,
       status,
-      checkin,
+      checkin: checkin ?? '0',
     };
     const updatedContracts: Contract[] = [...existingContracts, newContract];
     const variables = {
-      i: {
-        id: eventId,
+      input: {
+        id,
         content: {
-          contracts: updatedContracts,
+          scrollPassTickets: updatedContracts,
         },
       },
     };
     const updateResult: any = await composeClient.executeQuery(
-      query,
+      Update_QUERY,
       variables,
     );
+    console.log(updateResult);
     return NextResponse.json(
       {
         message: 'Successfully added into member list',

@@ -42,7 +42,6 @@ import {
   FormLabelDesc,
   FormTitle,
 } from '@/components/typography/formTypography';
-import SuperEditor from '@/components/editor/SuperEditor';
 import { PreviewFile } from '@/components';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
@@ -58,10 +57,17 @@ import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/utils/supabase/client';
 import { updateEventKeySupa } from '@/services/event/updateEvent';
+import { createUrlWhenEdit } from '@/services/url';
+import { covertNameToUrlName } from '@/utils/format';
 
 dayjs.extend(timezone);
 
 type FormData = Yup.InferType<typeof schema>;
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 interface Inputs {
   name: string;
@@ -73,6 +79,7 @@ interface Inputs {
 interface PropTypes {
   event?: Event;
   refetch?: () => void;
+  setTabName: (value: string | ((prevVar: string) => string)) => void;
 }
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
@@ -89,7 +96,7 @@ const schema = Yup.object().shape({
   ),
 });
 
-const Overview = ({ event, refetch }: PropTypes) => {
+const Overview = ({ event, refetch, setTabName }: PropTypes) => {
   const { ceramic, profile, composeClient } = useCeramicContext();
   const params = useParams();
   const spaceId = params.spaceid.toString();
@@ -285,6 +292,10 @@ const Overview = ({ event, refetch }: PropTypes) => {
             : dayjs.tz.guess(),
         };
         await updateEventKeySupa(eventUpdateInput);
+        if (inputs.name !== event.title) {
+          const urlName = covertNameToUrlName(inputs.name);
+          await createUrlWhenEdit(urlName, event.id, 'events');
+        }
         refetch?.();
         handleClose();
       } catch (error) {
@@ -860,8 +871,8 @@ const Overview = ({ event, refetch }: PropTypes) => {
     );
   };
   return (
-    <Stack direction="column" spacing={4} padding={'30px'}>
-      <OverviewHeader event={event} />
+    <Stack direction="column" spacing={4} padding="0 30px 30px">
+      <OverviewHeader event={event} setTabName={setTabName} />
       <OverviewDetail
         eventData={event}
         handleEditEvent={() => toggleDrawer('right', true)}

@@ -19,6 +19,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import Image from 'next/image';
 import { ZuButton } from '@/components/core';
+import { formatUserName } from '@/utils/format';
 
 export function formatAddressString(str?: string, maxLength: number = 10) {
   if (!str) return;
@@ -35,13 +36,9 @@ const Header = () => {
   const pathName = usePathname();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const { isAuthenticated, showAuthPrompt, logout, username } =
+  const { isAuthenticated, showAuthPrompt, logout, username, profile } =
     useCeramicContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { address } = useAccount();
-  const ensNameData = useEnsName({
-    address,
-  });
   const { disconnect } = useDisconnect();
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,14 +59,16 @@ const Header = () => {
     handleMenuClose();
   };
 
-  const userName = useMemo(() => {
-    if (address) {
-      return (
-        formatAddressString(ensNameData.data?.toString(), 16) ||
-        formatAddressString(address)
-      );
+  const address = useMemo(() => {
+    if (profile) {
+      const id = profile.author?.id.split(':');
+      return formatAddressString(id?.[id?.length - 1]);
     }
-  }, [address, ensNameData.data]);
+  }, [profile]);
+
+  const formattedName = useMemo(() => {
+    return formatUserName(username);
+  }, [username]);
 
   return (
     <Box
@@ -150,7 +149,7 @@ const Header = () => {
               height={24}
               width={24}
             />
-            {username}
+            {formattedName}
           </Button>
           <Menu
             anchorEl={anchorEl}
@@ -191,7 +190,7 @@ const Header = () => {
                   spacing="4px"
                   flexDirection="column"
                 >
-                  <Typography variant="bodyBB">{userName}</Typography>
+                  <Typography variant="bodyBB">{address}</Typography>
                   <Typography variant="bodyM" color="text.secondary">
                     Wallet Connected
                   </Typography>

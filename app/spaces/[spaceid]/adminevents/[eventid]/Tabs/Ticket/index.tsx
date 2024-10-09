@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { Stack, Box, SwipeableDrawer, Typography } from '@mui/material';
+import { Stack, Box, Typography } from '@mui/material';
 import {
   TicketHeader,
-  TicketList,
-  TicketAdd,
-  TicketAccess,
   InitialSetup,
   TicketSetup,
   CreateTicket,
   TicketCreationSummary,
   ProcessingTicket,
   TicketVault,
+  RegistrationPanel,
+  NoTicketList,
+  ZupassList,
+  ScrollPassList,
 } from './components';
 import { ZuButton } from 'components/core';
-import { useAccount } from 'wagmi';
 import { scroll, scrollSepolia } from 'viem/chains';
 import { waitForTransactionReceipt, writeContract } from 'wagmi/actions';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
@@ -22,7 +22,6 @@ import {
   TICKET_FACTORY_ADDRESS,
   mUSDC_TOKEN,
   mUSDT_TOKEN,
-  ticketFactoryGetContract,
   isDev,
 } from '@/constant';
 import { Address, parseUnits } from 'viem';
@@ -32,52 +31,36 @@ import { TICKET_ABI } from '@/utils/ticket_abi';
 import { ERC20_ABI } from '@/utils/erc20_abi';
 import { TICKET_WITH_WHITELIST_ABI } from '@/utils/ticket_with_whitelist_abi';
 import { useEffect } from 'react';
-import { IEventArg } from '@/app/spaces/[spaceid]/adminevents/page';
 import { Event } from '@/types';
-import { useCeramicContext } from '@/context/CeramicContext';
 import { Abi, AbiItem } from 'viem';
 import { TicketType } from './components/CreateTicket';
-import { Uploader3, SelectedFile } from '@lxdao/uploader3';
+import { SelectedFile } from '@lxdao/uploader3';
 import { updateTicketContract } from '@/services/event/addTicketContract';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import useOpenDraw from '@/hooks/useOpenDraw';
+import Drawer from '@/components/drawer';
+import { TicketingMethod } from './components/types';
+import { useQueryClient } from '@tanstack/react-query';
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
 interface PropTypes {
   event?: Event;
 }
-interface Contract {
-  type?: string;
-  contractAddress?: string;
-  description?: string;
-  image_url?: string;
-  status?: string;
-}
+
 const Ticket = ({ event }: PropTypes) => {
-  const [state, setState] = React.useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
+  const { open, handleOpen, handleClose } = useOpenDraw();
 
-  const toggleDrawer = (anchor: Anchor, open: boolean) => {
-    setState({ ...state, [anchor]: open });
-  };
-
-  const [ticketInfo, setTicketInfo] = React.useState<any>({});
-  const [isTicketFree, setIsTicketFree] = React.useState(false);
-  const [isShowQtyRemaining, setIsShowQtyRemaining] = React.useState(false);
-  const [isHideUntilSetDate, setIsHideUntilSetDate] = React.useState(false);
-  const [isHideAfterSetDate, setIsHideAfterSetDate] = React.useState(false);
-  const [isMintCloseTime, setIsMintCloseTime] = React.useState(false);
-  const [endDate, setEndDate] = React.useState<Dayjs>(dayjs());
-  const [endTime, setEndTime] = React.useState<Dayjs>(dayjs());
-  const [isHideWhenSoldOut, setIsHideWhenSoldOut] = React.useState(false);
-  const [selectedToken, setSelectedToken] = React.useState('USDT');
-  const [selectedType, setSelectedType] = React.useState('Attendee');
-  const [isWhiteList, setIsWhiteList] = React.useState(false);
-  const { ceramic, composeClient, profile } = useCeramicContext();
-  const [creatingImage, setCreatingImage] = React.useState('');
+  const [ticketInfo, setTicketInfo] = useState<any>({});
+  const [isTicketFree, setIsTicketFree] = useState(false);
+  const [isShowQtyRemaining, setIsShowQtyRemaining] = useState(false);
+  const [isHideUntilSetDate, setIsHideUntilSetDate] = useState(false);
+  const [isHideAfterSetDate, setIsHideAfterSetDate] = useState(false);
+  const [isMintCloseTime, setIsMintCloseTime] = useState(false);
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+  const [endTime, setEndTime] = useState<Dayjs>(dayjs());
+  const [isHideWhenSoldOut, setIsHideWhenSoldOut] = useState(false);
+  const [selectedToken, setSelectedToken] = useState('USDT');
+  const [selectedType, setSelectedType] = useState('Attendee');
+  const [isWhiteList, setIsWhiteList] = useState(false);
   const handleChange = (e: any) => {
     const { name, value } = e.target;
 
@@ -87,22 +70,24 @@ const Ticket = ({ event }: PropTypes) => {
     });
   };
 
-  const [isConfirm, setIsConfirm] = React.useState(false);
-  const [isNext, setIsNext] = React.useState(false);
-  const [isTicket, setIsTicket] = React.useState(false);
-  const [goToSummary, setGoToSummary] = React.useState(false);
-  const [purchasingTicket, setPurchasingTicket] = React.useState(false);
-  const [toggleAction, setToggleAction] = React.useState('CreateTicket');
-  const [txnHash, setTxnHash] = React.useState('');
-  const [selectedFile, setSelectedFile] = React.useState<string | null>(null);
-  const [previewImage, setPreviewImage] = React.useState<string | null>(null);
-  const [ticketImage, setTicketImage] = React.useState<SelectedFile>();
-  const [ticketImageURL, setTicketImageURL] = React.useState<string>();
-  const [ticketMintDeadline, setTicketMintDeadline] =
-    React.useState<Dayjs | null>(dayjs());
-  const [vaultIndex, setVaultIndex] = React.useState<number>(0);
+  const [isConfirm, setIsConfirm] = useState(false);
+  const [isNext, setIsNext] = useState(false);
+  const [isTicket, setIsTicket] = useState(false);
+  const [goToSummary, setGoToSummary] = useState(false);
+  const [purchasingTicket, setPurchasingTicket] = useState(false);
+  const [toggleAction, setToggleAction] = useState('CreateTicket');
+  const [txnHash, setTxnHash] = useState('');
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [ticketImage, setTicketImage] = useState<SelectedFile>();
+  const [ticketImageURL, setTicketImageURL] = useState<string>();
+  const [ticketMintDeadline, setTicketMintDeadline] = useState<Dayjs | null>(
+    dayjs(),
+  );
+  const [vaultIndex, setVaultIndex] = useState<number>(0);
   const [blockClickModal, setBlockClickModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
   const handleFileChange = (event: { target: { files: any[] } }) => {
     const file = event.target.files[0];
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
@@ -119,13 +104,15 @@ const Ticket = ({ event }: PropTypes) => {
     }
   };
 
-  const [isSubmitLoading, setIsSubmitLoading] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [tickets, setTickets] = React.useState<Array<any>>([]);
-  const [ticketAddresses, setTicketAddresses] = React.useState<Array<string>>(
-    [],
-  );
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [tickets, setTickets] = useState<Array<any>>([]);
+  const [ticketAddresses, setTicketAddresses] = useState<Array<string>>([]);
   const initialWhitelist = ['0x0000000000000000000000000000000000000000'];
+
+  const regAndAccess = event?.regAndAccess.edges?.[0]?.node;
+  const queryClient = useQueryClient();
+
   const updateEventContract = async (
     type: string,
     contractAddress: string,
@@ -140,6 +127,7 @@ const Ticket = ({ event }: PropTypes) => {
       description: description,
       image_url: image_url,
       status: status,
+      id: regAndAccess?.id,
     };
     try {
       setBlockClickModal(true);
@@ -188,7 +176,7 @@ const Ticket = ({ event }: PropTypes) => {
         functionName: 'createNewTicket',
         args: isWhiteList
           ? [
-              event?.contractID,
+              regAndAccess?.scrollPassContractFactoryID,
               ticketInfo?.ticketName,
               selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
               convertDateToEpoch(ticketMintClose),
@@ -199,7 +187,7 @@ const Ticket = ({ event }: PropTypes) => {
               initialWhitelist,
             ]
           : [
-              event?.contractID,
+              regAndAccess?.scrollPassContractFactoryID,
               ticketInfo?.ticketName,
               selectedToken === 'USDT' ? mUSDT_TOKEN : mUSDC_TOKEN,
               convertDateToEpoch(ticketMintClose),
@@ -219,13 +207,11 @@ const Ticket = ({ event }: PropTypes) => {
         });
 
       if (createTicketStatus === 'success') {
-        const defaultPreviewImage =
-          'https://unsplash.com/photos/a-small-yellow-boat-floating-on-top-of-a-lake-HONnVkEnzDo';
-        const previewImageToUse = ticketImageURL ?? defaultPreviewImage;
+        const previewImageToUse = ticketImageURL ?? '';
 
         if (createTicketLogs.length > 0) {
           const newContractAddress = createTicketLogs[0].address;
-          updateEventContract(
+          await updateEventContract(
             selectedType,
             newContractAddress?.toString(),
             ticketInfo?.description,
@@ -236,6 +222,9 @@ const Ticket = ({ event }: PropTypes) => {
           setGoToSummary(false);
         }
       }
+      queryClient.invalidateQueries({
+        queryKey: ['fetchEventById'],
+      });
       await readFromContract();
       setIsSubmitLoading(false);
     } catch (error) {
@@ -245,6 +234,7 @@ const Ticket = ({ event }: PropTypes) => {
   };
 
   const readFromContract = async () => {
+    if (!regAndAccess?.scrollPassContractFactoryID) return;
     try {
       setIsLoading(true);
 
@@ -252,7 +242,7 @@ const Ticket = ({ event }: PropTypes) => {
         address: TICKET_FACTORY_ADDRESS as Address,
         abi: TICKET_FACTORY_ABI as Abi,
         functionName: 'getTickets',
-        args: [event?.contractID],
+        args: [regAndAccess?.scrollPassContractFactoryID],
       })) as Array<string>;
 
       setTicketAddresses(getTicketAddresses);
@@ -350,10 +340,10 @@ const Ticket = ({ event }: PropTypes) => {
     readFromContract();
   }, []);
 
-  const list = (anchor: Anchor) => (
+  const list = () => (
     <Box
       sx={{
-        width: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+        width: '700px',
         backgroundColor: '#222222',
       }}
       role="presentation"
@@ -369,7 +359,8 @@ const Ticket = ({ event }: PropTypes) => {
       >
         <ZuButton
           onClick={() => {
-            toggleDrawer('right', false), setIsConfirm(false);
+            handleClose();
+            setIsConfirm(false);
             setGoToSummary(false);
             setPurchasingTicket(false);
             setIsNext(false);
@@ -479,17 +470,17 @@ const Ticket = ({ event }: PropTypes) => {
         !isTicket && (
           <ProcessingTicket
             setPurchasingTicket={setPurchasingTicket}
-            toggleDrawer={toggleDrawer}
+            toggleDrawer={handleClose}
             isSubmitLoading={isSubmitLoading}
             txnHash={txnHash}
           />
         )}
     </Box>
   );
-  const vault = (anchor: Anchor) => (
+  const vault = () => (
     <Box
       sx={{
-        maxWidth: anchor === 'top' || anchor === 'bottom' ? 'auto' : '700px',
+        maxWidth: '700px',
         backgroundColor: '#222222',
       }}
       role="presentation"
@@ -503,7 +494,7 @@ const Ticket = ({ event }: PropTypes) => {
         borderBottom="1px solid #383838"
         paddingX={3}
       >
-        <ZuButton onClick={() => toggleDrawer('right', false)}>Close</ZuButton>
+        <ZuButton onClick={handleClose}>Close</ZuButton>
         <Typography marginLeft={'14px'} fontSize="18px" fontWeight="bold">
           Create Ticket
         </Typography>
@@ -518,7 +509,7 @@ const Ticket = ({ event }: PropTypes) => {
   );
 
   return (
-    <Stack spacing={2}>
+    <Stack direction="column" spacing={4} padding="0 30px 30px">
       <Dialog
         title="Created"
         message="Your new NFT ticket is created."
@@ -536,48 +527,35 @@ const Ticket = ({ event }: PropTypes) => {
         title="Updating"
         message="Please wait while the data is being updated..."
       />
-      <TicketHeader event={event} visible={event?.contractID === null} />
-      {isLoading ? (
-        <Box>
-          <Typography>Loading...</Typography>
-        </Box>
-      ) : tickets.length > 0 ? (
-        <TicketList
+      {<TicketHeader regAndAccess={regAndAccess} />}
+      {!regAndAccess && <RegistrationPanel registered={false} />}
+      {regAndAccess?.ticketType === TicketingMethod.NoTicketing && (
+        <NoTicketList regAndAccess={regAndAccess} />
+      )}
+      {regAndAccess?.ticketType === TicketingMethod.ZuPass && (
+        <ZupassList regAndAccess={regAndAccess} />
+      )}
+      {regAndAccess?.ticketType === TicketingMethod.ScrollPass && (
+        <ScrollPassList
+          ticketsIsLoading={isLoading}
+          regAndAccess={regAndAccess}
           setVaultIndex={setVaultIndex}
           ticketAddresses={ticketAddresses}
           tickets={tickets}
           setToggleAction={setToggleAction}
-          onToggle={toggleDrawer}
+          onToggle={handleOpen}
+          event={event!}
           eventContracts={event?.contracts ? event.contracts : []}
         />
-      ) : (
-        <TicketAdd
-          onToggle={toggleDrawer}
-          setToggleAction={setToggleAction}
-          visible={event?.contractID !== null}
-        />
       )}
-      <TicketAccess />
-      <SwipeableDrawer
-        hideBackdrop={true}
-        sx={{
-          '& .MuiDrawer-paper': {
-            marginTop: '50px',
-            height: 'calc(100% - 35px)',
-            boxShadow: 'none',
-          },
-        }}
-        anchor="right"
-        open={state['right']}
-        onClose={() => toggleDrawer('right', false)}
-        onOpen={() => toggleDrawer('right', true)}
-      >
+      {/* <TicketAccess /> */}
+      <Drawer open={open} onOpen={handleOpen} onClose={handleClose}>
         {toggleAction === 'CreateTicket'
-          ? list('right')
+          ? list()
           : toggleAction === 'ViewVault'
-            ? vault('right')
+            ? vault()
             : null}
-      </SwipeableDrawer>
+      </Drawer>
     </Stack>
   );
 };

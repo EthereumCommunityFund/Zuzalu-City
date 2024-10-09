@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
   Stack,
@@ -70,6 +70,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
+import { formatUserName } from '@/utils/format';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -194,7 +195,7 @@ const Home = () => {
           `
         query MyQuery($id: ID!) {
           node (id: $id) {
-            ...on zucityEvent {
+            ...on ZucityEvent {
               createdAt
               description
               endTime
@@ -804,6 +805,7 @@ const Home = () => {
           await authenticate();
         }
         const adminId = ceramic?.did?.parent.toString().toLowerCase() || '';
+        console.log(adminId, superadmins, admins, members);
         if (!adminId) {
           setDialogTitle('You are not logged in');
           setDialogMessage('Please login and refresh the page');
@@ -1841,6 +1843,17 @@ const Home = () => {
     };
   }, []);
 
+  const isInTime = useMemo(() => {
+    return (
+      dayjs(session?.startTime)
+        .tz(eventData?.timezone)
+        .isBefore(dayjs().tz(eventData?.timezone)) &&
+      dayjs(session?.endTime)
+        .tz(eventData?.timezone)
+        .isAfter(dayjs().tz(eventData?.timezone))
+    );
+  }, [session?.startTime, session?.endTime, eventData?.timezone]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Dialog
@@ -2036,16 +2049,18 @@ const Home = () => {
                 <Stack padding={!isMobile ? '20px' : '0 0 20px'} spacing="20px">
                   <Stack spacing="10px">
                     <Box flex={1}>
-                      <Typography
-                        bgcolor="#7DFFD11A"
-                        padding="4px 8px"
-                        color="#7DFFD1"
-                        variant="bodyX"
-                        borderRadius="2px"
-                        marginRight="10px"
-                      >
-                        · LIVE
-                      </Typography>
+                      {isInTime ? (
+                        <Typography
+                          bgcolor="#7DFFD11A"
+                          padding="4px 8px"
+                          color="#7DFFD1"
+                          variant="bodyX"
+                          borderRadius="2px"
+                          marginRight="10px"
+                        >
+                          · LIVE
+                        </Typography>
+                      ) : null}
                       <Typography
                         bgcolor="rgba(255, 255, 255, 0.06)"
                         padding="4px 8px"
@@ -2129,7 +2144,7 @@ const Home = () => {
                               src={speaker.avatar || '/user/avatar_p.png'}
                             />
                             <Typography variant="bodyB">
-                              {speaker.username}
+                              {formatUserName(speaker.username)}
                             </Typography>
                           </Stack>
                         ),
@@ -2179,7 +2194,9 @@ const Home = () => {
                       By:
                     </Typography>
                     <Typography variant="bodyS" sx={{ opacity: 0.8 }}>
-                      {JSON.parse(session.organizers)[0].username}
+                      {formatUserName(
+                        JSON.parse(session.organizers)[0].username,
+                      )}
                     </Typography>
                   </Stack>
                   <Stack spacing="10px">
@@ -2295,7 +2312,9 @@ const Home = () => {
                         Last Edited By:
                       </Typography>
                       <Typography variant="bodyS">
-                        {JSON.parse(session.organizers)[0].username}
+                        {formatUserName(
+                          JSON.parse(session.organizers)[0].username,
+                        )}
                       </Typography>
                       <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                         {formatDateAgo(session.createdAt)}
@@ -2306,7 +2325,9 @@ const Home = () => {
                         Edited By:
                       </Typography>
                       <Typography variant="bodyS">
-                        {JSON.parse(session.organizers)[0].username}
+                        {formatUserName(
+                          JSON.parse(session.organizers)[0].username,
+                        )}
                       </Typography>
                       <Typography variant="bodyS" sx={{ opacity: 0.5 }}>
                         {formatDateAgo(session.createdAt)}
@@ -2383,7 +2404,7 @@ const Home = () => {
                             src={organizer.avatar || '/user/avatar_p.png'}
                           />
                           <Typography variant="bodyS">
-                            {organizer.username}
+                            {formatUserName(organizer.username)}
                           </Typography>
                         </Stack>
                       ),
@@ -2414,7 +2435,7 @@ const Home = () => {
                             src={speaker.avatar || '/user/avatar_p.png'}
                           />
                           <Typography variant="bodyS">
-                            {speaker.username}
+                            {formatUserName(speaker.username)}
                           </Typography>
                         </Stack>
                       ),

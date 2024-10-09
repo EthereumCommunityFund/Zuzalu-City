@@ -2,19 +2,22 @@
 import React, { useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 import { Thumbnail, Subbar } from './components';
-import { About, Sessions } from './tabs';
+import { About, Sessions, Announcements } from './tabs';
 import { CeramicResponseType, EventEdge, Event } from '@/types';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
+
 const Home = () => {
   const [tabName, setTabName] = useState('About');
   const params = useParams();
   const [eventData, setEventData] = useState<Event>();
   const { composeClient, ceramic } = useCeramicContext();
   const [sessionView, setSessionView] = useState<boolean>(false);
+  const [announcementsEdit, setAnnouncementsEdit] = useState<boolean>(false);
   const [verify, setVerify] = useState<boolean>(false);
   const eventId = params.eventid.toString();
   const [urlOption, setUrlOption] = useState<string>('');
+
   const getEventDetailInfo = async () => {
     try {
       const response: CeramicResponseType<EventEdge> =
@@ -96,30 +99,39 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const eventDetails = await getEventDetailInfo();
-        const admins =
-          eventDetails?.admins?.map((admin) => admin.id.toLowerCase()) || [];
-        const superadmins =
-          eventDetails?.superAdmin?.map((superAdmin) =>
-            superAdmin.id.toLowerCase(),
-          ) || [];
-        const members =
-          eventDetails?.members?.map((member) => member.id.toLowerCase()) || [];
         const userDID = ceramic?.did?.parent.toString().toLowerCase() || '';
-        if (
-          superadmins.includes(userDID) ||
-          admins.includes(userDID) ||
-          members.includes(userDID)
-        ) {
-          setSessionView(true);
-        }
-        if (sessionStorage.getItem('tab')) {
-          setTabName(sessionStorage.getItem('tab') as string);
-          setUrlOption(sessionStorage.getItem('option') as string);
+
+        const {
+          admins = [],
+          superAdmin = [],
+          members = [],
+        } = eventDetails || {};
+        const lowerCaseIds = (arr: any[]) =>
+          (arr || []).map((item) => item.id.toLowerCase());
+
+        const adminIds = lowerCaseIds(admins);
+        const superAdminIds = lowerCaseIds(superAdmin);
+        const memberIds = lowerCaseIds(members);
+
+        console.log(superAdminIds, adminIds, memberIds, userDID);
+        setAnnouncementsEdit(
+          superAdminIds.includes(userDID) || adminIds.includes(userDID),
+        );
+        setSessionView(
+          superAdminIds.includes(userDID) ||
+            adminIds.includes(userDID) ||
+            memberIds.includes(userDID),
+        );
+
+        const storedTab = sessionStorage.getItem('tab');
+        if (storedTab) {
+          setTabName(storedTab);
+          setUrlOption(sessionStorage.getItem('option') || '');
           sessionStorage.setItem('tab', '');
           sessionStorage.setItem('option', '');
         }
       } catch (err) {
-        console.log(err);
+        console.error('Error:', err);
       }
     };
     fetchData();
@@ -138,6 +150,13 @@ const Home = () => {
       )}
       {tabName === 'Sessions' && (
         <Sessions eventData={eventData} option={urlOption} />
+      )}
+      {tabName === 'Announcements' && (
+        <Announcements
+          eventData={eventData}
+          setVerify={setVerify}
+          canEdit={announcementsEdit}
+        />
       )}
     </Stack>
   );

@@ -1,17 +1,29 @@
 import { styled, SwitchProps, Switch } from '@mui/material';
 
-const ZuSwitch = styled((props: SwitchProps) => (
-  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-))(({ theme }) => ({
-  width: 42,
-  height: 26,
+interface ZuSwitchProps extends SwitchProps {
+  width?: number;
+  height?: number;
+}
+
+const ZuSwitch = styled((props: ZuSwitchProps) => {
+  const { width, height, ...otherProps } = props;
+  return (
+    <Switch
+      focusVisibleClassName=".Mui-focusVisible"
+      disableRipple
+      {...otherProps}
+    />
+  );
+})(({ theme, width = 42, height = 26 }) => ({
+  width,
+  height,
   padding: 0,
   '& .MuiSwitch-switchBase': {
     padding: 0,
     margin: 2,
     transitionDuration: '300ms',
     '&.Mui-checked': {
-      transform: 'translateX(16px)',
+      transform: `translateX(${width - height + 2}px)`,
       color: '#fff',
       '& + .MuiSwitch-track': {
         backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#58A68B',
@@ -38,11 +50,11 @@ const ZuSwitch = styled((props: SwitchProps) => (
   },
   '& .MuiSwitch-thumb': {
     boxSizing: 'border-box',
-    width: 22,
-    height: 22,
+    width: height - 4,
+    height: height - 4,
   },
   '& .MuiSwitch-track': {
-    borderRadius: 26 / 2,
+    borderRadius: height / 2,
     backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
     opacity: 1,
     transition: theme.transitions.create(['background-color'], {

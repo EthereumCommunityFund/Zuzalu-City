@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 import { ZupassProvider } from '@/context/ZupassContext';
 import '@/utils/yupExtensions';
 import Dialog from '@/app/spaces/components/Modal/Dialog';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,7 @@ function RootLayout({
   children: React.ReactNode;
 }>) {
   const [isClient, setIsClient] = useState(false);
-  const [show, setShow] = useState(true);
+  // const [show, setShow] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
@@ -51,9 +52,10 @@ function RootLayout({
                 <WalletProvider>
                   <ZupassProvider>
                     <AppContextProvider>
+                      <ReactQueryDevtools initialIsOpen={false} />
                       <Header />
                       {isClient && <AuthPrompt />}
-                      {isClient && (
+                      {/* {isClient && (
                         <Dialog
                           title="Upgrading Ceramic Node"
                           message="We are currently upgrading our Ceramic node. Some data may be temporarily unavailable or inconsistent. We apologize for any inconvenience."
@@ -61,7 +63,7 @@ function RootLayout({
                           onClose={() => setShow(false)}
                           onConfirm={() => setShow(false)}
                         />
-                      )}
+                      )} */}
                       <div style={{ minHeight: `calc(100vh - 50px)` }}>
                         {children}
                       </div>

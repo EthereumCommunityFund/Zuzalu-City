@@ -310,7 +310,6 @@ const About: React.FC<IAbout> = ({ eventData, setVerify }) => {
           direction="row"
           justifyContent={'center'}
           gap={'10px'}
-          paddingTop={'40px'}
           sx={{
             [breakpoints.down('md')]: {
               flexDirection: 'column',

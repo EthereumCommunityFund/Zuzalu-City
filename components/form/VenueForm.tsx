@@ -190,15 +190,7 @@ const VenueForm = ({ event, venue, refetch, handleClose }: IVenue) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box
-        sx={{
-          width: '100%',
-          backgroundColor: '#222222',
-        }}
-        role="presentation"
-        zIndex="100"
-        borderLeft="1px solid #383838"
-      >
+      <Box>
         <Dialog
           title="Space Updated"
           message="Please view it."

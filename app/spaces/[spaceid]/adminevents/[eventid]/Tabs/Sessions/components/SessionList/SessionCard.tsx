@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Stack,
@@ -17,6 +17,7 @@ import { Session } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { formatUserName } from '@/utils/format';
 interface SessionCardProps {
   session: Session;
   eventId: string;
@@ -219,6 +220,15 @@ const SessionCard: React.FC<SessionCardProps> = ({
               · LIVE
             </Typography>
           )}
+          <Typography
+            bgcolor="rgba(255, 255, 255, 0.05)"
+            padding="2px 4px"
+            color="#fff"
+            variant="bodyX"
+            borderRadius="2px"
+          >
+            {session.format === 'person' ? 'IRL' : 'ONLINE'}
+          </Typography>
           <Typography variant="caption" textTransform="uppercase">
             {session.track}
           </Typography>
@@ -250,7 +260,9 @@ const SessionCard: React.FC<SessionCardProps> = ({
                       borderRadius={10}
                       src={speaker.avatar || '/user/avatar_p.png'}
                     />
-                    <Typography variant="bodyS">{speaker.username}</Typography>
+                    <Typography variant="bodyS">
+                      {formatUserName(speaker.username)}
+                    </Typography>
                   </Stack>
                 ),
               )

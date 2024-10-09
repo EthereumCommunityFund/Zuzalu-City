@@ -56,13 +56,17 @@ import SelectCategories from '@/components/select/selectCategories';
 import ZuAutoCompleteInput from '@/components/input/ZuAutocompleteInput';
 import SelectSearchUser from '@/components/select/selectSearchUser';
 import { supaCreateSession } from '@/services/session';
-import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import { v4 as uuidv4 } from 'uuid';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isBetween);
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 const Sessions = () => {
   const params = useParams();
@@ -1307,7 +1311,7 @@ const Sessions = () => {
   };
 
   return (
-    <Stack direction={'column'} gap={6} padding={'30px'}>
+    <Stack direction={'column'} gap={6} padding="0 30px 30px">
       <SessionHeader onToggle={toggleDrawer} />
       <SessionList
         sessions={sessions}

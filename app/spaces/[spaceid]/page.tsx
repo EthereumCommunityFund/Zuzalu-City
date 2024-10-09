@@ -39,6 +39,9 @@ import {
 import { ChevronUpIcon } from '@/components/icons/ChevronUp';
 import dynamic from 'next/dynamic';
 import { getSpaceEventsQuery } from '@/services/space';
+import { useQuery } from '@tanstack/react-query';
+import { getUrlFromIdAndName } from '@/services/url';
+import useGetShareLink from '@/hooks/useGetShareLink';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -61,6 +64,9 @@ export default function SpaceDetailPage() {
   const [currentHref, setCurrentHref] = useState('');
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  const spaceId = params.spaceid.toString();
+  const { shareUrl } = useGetShareLink({ id: spaceId, name: space?.name });
 
   const getSpaceByID = async () => {
     setIsEventsLoading(true);
@@ -248,7 +254,7 @@ export default function SpaceDetailPage() {
               {/*  icon={<PlusCircleIcon />}*/}
               {/*/>*/}
               <CopyToClipboard
-                text={currentHref}
+                text={shareUrl || currentHref}
                 onCopy={() => {
                   setShowCopyToast(true);
                 }}

@@ -5,11 +5,12 @@ import {
   ThreeVerticalIcon,
   CheckCircleIcon,
   EyeSlashIcon,
+  CheckIcon,
 } from 'components/icons';
 import Image from 'next/image';
 import { shortenAddress } from '@/utils/format';
 import { mUSDC_TOKEN } from '@/constant';
-import { Contract } from '@/types';
+import { Contract, RegistrationAndAccess } from '@/types';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 export type TicketCardProps = {
@@ -27,6 +28,7 @@ export type TicketCardProps = {
   setVaultIndex?: React.Dispatch<React.SetStateAction<number>>;
   onToggle?: (anchor: Anchor, open: boolean) => void;
   eventContract?: Contract;
+  regAndAccess?: RegistrationAndAccess;
 };
 
 const TicketCard: React.FC<TicketCardProps> = ({
@@ -44,15 +46,24 @@ const TicketCard: React.FC<TicketCardProps> = ({
   setToggleAction,
   eventContract,
   onToggle = (anchor: Anchor, open: boolean) => {},
+  regAndAccess,
 }) => {
   const isMobile = useMediaQuery('(max-width:500px)');
   let status = true;
+
+  const currentTicket = regAndAccess?.scrollPassTickets?.find(
+    (ticket) =>
+      ticket.contractAddress.toLowerCase() ===
+      ticketAddresses[index].toLowerCase(),
+  );
+  const isChecked = currentTicket?.checkin === '1';
+
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
-      spacing={2.5}
-      borderRadius={2}
-      padding={1.5}
+      spacing="10px"
+      borderRadius="10px"
+      padding="10px"
       bgcolor="#2d2d2d"
       sx={{ cursor: 'pointer' }}
       onClick={() => {
@@ -73,19 +84,42 @@ const TicketCard: React.FC<TicketCardProps> = ({
           height: isMobile ? '100%' : undefined,
         }}
       />
-      <Stack direction="column" spacing={1}>
+      <Stack direction="column" spacing="14px" width="100%">
         <Stack
-          gap={1}
-          direction={{ xs: 'column', sm: 'row' }}
+          direction="row"
           alignItems="center"
+          justifyContent="space-between"
         >
-          <Typography variant="h5" color="white">
-            {ticket[0]?.result}
-          </Typography>{' '}
-          <Typography classes="subtitle2" color="white">
-            {(ticket[3].result / BigInt(10 ** 18)).toString()}{' '}
-            {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
-          </Typography>
+          <Stack
+            gap="10px"
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems="center"
+          >
+            <Typography fontSize={24} fontWeight={700} lineHeight={1.2}>
+              {ticket[0]?.result}
+            </Typography>
+            <Stack direction="row" alignItems="center" spacing="5px">
+              <Typography
+                fontSize={16}
+                fontWeight={700}
+                lineHeight={1.2}
+                sx={{ opacity: 0.7 }}
+              >
+                {(ticket[3].result / BigInt(10 ** 18)).toString()}{' '}
+              </Typography>
+              <Typography fontSize={10} lineHeight={1.2} sx={{ opacity: 0.7 }}>
+                {ticket[2]?.result === mUSDC_TOKEN ? 'USDC' : 'USDT'}
+              </Typography>
+            </Stack>
+          </Stack>
+          {isChecked && (
+            <Stack spacing="5px" alignItems="center" direction="row">
+              <CheckIcon size={4} />
+              <Typography fontSize={10} lineHeight={1.2} sx={{ opacity: 0.7 }}>
+                CHECK-IN ENABLED
+              </Typography>
+            </Stack>
+          )}
         </Stack>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
@@ -95,32 +129,29 @@ const TicketCard: React.FC<TicketCardProps> = ({
           <Stack
             direction="row"
             alignItems="center"
-            padding="4px 10px"
-            spacing={1}
-            borderRadius={3}
-            sx={{ backgroundColor: '#384A44' }}
+            padding="3px 6px"
+            spacing="6px"
+            borderRadius="10px"
+            sx={{ backgroundColor: 'rgba(125, 255, 209, 0.10)' }}
           >
             {status ? (
-              <CheckCircleIcon color="#65C0A0" />
+              <CheckCircleIcon color="#7DFFD1" size={5} />
             ) : (
-              <EyeSlashIcon color="#C09965" />
+              <EyeSlashIcon color="#C09965" size={5} />
             )}
-            <Typography color={status ? '#65C0A0' : '#C09965'}>
-              {status ? 'Available' : 'Hidden'}
-            </Typography>
             <Typography
-              style={{ marginLeft: '1px' }}
-              color={status ? '#65C0A0' : '#C09965'}
+              color={status ? '#7DFFD1' : '#C09965'}
+              fontSize={13}
+              lineHeight={1.4}
             >
-              :
-            </Typography>
-            <Typography color={status ? '#65C0A0' : '#C09965'}>
-              To All
+              {status ? 'Available' : 'Hidden'}: To All
             </Typography>
           </Stack>
-          <Typography>Sold: {String(ticket[4]?.result)}</Typography>
+          <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.7 }}>
+            Sold: {String(ticket[4]?.result)}
+          </Typography>
         </Stack>
-        <Typography variant="caption">
+        <Typography fontSize={10} lineHeight={1.2} sx={{ opacity: 0.5 }}>
           ADDRESS: {shortenAddress(ticketAddresses[index])}
         </Typography>
       </Stack>

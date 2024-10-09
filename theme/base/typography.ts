@@ -170,8 +170,7 @@ export const Typography: TypographyOptions = {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightBold,
     fontSize: '14px',
-    lineHeight: 1.4,
-    letterSpacing: '0.00938em',
+    lineHeight: 1.6,
   },
 
   bodyM: {
@@ -289,7 +288,6 @@ export const Typography: TypographyOptions = {
     fontFamily: baseProperties.fontFamily,
     fontWeight: baseProperties.fontWeightRegular,
     fontSize: '10px',
-    lineHeight: 1.66,
-    letterSpacing: '0.03333em',
+    lineHeight: 1.2,
   },
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SwipeableDrawer } from '@mui/material';
+import { Box, SwipeableDrawer, useTheme } from '@mui/material';
 
 interface EventDrawerProps {
   open: boolean;
@@ -14,6 +14,7 @@ const EventDrawer: React.FC<EventDrawerProps> = ({
   onOpen,
   children,
 }) => {
+  const breakpoints = useTheme().breakpoints;
   return (
     <SwipeableDrawer
       hideBackdrop={true}
@@ -22,19 +23,26 @@ const EventDrawer: React.FC<EventDrawerProps> = ({
       onClose={onClose}
       onOpen={onOpen}
       sx={{
-        position: 'relative',
-        zIndex: 3,
         '& .MuiDrawer-paper': {
-          marginTop: '50px',
-          height: 'calc(100% - 50px)',
-          width: '768px',
-          boxShadow: 'none',
-          backgroundColor: 'transparent',
-          paddingLeft: '80px', // WARNING:!! Leave space for editorjs to operate, DONT DELETE
+          background: '#222',
+          borderLeft: '1px solid #383838',
         },
       }}
     >
-      {children}
+      <Box
+        sx={{
+          width: '700px',
+          [breakpoints.down('sm')]: {
+            width: '100vw',
+            borderLeft: 'none',
+          },
+        }}
+        role="presentation"
+        zIndex="100"
+        borderLeft="1px solid #383838"
+      >
+        {children}
+      </Box>
     </SwipeableDrawer>
   );
 };

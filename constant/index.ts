@@ -112,6 +112,20 @@ export const VENUE_TAGS: {
   },
 ];
 
+export const POST_TAGS: {
+  value: string;
+  label: string;
+}[] = [
+  {
+    value: 'updates',
+    label: 'Updates',
+  },
+  {
+    value: 'policy',
+    label: 'Policy',
+  },
+];
+
 export const SOCIAL_TYPES: {
   key: string;
   value: string;

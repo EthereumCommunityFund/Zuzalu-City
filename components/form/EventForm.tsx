@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
+import Yup from '@/utils/yupExtensions';
 import {
   Box,
   Typography,
@@ -17,7 +17,6 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimezoneSelector } from '@/components/select/TimezoneSelector';
-import SuperEditor from '@/components/editor/SuperEditor';
 import { useEditorStore } from '@/components/editor/useEditorStore';
 import { ZuButton, ZuInput } from 'components/core';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -40,6 +39,13 @@ import FormHeader from './FormHeader';
 import FormatCheckboxGroup from './FormatCheckbox';
 import FormUploader from './FormUploader';
 import { PlusIcon } from '../icons';
+import { covertNameToUrlName } from '@/utils/format';
+import { createUrl } from '@/services/url';
+
+import dynamic from 'next/dynamic';
+const SuperEditor = dynamic(() => import('@/components/editor/SuperEditor'), {
+  ssr: false,
+});
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Event name is required'),
@@ -225,6 +231,8 @@ export const EventForm: React.FC<EventFormProps> = ({
 
         const response = await createEventKeySupa(eventCreationInput);
         if (response.status === 200) {
+          const urlName = covertNameToUrlName(data.name);
+          await createUrl(urlName, response.data.data.eventId, 'events');
           setShowModal(true);
         }
       } catch (err) {
@@ -262,15 +270,7 @@ export const EventForm: React.FC<EventFormProps> = ({
         title="Creating Event"
         message="Please wait while the event is being created..."
       />
-      <Box
-        sx={{
-          width: '100%',
-          backgroundColor: '#222222',
-        }}
-        role="presentation"
-        zIndex="10"
-        borderLeft="1px solid #383838"
-      >
+      <Box>
         <FormHeader title="Create Event" handleClose={handleClose} />
         <Box display="flex" flexDirection="column" gap="20px" padding={3}>
           <Box bgcolor="#262626" borderRadius="10px">

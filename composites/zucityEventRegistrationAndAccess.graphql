@@ -1,0 +1,59 @@
+type ZucityEventRegistrationAndAccess
+  @createModel(
+    accountRelation: LIST
+    description: "Event registration and access for Zuzalu.city beta version"
+  ) {
+  author: DID! @documentAccount
+  profileId: StreamID! @documentReference(model: "ZucityProfile")
+  profile: ZucityProfile! @relationDocument(property: "profileId")
+  eventId: StreamID! @documentReference(model: "ZucityEvent")
+  event: ZucityEvent! @relationDocument(property: "eventId")
+  zuPassInfo: [ZuPass] @list(maxLength: 10000)
+  scrollPassTickets: [ScrollPassTicket] @list(maxLength: 1000)
+  scrollPassContractFactoryID: Int
+  zuLottoInfo: [ZuLotto] @list(maxLength: 10000)
+  customAttributes: [TBD] @list(maxLength: 10000)
+  registrationAccess: String @string(minLength: 1, maxLength: 1000)
+  registrationWhitelist: [DID!] @list(maxLength: 10000)
+  ticketType: String @string(minLength: 1, maxLength: 1000)
+  applyRule: String @string(minLength: 1, maxLength: 1000)
+  applyOption: String @string(minLength: 1, maxLength: 1000)
+  registrationOpen: String @string(minLength: 1, maxLength: 1000)
+  checkinOpen: String @string(minLength: 1, maxLength: 1000)
+  applicationForm: String @string(minLength: 1, maxLength: 10000)
+}
+
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  id: ID!
+}
+
+type ZucityProfile @loadModel(id: "$Profile_ID") {
+  id: ID!
+}
+
+type ScrollPassTicket {
+  type: String! @string(minLength: 1, maxLength: 200)
+  contractAddress: String! @string(maxLength: 1000)
+  description: String! @string(maxLength: 1000)
+  image_url: String! @string(maxLength: 1000)
+  status: String! @string(maxLength: 1000)
+  checkin: String! @string(maxLength: 1000)
+  tbd: String @string(maxLength: 1000)
+}
+
+type ZuPass {
+  eventId: String @string(minLength: 1, maxLength: 1000)
+  eventName: String @string(minLength: 1, maxLength: 1000)
+  registration: String @string(minLength: 1, maxLength: 1000)
+  access: String @string(minLength: 1, maxLength: 1000)
+}
+
+type ZuLotto {
+  name: String! @string(minLength: 1, maxLength: 1000)
+  description: String @string(minLength: 1, maxLength: 1000)
+  contractAddress: String! @string(minLength: 1, maxLength: 1000)
+}
+
+type TBD {
+  tbd: String @string(minLength: 1, maxLength: 10000)
+}

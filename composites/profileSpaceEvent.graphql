@@ -6,9 +6,14 @@ type ZucitySpace @loadModel(id: "$Space_ID") {
   id: ID!
 }
 
+type ZucityApplicationForm @loadModel(id: "$ApplicationForm_ID") {
+  id: ID!
+}
 type ZucityProfile @loadModel(id: "$Profile_ID") {
   events: [ZucityEvent]
     @relationFrom(model: "ZucityEvent", property: "profileId")
   spaces: [ZucitySpace]
     @relationFrom(model: "ZucitySpace", property: "profileId")
+  applicationForms: [ZucityApplicationForm]
+    @relationFrom(model: "ZucityApplicationForm", property: "profileId")
 }

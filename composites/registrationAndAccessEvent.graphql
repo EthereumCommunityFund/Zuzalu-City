@@ -1,0 +1,12 @@
+type ZucityEventRegistrationAndAccess
+  @loadModel(id: "$EventRegistrationAndAccess_ID") {
+  id: ID!
+}
+
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  regAndAccess: [ZucityEventRegistrationAndAccess]
+    @relationFrom(
+      model: "ZucityEventRegistrationAndAccess"
+      property: "eventId"
+    )
+}

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Box, Stack } from '@mui/material';
-import { EventHeader, CurrentEvents, Invite } from './components';
+import { EventHeader, CurrentEvents } from './components';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { Event, Space } from '@/types';
 import SubSidebar from 'components/layout/Sidebar/SubSidebar';

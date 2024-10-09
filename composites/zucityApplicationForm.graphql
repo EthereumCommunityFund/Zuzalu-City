@@ -1,0 +1,26 @@
+type ZucityApplicationForm
+  @createModel(
+    accountRelation: LIST
+    description: "Application Form for Zuzalu.city beta version"
+  ) {
+  author: DID! @documentAccount
+  eventId: StreamID! @documentReference(model: "ZucityEvent")
+  event: ZucityEvent! @relationDocument(property: "eventId")
+  profileId: StreamID! @documentReference(model: "ZucityProfile")
+  profile: ZucityProfile! @relationDocument(property: "profileId")
+  answers: String @string(minLength: 1, maxLength: 50000)
+  approveStatus: String @string(minLength: 1, maxLength: 10000)
+  customAttributes: [TBD] @list(maxLength: 10000)
+}
+
+type ZucityProfile @loadModel(id: "$Profile_ID") {
+  id: ID!
+}
+
+type ZucityEvent @loadModel(id: "$Event_ID") {
+  id: ID!
+}
+
+type TBD {
+  tbd: String @string(minLength: 1, maxLength: 10000)
+}

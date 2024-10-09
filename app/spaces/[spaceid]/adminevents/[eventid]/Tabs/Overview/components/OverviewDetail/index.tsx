@@ -17,6 +17,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import dynamic from 'next/dynamic';
 import { deleteEvent } from 'services/event/deleteEvent';
 import { useCeramicContext } from '@/context/CeramicContext';
+import useGetShareLink from '@/hooks/useGetShareLink';
 
 const EditorPreview = dynamic(
   () => import('@/components/editor/EditorPreview'),
@@ -49,6 +50,12 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
       console.log(err);
     }
   };
+  const { shareUrl } = useGetShareLink({ id: eventId, name: eventData?.title });
+  const url =
+    shareUrl ||
+    (typeof window !== 'undefined' && `${window.origin}/events/${eventId}`) ||
+    '';
+
   return eventData ? (
     <Stack
       marginY={4}
@@ -114,7 +121,7 @@ const OverviewDetail = ({ eventData, handleEditEvent }: PropTypes) => {
             </ZuButton>
           </Link>
           <CopyToClipboard
-            text={`${window.origin}/events/${eventId}`}
+            text={url}
             onCopy={() => {
               setShowCopyToast(true);
             }}

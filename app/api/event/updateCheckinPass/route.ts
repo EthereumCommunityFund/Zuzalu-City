@@ -4,9 +4,7 @@ import { Ed25519Provider } from 'key-did-provider-ed25519';
 import { getResolver } from 'key-did-resolver';
 import { DID } from 'dids';
 import { ceramic, composeClient } from '@/constant';
-import { base64ToUint8Array, hashAndEncodeBase58 } from '@/utils';
-import { chainID } from '@/constant';
-
+import { base64ToUint8Array } from '@/utils';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -35,19 +33,15 @@ export async function POST(req: Request) {
         }
     }
     `;
-
     const variables = {
       i: {
         id: eventId,
         content: {
-          checkinPass: checkinPass,
+          checkinPass,
         },
       },
     };
-    const updateResult: any = await composeClient.executeQuery(
-      query,
-      variables,
-    );
+    await composeClient.executeQuery(query, variables);
     return NextResponse.json(
       {
         message: 'Successfully added into member list',

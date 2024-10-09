@@ -29,20 +29,16 @@ type ZucityEvent
   participantCount: Int @int(min: 1, max: 10000)
   tagline: String @string(minLength: 1, maxLength: 1000)
   gated: String @string(minLength: 1, maxLength: 1000)
-  contracts: [Ticket] @list(maxLength: 1000)
   update: [OrganizerUpdate] @list(maxLength: 1000)
   customLinks: [Link] @list(maxLength: 100)
-  contractID: Int
   tracks: String @string(minLength: 1, maxLength: 1000)
   admins: [DID!] @list(maxLength: 1000)
   members: [DID!] @list(maxLength: 10000)
   superAdmin: [DID!]! @list(maxLength: 1000) @immutable
   zupassHash: [MemberZupass] @list(maxLength: 10000)
-  checkinPass: String @string(minLength: 1, maxLength: 1000)
-  zupassInfo: String @string(minLength: 1, maxLength: 1000)
   sessionStorage: String @string(minLength: 1, maxLength: 1000)
-  supportChain: String @string(minLength: 1, maxLength: 1000)
   customAttributes: [TBD] @list(maxLength: 10000)
+  supportChain: String @string(minLength: 1, maxLength: 1000)
 }
 
 type ZucitySpace @loadModel(id: "$Space_ID") {
@@ -51,14 +47,7 @@ type ZucitySpace @loadModel(id: "$Space_ID") {
 type ZucityProfile @loadModel(id: "$Profile_ID") {
   id: ID!
 }
-type Ticket {
-  type: String! @string(minLength: 1, maxLength: 200)
-  contractAddress: String! @string(maxLength: 1000)
-  description: String! @string(maxLength: 1000)
-  image_url: String! @string(maxLength: 1000)
-  status: String! @string(maxLength: 1000)
-  checkin: String! @string(maxLength: 1000)
-}
+
 type Link {
   title: String! @string(minLength: 1, maxLength: 1000)
   links: String! @string(maxLength: 1000)
