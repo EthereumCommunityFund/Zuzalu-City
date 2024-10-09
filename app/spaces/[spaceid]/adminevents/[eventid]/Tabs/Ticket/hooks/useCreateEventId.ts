@@ -8,7 +8,7 @@ import { Address } from 'viem';
 import { writeContract, waitForTransactionReceipt } from 'wagmi/actions';
 import { scroll, scrollSepolia } from 'viem/chains';
 import { TICKET_FACTORY_ABI } from '@/utils/ticket_factory_abi';
-import { useAccount } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 import { ethers } from 'ethers';
 
 interface PropTypes {
@@ -17,11 +17,16 @@ interface PropTypes {
 
 export const useCreateEventId = ({ event }: PropTypes) => {
   const { address } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
   const [isLoading, setIsLoading] = useState(false);
 
   const createEventID = useCallback(async () => {
     try {
       setIsLoading(true);
+      const chainId = isDev ? scrollSepolia.id : scroll.id;
+      await switchChainAsync({
+        chainId,
+      });
       const createEventHash = await writeContract(config, {
         chainId: isDev ? scrollSepolia.id : scroll.id,
         address: TICKET_FACTORY_ADDRESS as Address,
