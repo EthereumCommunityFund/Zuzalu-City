@@ -5,7 +5,6 @@ import {
   useStatusContext,
 } from '../Common';
 import ClockIcon from '@/components/icons/Clock';
-import { ZuSwitch } from '@/components/core';
 import { BuildStoreFrontIcon } from '@/components/icons';
 import useRegAndAccess from '@/hooks/useRegAndAccess';
 import { RegistrationAndAccess } from '@/types';

@@ -11,12 +11,15 @@ import { updateRegAndAccess } from '@/services/event/regAndAccess';
 import { debounce } from 'lodash';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
+import { useEventContext } from '@/app/spaces/[spaceid]/adminevents/[eventid]/EventContext';
 
 interface Props {
   regAndAccess?: RegistrationAndAccess;
 }
 
-const useRegAndAccess = ({ regAndAccess }: Props) => {
+const useRegAndAccess = (props: Props) => {
+  const { event } = useEventContext();
+  const regAndAccess = event?.regAndAccess?.edges?.[0]?.node;
   const queryClient = useQueryClient();
   const pathname = useParams();
   const { profile } = useCeramicContext();
