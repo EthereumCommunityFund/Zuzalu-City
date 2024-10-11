@@ -101,7 +101,7 @@ export default function Panel({ regAndAccess }: PanelProps) {
         <Form
           questions={questions}
           onClose={handleClose}
-          id={regAndAccess?.id!}
+          regAndAccess={regAndAccess}
         />
       </Drawer>
     </Stack>
