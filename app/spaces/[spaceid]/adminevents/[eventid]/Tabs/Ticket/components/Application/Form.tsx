@@ -145,7 +145,7 @@ export default function Form({
         </Stack>
       </>
     );
-  }, []);
+  }, [regAndAccess]);
 
   return (
     <Box>

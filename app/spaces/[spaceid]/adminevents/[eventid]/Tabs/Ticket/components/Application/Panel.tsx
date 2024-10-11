@@ -86,7 +86,7 @@ export default function Panel({ regAndAccess }: PanelProps) {
       />
       <Box>
         {hasConfiged ? (
-          <Submissions list={[]} />
+          <Submissions list={Array.from({ length: 10 })} />
         ) : (
           <ZuButton
             startIcon={<PlusIcon size={4} />}
