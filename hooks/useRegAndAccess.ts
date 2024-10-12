@@ -73,7 +73,13 @@ const useRegAndAccess = (props: Props) => {
   }, [regAndAccess?.applyOption, regAndAccess?.applyRule]);
 
   const hasConfigedApplicationForm = !!regAndAccess?.applicationForm;
-  const hasCheckin = regAndAccess?.ticketType !== TicketingMethod.NoTicketing;
+
+  const hasCheckin = useMemo(() => {
+    return (
+      regAndAccess?.ticketType !== TicketingMethod.NoTicketing &&
+      regAndAccess?.ticketType !== TicketingMethod.LottoPGF
+    );
+  }, [regAndAccess?.ticketType]);
 
   const showAccessRuleCheckin = useMemo(() => {
     if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
@@ -100,6 +106,9 @@ const useRegAndAccess = (props: Props) => {
 
     if (regAndAccess?.ticketType === TicketingMethod.NoTicketing) {
       return hasWhitelist && (noApplication || hasConfigedApplicationForm);
+    }
+    if (regAndAccess?.ticketType === TicketingMethod.LottoPGF) {
+      return hasWhitelist;
     }
     return hasWhitelist && hasConfigedApplicationForm;
   }, [hasConfigedApplicationForm, noApplication, regAndAccess]);

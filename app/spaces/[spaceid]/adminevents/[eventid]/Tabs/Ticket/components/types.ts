@@ -58,7 +58,7 @@ export enum ApplyOption {
 
 export interface TagProps {
   type: 'text' | 'required' | 'warning' | 'pass';
-  pass?: 'zupass' | 'scrollpass';
+  pass?: 'zupass' | 'scrollpass' | 'lotto';
   text?: string;
   bgColor?: string;
   textColor?: string;

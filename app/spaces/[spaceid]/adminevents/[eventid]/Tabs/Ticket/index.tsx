@@ -12,6 +12,7 @@ import {
   NoTicketList,
   ZupassList,
   ScrollPassList,
+  PGFList,
 } from './components';
 import { ZuButton } from 'components/core';
 import { scroll, scrollSepolia } from 'viem/chains';
@@ -531,6 +532,9 @@ const Ticket = ({ event }: PropTypes) => {
       {!regAndAccess && <RegistrationPanel registered={false} />}
       {regAndAccess?.ticketType === TicketingMethod.NoTicketing && (
         <NoTicketList regAndAccess={regAndAccess} />
+      )}
+      {regAndAccess?.ticketType === TicketingMethod.LottoPGF && (
+        <PGFList regAndAccess={regAndAccess} />
       )}
       {regAndAccess?.ticketType === TicketingMethod.ZuPass && (
         <ZupassList regAndAccess={regAndAccess} />

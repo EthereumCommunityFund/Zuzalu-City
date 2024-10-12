@@ -26,6 +26,7 @@ import {
   CloseIcon,
   ExclamationCircleIcon,
   LeftArrowIcon,
+  LottoPGFIcon,
   RightArrowIcon,
   ScrollPassIcon,
   SettingIcon,
@@ -181,9 +182,13 @@ export const Item: React.FC<ItemProps> = ({
             <RoundCheckbox checked={isSelected} disabled={disabled} />
           ) : null}
         </Stack>
-        <Typography fontSize={13} lineHeight={1.4} sx={{ opacity: 0.6 }}>
-          {description}
-        </Typography>
+        {typeof description === 'string' ? (
+          <Typography fontSize={13} lineHeight={1.4} sx={{ opacity: 0.6 }}>
+            {description}
+          </Typography>
+        ) : (
+          description
+        )}
         {warning && (
           <Typography
             fontSize={10}
@@ -498,11 +503,17 @@ export const Tag = ({ type, pass, text, bgColor, textColor }: TagProps) => {
       >
         {pass === 'zupass' ? (
           <ZuPassIcon size={4} />
-        ) : (
+        ) : pass === 'scrollpass' ? (
           <ScrollPassIcon size={4} />
+        ) : (
+          <LottoPGFIcon size={4} />
         )}
         <Typography fontSize={13} lineHeight={1.4}>
-          {pass === 'zupass' ? 'Zupass' : 'Scrollpass'}
+          {pass === 'zupass'
+            ? 'Zupass'
+            : pass === 'scrollpass'
+              ? 'Scrollpass'
+              : 'ZuLotto'}
         </Typography>
       </Stack>
     );

@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
+import { Box, Stack, useMediaQuery } from '@mui/material';
 
 import { Ticket, Overview, Venue, Announcements } from './Tabs';
 import { Tabbar, Navbar } from 'components/layout';
@@ -14,8 +14,6 @@ import {
   StatusProvider,
   useStatusContext,
 } from './Tabs/Ticket/components/Common';
-import { ApplyOption, ApplyRule } from './Tabs/Ticket/components/types';
-import Navigation from './Navigation';
 
 const EventContent: React.FC = () => {
   const [tabName, setTabName] = React.useState<string>('Overview');
@@ -113,6 +111,11 @@ const EventContent: React.FC = () => {
                     status
                     checkin
                     image_url
+                    description
+                    contractAddress
+                  }
+                  zuLottoInfo {
+                    name
                     description
                     contractAddress
                   }

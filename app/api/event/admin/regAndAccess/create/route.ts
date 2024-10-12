@@ -57,7 +57,7 @@ export async function POST(req: Request) {
       input: {
         content: {
           eventId,
-          applyRule,
+          applyRule: applyRule || null,
           ticketType,
           applyOption: applyOption || null,
           registrationWhitelist: registrationWhitelist || null,

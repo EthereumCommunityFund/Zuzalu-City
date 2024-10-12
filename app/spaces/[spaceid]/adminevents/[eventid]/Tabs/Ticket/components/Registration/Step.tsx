@@ -1,5 +1,4 @@
 import {
-  Box,
   Collapse,
   Divider,
   Link,
@@ -23,14 +22,15 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   ExclamationCircleIcon,
-  InformationIcon,
   LottoPGFIcon,
   MegaPhoneIcon,
   ScrollPassIcon,
   ZuPassIcon,
 } from '@/components/icons';
+import Image from 'next/image';
 
 interface CommonProps {
+  isLoading?: boolean;
   handleClose: () => void;
   handleNext: () => void;
 }
@@ -186,9 +186,27 @@ const stepTwoItems: ItemType[] = [
   {
     id: TicketingMethod.LottoPGF,
     name: 'LottoPGF',
-    description: 'COMING SOON',
-    disabled: true,
-    isExternal: true,
+    description: (
+      <Stack spacing="10px">
+        <Typography fontSize={13} lineHeight={1.4} sx={{ opacity: 0.8 }}>
+          NFT Ticketing + lottery participation.
+        </Typography>
+        <Stack
+          direction="row"
+          spacing="5px"
+          alignItems="center"
+          sx={{ opacity: 0.5 }}
+        >
+          <Typography fontSize={10} lineHeight={1.2}>
+            Powered by:
+          </Typography>
+          <Typography fontSize={13} lineHeight={1.4}>
+            Lotto PGF
+          </Typography>
+          <Image src="/smallPGF.png" alt="Lotto PGF" width={18} height={18} />
+        </Stack>
+      </Stack>
+    ),
     icon: <LottoPGFIcon size={5} />,
   },
 ];
@@ -197,6 +215,7 @@ export const StepTwo = ({
   handleClose,
   handleNext,
   isFirstStep = false,
+  isLoading,
 }: CommonProps & { isFirstStep: boolean }) => {
   const { watch, setValue } = useFormContext<ConfigFormType>();
   const pass = watch('pass') || '';
@@ -333,6 +352,7 @@ export const StepTwo = ({
       <ButtonGroup
         isBackButton={!isFirstStep}
         isDisabled={!pass}
+        isLoading={isLoading}
         handleNext={handleNext}
         handleBack={handleClose}
       />
@@ -450,7 +470,7 @@ export const StepFour = ({
   handleClose,
   handleNext,
   isLoading,
-}: CommonProps & { isLoading: boolean }) => {
+}: CommonProps) => {
   const { watch } = useFormContext<ConfigFormType>();
   const access = watch('access') || '';
   const apply = watch('apply') || '';
