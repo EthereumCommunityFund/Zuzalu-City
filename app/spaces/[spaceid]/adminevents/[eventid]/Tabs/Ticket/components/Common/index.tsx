@@ -86,7 +86,9 @@ interface ItemProps {
   onOptionsChange?: (optionIds: string[]) => void;
 }
 
-export const RoundCheckbox: React.FC<CheckboxProps> = (props) => {
+export const RoundCheckbox: React.FC<
+  CheckboxProps & { iconColor?: string }
+> = ({ iconColor, ...props }) => {
   return (
     <Checkbox
       {...props}
@@ -98,7 +100,11 @@ export const RoundCheckbox: React.FC<CheckboxProps> = (props) => {
           }}
         />
       }
-      checkedIcon={<CheckCircleIcon sx={{ width: 16, height: 16 }} />}
+      checkedIcon={
+        <CheckCircleIcon
+          sx={{ width: 16, height: 16, color: iconColor || 'inherit' }}
+        />
+      }
       sx={{
         p: 0,
         ...props.sx,

@@ -74,18 +74,12 @@ async function updateSwitch({
   checkinOpen: string;
   profileId: string;
 }) {
-  const content = checkinOpen
-    ? {
-        checkinOpen,
-      }
-    : {
-        registrationOpen,
-      };
   return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
-        ...content,
+        registrationOpen,
+        checkinOpen,
         profileId,
       },
     },
