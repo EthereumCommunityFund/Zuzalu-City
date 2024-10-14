@@ -505,7 +505,11 @@ export const StepFour = ({
         desc:
           apply === ApplyRule.Join
             ? `Require users to submit an application through an approval process before gaining access to the event's schedule.`
-            : 'Need Copy',
+            : apply === ApplyRule.NoApplication
+              ? `Allow users to join the event directly without any application process.`
+              : apply === ApplyRule.RequireApplication
+                ? `Require users to fill out an application form before joining the event.`
+                : `Require users to apply for the opportunity to purchase tickets for the event.`,
       },
     ];
   }, [access, pass, apply]);
