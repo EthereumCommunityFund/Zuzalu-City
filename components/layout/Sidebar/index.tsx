@@ -164,6 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
         display: 'flex',
         flexDirection: 'column',
       }}
+      borderRight="1px solid #383838"
     >
       <Box
         display="flex"
@@ -251,6 +252,10 @@ const Sidebar: React.FC<SidebarProps> = ({ selected }) => {
                           padding: '6px 10px',
                           opacity: 0.7,
                           cursor: 'pointer',
+                          '&:hover': {
+                            bgcolor: 'rgba(255, 255, 255, 0.05)',
+                          },
+                          borderRadius: '4px',
                         }}
                         onClick={() => {
                           router.push(`/events/${event.id}`);

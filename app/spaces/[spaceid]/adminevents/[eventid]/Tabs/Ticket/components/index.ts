@@ -17,7 +17,7 @@ import { RegistrationStatus } from './Status';
 import NoTicketList from './NoTicketList';
 import ZupassList from './ZupassList';
 import ScrollPassList from './ScrollPassList';
-import PGFList from './PGFList';
+import PGFList from './PGF';
 
 export {
   TicketHeader,

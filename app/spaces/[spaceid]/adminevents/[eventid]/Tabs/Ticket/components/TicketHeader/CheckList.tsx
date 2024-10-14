@@ -12,7 +12,7 @@ interface ChecklistProps {
 }
 
 export default function CheckList({ regAndAccess }: ChecklistProps) {
-  const [showGuide, setShowGuide] = useState(true);
+  const [showGuide, setShowGuide] = useState(false);
   const { hasCheckin, noApplication, showAccessRuleCheckin } = useRegAndAccess({
     regAndAccess,
   });
