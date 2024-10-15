@@ -4,7 +4,7 @@ import {
   RegistrationAccess,
   TicketingMethod,
 } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Ticket/components/types';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { RegistrationAndAccess } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateRegAndAccess } from '@/services/event/regAndAccess';
@@ -12,6 +12,7 @@ import { debounce } from 'lodash';
 import { useCeramicContext } from '@/context/CeramicContext';
 import { useParams } from 'next/navigation';
 import { useEventContext } from '@/app/spaces/[spaceid]/adminevents/[eventid]/EventContext';
+import { useStatusContext } from '@/app/spaces/[spaceid]/adminevents/[eventid]/Tabs/Ticket/components/Common';
 
 interface Props {
   regAndAccess?: RegistrationAndAccess;
@@ -19,6 +20,7 @@ interface Props {
 
 const useRegAndAccess = (props: Props) => {
   const { event } = useEventContext();
+  const { status } = useStatusContext();
   const regAndAccess = event?.regAndAccess?.edges?.[0]?.node;
   const queryClient = useQueryClient();
   const pathname = useParams();
@@ -26,8 +28,27 @@ const useRegAndAccess = (props: Props) => {
   const profileId = profile?.id || '';
   const eventId = pathname.eventid.toString();
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const updateRegistrationOpenMutation = useMutation({
-    mutationFn: updateRegAndAccess,
+    mutationFn: async (data: any) => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
+      return updateRegAndAccess(
+        {
+          type: 'switch',
+          id: regAndAccess!.id,
+          profileId,
+          eventId,
+          registrationOpen: status.registrationOpen ? '1' : '0',
+          checkinOpen: status.checkinOpen ? '1' : '0',
+          ...data,
+        },
+        abortControllerRef.current.signal,
+      );
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fetchEventById'] });
     },
@@ -39,10 +60,6 @@ const useRegAndAccess = (props: Props) => {
   const handleRegistrationOpenChange = useCallback(
     debounce((checked: boolean) => {
       updateRegistrationOpenMutation.mutate({
-        type: 'switch',
-        id: regAndAccess!.id,
-        profileId,
-        eventId,
         registrationOpen: checked ? '1' : '0',
       });
     }, 1000),
@@ -52,10 +69,6 @@ const useRegAndAccess = (props: Props) => {
   const handleCheckinOpenChange = useCallback(
     debounce((checked: boolean) => {
       updateRegistrationOpenMutation.mutate({
-        type: 'switch',
-        id: regAndAccess!.id,
-        profileId,
-        eventId,
         checkinOpen: checked ? '1' : '0',
       });
     }, 1000),
@@ -73,7 +86,13 @@ const useRegAndAccess = (props: Props) => {
   }, [regAndAccess?.applyOption, regAndAccess?.applyRule]);
 
   const hasConfigedApplicationForm = !!regAndAccess?.applicationForm;
-  const hasCheckin = regAndAccess?.ticketType !== TicketingMethod.NoTicketing;
+
+  const hasCheckin = useMemo(() => {
+    return (
+      regAndAccess?.ticketType !== TicketingMethod.NoTicketing &&
+      regAndAccess?.ticketType !== TicketingMethod.LottoPGF
+    );
+  }, [regAndAccess?.ticketType]);
 
   const showAccessRuleCheckin = useMemo(() => {
     if (regAndAccess?.ticketType === TicketingMethod.ScrollPass) {
@@ -100,6 +119,9 @@ const useRegAndAccess = (props: Props) => {
 
     if (regAndAccess?.ticketType === TicketingMethod.NoTicketing) {
       return hasWhitelist && (noApplication || hasConfigedApplicationForm);
+    }
+    if (regAndAccess?.ticketType === TicketingMethod.LottoPGF) {
+      return hasWhitelist;
     }
     return hasWhitelist && hasConfigedApplicationForm;
   }, [hasConfigedApplicationForm, noApplication, regAndAccess]);

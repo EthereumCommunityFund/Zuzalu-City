@@ -1,7 +1,14 @@
-import { Box, Stack, Typography, TextField, IconButton } from '@mui/material';
+import {
+  Box,
+  Stack,
+  Typography,
+  TextField,
+  IconButton,
+  Divider,
+} from '@mui/material';
 import FormHeader from '@/components/form/FormHeader';
 import { CommonWrapper, Title, ButtonGroup } from '../Common';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -11,9 +18,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateRegAndAccess } from '@/services/event/regAndAccess';
 import { useParams } from 'next/navigation';
 import { useCeramicContext } from '@/context/CeramicContext';
-
+import { RegistrationAndAccess } from '@/types';
+import { TicketingMethod } from '../types';
 interface FormProps {
-  id: string;
+  regAndAccess?: RegistrationAndAccess;
   questions: string[];
   onClose: () => void;
 }
@@ -26,7 +34,12 @@ const schema = yup.object().shape({
   ),
 });
 
-export default function Form({ questions = [''], onClose, id }: FormProps) {
+export default function Form({
+  questions = [''],
+  onClose,
+  regAndAccess,
+}: FormProps) {
+  const id = regAndAccess?.id;
   const {
     control,
     handleSubmit,
@@ -66,7 +79,7 @@ export default function Form({ questions = [''], onClose, id }: FormProps) {
     (data: yup.InferType<typeof schema>) => {
       updateMutation.mutate({
         type: 'question',
-        id,
+        id: id!,
         applicationForm: data.questions?.map((q) => q.question).join(','),
         profileId,
         eventId,
@@ -74,6 +87,65 @@ export default function Form({ questions = [''], onClose, id }: FormProps) {
     },
     [updateMutation, profileId, id, eventId],
   );
+
+  const fixQuestions = useMemo(() => {
+    if (!regAndAccess) return null;
+    if (regAndAccess.ticketType === TicketingMethod.NoTicketing) return null;
+    const list = [];
+    if (regAndAccess.ticketType === TicketingMethod.ScrollPass) {
+      list.push({
+        text: 'Receiving Address',
+        type: 'scrollPass',
+      });
+      if (regAndAccess.scrollPassTickets?.length) {
+        list.push({
+          text: 'Selected Ticket',
+          type: 'scrollPass',
+        });
+      }
+    }
+    if (regAndAccess.ticketType === TicketingMethod.ZuPass) {
+      list.push({
+        text: 'Applicant Email',
+        type: 'zuPass',
+      });
+    }
+    return (
+      <>
+        <Divider />
+        <Stack spacing="10px">
+          <Typography fontSize={14} lineHeight={1.6} sx={{ opacity: 0.5 }}>
+            Default required fields for applicants
+          </Typography>
+          {list.map((item) => (
+            <Stack
+              key={item.text}
+              spacing="10px"
+              direction="row"
+              alignItems="center"
+            >
+              <Typography fontSize={16} fontWeight={700} lineHeight={1.2}>
+                {item.text}
+              </Typography>
+              <Typography
+                fontSize={13}
+                lineHeight={1.4}
+                sx={{
+                  p: '4px 10px',
+                  borderRadius: '6px',
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                }}
+              >
+                {item.type === 'scrollPass'
+                  ? 'Scrollpass Required Field'
+                  : 'ZuPass Required Field'}
+              </Typography>
+            </Stack>
+          ))}
+        </Stack>
+      </>
+    );
+  }, [regAndAccess]);
 
   return (
     <Box>
@@ -89,7 +161,7 @@ export default function Form({ questions = [''], onClose, id }: FormProps) {
         </Stack>
         <CommonWrapper>
           <Title title="Form Fields" />
-          <Stack spacing={2}>
+          <Stack spacing="20px">
             {fields.map((field, index) => (
               <Stack key={field.id} spacing="10px">
                 <Typography fontSize={16} fontWeight={700} lineHeight={1.2}>
@@ -123,6 +195,7 @@ export default function Form({ questions = [''], onClose, id }: FormProps) {
             >
               Add Question
             </ZuButton>
+            {fixQuestions}
           </Stack>
         </CommonWrapper>
         <ButtonGroup

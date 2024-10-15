@@ -4,6 +4,7 @@ import { QRCodeIcon } from '@/components/icons';
 import { RegistrationAndAccess } from '@/types';
 import { StatusIndicatorPanel, useStatusContext } from '../Common';
 import useRegAndAccess from '@/hooks/useRegAndAccess';
+import CheckList from './CheckList';
 
 interface TicketHeaderProps {
   regAndAccess?: RegistrationAndAccess;
@@ -38,54 +39,57 @@ const TicketHeader = ({ regAndAccess }: TicketHeaderProps) => {
         </Typography>
       </Stack>
       {regAndAccess && (
-        <Stack
-          direction="row"
-          gap="20px"
-          sx={{
-            [breakpoints.down('sm')]: {
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '10px',
-            },
-          }}
-        >
-          <StatusIndicatorPanel
-            type="registration"
-            name="Registration Status"
-            desc={
-              registrationOpen
-                ? 'OPEN'
-                : registrationAvailable
-                  ? 'CLOSED'
-                  : 'Unavailable'
-            }
-            checked={registrationOpen}
-            disabled={!registrationAvailable}
-            onChange={handleRegistrationOpenChange}
-          />
-          {hasCheckin && (
+        <>
+          <CheckList regAndAccess={regAndAccess} />
+          <Stack
+            direction="row"
+            gap="20px"
+            sx={{
+              [breakpoints.down('sm')]: {
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: '10px',
+              },
+            }}
+          >
             <StatusIndicatorPanel
-              type="checkin"
-              name="Check-In Status"
+              type="registration"
+              name="Registration Status"
               desc={
-                checkinOpen
+                registrationOpen
                   ? 'OPEN'
-                  : showAccessRuleCheckin
+                  : registrationAvailable
                     ? 'CLOSED'
                     : 'Unavailable'
               }
-              checked={checkinOpen}
-              disabled={!showAccessRuleCheckin}
-              onChange={handleCheckinOpenChange}
+              checked={registrationOpen}
+              disabled={!registrationAvailable}
+              onChange={handleRegistrationOpenChange}
             />
-          )}
-          <StatusIndicatorPanel
-            name="Event Capacity"
-            desc="COMING SOON"
-            left={<QRCodeIcon />}
-            disabled
-          />
-        </Stack>
+            {hasCheckin && (
+              <StatusIndicatorPanel
+                type="checkin"
+                name="Check-In Status"
+                desc={
+                  checkinOpen
+                    ? 'OPEN'
+                    : showAccessRuleCheckin
+                      ? 'CLOSED'
+                      : 'Unavailable'
+                }
+                checked={checkinOpen}
+                disabled={!showAccessRuleCheckin}
+                onChange={handleCheckinOpenChange}
+              />
+            )}
+            <StatusIndicatorPanel
+              name="Event Capacity"
+              desc="COMING SOON"
+              left={<QRCodeIcon />}
+              disabled
+            />
+          </Stack>
+        </>
       )}
     </Stack>
   );

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box } from '@mui/material';
 import FormHeader from '@/components/form/FormHeader';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -53,6 +53,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
       : {},
   });
   const { profile } = useCeramicContext();
+  const pass = formMethods.watch('pass');
   const profileId = profile?.id || '';
 
   const eventId = pathname.eventid.toString();
@@ -125,7 +126,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
             id: regAndAccess!.id,
             type: 'method',
             applyOption: options || '',
-            applyRule: apply!,
+            applyRule: apply || '',
             registrationAccess: access!,
             ticketType: pass!,
           });
@@ -150,13 +151,15 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
         onClose();
         return;
       }
-      if (type === 'next' && step === 4) {
-        formMethods.handleSubmit(handleSubmit)();
-        return;
+      if (type === 'next') {
+        if (step === 4 || pass === TicketingMethod.LottoPGF) {
+          formMethods.handleSubmit(handleSubmit)();
+          return;
+        }
       }
       setStep((v) => (type === 'next' ? v + 1 : v - 1));
     },
-    [formMethods, handleSubmit, initialStep, onClose, step],
+    [formMethods, handleSubmit, initialStep, onClose, pass, step],
   );
 
   useEffect(() => {
@@ -175,6 +178,7 @@ const ConfigForm: React.FC<RegistrationMethodSelectorProps> = ({
         ) : step === 2 ? (
           <StepTwo
             isFirstStep={step === initialStep}
+            isLoading={isLoading}
             handleClose={() => handleStep('back')}
             handleNext={() => handleStep('next')}
           />

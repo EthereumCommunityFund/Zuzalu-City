@@ -98,6 +98,7 @@ export interface RegistrationAndAccess {
   checkinOpen: string;
   zuPassInfo?: ZuPassInfo[];
   scrollPassTickets?: ScrollPassTickets[];
+  zuLottoInfo?: ZuLottoInfo[];
   scrollPassContractFactoryID?: number;
 }
 
@@ -115,6 +116,12 @@ export interface ZuPassInfo {
   eventId: string;
   eventName: string;
   registration: string;
+}
+
+export interface ZuLottoInfo {
+  name: string;
+  description: string;
+  contractAddress: string;
 }
 
 export interface ApplicationForm {
@@ -440,11 +447,13 @@ export interface UpdateRegAndAccessRequest
     | 'switch'
     | 'whitelist'
     | 'zuPass'
-    | 'scrollpass';
+    | 'scrollpass'
+    | 'zuLotto';
   id: string;
   applicationForm?: string;
   checkinOpen?: string;
   registrationOpen?: string;
   zuPassInfo?: ZuPassInfo;
   scrollPassTickets?: ScrollPassTickets[];
+  zuLottoInfo?: ZuLottoInfo;
 }

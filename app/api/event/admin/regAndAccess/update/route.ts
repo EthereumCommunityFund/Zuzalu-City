@@ -53,7 +53,7 @@ async function updateMethod({
     input: {
       id,
       content: {
-        applyRule,
+        applyRule: applyRule || null,
         ticketType,
         applyOption: applyOption || null,
         registrationAccess,
@@ -74,18 +74,12 @@ async function updateSwitch({
   checkinOpen: string;
   profileId: string;
 }) {
-  const content = checkinOpen
-    ? {
-        checkinOpen,
-      }
-    : {
-        registrationOpen,
-      };
   return await composeClient.executeQuery(Update_QUERY, {
     input: {
       id,
       content: {
-        ...content,
+        registrationOpen,
+        checkinOpen,
         profileId,
       },
     },
@@ -129,6 +123,23 @@ async function updateZuPass({
   });
 }
 
+async function updateZuLotto({
+  id,
+  zuLottoInfo,
+}: {
+  id: string;
+  zuLottoInfo: any;
+}) {
+  return await composeClient.executeQuery(Update_QUERY, {
+    input: {
+      id,
+      content: {
+        zuLottoInfo: [zuLottoInfo],
+      },
+    },
+  });
+}
+
 async function updateScrollPass({
   id,
   scrollPassTickets,
@@ -164,6 +175,7 @@ export async function POST(req: Request) {
       registrationWhitelist,
       zuPassInfo,
       scrollPassTickets,
+      zuLottoInfo,
     } = body;
     const { data, error } = await supabase
       .from('events')
@@ -269,6 +281,13 @@ export async function POST(req: Request) {
       result = await updateScrollPass({
         id,
         scrollPassTickets,
+      });
+    }
+
+    if (type === 'zuLotto') {
+      result = await updateZuLotto({
+        id,
+        zuLottoInfo,
       });
     }
 
